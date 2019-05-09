@@ -4,12 +4,14 @@ const emailReg = /^[a-zA-Z0-9_.-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.[a-zA-Z0-9]{
 export function isUrl(path) {
   return reg.test(path);
 }
-export function checkPhone(phone) { // 手机效验
-  if(phone.length===11){
-    return /^1(3|4|5|7|8)\d{9}$/.test(phone) 
+export function checkPhone(phone) {
+  // 手机效验
+  if (phone.length === 11) {
+    return /^1(3|4|5|7|8)\d{9}$/.test(phone);
   }
-  return false
+  return false;
 }
-export function chechEmail(email){ // 邮箱效验
-  return emailReg.test(email)
+export function chechEmail(email) {
+  // 邮箱效验
+  return emailReg.test(email);
 }

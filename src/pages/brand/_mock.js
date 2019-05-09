@@ -13,7 +13,7 @@ for (let i = 0; i < 46; i += 1) {
       'https://gw.alipayobjects.com/zos/rmsportal/eeHMaZBwmTvLdIwMfBpg.png',
       'https://gw.alipayobjects.com/zos/rmsportal/udxAbMEhpwthVVcjLXik.png',
     ],
-    Code:i,
+    Code: i,
     Name: `品牌 ${i}`,
     Modifier: `采购员 ${i}`,
     Supplier: `供应商 ${i}`,

@@ -125,7 +125,7 @@ class BasicLayout extends React.PureComponent {
     const { fixSiderbar, isMobile, collapsed, layout } = this.props;
     if (fixSiderbar && layout !== 'topmenu' && !isMobile) {
       return {
-        paddingLeft: collapsed ? '80px' : '256px',
+        paddingLeft: collapsed ? '80px' : '150px',
       };
     }
     return null;
@@ -151,7 +151,6 @@ class BasicLayout extends React.PureComponent {
       route: { routes },
       fixedHeader,
     } = this.props;
-    console.log(menuData)
     const isTop = PropsLayout === 'topmenu';
     const routerConfig = this.getRouterAuthority(pathname, routes);
     const contentStyle = !fixedHeader ? { paddingTop: 0 } : {};
