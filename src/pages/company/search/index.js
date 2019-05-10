@@ -1,7 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
-import moment from 'moment';
 import { Row, Col, Card, Form, Input, Button, Divider } from 'antd';
 import StandardTable from '@/components/StandardTable';
 
@@ -57,15 +56,20 @@ class companyList extends PureComponent {
       dataIndex: 'CreditCode',
     },
     {
-      title: '创建时间',
-      dataIndex: 'CreatedAt',
-      render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>,
+      title: '状态',
+      dataIndex: 'Status',
+      render: val => <span>{val === '1' ? '开启' : '禁用'}</span>,
     },
-    {
-      title: '更新时间',
-      dataIndex: 'UpdatedAt',
-      render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>,
-    },
+    // {
+    //   title: '创建时间',
+    //   dataIndex: 'CreatedAt',
+    //   render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>,
+    // },
+    // {
+    //   title: '更新时间',
+    //   dataIndex: 'UpdatedAt',
+    //   render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>,
+    // },
     {
       title: '操作',
       render: (text, record) => (
