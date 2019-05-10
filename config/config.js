@@ -65,10 +65,42 @@ export default {
           icon: 'block',
         },
         {
-          name: 'blank',
+          name: '客户管理',
           icon: 'smile',
-          path: '/blank',
-          component: './blank',
+          path: '/company',
+          routes:[
+            {
+              path: '/company/search',
+              name: '客户查询',
+              icon: 'smile',
+              component: './company/search',
+            },
+            {
+              path: '/company/edit',
+              name: '客户添加',
+              icon: 'smile',
+              component: './company/edit',
+            },
+          ]
+        },
+        {
+          name: '供应商管理',
+          icon: 'smile',
+          path: '/supplier',
+          routes:[
+            {
+              path: '/supplier/search',
+              name: '供应商查询',
+              icon: 'smile',
+              component: './supplier/search',
+            },
+            {
+              path: '/supplier/edit',
+              name: '供应商添加',
+              icon: 'smile',
+              component: './supplier/edit',
+            },
+          ]
         },
         {
           name: '员工管理',

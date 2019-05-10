@@ -3,6 +3,8 @@ import { Table } from 'antd';
 import { Resizable } from 'react-resizable';
 import styles from './index.less';
 
+// 要想列可以拖拽，列必须制定宽度
+
 const ResizeableTitle = props => {
   const { onResize, width, ...restProps } = props;
 
@@ -19,6 +21,7 @@ const ResizeableTitle = props => {
 
 class StandardTable extends PureComponent {
   components = {
+    // 修改表头组件
     header: {
       cell: ResizeableTitle,
     },
@@ -51,12 +54,17 @@ class StandardTable extends PureComponent {
 
   render() {
     const { data = {}, rowKey, ...rest } = this.props;
+
     const { list = [], pagination } = data;
-    const paginationProps = {
-      showSizeChanger: true,
-      showQuickJumper: true,
-      ...pagination,
-    };
+    let paginationProps = false;
+    if (pagination) {
+      paginationProps = {
+        showSizeChanger: true,
+        showQuickJumper: true,
+        ...pagination,
+      };
+    }
+
     let { columns } = this.state;
     columns = columns.map((col, index) => ({
       ...col,
@@ -70,12 +78,12 @@ class StandardTable extends PureComponent {
         <Table
           bordered
           components={this.components}
-          columns={columns}
           rowKey={rowKey || 'key'}
           dataSource={list}
           pagination={paginationProps}
           onChange={this.handleTableChange}
           {...rest}
+          columns={columns} //  columns={columns} 需放到  {...rest} 后，防止 columns 被覆盖
         />
       </div>
     );

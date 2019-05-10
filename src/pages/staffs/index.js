@@ -233,9 +233,11 @@ class TableList extends PureComponent {
     {
       title: '用户ID',
       dataIndex: 'UserID',
+      width: 80,
     },
     {
       title: '姓名',
+      width: 80,
       dataIndex: 'Name',
     },
     {
@@ -395,7 +397,6 @@ class TableList extends PureComponent {
   };
 
   handleUpdateModalVisible = (flag, record) => {
-    console.log(record);
     this.setState({
       modalVisible: !!flag,
       formValues: record,

@@ -1,5 +1,5 @@
 {
-  "name": "Viktor",
+  "name": "viktor",
   "version": "2.1.1",
   "description": "An out-of-box UI solution for enterprise applications",
   "private": true,
@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "ant-design-pro": "^2.1.1",
-    "antd": "^3.10.9",
+    "antd": "^3.17.0",
     "classnames": "^2.2.6",
     "dva": "^2.4.0",
     "lodash": "^4.17.10",
