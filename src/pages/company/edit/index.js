@@ -1,6 +1,20 @@
+/* eslint-disable no-script-url */
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Row, Col, Form, Input, Card, Switch, Tabs, Button, message, Divider, Select } from 'antd';
+import {
+  Row,
+  Col,
+  Form,
+  Input,
+  Card,
+  Switch,
+  Tabs,
+  Button,
+  Popconfirm,
+  message,
+  Divider,
+  Select,
+} from 'antd';
 import StandardTable from '@/components/StandardTable';
 import AddressInfo from '../components/address';
 import styles from './style.less';
@@ -60,7 +74,9 @@ class CreateForm extends PureComponent {
             修改
           </a>
           <Divider type="vertical" />
-          <a href="">删除</a>
+          <Popconfirm title="确定要删除吗?" onConfirm={() => this.handleDelete(record.key)}>
+            <a href="javascript:;">删除</a>
+          </Popconfirm>
         </Fragment>
       ),
     },
@@ -103,7 +119,9 @@ class CreateForm extends PureComponent {
             修改
           </a>
           <Divider type="vertical" />
-          <a href="">删除</a>
+          <Popconfirm title="确定要删除吗?" onConfirm={() => this.handleDelete(record.key)}>
+            <a href="javascript:;">删除</a>
+          </Popconfirm>
         </Fragment>
       ),
     },
@@ -142,8 +160,8 @@ class CreateForm extends PureComponent {
       },
     };
     this.formLayout = {
-      labelCol: { span: 8 },
-      wrapperCol: { span: 13 },
+      labelCol: { span: 10 },
+      wrapperCol: { span: 14 },
     };
   }
 
@@ -333,7 +351,7 @@ class CreateForm extends PureComponent {
     };
     return (
       <Fragment>
-        <Form type="flex" {...formItemLayout} onSubmit={this.handleSubmit}>
+        <Form {...formItemLayout} onSubmit={this.handleSubmit}>
           <Row gutter={8}>
             <Col lg={8} md={12} sm={24}>
               <FormItem key="Code" {...this.formLayout} label="客户ID">
@@ -356,8 +374,6 @@ class CreateForm extends PureComponent {
                 })(<Input placeholder="请输入营业执照开户行！" />)}
               </FormItem>
             </Col>
-          </Row>
-          <Row gutter={8}>
             <Col lg={8} md={12} sm={24}>
               <FormItem key="BankAccount" {...this.formLayout} label="营业执照账户">
                 {getFieldDecorator('BankAccount', {
@@ -382,8 +398,6 @@ class CreateForm extends PureComponent {
                 })(<Input placeholder="请输入营业执照地址" />)}
               </FormItem>
             </Col>
-          </Row>
-          <Row gutter={8}>
             <Col lg={8} md={12} sm={24}>
               <FormItem key="LPhone" {...this.formLayout} label="营业执照电话">
                 {getFieldDecorator('LPhone', {
@@ -413,8 +427,6 @@ class CreateForm extends PureComponent {
                 )}
               </FormItem>
             </Col>
-          </Row>
-          <Row gutter={8}>
             <Col lg={8} md={12} sm={24}>
               <FormItem key="PayMent" {...this.formLayout} label="付款条款">
                 {getFieldDecorator('PayMent', {
@@ -447,8 +459,6 @@ class CreateForm extends PureComponent {
                 })(<Input placeholder="请输入" />)}
               </FormItem>
             </Col>
-          </Row>
-          <Row gutter={8}>
             <Col lg={8} md={12} sm={24}>
               <FormItem key="Status" {...this.formLayout} label="状态">
                 {getFieldDecorator('Status', {
@@ -460,10 +470,18 @@ class CreateForm extends PureComponent {
         </Form>
         <Tabs tabBarExtraContent={this.rightButton(tabIndex)} onChange={this.tabChange}>
           <TabPane tab="联系人" key="1">
-            <StandardTable data={{ list: formVals.MDM01 }} columns={this.linkmanColumns} />
+            <StandardTable
+              data={{ list: formVals.MDM01 }}
+              rowKey="OrderID"
+              columns={this.linkmanColumns}
+            />
           </TabPane>
           <TabPane tab="收货地址" key="2">
-            <StandardTable data={{ list: formVals.MDM02 }} columns={this.addressColumns} />
+            <StandardTable
+              data={{ list: formVals.MDM02 }}
+              rowKey="OrderID"
+              columns={this.addressColumns}
+            />
           </TabPane>
         </Tabs>
         <LinkMan

@@ -109,6 +109,30 @@ export default {
           component: './staffs',
         },
         {
+          name: '产品分类',
+          icon: 'smile',
+          path: '/category',
+          component: './category',
+        },
+        {
+          name: '组织架构',
+          icon: 'smile',
+          path: '/organization',
+          component: './organization',
+        },
+        {
+          name: '权限定义',
+          icon: 'smile',
+          path: '/authority',
+          component: './authority',
+        },
+        {
+          name: '用户查询',
+          icon: 'smile',
+          path: '/users',
+          component: './users',
+        },
+        {
           name: '品牌管理',
           icon: 'smile',
           path: '/brand',
