@@ -1,6 +1,20 @@
+/* eslint-disable no-script-url */
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Row, Col, Form, Input, Card, Switch, Tabs, Button, message, Divider, Select } from 'antd';
+import {
+  Row,
+  Col,
+  Form,
+  Input,
+  Card,
+  Switch,
+  Tabs,
+  Popconfirm,
+  Button,
+  message,
+  Divider,
+  Select,
+} from 'antd';
 import StandardTable from '@/components/StandardTable';
 import AddressInfo from '../components/address';
 import styles from './style.less';
@@ -54,57 +68,44 @@ class CreateForm extends PureComponent {
         <Fragment>
           <a
             onClick={() =>
-              this.handleUpdateModalVisible(true, record, 'LinkManmodalVisible', 'linkManVal')
+              this.handleUpdateModalVisible(true, record, 'linkmanModalVisible', 'linkManVal')
             }
           >
             修改
           </a>
           <Divider type="vertical" />
-          <a href="">删除</a>
+          <Popconfirm title="确定要删除吗?" onConfirm={() => this.handleDelete(record.key)}>
+            <a href="javascript:;">删除</a>
+          </Popconfirm>
         </Fragment>
       ),
     },
   ];
 
-  addressColumns = [
+  brandColumns = [
     {
-      title: 'ID',
+      title: '序号',
       width: 80,
-      dataIndex: 'AddressID',
+      dataIndex: 'OrderID',
     },
     {
-      title: '收货人姓名',
-      dataIndex: 'UserName',
+      title: '品牌',
+      dataIndex: 'Brand',
     },
     {
-      title: '手机号码',
-      dataIndex: 'ReceiverPhone',
+      title: '品牌名称',
+      dataIndex: 'BrandName',
     },
     {
-      title: '收货地址',
-      key: 'address',
-      render: (text, record) => (
-        <Fragment>
-          <span>{`${record.Province + record.City + record.Area + record.Street}`}</span>
-          <span>{`${record.Address}`}</span>
-        </Fragment>
-      ),
+      title: '联系人',
+      key: 'UserID',
     },
-
     {
       title: '操作',
       render: (text, record) => (
-        <Fragment>
-          <a
-            onClick={() =>
-              this.handleUpdateModalVisible(true, record, 'AddressmodalVisible', 'addressVal')
-            }
-          >
-            修改
-          </a>
-          <Divider type="vertical" />
-          <a href="">删除</a>
-        </Fragment>
+        <Popconfirm title="确定要删除吗?" onConfirm={() => this.handleDelete(record.key)}>
+          <a href="javascript:;">删除</a>
+        </Popconfirm>
       ),
     },
   ];
@@ -114,8 +115,8 @@ class CreateForm extends PureComponent {
     this.state = {
       formVals: props.formVals,
       tabIndex: '1',
-      LinkManmodalVisible: false,
-      AddressmodalVisible: false,
+      linkmanModalVisible: false,
+      brandModalVisible: false,
       addressVal: {
         OrderID: '',
         AddressID: '',
@@ -142,8 +143,8 @@ class CreateForm extends PureComponent {
       },
     };
     this.formLayout = {
-      labelCol: { span: 8 },
-      wrapperCol: { span: 13 },
+      labelCol: { span: 10 },
+      wrapperCol: { span: 14 },
     };
   }
 
@@ -221,8 +222,8 @@ class CreateForm extends PureComponent {
 
   handleModalVisible = flag => {
     this.setState({
-      LinkManmodalVisible: !!flag,
-      AddressmodalVisible: !!flag,
+      linkmanModalVisible: !!flag,
+      brandModalVisible: !!flag,
     });
   };
 
@@ -240,8 +241,8 @@ class CreateForm extends PureComponent {
     }
     if (tabIndex === '2') {
       return (
-        <Button icon="plus" style={{ marginLeft: 8 }} type="primary" onClick={this.addAddressInfo}>
-          新建收货地址
+        <Button icon="plus" style={{ marginLeft: 8 }} type="primary" onClick={this.addBrand}>
+          新建品牌
         </Button>
       );
     }
@@ -266,7 +267,7 @@ class CreateForm extends PureComponent {
 
   addLinkMan = () => {
     this.setState({
-      LinkManmodalVisible: true,
+      linkmanModalVisible: true,
       linkManVal: {
         Name: '',
         CellphoneNO: '',
@@ -279,24 +280,9 @@ class CreateForm extends PureComponent {
     });
   };
 
-  addAddressInfo = () => {
+  addBrand = () => {
     this.setState({
-      AddressmodalVisible: true,
-      addressVal: {
-        OrderID: '',
-        AddressID: '',
-        ProvinceID: '',
-        Province: '',
-        CityID: '',
-        City: '',
-        AreaID: '',
-        Area: '',
-        StreetID: '',
-        Street: '',
-        Address: '',
-        UserName: '',
-        ReceiverPhone: '',
-      },
+      brandModalVisible: true,
     });
   };
 
@@ -307,9 +293,9 @@ class CreateForm extends PureComponent {
     const {
       formVals,
       tabIndex,
-      LinkManmodalVisible,
+      linkmanModalVisible,
       linkManVal,
-      AddressmodalVisible,
+      brandModalVisible,
       addressVal,
     } = this.state;
     const formItemLayout = {
@@ -356,8 +342,6 @@ class CreateForm extends PureComponent {
                 })(<Input placeholder="请输入营业执照开户行！" />)}
               </FormItem>
             </Col>
-          </Row>
-          <Row gutter={8}>
             <Col lg={8} md={12} sm={24}>
               <FormItem key="BankAccount" {...this.formLayout} label="营业执照账户">
                 {getFieldDecorator('BankAccount', {
@@ -382,8 +366,6 @@ class CreateForm extends PureComponent {
                 })(<Input placeholder="请输入营业执照地址" />)}
               </FormItem>
             </Col>
-          </Row>
-          <Row gutter={8}>
             <Col lg={8} md={12} sm={24}>
               <FormItem key="LPhone" {...this.formLayout} label="营业执照电话">
                 {getFieldDecorator('LPhone', {
@@ -412,8 +394,6 @@ class CreateForm extends PureComponent {
                 )}
               </FormItem>
             </Col>
-          </Row>
-          <Row gutter={8}>
             <Col lg={8} md={12} sm={24}>
               <FormItem key="LogisticsCompany" {...this.formLayout} label="支票汇款公司名称">
                 {getFieldDecorator('LogisticsCompany', {
@@ -435,8 +415,6 @@ class CreateForm extends PureComponent {
                 })(<Input placeholder="请输入支票汇款联系人" />)}
               </FormItem>
             </Col>
-          </Row>
-          <Row gutter={8}>
             <Col lg={8} md={12} sm={24}>
               <FormItem key="CardType" {...this.formLayout} label="供应商类型">
                 {getFieldDecorator('CardType', {
@@ -460,21 +438,29 @@ class CreateForm extends PureComponent {
         </Form>
         <Tabs tabBarExtraContent={this.rightButton(tabIndex)} onChange={this.tabChange}>
           <TabPane tab="联系人" key="1">
-            <StandardTable data={{ list: formVals.MDM01 }} columns={this.linkmanColumns} />
+            <StandardTable
+              data={{ list: formVals.MDM01 }}
+              rowKey="OrderID"
+              columns={this.linkmanColumns}
+            />
           </TabPane>
           <TabPane tab="品牌" key="2">
-            <StandardTable data={{ list: formVals.MDM02 }} columns={this.addressColumns} />
+            <StandardTable
+              data={{ list: formVals.MDM02 }}
+              rowKey="OrderID"
+              columns={this.brandColumns}
+            />
           </TabPane>
         </Tabs>
         <LinkMan
           {...linkmanParentMethods}
           formVals={linkManVal}
-          modalVisible={LinkManmodalVisible}
+          modalVisible={linkmanModalVisible}
         />
         <AddressInfo
           {...addressParentMethods}
           formVals={addressVal}
-          modalVisible={AddressmodalVisible}
+          modalVisible={brandModalVisible}
         />
       </Fragment>
     );
@@ -525,7 +511,7 @@ class CompanyEdit extends PureComponent {
       MDM02: [
         {
           Code: '',
-          OrderID: '',
+          OrderID: '1',
           AddressID: '',
           CreateDate: '',
           UpdateDate: '',
