@@ -81,6 +81,7 @@ class StandardTable extends PureComponent {
           rowKey={rowKey || 'key'}
           dataSource={list}
           pagination={paginationProps}
+          size="middle"
           onChange={this.handleTableChange}
           {...rest}
           columns={columns} //  columns={columns} 需放到  {...rest} 后，防止 columns 被覆盖

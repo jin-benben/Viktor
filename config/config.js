@@ -119,6 +119,31 @@ export default {
               icon: 'smile',
               component: './message/wx',
             },
+            {
+              path: '/message/log',
+              name: '推送日志',
+              icon: 'smile',
+              component: './message/pushlog',
+            },
+            {
+              path: '/message/approve',
+              name: '钉钉审批单',
+              icon: 'smile',
+              component: './message/ddapprove'
+            },
+            {
+              path: '/message/approve/detail',
+              name: '钉钉审批单详情',
+              hideInMenu: true,
+              icon: 'smile',
+              component: './message/ddapprove/detail',
+            },
+            {
+              path: '/message/bind',
+              name: '微信绑定',
+              icon: 'smile',
+              component: './message/wxbind',
+            },
           ]
         },
         {
