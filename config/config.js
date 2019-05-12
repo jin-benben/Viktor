@@ -103,6 +103,25 @@ export default {
           ]
         },
         {
+          name: '消息管理',
+          icon: 'smile',
+          path: '/message',
+          routes:[
+            {
+              path: '/message/dd',
+              name: '钉钉消息',
+              icon: 'smile',
+              component: './message/dd',
+            },
+            {
+              path: '/message/wx',
+              name: '微信消息',
+              icon: 'smile',
+              component: './message/wx',
+            },
+          ]
+        },
+        {
           name: '员工管理',
           icon: 'smile',
           path: '/staffs',
