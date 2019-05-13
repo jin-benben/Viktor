@@ -68,7 +68,7 @@ export default {
           name: '客户管理',
           icon: 'smile',
           path: '/company',
-          routes:[
+          routes: [
             {
               path: '/company/search',
               name: '客户查询',
@@ -81,13 +81,13 @@ export default {
               icon: 'smile',
               component: './company/edit',
             },
-          ]
+          ],
         },
         {
           name: '供应商管理',
           icon: 'smile',
           path: '/supplier',
-          routes:[
+          routes: [
             {
               path: '/supplier/search',
               name: '供应商查询',
@@ -100,13 +100,13 @@ export default {
               icon: 'smile',
               component: './supplier/edit',
             },
-          ]
+          ],
         },
         {
           name: '消息管理',
           icon: 'smile',
           path: '/message',
-          routes:[
+          routes: [
             {
               path: '/message/dd',
               name: '钉钉消息',
@@ -129,7 +129,7 @@ export default {
               path: '/message/approve',
               name: '钉钉审批单',
               icon: 'smile',
-              component: './message/ddapprove'
+              component: './message/ddapprove',
             },
             {
               path: '/message/approve/detail',
@@ -144,7 +144,7 @@ export default {
               icon: 'smile',
               component: './message/wxbind',
             },
-          ]
+          ],
         },
         {
           name: '员工管理',
@@ -182,10 +182,66 @@ export default {
           path: '/brand',
           component: './brand',
         },
-        
+        {
+          name: 'exception',
+          icon: 'smile',
+          hideInMenu: true,
+          path: '/exception',
+          routes:[
+            {
+              name: '404',
+              icon: 'smile',
+              path: '/exception/404',
+              component: './exception/404',
+            },
+            {
+              name: '403',
+              icon: 'smile',
+              path: '/exception/403',
+              component: './exception/403',
+            },
+            {
+              name: '500',
+              icon: 'smile',
+              path: '/exception/500',
+              component: './exception/500',
+            }
+          ]
+        },
+        {
+          name: '客户询价单',
+          icon: 'smile',
+          path: '/inquiry',
+          routes:[
+            {
+              name: '客户询价单查询',
+              icon: 'smile',
+              path: '/inquiry/search',
+              component: './inquiry/list',
+            },
+            {
+              name: '客户询价单编辑',
+              icon: 'smile',
+              path: '/inquiry/edit',
+              component: './inquiry/edit',
+            }
+          ]
+        }
       ],
     },
   ],
+  proxy: {
+    "/MDM": {
+      "target": "http://117.149.160.231:9301/",
+      "changeOrigin": true,
+      "pathRewrite": { "^/MDM" : "" }
+    },
+    "/OMS": {
+      "target": "http://117.149.160.231:9302/",
+      "changeOrigin": true,
+      "pathRewrite": { "^/OMS" : "" }
+    }
+  },
   disableRedirectHoist: true,
   /**
    * webpack 相关配置

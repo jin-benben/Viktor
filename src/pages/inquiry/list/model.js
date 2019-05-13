@@ -1,32 +1,33 @@
-import { queryRule, addRule, updateRule, querySingleRule } from './service';
+import { queryRule, removeRule, addRule, updateRule } from './service';
 
 export default {
-  namespace: 'organization',
+  namespace: 'inquiryList',
 
   state: {
-    treeData: [],
-    singleInfo: {},
+    data: {
+      list: [],
+      pagination: {},
+    },
   },
+
   effects: {
     *fetch({ payload }, { call, put }) {
       const response = yield call(queryRule, payload);
       yield put({
         type: 'save',
-        payload: {
-          treeData: response.Content,
-        },
+        payload: response,
       });
     },
-    *single({ payload, callback }, { call, put }) {
-      const response = yield call(querySingleRule, payload);
+    *add({ payload, callback }, { call, put }) {
+      const response = yield call(addRule, payload);
       yield put({
         type: 'save',
         payload: response,
       });
       if (callback) callback();
     },
-    *add({ payload, callback }, { call, put }) {
-      const response = yield call(addRule, payload);
+    *remove({ payload, callback }, { call, put }) {
+      const response = yield call(removeRule, payload);
       yield put({
         type: 'save',
         payload: response,
@@ -42,11 +43,12 @@ export default {
       if (callback) callback();
     },
   },
+
   reducers: {
     save(state, action) {
       return {
         ...state,
-        ...action.payload,
+        data: action.payload,
       };
     },
   },
