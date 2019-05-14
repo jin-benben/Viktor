@@ -9,7 +9,7 @@ class Staffs extends PureComponent {
   constructor(props) {
     super(props);
     this.lastFetchId = 0;
-    this.fetchUser = debounce(this.fetchUser, 800);
+    this.fetchCompany = debounce(this.fetchCompany, 800);
   }
 
   state = {
@@ -18,7 +18,7 @@ class Staffs extends PureComponent {
     fetching: false,
   };
 
-  fetchUser = async value => {
+  fetchCompany = async value => {
     this.lastFetchId += 1;
     const fetchId = this.lastFetchId;
     this.setState({ data: [], fetching: true });
@@ -60,7 +60,7 @@ class Staffs extends PureComponent {
         placeholder="输入内容"
         notFoundContent={fetching ? <Spin size="small" /> : null}
         filterOption={false}
-        onSearch={this.fetchUser}
+        onSearch={this.fetchCompany}
         onChange={this.handleChange}
         style={{ width: '100%' }}
       >

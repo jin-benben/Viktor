@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import { Table } from 'antd';
 import { Resizable } from 'react-resizable';
+
 import styles from './index.less';
 
 // 要想列可以拖拽，列必须制定宽度
@@ -30,6 +31,7 @@ class StandardTable extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
+      selectedRowKeys: [],
       columns: props.columns,
     };
   }
@@ -52,16 +54,35 @@ class StandardTable extends PureComponent {
     });
   };
 
+  handleRowSelectChange = (selectedRowKeys, selectedRows) => {
+    const { onSelectRow } = this.props;
+    if (onSelectRow) {
+      onSelectRow(selectedRows);
+    }
+    this.setState({ selectedRowKeys });
+  };
+
   render() {
     const { data = {}, rowKey, ...rest } = this.props;
+    let { rowSelection } = this.props;
 
     const { list = [], pagination } = data;
+    const { selectedRowKeys } = this.state;
     let paginationProps = false;
     if (pagination) {
       paginationProps = {
         showSizeChanger: true,
         showQuickJumper: true,
         ...pagination,
+      };
+    }
+    if (rowSelection) {
+      rowSelection = {
+        selectedRowKeys,
+        onChange: this.handleRowSelectChange,
+        getCheckboxProps: record => ({
+          disabled: record.disabled,
+        }),
       };
     }
 
@@ -84,6 +105,7 @@ class StandardTable extends PureComponent {
           size="middle"
           onChange={this.handleTableChange}
           {...rest}
+          rowSelection={rowSelection}
           columns={columns} //  columns={columns} 需放到  {...rest} 后，防止 columns 被覆盖
         />
       </div>

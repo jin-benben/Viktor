@@ -5,17 +5,13 @@ import moment from 'moment';
 import { Row, Col, Card, Form, Input, Button, Divider, Select, DatePicker, Icon } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import Staffs from '@/components/Staffs';
-
+import DocEntryFrom from '@/components/DocEntryFrom';
 import styles from './style.less';
 
 const { RangePicker } = DatePicker;
-const InputGroup = Input.Group;
+
 const FormItem = Form.Item;
 const { Option } = Select;
-const getValue = obj =>
-  Object.keys(obj)
-    .map(key => obj[key])
-    .join(',');
 
 /* eslint react/no-multi-comp:0 */
 @connect(({ inquiryList, loading }) => ({
@@ -26,6 +22,26 @@ const getValue = obj =>
 class inquiryList extends PureComponent {
   state = {
     expandForm: false,
+    queryData: {
+      Content: {
+        DocEntryFrom: '',
+        DocEntryTo: '',
+        DocDateFrom: '',
+        DocDateTo: '',
+        SDocStatus: '',
+        PDocStatus: '',
+        InquiryStatus: '',
+        Closed: '',
+        IsInquiry: '',
+        Owner: '',
+        SearchText: '',
+        SearchKey: '',
+      },
+      page: 1,
+      rows: 20,
+      sidx: 'DocEntry',
+      sord: 'Desc',
+    },
   };
 
   columns = [
@@ -92,78 +108,62 @@ class inquiryList extends PureComponent {
 
   componentDidMount() {
     const { dispatch } = this.props;
+    const { queryData } = this.state;
     dispatch({
       type: 'inquiryList/fetch',
-      payload: {
-        Content: {
-          DocEntryFrom: 0,
-          DocEntryTo: 0,
-          DocDateFrom: '',
-          DocDateTo: '',
-          SDocStatus: '',
-          PDocStatus: '',
-          InquiryStatus: '',
-          Closed: '',
-          IsInquiry: '',
-          Owner: '',
-          SearchText: '',
-          SearchKey: '',
-        },
-        page: 1,
-        rows: 20,
-        sidx: 'DocEntry',
-        sord: 'Desc',
-      },
+      payload: queryData,
     });
   }
 
-  handleStandardTableChange = (pagination, filtersArg, sorter) => {
+  handleStandardTableChange = pagination => {
+    // table change
     const { dispatch } = this.props;
-    const { formValues } = this.state;
-
-    const filters = Object.keys(filtersArg).reduce((obj, key) => {
-      const newObj = { ...obj };
-      newObj[key] = getValue(filtersArg[key]);
-      return newObj;
-    }, {});
-
+    const { queryData } = this.state;
     const params = {
-      currentPage: pagination.current,
-      pageSize: pagination.pageSize,
-      ...formValues,
-      ...filters,
+      page: pagination.current,
+      rows: pagination.pageSize,
     };
-    if (sorter.field) {
-      params.sorter = `${sorter.field}_${sorter.order}`;
-    }
 
     dispatch({
       type: 'inquiryList/fetch',
-      payload: params,
+      payload: {
+        ...queryData,
+        ...params,
+      },
     });
   };
 
   handleSearch = e => {
+    // 搜索
     e.preventDefault();
     const { dispatch, form } = this.props;
+    const { queryData } = this.state;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
-      const values = {
+      let DocDateFrom;
+      let DocDateTo;
+      if (fieldsValue.dateArr) {
+        DocDateFrom = moment(fieldsValue.dateArr[0]).format('YYYY-MM-DD');
+        DocDateTo = moment(fieldsValue.dateArr[1]).format('YYYY-MM-DD');
+      }
+      queryData.Content = {
         ...fieldsValue,
-        updatedAt: fieldsValue.updatedAt && fieldsValue.updatedAt.valueOf(),
+        DocDateFrom,
+        DocDateTo,
       };
       this.setState({
-        formValues: values,
+        queryData,
       });
 
       dispatch({
         type: 'inquiryList/fetch',
-        payload: values,
+        payload: queryData,
       });
     });
   };
 
   handleSubmit = () => {
+    // 搜索btn
     const { form } = this.props;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
@@ -173,14 +173,15 @@ class inquiryList extends PureComponent {
   };
 
   toggleForm = () => {
+    // 是否展开
     const { expandForm } = this.state;
-
     this.setState({
       expandForm: !expandForm,
     });
   };
 
   handleOnRow = record => ({
+    // 详情or修改
     onClick: () => router.push(`/inquiry/edit?DocEntry=${record.DocEntry}`),
   });
 
@@ -189,9 +190,6 @@ class inquiryList extends PureComponent {
       form: { getFieldDecorator },
     } = this.props;
     const { expandForm } = this.state;
-    const rangeConfig = {
-      rules: [{ type: 'array', required: true, message: 'Please select time!' }],
-    };
     const formLayout = {
       labelCol: { span: 8 },
       wrapperCol: { span: 16 },
@@ -229,15 +227,15 @@ class inquiryList extends PureComponent {
           </Col>
           <Col md={6} sm={24}>
             <FormItem label="日期" {...formLayout}>
-              {getFieldDecorator('range-time-picker', rangeConfig)(
+              {getFieldDecorator('dateArr', { rules: [{ type: 'array' }] })(
                 <RangePicker style={{ width: '100%' }} />
               )}
             </FormItem>
           </Col>
           <Col md={6} sm={24}>
-            <FormItem key="SDocStatus " {...formLayout} label="来源">
-              {getFieldDecorator('SDocStatus ')(
-                <Select placeholder="请选择性别">
+            <FormItem key="SDocStatus" {...formLayout} label="销售报价状态">
+              {getFieldDecorator('SDocStatus')(
+                <Select placeholder="请选择">
                   <Option value="1">已报价</Option>
                   <Option value="2">未报价</Option>
                   <Option value="3">不详</Option>
@@ -247,38 +245,22 @@ class inquiryList extends PureComponent {
           </Col>
           <Col md={6} sm={24}>
             <FormItem label="所有者" {...formLayout}>
-              {getFieldDecorator('name')(<Staffs />)}
+              {getFieldDecorator('Owner')(<Staffs />)}
             </FormItem>
           </Col>
 
           {expandForm ? (
             <Fragment>
               <Col md={6} sm={24}>
-                <FormItem key="IsInquiry" {...formLayout} label="需要采购询价">
-                  {getFieldDecorator('IsInquiry', { rules: [{ type: 'array' }] })(
-                    <InputGroup compact style={{ width: '100%' }}>
-                      <Input style={{ width: '40%', textAlign: 'center' }} placeholder="开始单号" />
-                      <Input
-                        style={{
-                          width: '20%',
-                          borderLeft: 0,
-                          pointerEvents: 'none',
-                          backgroundColor: '#fff',
-                        }}
-                        placeholder="~"
-                        disabled
-                      />
-                      <Input
-                        style={{ width: '40%', textAlign: 'center', borderLeft: 0 }}
-                        placeholder="结束单号"
-                      />
-                    </InputGroup>
-                  )}
+                <FormItem key="orderNo" {...formLayout} label="单号">
+                  {getFieldDecorator('orderNo', {
+                    initialValue: { DocEntryFrom: '', DocEntryTo: '' },
+                  })(<DocEntryFrom />)}
                 </FormItem>
               </Col>
               <Col md={6} sm={24}>
-                <FormItem key="Closed " {...formLayout} label="关闭状态">
-                  {getFieldDecorator('Closed ')(
+                <FormItem key="Closed" {...formLayout} label="关闭状态">
+                  {getFieldDecorator('Closed')(
                     <Select placeholder="请选择">
                       <Option value="1">已关闭</Option>
                       <Option value="2">未关闭</Option>
@@ -289,7 +271,7 @@ class inquiryList extends PureComponent {
               </Col>
               <Col md={6} sm={24}>
                 <FormItem key="InquiryStatus" {...formLayout} label="采购询价状态">
-                  {getFieldDecorator('InquiryStatus ')(
+                  {getFieldDecorator('InquiryStatus')(
                     <Select placeholder="请选择">
                       <Option value="1">已报价</Option>
                       <Option value="2">未报价</Option>
@@ -300,7 +282,7 @@ class inquiryList extends PureComponent {
               </Col>
               <Col md={6} sm={24}>
                 <FormItem key="IsInquiry" {...formLayout} label="需要采购询价">
-                  {getFieldDecorator('IsInquiry  ')(
+                  {getFieldDecorator('IsInquiry')(
                     <Select placeholder="请选择">
                       <Option value="1">是</Option>
                       <Option value="2">否</Option>

@@ -9,7 +9,7 @@ export default {
         dva: { hmr: true },
         targets: { ie: 11 },
         locale: {
-          enable: true,
+          enable: false,
           // default false
           default: 'zh-CN',
           // default zh-CN

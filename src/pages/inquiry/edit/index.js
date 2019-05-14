@@ -7,12 +7,11 @@ import {
   Form,
   Input,
   Card,
-  Switch,
   Tabs,
   Button,
   Popconfirm,
   message,
-  Divider,
+  DatePicker,
   Select,
 } from 'antd';
 import StandardTable from '@/components/StandardTable';
@@ -20,58 +19,100 @@ import StandardTable from '@/components/StandardTable';
 import { checkPhone, chechEmail } from '@/utils/utils';
 
 const { TabPane } = Tabs;
-
+const { Search } = Input;
 const FormItem = Form.Item;
 const { Option } = Select;
 
 @Form.create()
 class CreateForm extends PureComponent {
-  linkmanColumns = [
+  skuColumns = [
     {
-      title: 'ID',
+      title: '行号',
       dataIndex: 'LineID',
+      width: 50,
+    },
+    {
+      title: 'SKU',
+      dataIndex: 'SKU',
+      editable: true,
+      inputType: 'text',
+    },
+    {
+      title: '产品描述',
+      dataIndex: 'SKUName',
+      editable: true,
+      inputType: 'text',
+    },
+    {
+      title: '品牌',
+      dataIndex: 'BrandName',
+      editable: true,
+      inputType: 'text',
+    },
+    {
+      title: '名称',
+      dataIndex: 'ProductName',
+      editable: true,
+      inputType: 'text',
+    },
+    {
+      title: '型号',
+      dataIndex: 'ManufactureNO',
+    },
+    {
+      title: '参数',
+      dataIndex: 'Parameters',
+    },
+    {
+      title: '包装',
+      dataIndex: 'Package',
+    },
+    {
+      title: '采购员',
+      dataIndex: 'Purchaser',
+    },
+    {
+      title: '数量',
+      width: 100,
+      dataIndex: 'Quantity',
+    },
+    {
+      title: '单位',
       width: 80,
+      dataIndex: 'Unit',
     },
     {
-      title: '姓名',
-      dataIndex: 'Name',
+      title: '要求交期',
+      dataIndex: 'DueDate',
     },
     {
-      title: '手机号码',
-      dataIndex: 'CellphoneNO',
+      title: '询价最终价格',
+      dataIndex: 'InquiryPrice',
     },
     {
-      title: '电话号码',
-      dataIndex: 'PhoneNo',
+      title: '销售建议价格',
+      dataIndex: 'Price',
     },
     {
-      title: 'Email',
-      dataIndex: 'Email',
+      title: '询价最终交期',
+      dataIndex: 'InquiryDueDate',
     },
     {
-      title: '职位',
-      dataIndex: 'Position',
+      title: '询价备注',
+      dataIndex: 'InquiryComment',
     },
     {
-      title: '销售',
-      dataIndex: 'Saler',
+      title: '询价行总计',
+      dataIndex: 'InquiryLineTotal',
     },
     {
-      title: '交易公司',
-      dataIndex: 'CompanyCode',
+      title: '销售行总计',
+      dataIndex: 'LineTotal',
     },
     {
       title: '操作',
       render: (text, record) => (
         <Fragment>
-          <a
-            onClick={() =>
-              this.handleUpdateModalVisible(true, record, 'LinkManmodalVisible', 'linkManVal')
-            }
-          >
-            修改
-          </a>
-          <Divider type="vertical" />
           <Popconfirm title="确定要删除吗?" onConfirm={() => this.handleDelete(record.key)}>
             <a href="javascript:;">删除</a>
           </Popconfirm>
@@ -82,41 +123,35 @@ class CreateForm extends PureComponent {
 
   addressColumns = [
     {
-      title: 'ID',
+      title: '序号',
       width: 80,
-      dataIndex: 'AddressID',
+      dataIndex: 'OrderID',
     },
     {
-      title: '收货人姓名',
-      dataIndex: 'UserName',
+      title: '来源类型',
+      dataIndex: 'BaseType',
     },
     {
-      title: '手机号码',
-      dataIndex: 'ReceiverPhone',
+      title: '来源单号',
+      dataIndex: 'BaseEntry',
     },
     {
-      title: '收货地址',
-      key: 'address',
-      render: (text, record) => (
-        <Fragment>
-          <span>{`${record.Province + record.City + record.Area + record.Street}`}</span>
-          <span>{`${record.Address}`}</span>
-        </Fragment>
-      ),
+      title: '附件代码',
+      dataIndex: 'AttachmentCode',
+    },
+    {
+      title: '附件描述',
+      dataIndex: 'AttachmentName',
+    },
+    {
+      title: '附件路径',
+      dataIndex: 'AttachmentPath',
     },
 
     {
       title: '操作',
       render: (text, record) => (
         <Fragment>
-          <a
-            onClick={() =>
-              this.handleUpdateModalVisible(true, record, 'AddressmodalVisible', 'addressVal')
-            }
-          >
-            修改
-          </a>
-          <Divider type="vertical" />
           <Popconfirm title="确定要删除吗?" onConfirm={() => this.handleDelete(record.key)}>
             <a href="javascript:;">删除</a>
           </Popconfirm>
@@ -158,7 +193,7 @@ class CreateForm extends PureComponent {
       },
     };
     this.formLayout = {
-      labelCol: { span: 10 },
+      labelCol: { span: 8 },
       wrapperCol: { span: 14 },
     };
   }
@@ -250,14 +285,14 @@ class CreateForm extends PureComponent {
     if (tabIndex === '1') {
       return (
         <Button icon="plus" style={{ marginLeft: 8 }} type="primary" onClick={this.addLinkMan}>
-          新建联系人
+          添加新物料
         </Button>
       );
     }
-    if (tabIndex === '2') {
+    if (tabIndex === '3') {
       return (
-        <Button icon="plus" style={{ marginLeft: 8 }} type="primary" onClick={this.addAddressInfo}>
-          新建收货地址
+        <Button icon="plus" style={{ marginLeft: 8 }} type="primary" onClick={this.addLinkMan}>
+          添加新附件
         </Button>
       );
     }
@@ -319,6 +354,7 @@ class CreateForm extends PureComponent {
   render() {
     const {
       form: { getFieldDecorator },
+      form,
     } = this.props;
     const {
       formVals,
@@ -337,6 +373,7 @@ class CreateForm extends PureComponent {
         xs: { span: 24 },
         sm: { span: 14 },
         md: { span: 10 },
+        lg: { span: 6 },
       },
     };
     const linkmanParentMethods = {
@@ -347,77 +384,92 @@ class CreateForm extends PureComponent {
       handleSubmit: this.handleSubmit,
       handleModalVisible: this.handleModalVisible,
     };
+    const skucolumns = this.skuColumns.map(col => {
+      if (!col.editable) {
+        return col;
+      }
+      return {
+        ...col,
+        onCell: record => ({
+          record,
+          inputType: col.inputType,
+          dataIndex: col.dataIndex,
+          title: col.title,
+          editing: true,
+        }),
+      };
+    });
+
     return (
       <Fragment>
         <Form {...formItemLayout} onSubmit={this.handleSubmit}>
           <Row gutter={8}>
             <Col lg={8} md={12} sm={24}>
-              <FormItem key="Code" {...this.formLayout} label="客户ID">
-                <span>{formVals.Code}</span>
-              </FormItem>
-            </Col>
-            <Col lg={8} md={12} sm={24}>
-              <FormItem key="Name" {...this.formLayout} label="客户名称">
-                {getFieldDecorator('Department', {
+              <FormItem key="CardCode" {...this.formLayout} label="客户ID">
+                {getFieldDecorator('CardCode', {
                   rules: [{ required: true, message: '请输入客户名称！' }],
-                  initialValue: formVals.Name,
-                })(<Input placeholder="请输入客户名称" />)}
-              </FormItem>
-            </Col>
-            <Col lg={8} md={12} sm={24}>
-              <FormItem key="OpeningBank" {...this.formLayout} label="营业执照开户行">
-                {getFieldDecorator('OpeningBank', {
-                  rules: [{ required: true, message: '请输入营业执照开户行！' }],
-                  initialValue: formVals.OpeningBank,
-                })(<Input placeholder="请输入营业执照开户行！" />)}
-              </FormItem>
-            </Col>
-            <Col lg={8} md={12} sm={24}>
-              <FormItem key="BankAccount" {...this.formLayout} label="营业执照账户">
-                {getFieldDecorator('BankAccount', {
-                  rules: [{ required: true, message: '请输入营业执照账户！' }],
-                  initialValue: formVals.BankAccount,
-                })(<Input placeholder="请输入营业执照账户" />)}
-              </FormItem>
-            </Col>
-            <Col lg={8} md={12} sm={24}>
-              <FormItem key="DutyNo" {...this.formLayout} label="营业执照税号">
-                {getFieldDecorator('DutyNo', {
-                  rules: [{ required: true, message: '请输入营业执照税号！' }],
-                  initialValue: formVals.DutyNo,
-                })(<Input placeholder="请输入营业执照税号" />)}
-              </FormItem>
-            </Col>
-            <Col lg={8} md={12} sm={24}>
-              <FormItem key="Laddress" {...this.formLayout} label="营业执照地址">
-                {getFieldDecorator('Laddress', {
-                  rules: [{ required: true, message: '请输入营业执照地址！' }],
-                  initialValue: formVals.Laddress,
-                })(<Input placeholder="请输入营业执照地址" />)}
-              </FormItem>
-            </Col>
-            <Col lg={8} md={12} sm={24}>
-              <FormItem key="LPhone" {...this.formLayout} label="营业执照电话">
-                {getFieldDecorator('LPhone', {
-                  rules: [{ required: true, message: '请输入营业执照电话！' }],
-                  initialValue: formVals.LPhone,
-                })(<Input placeholder="请输入营业执照电话" />)}
-              </FormItem>
-            </Col>
-            <Col lg={8} md={12} sm={24}>
-              <FormItem key="CreditCode" {...this.formLayout} label="营业执照信用代码">
-                {getFieldDecorator('CreditCode', {
-                  rules: [{ required: true, message: '请输入营业执照信用代码！' }],
-                  initialValue: formVals.CreditCode,
-                })(<Input placeholder="请输入营业执照信用代码" />)}
-              </FormItem>
-            </Col>
-            <Col lg={8} md={12} sm={24}>
-              <FormItem key="CusSource" {...this.formLayout} label="来源">
-                {getFieldDecorator('CusSource', {
-                  initialValue: formVals.CusSource,
+                  initialValue: formVals.CardCode,
                 })(
-                  <Select placeholder="请选择性别">
+                  <Search
+                    placeholder="input search text"
+                    onSearch={value => console.log(value)}
+                    style={{ width: '100%' }}
+                  />
+                )}
+              </FormItem>
+            </Col>
+            <Col lg={8} md={12} sm={24}>
+              <FormItem key="DocEntry" {...this.formLayout} label="单号">
+                {getFieldDecorator('DocEntry', {
+                  initialValue: formVals.DocEntry,
+                })(<Input disabled placeholder="单号" />)}
+              </FormItem>
+            </Col>
+          </Row>
+          <Row gutter={8}>
+            <Col lg={8} md={12} sm={24}>
+              <FormItem key="CardName" {...this.formLayout} label="客户名称">
+                {getFieldDecorator('CardName', {
+                  rules: [{ required: true, message: '请输入客户名称！' }],
+                  initialValue: formVals.CardName,
+                })(
+                  <Search
+                    placeholder="input search text"
+                    onSearch={value => console.log(value)}
+                    style={{ width: '100%' }}
+                  />
+                )}
+              </FormItem>
+            </Col>
+            <Col lg={8} md={12} sm={24}>
+              <FormItem key="DocDate" {...this.formLayout} label="单据日期">
+                {getFieldDecorator('date-time-picker', { rules: [{ type: 'object' }] })(
+                  <DatePicker style={{ width: '100%' }} />
+                )}
+              </FormItem>
+            </Col>
+          </Row>
+          <Row gutter={8}>
+            <Col lg={8} md={12} sm={24}>
+              <FormItem key="BankAccount" {...this.formLayout} label="联系人">
+                {getFieldDecorator('BankAccount', {
+                  rules: [{ required: true, message: '请输入联系人！' }],
+                  initialValue: formVals.BankAccount,
+                })(
+                  <Search
+                    placeholder="input search text"
+                    onSearch={value => console.log(value)}
+                    style={{ width: '100%' }}
+                  />
+                )}
+              </FormItem>
+            </Col>
+            <Col lg={8} md={12} sm={24}>
+              <FormItem key="OrderType" {...this.formLayout} label="订单类型">
+                {getFieldDecorator('OrderType', {
+                  initialValue: formVals.OrderType,
+                })(
+                  <Select placeholder="请选择">
                     <Option value="1">男</Option>
                     <Option value="2">女</Option>
                     <Option value="3">不详</Option>
@@ -425,56 +477,34 @@ class CreateForm extends PureComponent {
                 )}
               </FormItem>
             </Col>
+          </Row>
+          <Row gutter={8}>
             <Col lg={8} md={12} sm={24}>
-              <FormItem key="PayMent" {...this.formLayout} label="付款条款">
-                {getFieldDecorator('PayMent', {
-                  initialValue: formVals.PayMent,
-                })(
-                  <Select placeholder="请选择">
-                    <Option value="Y">是</Option>
-                    <Option value="N">否</Option>
-                  </Select>
-                )}
+              <FormItem key="NumAtCard" {...this.formLayout} label="客户参考号">
+                {getFieldDecorator('NumAtCard', {
+                  initialValue: formVals.NumAtCard,
+                })(<Input placeholder="请输入客户参考号" />)}
               </FormItem>
             </Col>
             <Col lg={8} md={12} sm={24}>
-              <FormItem key="CardType" {...this.formLayout} label="客户类型">
-                {getFieldDecorator('CardType', {
-                  initialValue: formVals.CardType,
-                })(
-                  <Select placeholder="请选择">
-                    <Option value="1">正常</Option>
-                    <Option value="2">问题</Option>
-                  </Select>
-                )}
-              </FormItem>
-            </Col>
-            <Col lg={8} md={12} sm={24}>
-              <FormItem key="LogisticsCompany" {...this.formLayout} label="默认物流公司">
-                {getFieldDecorator('LogisticsCompany', {
-                  rules: [{ required: true, message: '请选择交易主体！' }],
-                  initialValue: formVals.LogisticsCompany,
-                })(<Input placeholder="请输入" />)}
-              </FormItem>
-            </Col>
-            <Col lg={8} md={12} sm={24}>
-              <FormItem key="Status" {...this.formLayout} label="状态">
-                {getFieldDecorator('Status', {
-                  initialValue: formVals.Status,
-                })(<Switch checkedChildren="开启" unCheckedChildren="禁用" defaultChecked />)}
+              <FormItem key="DutyNo" {...this.formLayout} label="状态">
+                <span>状态</span>
               </FormItem>
             </Col>
           </Row>
         </Form>
         <Tabs tabBarExtraContent={this.rightButton(tabIndex)} onChange={this.tabChange}>
-          <TabPane tab="联系人" key="1">
+          <TabPane tab="物料" key="1">
+            <StandardTable data={{ list: formVals.MDM01 }} rowKey="LineID" columns={skucolumns} />
+          </TabPane>
+          <TabPane tab="常规" key="2">
             <StandardTable
-              data={{ list: formVals.MDM01 }}
+              data={{ list: formVals.MDM02 }}
               rowKey="OrderID"
-              columns={this.linkmanColumns}
+              columns={this.addressColumns}
             />
           </TabPane>
-          <TabPane tab="收货地址" key="2">
+          <TabPane tab="附件" key="3">
             <StandardTable
               data={{ list: formVals.MDM02 }}
               rowKey="OrderID"
@@ -492,106 +522,57 @@ class CreateForm extends PureComponent {
   loading: loading.models.rule,
 }))
 @Form.create()
-class CompanyEdit extends PureComponent {
+class InquiryEdit extends PureComponent {
   state = {
     formValues: {
-      Code: 'C00001',
-      Name: '',
-      OpeningBank: '',
-      BankAccount: '',
-      DutyNo: '',
-      Laddress: '',
-      LPhone: '',
-      CreditCode: '',
-      Status: '',
-      CardType: '',
-      CusSource: '',
-      PayMent: '',
-      LogisticsCompany: '',
-      UpdateTimestamp: '',
-      Tagging: '',
       MDM01: [
         {
-          Code: '001',
-          OrderID: '1',
-          UserID: '0914',
-          CreateDate: '',
-          UpdateDate: '',
-          CreateUser: '',
-          UpdateUser: '',
-          Name: '晋文涛',
-          CellphoneNO: '17682310914',
-          PhoneNO: '8888888',
-          Email: '528325291@qq.com',
-          Position: '前端工程师',
-          Saler: '马云',
-          CompanyCode: '阿里巴巴',
-        },
-      ],
-      MDM02: [
-        {
-          Code: '',
-          OrderID: '',
-          AddressID: '',
-          CreateDate: '',
-          UpdateDate: '',
-          CreateUser: '',
-          UpdateUser: '',
-          ProvinceID: '',
-          Province: '浙江省',
-          CityID: '',
-          City: '绍兴市',
-          AreaID: '',
-          Area: '越城区',
-          StreetID: '',
-          Street: '灵芝镇',
-          Address: '解放大道158号',
-          UserName: '晋文涛',
-          ReceiverPhone: '17682310914',
+          LineID: 0,
+          LineComment: 'string',
+          SLineStatus: 'string',
+          PLineStatus: 'string',
+          Closed: 'string',
+          ClosedBy: 'string',
+          SKU: 'string',
+          SKUName: 'string',
+          BrandName: 'string',
+          ProductName: 'string',
+          ManufactureNO: 'string',
+          Parameters: 'string',
+          Package: 'string',
+          Purchaser: 'string',
+          Quantity: 0,
+          Unit: 'string',
+          DueDate: '2019-05-14T00:48:28.938Z',
+          InquiryPrice: 0,
+          Price: 0,
+          InquiryDueDate: '2019-05-14T00:48:28.938Z',
+          InquiryComment: 'string',
+          InquiryLineTotal: 0,
+          LineTotal: 0,
+          TI_Z02604: [
+            {
+              DocEntry: 0,
+              OrderID: 0,
+              ItemLine: 0,
+              CreateDate: '2019-05-14T00:48:28.939Z',
+              UpdateDate: '2019-05-14T00:48:28.939Z',
+              CreateUser: 'string',
+              UpdateUser: 'string',
+              BaseType: 'string',
+              BaseEntry: 0,
+              BaseLineID: 0,
+              AttachmentCode: 'string',
+              AttachmentName: 'string',
+              AttachmentPath: 'string',
+            },
+          ],
         },
       ],
     },
   };
 
-  componentDidMount() {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'tableList/fetch',
-    });
-  }
-
-  renderSimpleForm() {
-    const {
-      form: { getFieldDecorator },
-    } = this.props;
-    return (
-      <Form onSubmit={this.handleSearch} layout="inline">
-        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={8} sm={24}>
-            <FormItem label="规则名称">
-              {getFieldDecorator('name')(<Input placeholder="请输入" />)}
-            </FormItem>
-          </Col>
-
-          <Col md={8} sm={24}>
-            <span className={styles.submitButtons}>
-              <Button type="primary" htmlType="submit">
-                查询
-              </Button>
-              <Button
-                icon="plus"
-                style={{ marginLeft: 8 }}
-                type="primary"
-                onClick={() => this.handleModalVisible(true)}
-              >
-                新建
-              </Button>
-            </span>
-          </Col>
-        </Row>
-      </Form>
-    );
-  }
+  componentDidMount() {}
 
   render() {
     const { formValues } = this.state;
@@ -603,4 +584,4 @@ class CompanyEdit extends PureComponent {
   }
 }
 
-export default CompanyEdit;
+export default InquiryEdit;

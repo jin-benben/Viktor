@@ -1,6 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Table, Input, InputNumber, Form } from 'antd';
-import { Resizable } from 'react-resizable';
+import { Table, Input, InputNumber, Popconfirm, Form } from 'antd';
 
 const data = [];
 for (let i = 0; i < 100; i++) {
@@ -13,20 +12,6 @@ for (let i = 0; i < 100; i++) {
 }
 const FormItem = Form.Item;
 const EditableContext = React.createContext();
-
-const ResizeableTitle = props => {
-  const { onResize, width, ...restProps } = props;
-  console.log(props, width);
-  if (!width) {
-    return <th {...restProps} />;
-  }
-
-  return (
-    <Resizable width={width} height={0} onResize={onResize}>
-      <th {...restProps} />
-    </Resizable>
-  );
-};
 
 class EditableCell extends React.Component {
   getInput = () => {
@@ -77,13 +62,13 @@ class EditableTable extends React.Component {
       {
         title: 'name',
         dataIndex: 'name',
-        width: 100,
+        width: '25%',
         editable: false,
       },
       {
         title: 'age',
         dataIndex: 'age',
-        width: 100,
+        width: '15%',
         editable: true,
       },
       {
@@ -99,9 +84,6 @@ class EditableTable extends React.Component {
     const components = {
       body: {
         cell: EditableCell,
-      },
-      header: {
-        cell: ResizeableTitle,
       },
     };
 
@@ -121,7 +103,6 @@ class EditableTable extends React.Component {
       };
     });
 
-    console.log(columns);
     return (
       <EditableContext.Provider value={this.props.form}>
         <Table
