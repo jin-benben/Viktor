@@ -1,22 +1,31 @@
 import { queryRule, removeRule, addRule, updateRule } from './service';
 
 export default {
-  namespace: 'tableList',
+  namespace: 'staffs',
 
   state: {
-    data: {
-      list: [],
-      pagination: {},
+    staffsList: [],
+    queryData: {
+      Content: {
+        SearchText: '',
+        SearchKey: 'Name',
+      },
+      page: 1,
+      rows: 30,
+      sidx: 'Code',
+      sord: 'Desc',
     },
   },
 
   effects: {
     *fetch({ payload }, { call, put }) {
       const response = yield call(queryRule, payload);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
+      if (response.Status === 200) {
+        yield put({
+          type: 'save',
+          payload: { staffsList: response.Content.rows },
+        });
+      }
     },
     *add({ payload, callback }, { call, put }) {
       const response = yield call(addRule, payload);
@@ -24,7 +33,7 @@ export default {
         type: 'save',
         payload: response,
       });
-      if (callback) callback();
+      if (callback) callback(response);
     },
     *remove({ payload, callback }, { call, put }) {
       const response = yield call(removeRule, payload);
@@ -32,7 +41,7 @@ export default {
         type: 'save',
         payload: response,
       });
-      if (callback) callback();
+      if (callback) callback(response);
     },
     *update({ payload, callback }, { call, put }) {
       const response = yield call(updateRule, payload);
@@ -40,15 +49,16 @@ export default {
         type: 'save',
         payload: response,
       });
-      if (callback) callback();
+      if (callback) callback(response);
     },
   },
 
   reducers: {
-    save(state, action) {
+    save(state, { payload }) {
+      console.log(payload);
       return {
         ...state,
-        data: action.payload,
+        ...payload,
       };
     },
   },

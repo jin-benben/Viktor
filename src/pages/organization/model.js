@@ -5,7 +5,16 @@ export default {
 
   state: {
     treeData: [],
-    singleInfo: {},
+    singleInfo: {
+      Code: '',
+      Name: '',
+      Comment: '',
+      Type: '2',
+      FatherCode: '',
+      ComapnyCode: '',
+      DDCode: 0,
+      Level: 0,
+    },
   },
   effects: {
     *fetch({ payload }, { call, put }) {
@@ -17,13 +26,14 @@ export default {
         },
       });
     },
-    *single({ payload, callback }, { call, put }) {
+    *single({ payload }, { call, put }) {
       const response = yield call(querySingleRule, payload);
       yield put({
         type: 'save',
-        payload: response,
+        payload: {
+          singleInfo: response.Content,
+        },
       });
-      if (callback) callback();
     },
     *add({ payload, callback }, { call, put }) {
       const response = yield call(addRule, payload);
@@ -31,7 +41,7 @@ export default {
         type: 'save',
         payload: response,
       });
-      if (callback) callback();
+      if (callback) callback(response);
     },
     *update({ payload, callback }, { call, put }) {
       const response = yield call(updateRule, payload);
@@ -39,7 +49,7 @@ export default {
         type: 'save',
         payload: response,
       });
-      if (callback) callback();
+      if (callback) callback(response);
     },
   },
   reducers: {

@@ -9,33 +9,9 @@ import { checkPhone, chechEmail } from '@/utils/utils';
 
 const FormItem = Form.Item;
 const { Option } = Select;
-const getValue = obj =>
-  Object.keys(obj)
-    .map(key => obj[key])
-    .join(',');
 
 @Form.create()
 class CreateForm extends PureComponent {
-  constructor(props) {
-    super(props);
-    this.state = {
-      formVals: props.formVals,
-    };
-    this.formLayout = {
-      labelCol: { span: 7 },
-      wrapperCol: { span: 13 },
-    };
-  }
-
-  static getDerivedStateFromProps(nextProps, prevState) {
-    if (nextProps.formVals !== prevState.formVals) {
-      return {
-        formVals: nextProps.formVals,
-      };
-    }
-    return null;
-  }
-
   validatorPhone = (rule, value, callback) => {
     if (value && !checkPhone(value)) {
       callback(new Error('手机号格式不正确'));
@@ -52,14 +28,26 @@ class CreateForm extends PureComponent {
     }
   };
 
+  okHandle = () => {
+    const { form, formVals, handleSubmit } = this.props;
+    form.validateFields((err, fieldsValue) => {
+      if (err) return;
+      form.resetFields();
+      handleSubmit({ ...formVals, ...fieldsValue });
+    });
+  };
+
   render() {
     const {
       form: { getFieldDecorator },
+      formVals,
       modalVisible,
       handleModalVisible,
-      handleSubmit,
     } = this.props;
-    const { formVals } = this.state;
+    const formLayout = {
+      labelCol: { span: 7 },
+      wrapperCol: { span: 16 },
+    };
     const formItemLayout = {
       labelCol: {
         xs: { span: 24 },
@@ -75,15 +63,24 @@ class CreateForm extends PureComponent {
       <Modal
         width={640}
         destroyOnClose
-        title="添加员工"
+        title="员工编辑"
+        okText="保存"
         visible={modalVisible}
-        onOk={handleSubmit}
+        onOk={this.okHandle}
         onCancel={() => handleModalVisible()}
       >
-        <Form {...formItemLayout} onSubmit={this.handleSubmit}>
+        <Form {...formItemLayout}>
           <Row>
             <Col span={12}>
-              <FormItem key="Name" {...this.formLayout} label="姓名">
+              <FormItem key="Code" {...formLayout} label="代码">
+                {getFieldDecorator('Code', {
+                  rules: [{ required: true, message: '请输入代码！' }],
+                  initialValue: formVals.Code,
+                })(<Input placeholder="请输入代码" />)}
+              </FormItem>
+            </Col>
+            <Col span={12}>
+              <FormItem key="Name" {...formLayout} label="姓名">
                 {getFieldDecorator('Name', {
                   rules: [{ required: true, message: '请输入姓名！' }],
                   initialValue: formVals.Name,
@@ -91,25 +88,15 @@ class CreateForm extends PureComponent {
               </FormItem>
             </Col>
             <Col span={12}>
-              <FormItem key="Department" {...this.formLayout} label="部门">
+              <FormItem key="Department" {...formLayout} label="部门">
                 {getFieldDecorator('Department', {
                   rules: [{ required: true, message: '请选择部门！' }],
                   initialValue: formVals.Department,
                 })(<Input placeholder="请输入" />)}
               </FormItem>
             </Col>
-          </Row>
-          <Row>
             <Col span={12}>
-              <FormItem key="Password" {...this.formLayout} label="密码">
-                {getFieldDecorator('Password', {
-                  rules: [{ required: true, message: '请输入密码！' }],
-                  initialValue: formVals.Password,
-                })(<Input placeholder="请输入密码" />)}
-              </FormItem>
-            </Col>
-            <Col span={12}>
-              <FormItem key="Mobile" {...this.formLayout} label="手机号">
+              <FormItem key="Mobile" {...formLayout} label="手机号">
                 {getFieldDecorator('Mobile', {
                   rules: [
                     { required: true, message: '请输入手机号！' },
@@ -121,10 +108,8 @@ class CreateForm extends PureComponent {
                 })(<Input placeholder="请输入手机号" />)}
               </FormItem>
             </Col>
-          </Row>
-          <Row>
             <Col span={12}>
-              <FormItem key="Email" {...this.formLayout} label="邮箱">
+              <FormItem key="Email" {...formLayout} label="邮箱">
                 {getFieldDecorator('Email', {
                   rules: [{ validator: this.validatorEmail }],
                   initialValue: formVals.Email,
@@ -132,17 +117,15 @@ class CreateForm extends PureComponent {
               </FormItem>
             </Col>
             <Col span={12}>
-              <FormItem key="Position" {...this.formLayout} label="职位">
+              <FormItem key="Position" {...formLayout} label="职位">
                 {getFieldDecorator('Position', {
                   rules: [{ required: true, message: '请输入职位' }],
                   initialValue: formVals.Position,
                 })(<Input placeholder="请输入职位" />)}
               </FormItem>
             </Col>
-          </Row>
-          <Row>
             <Col span={12}>
-              <FormItem key="Gender" {...this.formLayout} label="性别">
+              <FormItem key="Gender" {...formLayout} label="性别">
                 {getFieldDecorator('Gender', {
                   initialValue: formVals.Gender,
                 })(
@@ -155,7 +138,7 @@ class CreateForm extends PureComponent {
               </FormItem>
             </Col>
             <Col span={12}>
-              <FormItem key="Dmanager" {...this.formLayout} label="部门主管">
+              <FormItem key="Dmanager" {...formLayout} label="部门主管">
                 {getFieldDecorator('Dmanager', {
                   initialValue: formVals.Dmanager,
                 })(
@@ -166,10 +149,8 @@ class CreateForm extends PureComponent {
                 )}
               </FormItem>
             </Col>
-          </Row>
-          <Row>
             <Col span={12}>
-              <FormItem key="Status" {...this.formLayout} label="在职状态">
+              <FormItem key="Status" {...formLayout} label="在职状态">
                 {getFieldDecorator('Status', {
                   initialValue: formVals.Status,
                 })(
@@ -181,17 +162,15 @@ class CreateForm extends PureComponent {
               </FormItem>
             </Col>
             <Col span={12}>
-              <FormItem key="CompanyCode" {...this.formLayout} label="交易主体">
+              <FormItem key="CompanyCode" {...formLayout} label="交易主体">
                 {getFieldDecorator('CompanyCode', {
                   rules: [{ required: true, message: '请选择交易主体！' }],
                   initialValue: formVals.CompanyCode,
                 })(<Input placeholder="请输入" />)}
               </FormItem>
             </Col>
-          </Row>
-          <Row>
             <Col span={12}>
-              <FormItem key="DefaultWhsCode" {...this.formLayout} label="默认仓库">
+              <FormItem key="DefaultWhsCode" {...formLayout} label="默认仓库">
                 {getFieldDecorator('DefaultWhsCode', {
                   initialValue: formVals.DefaultWhsCode,
                 })(
@@ -209,14 +188,15 @@ class CreateForm extends PureComponent {
   }
 }
 /* eslint react/no-multi-comp:0 */
-@connect(({ tableList, loading }) => ({
-  tableList,
-  loading: loading.models.rule,
+@connect(({ staffs, loading }) => ({
+  staffs,
+  loading: loading.models.staffs,
 }))
 @Form.create()
-class TableList extends PureComponent {
+class Staffs extends PureComponent {
   state = {
     modalVisible: false,
+    method: 'A',
     formValues: {
       Name: '',
       Department: '',
@@ -242,19 +222,18 @@ class TableList extends PureComponent {
     },
     {
       title: '部门',
+      width: 100,
       dataIndex: 'Department',
     },
     {
       title: '部门主管',
+      width: 100,
       dataIndex: 'Dmanager',
-      render: val => <span>{val === 'Y' ? '是' : '否'}</span>,
-    },
-    {
-      title: '密码',
-      dataIndex: 'Password',
+      render: val => <span>{val === '1' ? '是' : '否'}</span>,
     },
     {
       title: '手机号',
+      width: 120,
       dataIndex: 'Mobile',
     },
     {
@@ -263,15 +242,19 @@ class TableList extends PureComponent {
     },
     {
       title: '职位',
+      width: 100,
       dataIndex: 'Position',
     },
     {
       title: '性别',
       dataIndex: 'Gender',
+      width: 80,
+      render: val => <span>{val === '1' ? '男' : '女'}</span>,
     },
     {
       title: '在职状态',
       dataIndex: 'Status',
+      width: 80,
       render: val => <span>{val === '1' ? '在职' : '离职'}</span>,
     },
     {
@@ -285,27 +268,16 @@ class TableList extends PureComponent {
     {
       title: '入职时间',
       dataIndex: 'EntryTime',
-      render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>,
+      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
     {
       title: '离职时间',
       dataIndex: 'ResignationTime',
-      render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>,
+      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
-    // {
-    //   title: '创建时间',
-    //   dataIndex: 'CreatedAt',
-    //   sorter: true,
-    //   render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>,
-    // },
-    // {
-    //   title: '更新时间',
-    //   dataIndex: 'UpdatedAt',
-    //   sorter: true,
-    //   render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>,
-    // },
     {
       title: '操作',
+      fixed: 'right',
       render: (text, record) => (
         <Fragment>
           <a onClick={() => this.handleUpdateModalVisible(true, record)}>修改</a>
@@ -317,35 +289,30 @@ class TableList extends PureComponent {
   ];
 
   componentDidMount() {
-    const { dispatch } = this.props;
+    const {
+      dispatch,
+      staffs: { queryData },
+    } = this.props;
     dispatch({
-      type: 'tableList/fetch',
+      type: 'staffs/fetch',
+      payload: {
+        ...queryData,
+      },
     });
   }
 
-  handleStandardTableChange = (pagination, filtersArg, sorter) => {
-    const { dispatch } = this.props;
-    const { formValues } = this.state;
-
-    const filters = Object.keys(filtersArg).reduce((obj, key) => {
-      const newObj = { ...obj };
-      newObj[key] = getValue(filtersArg[key]);
-      return newObj;
-    }, {});
-
-    const params = {
-      currentPage: pagination.current,
-      pageSize: pagination.pageSize,
-      ...formValues,
-      ...filters,
-    };
-    if (sorter.field) {
-      params.sorter = `${sorter.field}_${sorter.order}`;
-    }
-
+  handleStandardTableChange = pagination => {
+    const {
+      dispatch,
+      staffs: { queryData },
+    } = this.props;
     dispatch({
       type: 'tableList/fetch',
-      payload: params,
+      payload: {
+        ...queryData,
+        page: pagination.current,
+        rows: pagination.pageSize,
+      },
     });
   };
 
@@ -354,17 +321,19 @@ class TableList extends PureComponent {
     const { dispatch, form } = this.props;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
-      const values = {
-        ...fieldsValue,
-        updatedAt: fieldsValue.updatedAt && fieldsValue.updatedAt.valueOf(),
-      };
-      this.setState({
-        formValues: values,
-      });
-
       dispatch({
-        type: 'tableList/fetch',
-        payload: values,
+        type: 'staffs/fetch',
+        payload: {
+          Content: {
+            SearchText: '',
+            SearchKey: 'Name',
+            ...fieldsValue,
+          },
+          page: 1,
+          rows: 30,
+          sidx: 'Code',
+          sord: 'Desc',
+        },
       });
     });
   };
@@ -372,7 +341,7 @@ class TableList extends PureComponent {
   handleAdd = fields => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'tableList/add',
+      type: 'staffs/add',
       payload: {
         desc: fields.desc,
       },
@@ -381,40 +350,60 @@ class TableList extends PureComponent {
     this.handleModalVisible();
   };
 
-  handleUpdate = fields => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'tableList/update',
-      payload: {
-        name: fields.name,
-        desc: fields.desc,
-        key: fields.key,
-      },
-    });
-
-    message.success('配置成功');
-    this.handleUpdateModalVisible();
-  };
-
   handleUpdateModalVisible = (flag, record) => {
     this.setState({
       modalVisible: !!flag,
+      method: 'U',
       formValues: record,
     });
   };
 
-  handleSubmit = () => {
-    const { form } = this.props;
-    form.validateFields((err, fieldsValue) => {
-      if (err) return;
-      form.resetFields();
-      this.handleAdd(fieldsValue);
-    });
+  handleSubmit = fieldsValue => {
+    const { dispatch } = this.props;
+    const { method } = this.state;
+    if (method === 'A') {
+      dispatch({
+        type: 'staffs/add',
+        payload: {
+          Content: {
+            ...fieldsValue,
+          },
+        },
+        callback: response => {
+          if (response.Status === 200) {
+            this.handleModalVisible(false);
+            message.success('添加成功');
+            dispatch({
+              type: 'staffs/fetch',
+            });
+          }
+        },
+      });
+    } else {
+      dispatch({
+        type: 'staffs/update',
+        payload: {
+          Content: {
+            ...fieldsValue,
+          },
+        },
+        callback: response => {
+          if (response.Status === 200) {
+            this.handleModalVisible(false);
+            message.success('更新成功');
+            dispatch({
+              type: 'staffs/fetch',
+            });
+          }
+        },
+      });
+    }
   };
 
   handleModalVisible = flag => {
     this.setState({
       modalVisible: !!flag,
+      method: 'A',
       formValues: {},
     });
   };
@@ -427,8 +416,8 @@ class TableList extends PureComponent {
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={8} sm={24}>
-            <FormItem label="规则名称">
-              {getFieldDecorator('name')(<Input placeholder="请输入" />)}
+            <FormItem label="员工姓名">
+              {getFieldDecorator('SearchText')(<Input placeholder="请输入" />)}
             </FormItem>
           </Col>
 
@@ -454,7 +443,7 @@ class TableList extends PureComponent {
 
   render() {
     const {
-      tableList: { data },
+      staffs: { staffsList },
       loading,
     } = this.props;
     const { modalVisible, formValues } = this.state;
@@ -469,7 +458,9 @@ class TableList extends PureComponent {
             <div className={styles.tableListForm}>{this.renderSimpleForm()}</div>
             <StandardTable
               loading={loading}
-              data={data}
+              data={{ list: staffsList }}
+              scroll={{ x: 1400 }}
+              rowKey="UserID"
               columns={this.columns}
               onChange={this.handleStandardTableChange}
             />
@@ -481,4 +472,4 @@ class TableList extends PureComponent {
   }
 }
 
-export default TableList;
+export default Staffs;

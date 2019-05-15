@@ -9,13 +9,15 @@ import {
   Card,
   Tabs,
   Button,
+  Icon,
   Popconfirm,
   message,
   DatePicker,
   Select,
 } from 'antd';
 import StandardTable from '@/components/StandardTable';
-
+import EditableFormTable from '@/components/EditableFormTable';
+import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import { checkPhone, chechEmail } from '@/utils/utils';
 
 const { TabPane } = Tabs;
@@ -29,93 +31,141 @@ class CreateForm extends PureComponent {
     {
       title: '行号',
       dataIndex: 'LineID',
+      fixed: 'left',
       width: 50,
     },
     {
       title: 'SKU',
       dataIndex: 'SKU',
-      editable: true,
+      width: 100,
       inputType: 'text',
     },
     {
       title: '产品描述',
       dataIndex: 'SKUName',
+      inputType: 'textArea',
+      width: 100,
       editable: true,
-      inputType: 'text',
     },
     {
       title: '品牌',
+      width: 100,
       dataIndex: 'BrandName',
-      editable: true,
       inputType: 'text',
+      editable: true,
     },
     {
       title: '名称',
       dataIndex: 'ProductName',
-      editable: true,
       inputType: 'text',
+      width: 100,
+      editable: true,
     },
     {
       title: '型号',
+      width: 100,
       dataIndex: 'ManufactureNO',
+      inputType: 'text',
+      editable: true,
     },
     {
       title: '参数',
+      width: 100,
       dataIndex: 'Parameters',
+      inputType: 'text',
+      editable: true,
     },
     {
       title: '包装',
+      width: 100,
       dataIndex: 'Package',
+      inputType: 'text',
+      editable: true,
     },
     {
       title: '采购员',
+      width: 100,
       dataIndex: 'Purchaser',
+      editable: true,
     },
     {
       title: '数量',
       width: 100,
+      inputType: 'text',
       dataIndex: 'Quantity',
+      editable: true,
     },
     {
       title: '单位',
       width: 80,
+      inputType: 'text',
       dataIndex: 'Unit',
+      editable: true,
     },
     {
       title: '要求交期',
+      width: 150,
+      inputType: 'date',
       dataIndex: 'DueDate',
+      editable: true,
     },
     {
       title: '询价最终价格',
+      width: 100,
+      inputType: 'text',
       dataIndex: 'InquiryPrice',
+      editable: true,
     },
     {
       title: '销售建议价格',
+      width: 100,
+      inputType: 'text',
       dataIndex: 'Price',
+      editable: true,
     },
     {
       title: '询价最终交期',
+      width: 150,
+      inputType: 'date',
       dataIndex: 'InquiryDueDate',
+      editable: true,
     },
     {
       title: '询价备注',
+      width: 100,
+      inputType: 'textArea',
       dataIndex: 'InquiryComment',
+      editable: true,
     },
     {
       title: '询价行总计',
+      width: 100,
       dataIndex: 'InquiryLineTotal',
     },
     {
       title: '销售行总计',
+      width: 100,
       dataIndex: 'LineTotal',
     },
     {
       title: '操作',
+      fixed: 'right',
+      width: 50,
       render: (text, record) => (
         <Fragment>
-          <Popconfirm title="确定要删除吗?" onConfirm={() => this.handleDelete(record.key)}>
-            <a href="javascript:;">删除</a>
-          </Popconfirm>
+          <Icon
+            title="上传附件"
+            className="icons"
+            style={{ color: '#08c', marginRight: 5 }}
+            type="cloud-upload"
+          />
+          <Icon
+            title="删除行"
+            className="icons"
+            type="delete"
+            theme="twoTone"
+            onClick={() => this.deleteLine(record)}
+          />
         </Fragment>
       ),
     },
@@ -151,11 +201,9 @@ class CreateForm extends PureComponent {
     {
       title: '操作',
       render: (text, record) => (
-        <Fragment>
-          <Popconfirm title="确定要删除吗?" onConfirm={() => this.handleDelete(record.key)}>
-            <a href="javascript:;">删除</a>
-          </Popconfirm>
-        </Fragment>
+        <Button size="small" style={{ border: 'none' }} onClick={() => this.deleteLine(record)}>
+          <Icon title="删除行" type="delete" theme="twoTone" />
+        </Button>
       ),
     },
   ];
@@ -206,6 +254,20 @@ class CreateForm extends PureComponent {
     }
     return null;
   }
+
+  rowChange = record => {
+    const { data } = this.state;
+    data.map(item => {
+      if (item.key === record.key) {
+        return record;
+      }
+      return item;
+    });
+    // console.log(data)
+    this.setState({ data }, () => {
+      console.log(data);
+    });
+  };
 
   handleSearch = e => {
     e.preventDefault();
@@ -384,21 +446,6 @@ class CreateForm extends PureComponent {
       handleSubmit: this.handleSubmit,
       handleModalVisible: this.handleModalVisible,
     };
-    const skucolumns = this.skuColumns.map(col => {
-      if (!col.editable) {
-        return col;
-      }
-      return {
-        ...col,
-        onCell: record => ({
-          record,
-          inputType: col.inputType,
-          dataIndex: col.dataIndex,
-          title: col.title,
-          editing: true,
-        }),
-      };
-    });
 
     return (
       <Fragment>
@@ -495,90 +542,48 @@ class CreateForm extends PureComponent {
         </Form>
         <Tabs tabBarExtraContent={this.rightButton(tabIndex)} onChange={this.tabChange}>
           <TabPane tab="物料" key="1">
-            <StandardTable data={{ list: formVals.MDM01 }} rowKey="LineID" columns={skucolumns} />
+            <EditableFormTable
+              rowChange={this.rowChange}
+              rowKey="LineID"
+              scroll={{ x: 1800 }}
+              columns={this.skuColumns}
+              data={formVals.MDM01}
+            />
           </TabPane>
           <TabPane tab="常规" key="2">
-            <StandardTable
-              data={{ list: formVals.MDM02 }}
-              rowKey="OrderID"
-              columns={this.addressColumns}
-            />
+            ii
           </TabPane>
           <TabPane tab="附件" key="3">
             <StandardTable
-              data={{ list: formVals.MDM02 }}
+              data={{ list: formVals.TI_Z02603 }}
               rowKey="OrderID"
               columns={this.addressColumns}
             />
           </TabPane>
         </Tabs>
+        <FooterToolbar>
+          <Button type="primary">保存</Button>
+        </FooterToolbar>
       </Fragment>
     );
   }
 }
 /* eslint react/no-multi-comp:0 */
-@connect(({ tableList, loading }) => ({
-  tableList,
+@connect(({ inquiryEdit, loading }) => ({
+  inquiryEdit,
   loading: loading.models.rule,
 }))
 @Form.create()
 class InquiryEdit extends PureComponent {
-  state = {
-    formValues: {
-      MDM01: [
-        {
-          LineID: 0,
-          LineComment: 'string',
-          SLineStatus: 'string',
-          PLineStatus: 'string',
-          Closed: 'string',
-          ClosedBy: 'string',
-          SKU: 'string',
-          SKUName: 'string',
-          BrandName: 'string',
-          ProductName: 'string',
-          ManufactureNO: 'string',
-          Parameters: 'string',
-          Package: 'string',
-          Purchaser: 'string',
-          Quantity: 0,
-          Unit: 'string',
-          DueDate: '2019-05-14T00:48:28.938Z',
-          InquiryPrice: 0,
-          Price: 0,
-          InquiryDueDate: '2019-05-14T00:48:28.938Z',
-          InquiryComment: 'string',
-          InquiryLineTotal: 0,
-          LineTotal: 0,
-          TI_Z02604: [
-            {
-              DocEntry: 0,
-              OrderID: 0,
-              ItemLine: 0,
-              CreateDate: '2019-05-14T00:48:28.939Z',
-              UpdateDate: '2019-05-14T00:48:28.939Z',
-              CreateUser: 'string',
-              UpdateUser: 'string',
-              BaseType: 'string',
-              BaseEntry: 0,
-              BaseLineID: 0,
-              AttachmentCode: 'string',
-              AttachmentName: 'string',
-              AttachmentPath: 'string',
-            },
-          ],
-        },
-      ],
-    },
-  };
-
   componentDidMount() {}
 
   render() {
-    const { formValues } = this.state;
+    const {
+      inquiryEdit: { inquiryDetail },
+    } = this.props;
     return (
       <Card>
-        <CreateForm formVals={formValues} />
+        <CreateForm formVals={inquiryDetail} />
       </Card>
     );
   }
