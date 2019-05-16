@@ -10,6 +10,7 @@ import {
   Tabs,
   Button,
   Icon,
+  Switch,
   Popconfirm,
   message,
   DatePicker,
@@ -18,6 +19,8 @@ import {
 import StandardTable from '@/components/StandardTable';
 import EditableFormTable from '@/components/EditableFormTable';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
+import UpdateLoad from '../components/modal';
+import Staffs from '@/components/Staffs';
 import { checkPhone, chechEmail } from '@/utils/utils';
 
 const { TabPane } = Tabs;
@@ -25,8 +28,12 @@ const { Search } = Input;
 const FormItem = Form.Item;
 const { Option } = Select;
 
+@connect(({ inquiryEdit, loading }) => ({
+  inquiryEdit,
+  loading: loading.models.rule,
+}))
 @Form.create()
-class CreateForm extends PureComponent {
+class InquiryEdit extends PureComponent {
   skuColumns = [
     {
       title: '行号',
@@ -150,13 +157,14 @@ class CreateForm extends PureComponent {
     {
       title: '操作',
       fixed: 'right',
-      width: 50,
+      width: 80,
       render: (text, record) => (
         <Fragment>
+          <Icon title="预览" type="eye" style={{ color: '#08c', marginRight: 5 }} />
           <Icon
             title="上传附件"
             className="icons"
-            style={{ color: '#08c', marginRight: 5 }}
+            style={{ color: '#08c', marginRight: 5, marginLeft: 5 }}
             type="cloud-upload"
           />
           <Icon
@@ -171,7 +179,7 @@ class CreateForm extends PureComponent {
     },
   ];
 
-  addressColumns = [
+  attachmentColumns = [
     {
       title: '序号',
       width: 80,
@@ -196,12 +204,16 @@ class CreateForm extends PureComponent {
     {
       title: '附件路径',
       dataIndex: 'AttachmentPath',
+      render: text => <div style={{ wordWrap: 'break-word', wordBreak: 'break-all' }}>{text}</div>,
     },
 
     {
       title: '操作',
       render: (text, record) => (
         <Button size="small" style={{ border: 'none' }} onClick={() => this.deleteLine(record)}>
+          <a target="_blnk" href={record.AttachmentPath}>
+            <Icon title="预览" type="eye" style={{ color: '#08c', marginRight: 5 }} />
+          </a>
           <Icon title="删除行" type="delete" theme="twoTone" />
         </Button>
       ),
@@ -211,34 +223,10 @@ class CreateForm extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      formVals: props.formVals,
+      formVals: {},
       tabIndex: '1',
-      LinkManmodalVisible: false,
-      AddressmodalVisible: false,
-      addressVal: {
-        OrderID: '',
-        AddressID: '',
-        ProvinceID: '',
-        Province: '',
-        CityID: '',
-        City: '',
-        AreaID: '',
-        Area: '',
-        StreetID: '',
-        Street: '',
-        Address: '',
-        UserName: '',
-        ReceiverPhone: '',
-      },
-      linkManVal: {
-        Name: '',
-        CellphoneNO: '',
-        PhoneNO: '',
-        Email: '',
-        Position: '',
-        Saler: '',
-        CompanyCode: '',
-      },
+      uploadmodalVisible: false,
+      attachmentVisible: false,
     };
     this.formLayout = {
       labelCol: { span: 8 },
@@ -247,9 +235,9 @@ class CreateForm extends PureComponent {
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    if (nextProps.formVals !== prevState.formVals) {
+    if (nextProps.inquiryEdit.inquiryDetail !== prevState.formVals) {
       return {
-        formVals: nextProps.formVals,
+        formVals: nextProps.inquiryEdit.inquiryDetail,
       };
     }
     return null;
@@ -269,26 +257,6 @@ class CreateForm extends PureComponent {
     });
   };
 
-  handleSearch = e => {
-    e.preventDefault();
-    const { dispatch, form } = this.props;
-    form.validateFields((err, fieldsValue) => {
-      if (err) return;
-      const values = {
-        ...fieldsValue,
-        updatedAt: fieldsValue.updatedAt && fieldsValue.updatedAt.valueOf(),
-      };
-      this.setState({
-        formVals: values,
-      });
-
-      dispatch({
-        type: 'tableList/fetch',
-        payload: values,
-      });
-    });
-  };
-
   handleAdd = fields => {
     const { dispatch } = this.props;
     dispatch({
@@ -301,41 +269,24 @@ class CreateForm extends PureComponent {
     this.handleModalVisible();
   };
 
-  handleUpdate = fields => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'tableList/update',
-      payload: {
-        name: fields.name,
-        desc: fields.desc,
-        key: fields.key,
-      },
-    });
-
-    message.success('配置成功');
-    this.handleUpdateModalVisible();
-  };
-
-  handleUpdateModalVisible = (flag, record, modalkey, valkey) => {
-    this.setState({
-      [modalkey]: !!flag,
-      [valkey]: record,
-    });
-  };
-
-  handleSubmit = () => {
-    const { form } = this.props;
-    form.validateFields((err, fieldsValue) => {
-      if (err) return;
-      form.resetFields();
-      this.handleAdd(fieldsValue);
-    });
+  handleSubmit = fieldsValue => {
+    const { AttachmentPath, AttachmentCode, AttachmentName } = fieldsValue;
+    const { formVals } = this.state;
+    if (fieldsValue.AttachmentPath) {
+      formVals.Content.TI_Z02603.push({
+        AttachmentPath,
+        AttachmentCode,
+        AttachmentName,
+      });
+      this.setState({ formVals });
+    }
+    this.handleModalVisible(false);
   };
 
   handleModalVisible = flag => {
     this.setState({
-      LinkManmodalVisible: !!flag,
-      AddressmodalVisible: !!flag,
+      uploadmodalVisible: !!flag,
+      attachmentVisible: !!flag,
     });
   };
 
@@ -346,14 +297,21 @@ class CreateForm extends PureComponent {
   rightButton = tabIndex => {
     if (tabIndex === '1') {
       return (
-        <Button icon="plus" style={{ marginLeft: 8 }} type="primary" onClick={this.addLinkMan}>
+        <Button icon="plus" style={{ marginLeft: 8 }} type="primary" onClick={this.addLineSku}>
           添加新物料
         </Button>
       );
     }
     if (tabIndex === '3') {
       return (
-        <Button icon="plus" style={{ marginLeft: 8 }} type="primary" onClick={this.addLinkMan}>
+        <Button
+          icon="plus"
+          style={{ marginLeft: 8 }}
+          type="primary"
+          onClick={() => {
+            this.setState({ uploadmodalVisible: true });
+          }}
+        >
           添加新附件
         </Button>
       );
@@ -377,55 +335,18 @@ class CreateForm extends PureComponent {
     }
   };
 
-  addLinkMan = () => {
-    this.setState({
-      LinkManmodalVisible: true,
-      linkManVal: {
-        Name: '',
-        CellphoneNO: '',
-        PhoneNO: '',
-        Email: '',
-        Position: '',
-        Saler: '',
-        CompanyCode: '',
-      },
-    });
-  };
-
-  addAddressInfo = () => {
-    this.setState({
-      AddressmodalVisible: true,
-      addressVal: {
-        OrderID: '',
-        AddressID: '',
-        ProvinceID: '',
-        Province: '',
-        CityID: '',
-        City: '',
-        AreaID: '',
-        Area: '',
-        StreetID: '',
-        Street: '',
-        Address: '',
-        UserName: '',
-        ReceiverPhone: '',
-      },
-    });
+  addLineSku = () => {
+    // 添加物料
+    const { formVals } = this.state;
+    formVals.Content.TI_Z02602.push({});
   };
 
   render() {
     const {
       form: { getFieldDecorator },
-      form,
     } = this.props;
-    const {
-      formVals,
-      tabIndex,
-      LinkManmodalVisible,
-      linkManVal,
-      AddressmodalVisible,
-      addressVal,
-    } = this.state;
+    const { formVals, tabIndex, uploadmodalVisible, attachmentVisible } = this.state;
+    console.log(uploadmodalVisible);
     const formItemLayout = {
       labelCol: {
         xs: { span: 24 },
@@ -438,17 +359,18 @@ class CreateForm extends PureComponent {
         lg: { span: 6 },
       },
     };
-    const linkmanParentMethods = {
+    const uploadmodalMethods = {
       handleSubmit: this.handleSubmit,
       handleModalVisible: this.handleModalVisible,
     };
-    const addressParentMethods = {
+    console.log(this.state);
+    const attachmentMethods = {
       handleSubmit: this.handleSubmit,
       handleModalVisible: this.handleModalVisible,
     };
 
     return (
-      <Fragment>
+      <Card>
         <Form {...formItemLayout} onSubmit={this.handleSubmit}>
           <Row gutter={8}>
             <Col lg={8} md={12} sm={24}>
@@ -517,9 +439,7 @@ class CreateForm extends PureComponent {
                   initialValue: formVals.OrderType,
                 })(
                   <Select placeholder="请选择">
-                    <Option value="1">男</Option>
-                    <Option value="2">女</Option>
-                    <Option value="3">不详</Option>
+                    <Option value="1">正常订单</Option>
                   </Select>
                 )}
               </FormItem>
@@ -534,8 +454,8 @@ class CreateForm extends PureComponent {
               </FormItem>
             </Col>
             <Col lg={8} md={12} sm={24}>
-              <FormItem key="DutyNo" {...this.formLayout} label="状态">
-                <span>状态</span>
+              <FormItem key="DocStatus" {...this.formLayout} label="状态">
+                <span>{formVals.DocStatus === 'O' ? '未清' : '已清'}</span>
               </FormItem>
             </Col>
           </Row>
@@ -547,43 +467,149 @@ class CreateForm extends PureComponent {
               rowKey="LineID"
               scroll={{ x: 1800 }}
               columns={this.skuColumns}
-              data={formVals.MDM01}
+              data={formVals.Content.TI_Z02602}
             />
+            <Row style={{ marginTop: 20 }} gutter={8}>
+              <Col lg={8} md={12} sm={24}>
+                <FormItem key="Owner" {...this.formLayout} label="所有人">
+                  {getFieldDecorator('Owner', {
+                    initialValue: formVals.Owner,
+                  })(<Staffs />)}
+                </FormItem>
+              </Col>
+              <Col lg={8} md={12} sm={24}>
+                <FormItem key="CreateDate" {...this.formLayout} label="创建日期">
+                  {getFieldDecorator('CreateDate', {
+                    initialValue: formVals.CreateDate,
+                  })(<DatePicker style={{ width: '100%' }} />)}
+                </FormItem>
+              </Col>
+            </Row>
+            <Row gutter={8}>
+              <Col lg={8} md={12} sm={24}>
+                <FormItem key="DocTotal" {...this.formLayout} label="销售总计">
+                  {getFieldDecorator('DocTotal', {
+                    initialValue: formVals.DocTotal,
+                  })(<Input disabled />)}
+                </FormItem>
+              </Col>
+              <Col lg={8} md={12} sm={24}>
+                <FormItem key="InquiryDocTotal" {...this.formLayout} label="询价总计">
+                  {getFieldDecorator('InquiryDocTotal', {
+                    initialValue: formVals.InquiryDocTotal,
+                  })(<Input disabled />)}
+                </FormItem>
+              </Col>
+            </Row>
           </TabPane>
           <TabPane tab="常规" key="2">
-            ii
+            <Row gutter={8}>
+              <Col lg={8} md={12} sm={24}>
+                <FormItem key="CellphoneNO" {...this.formLayout} label="联系人手机号码">
+                  {getFieldDecorator('CellphoneNO', {
+                    initialValue: formVals.CellphoneNO,
+                  })(<Input placeholder="手机号码" />)}
+                </FormItem>
+              </Col>
+              <Col lg={8} md={12} sm={24}>
+                <FormItem key="PhoneNO" {...this.formLayout} label="联系人电话">
+                  {getFieldDecorator(
+                    'PhoneNO',
+
+                    {
+                      initialValue: formVals.PhoneNO,
+                    }
+                  )(<Input placeholder="电话号码" />)}
+                </FormItem>
+              </Col>
+              <Col lg={8} md={12} sm={24}>
+                <FormItem key="Email " {...this.formLayout} label="联系人邮箱">
+                  {getFieldDecorator('Email', {
+                    rules: [{ validator: this.validatorEmail }],
+                    initialValue: formVals.Email,
+                  })(<Input placeholder="请输入邮箱" />)}
+                </FormItem>
+              </Col>
+              <Col lg={8} md={12} sm={24}>
+                <FormItem key="DocTotal" {...this.formLayout} label="收货地址">
+                  {getFieldDecorator('DocTotal', {
+                    initialValue: formVals.DocTotal,
+                  })(<Input />)}
+                </FormItem>
+              </Col>
+              <Col lg={8} md={12} sm={24}>
+                <FormItem key="CompanyCode" {...this.formLayout} label="交易公司">
+                  {getFieldDecorator('CompanyCode', {
+                    initialValue: formVals.CompanyCode,
+                  })(<Input />)}
+                </FormItem>
+              </Col>
+              <Col lg={8} md={12} sm={24}>
+                <FormItem key="SourceType" {...this.formLayout} label="来源类型">
+                  {getFieldDecorator('SourceType', {
+                    initialValue: formVals.SourceType,
+                  })(
+                    <Select style={{ width: '100%' }} placeholder="请选择">
+                      <Option value="1">销售下单</Option>
+                      <Option value="2">网站下单</Option>
+                    </Select>
+                  )}
+                </FormItem>
+              </Col>
+              <Col lg={8} md={12} sm={24}>
+                <FormItem key="Comment" {...this.formLayout} label="备注">
+                  {getFieldDecorator('Comment', {
+                    initialValue: formVals.Comment,
+                  })(<Input placeholder="请输入备注" />)}
+                </FormItem>
+              </Col>
+              <Col lg={8} md={12} sm={24}>
+                <FormItem key="ToDate" {...this.formLayout} label="有效期至">
+                  {getFieldDecorator('ToDate', {
+                    initialValue: formVals.InquiryDocTotal,
+                  })(<DatePicker style={{ width: '100%' }} />)}
+                </FormItem>
+              </Col>
+              <Col lg={8} md={12} sm={24}>
+                <FormItem key="CreateUser" {...this.formLayout} label="创建人">
+                  <span>创建人</span>
+                </FormItem>
+              </Col>
+              <Col lg={8} md={12} sm={24}>
+                <FormItem key="InquiryDocTotal" {...this.formLayout} label="主单状态">
+                  <span>主单状态</span>
+                </FormItem>
+              </Col>
+              <Col lg={8} md={12} sm={24}>
+                <FormItem key="Closed" {...this.formLayout} label="关闭状态">
+                  <Switch
+                    checkedChildren="开"
+                    disabled
+                    unCheckedChildren="关"
+                    checked={formVals.Closed === 'Y'}
+                  />
+                </FormItem>
+              </Col>
+              <Col lg={8} md={12} sm={24}>
+                <FormItem key="ClosedBy " {...this.formLayout} label="关闭人">
+                  <span>关闭人</span>
+                </FormItem>
+              </Col>
+            </Row>
           </TabPane>
           <TabPane tab="附件" key="3">
             <StandardTable
-              data={{ list: formVals.TI_Z02603 }}
-              rowKey="OrderID"
-              columns={this.addressColumns}
+              data={{ list: formVals.Content.TI_Z02603 }}
+              rowKey="AttachmentCode"
+              columns={this.attachmentColumns}
             />
           </TabPane>
         </Tabs>
+
         <FooterToolbar>
           <Button type="primary">保存</Button>
         </FooterToolbar>
-      </Fragment>
-    );
-  }
-}
-/* eslint react/no-multi-comp:0 */
-@connect(({ inquiryEdit, loading }) => ({
-  inquiryEdit,
-  loading: loading.models.rule,
-}))
-@Form.create()
-class InquiryEdit extends PureComponent {
-  componentDidMount() {}
-
-  render() {
-    const {
-      inquiryEdit: { inquiryDetail },
-    } = this.props;
-    return (
-      <Card>
-        <CreateForm formVals={inquiryDetail} />
+        <UpdateLoad {...uploadmodalMethods} modalVisible={uploadmodalVisible} />
       </Card>
     );
   }

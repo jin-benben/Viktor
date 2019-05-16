@@ -14,50 +14,31 @@ const FormItem = Form.Item;
 const { Option } = Select;
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ inquiryList, loading }) => ({
-  inquiryList,
+@connect(({ inquiryFetch, loading }) => ({
+  inquiryFetch,
   loading: loading.models.rule,
 }))
 @Form.create()
 class inquiryList extends PureComponent {
   state = {
     expandForm: false,
-    queryData: {
-      Content: {
-        DocEntryFrom: '',
-        DocEntryTo: '',
-        DocDateFrom: '',
-        DocDateTo: '',
-        SDocStatus: '',
-        PDocStatus: '',
-        InquiryStatus: '',
-        Closed: '',
-        IsInquiry: '',
-        Owner: '',
-        SearchText: '',
-        SearchKey: '',
-      },
-      page: 1,
-      rows: 20,
-      sidx: 'DocEntry',
-      sord: 'Desc',
-    },
   };
 
   columns = [
     {
       title: '单号',
+      width: 50,
       dataIndex: 'DocEntry',
     },
     {
       title: '单据日期',
-      dataIndex: 'CreateDate',
-      render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>,
+      dataIndex: 'DocDate',
+      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
     {
       title: '创建日期',
-      dataIndex: 'OpeningBank',
-      render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>,
+      dataIndex: 'CreateDate',
+      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
     {
       title: '单据状态',
@@ -107,28 +88,30 @@ class inquiryList extends PureComponent {
   ];
 
   componentDidMount() {
-    const { dispatch } = this.props;
-    const { queryData } = this.state;
+    const {
+      dispatch,
+      inquiryFetch: { queryData },
+    } = this.props;
+    console.log(queryData);
     dispatch({
-      type: 'inquiryList/fetch',
-      payload: queryData,
+      type: 'inquiryFetch/fetch',
+      payload: {
+        ...queryData,
+      },
     });
   }
 
   handleStandardTableChange = pagination => {
-    // table change
-    const { dispatch } = this.props;
-    const { queryData } = this.state;
-    const params = {
-      page: pagination.current,
-      rows: pagination.pageSize,
-    };
-
+    const {
+      dispatch,
+      inquiryFetch: { queryData },
+    } = this.props;
     dispatch({
-      type: 'inquiryList/fetch',
+      type: 'inquiryFetch/fetch',
       payload: {
         ...queryData,
-        ...params,
+        page: pagination.current,
+        rows: pagination.pageSize,
       },
     });
   };
@@ -137,7 +120,7 @@ class inquiryList extends PureComponent {
     // 搜索
     e.preventDefault();
     const { dispatch, form } = this.props;
-    const { queryData } = this.state;
+
     form.validateFields((err, fieldsValue) => {
       if (err) return;
       let DocDateFrom;
@@ -146,29 +129,26 @@ class inquiryList extends PureComponent {
         DocDateFrom = moment(fieldsValue.dateArr[0]).format('YYYY-MM-DD');
         DocDateTo = moment(fieldsValue.dateArr[1]).format('YYYY-MM-DD');
       }
-      queryData.Content = {
+      const queryData = {
         ...fieldsValue,
         DocDateFrom,
         DocDateTo,
+        ...fieldsValue.orderNo,
       };
-      this.setState({
-        queryData,
-      });
-
       dispatch({
-        type: 'inquiryList/fetch',
-        payload: queryData,
+        type: 'inquiryFetch/fetch',
+        payload: {
+          Content: {
+            SearchText: '',
+            SearchKey: 'Name',
+            ...queryData,
+          },
+          page: 1,
+          rows: 30,
+          sidx: 'Code',
+          sord: 'Desc',
+        },
       });
-    });
-  };
-
-  handleSubmit = () => {
-    // 搜索btn
-    const { form } = this.props;
-    form.validateFields((err, fieldsValue) => {
-      if (err) return;
-      form.resetFields();
-      this.handleAdd(fieldsValue);
     });
   };
 
@@ -328,10 +308,10 @@ class inquiryList extends PureComponent {
 
   render() {
     const {
-      inquiryList: { data },
+      inquiryFetch: { inquiryList, pagination },
       loading,
     } = this.props;
-
+    console.log(this.props);
     return (
       <Fragment>
         <Card title="客户询价单查询" bordered={false}>
@@ -339,7 +319,9 @@ class inquiryList extends PureComponent {
             <div className={styles.tableListForm}>{this.renderSimpleForm()}</div>
             <StandardTable
               loading={loading}
-              data={data}
+              data={{ list: inquiryList }}
+              pagination={pagination}
+              rowKey="DocEntry"
               columns={this.columns}
               onRow={this.handleOnRow}
               onChange={this.handleStandardTableChange}

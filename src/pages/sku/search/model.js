@@ -1,10 +1,10 @@
-import { queryRule, removeRule, addRule, updateRule } from './service';
+import { queryRule } from '../service';
 
 export default {
-  namespace: 'brands',
+  namespace: 'skuFetch',
 
   state: {
-    brandsList: [],
+    skuList: [],
     queryData: {
       Content: {
         SearchText: '',
@@ -33,7 +33,7 @@ export default {
           yield put({
             type: 'save',
             payload: {
-              staffsList: [],
+              skuList: [],
             },
           });
         } else {
@@ -41,7 +41,7 @@ export default {
           yield put({
             type: 'save',
             payload: {
-              staffsList: rows,
+              skuList: rows,
               pagination: {
                 total: records,
                 pageSize: payload.rows,
@@ -52,38 +52,12 @@ export default {
         }
       }
     },
-    *add({ payload, callback }, { call, put }) {
-      const response = yield call(addRule, payload);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
-      if (callback) callback(response);
-    },
-    *remove({ payload, callback }, { call, put }) {
-      const response = yield call(removeRule, payload);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
-      if (callback) callback(response);
-    },
-    *update({ payload, callback }, { call, put }) {
-      const response = yield call(updateRule, payload);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
-      if (callback) callback(response);
-    },
   },
-
   reducers: {
-    save(state, { payload }) {
-      console.log(payload);
+    save(state, action) {
       return {
         ...state,
-        ...payload,
+        ...action.payload,
       };
     },
   },

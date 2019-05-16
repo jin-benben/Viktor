@@ -1,20 +1,35 @@
-import { queryRule, removeRule, addRule } from './service';
+import { queryRule, addRule, updateRule, querySingleRule } from './service';
 
 export default {
   namespace: 'category',
 
   state: {
-    data: {
-      categoryList: [],
+    treeData: [],
+    singleInfo: {
+      Code: '',
+      Name: '',
+      FatherCode: '',
+      Status: '1',
+      Level: 0,
     },
   },
-
   effects: {
     *fetch({ payload }, { call, put }) {
       const response = yield call(queryRule, payload);
       yield put({
         type: 'save',
-        payload: response,
+        payload: {
+          treeData: response.Content,
+        },
+      });
+    },
+    *single({ payload }, { call, put }) {
+      const response = yield call(querySingleRule, payload);
+      yield put({
+        type: 'save',
+        payload: {
+          singleInfo: response.Content,
+        },
       });
     },
     *add({ payload, callback }, { call, put }) {
@@ -23,23 +38,22 @@ export default {
         type: 'save',
         payload: response,
       });
-      if (callback) callback();
+      if (callback) callback(response);
     },
-    *remove({ payload, callback }, { call, put }) {
-      const response = yield call(removeRule, payload);
+    *update({ payload, callback }, { call, put }) {
+      const response = yield call(updateRule, payload);
       yield put({
         type: 'save',
         payload: response,
       });
-      if (callback) callback();
+      if (callback) callback(response);
     },
   },
-
   reducers: {
     save(state, action) {
       return {
         ...state,
-        data: action.payload,
+        ...action.payload,
       };
     },
   },

@@ -15,15 +15,31 @@ export default {
       sidx: 'Code',
       sord: 'Desc',
     },
+    pagination: {
+      showSizeChanger: true,
+      showTotal: total => `共 ${total} 条`,
+      pageSizeOptions: ['30', '60', '90'],
+      total: 0,
+      pageSize: 30,
+      current: 1,
+    },
   },
 
   effects: {
     *fetch({ payload }, { call, put }) {
       const response = yield call(queryRule, payload);
       if (response.Status === 200) {
+        const { rows, records, page } = response.Content;
         yield put({
           type: 'save',
-          payload: { staffsList: response.Content.rows },
+          payload: {
+            staffsList: rows,
+            pagination: {
+              total: records,
+              pageSize: payload.rows,
+              current: page,
+            },
+          },
         });
       }
     },

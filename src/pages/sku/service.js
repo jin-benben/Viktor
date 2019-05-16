@@ -1,16 +1,16 @@
 import request from '@/utils/request';
 
-export async function queryRule() {
-  return request(`/MDM/TI_Z010/TI_Z01002`, {
+export async function queryRule(params) {
+  return request(`/MDM/TI_Z009/TI_Z00902`, {
     method: 'POST',
     data: {
-      Content: {},
+      ...params,
     },
   });
 }
 
 export async function querySingleRule(params) {
-  return request('/MDM/TI_Z010/TI_Z01003', {
+  return request('/MDM/TI_Z009/TI_Z00903', {
     method: 'POST',
     data: {
       ...params,
@@ -19,7 +19,7 @@ export async function querySingleRule(params) {
 }
 
 export async function addRule(params) {
-  return request('/MDM/TI_Z010/TI_Z01001', {
+  return request('/MDM/TI_Z009/TI_Z00901', {
     method: 'POST',
     data: {
       ...params,
@@ -28,7 +28,7 @@ export async function addRule(params) {
 }
 
 export async function updateRule(params) {
-  return request('/MDM/TI_Z010/TI_Z01004', {
+  return request('/MDM/TI_Z009/TI_Z00904', {
     method: 'POST',
     data: {
       ...params,

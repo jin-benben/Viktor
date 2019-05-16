@@ -1,7 +1,7 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
-import { Row, Col, Card, Form, Input, Modal, Button, message, Divider, Select } from 'antd';
+import { Row, Col, Card, Form, Input, Modal, Button, DatePicker, message, Select } from 'antd';
 import StandardTable from '@/components/StandardTable';
 
 import styles from './style.less';
@@ -9,7 +9,7 @@ import { checkPhone, chechEmail } from '@/utils/utils';
 
 const FormItem = Form.Item;
 const { Option } = Select;
-
+const { TextArea } = Input;
 @Form.create()
 class CreateForm extends PureComponent {
   validatorPhone = (rule, value, callback) => {
@@ -170,6 +170,20 @@ class CreateForm extends PureComponent {
               </FormItem>
             </Col>
             <Col span={12}>
+              <FormItem key="EntryTime" {...formLayout} label="入职时间">
+                {getFieldDecorator('EntryTime', {
+                  initialValue: moment(formVals.EntryTime, 'YYYY/MM/DD'),
+                })(<DatePicker style={{ width: '100%' }} />)}
+              </FormItem>
+            </Col>
+            <Col span={12}>
+              <FormItem key="ResignationTime" {...formLayout} label="离职时间">
+                {getFieldDecorator('ResignationTime', {
+                  initialValue: moment(formVals.ResignationTime, 'YYYY/MM/DD'),
+                })(<DatePicker style={{ width: '100%' }} />)}
+              </FormItem>
+            </Col>
+            <Col span={12}>
               <FormItem key="DefaultWhsCode" {...formLayout} label="默认仓库">
                 {getFieldDecorator('DefaultWhsCode', {
                   initialValue: formVals.DefaultWhsCode,
@@ -179,6 +193,13 @@ class CreateForm extends PureComponent {
                     <Option value="2">问题</Option>
                   </Select>
                 )}
+              </FormItem>
+            </Col>
+            <Col span={12}>
+              <FormItem key="Comment" {...formLayout} label="备注">
+                {getFieldDecorator('Comment', {
+                  initialValue: formVals.Comment,
+                })(<TextArea placeholder="请输入备注" />)}
               </FormItem>
             </Col>
           </Row>
@@ -211,29 +232,25 @@ class Staffs extends PureComponent {
 
   columns = [
     {
-      title: '用户ID',
-      dataIndex: 'UserID',
+      title: '员工ID',
+      dataIndex: 'Code',
       width: 80,
     },
     {
       title: '姓名',
-      width: 80,
       dataIndex: 'Name',
     },
     {
       title: '部门',
-      width: 100,
       dataIndex: 'Department',
     },
     {
       title: '部门主管',
-      width: 100,
       dataIndex: 'Dmanager',
       render: val => <span>{val === '1' ? '是' : '否'}</span>,
     },
     {
       title: '手机号',
-      width: 120,
       dataIndex: 'Mobile',
     },
     {
@@ -242,19 +259,16 @@ class Staffs extends PureComponent {
     },
     {
       title: '职位',
-      width: 100,
       dataIndex: 'Position',
     },
     {
       title: '性别',
       dataIndex: 'Gender',
-      width: 80,
       render: val => <span>{val === '1' ? '男' : '女'}</span>,
     },
     {
       title: '在职状态',
       dataIndex: 'Status',
-      width: 80,
       render: val => <span>{val === '1' ? '在职' : '离职'}</span>,
     },
     {
@@ -277,12 +291,12 @@ class Staffs extends PureComponent {
     },
     {
       title: '操作',
-      fixed: 'right',
+
       render: (text, record) => (
         <Fragment>
           <a onClick={() => this.handleUpdateModalVisible(true, record)}>修改</a>
-          <Divider type="vertical" />
-          <a href="">删除</a>
+          {/* <Divider type="vertical" />
+          <a href="">删除</a> */}
         </Fragment>
       ),
     },
@@ -307,7 +321,7 @@ class Staffs extends PureComponent {
       staffs: { queryData },
     } = this.props;
     dispatch({
-      type: 'tableList/fetch',
+      type: 'staffs/fetch',
       payload: {
         ...queryData,
         page: pagination.current,
@@ -338,18 +352,6 @@ class Staffs extends PureComponent {
     });
   };
 
-  handleAdd = fields => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'staffs/add',
-      payload: {
-        desc: fields.desc,
-      },
-    });
-    message.success('添加成功');
-    this.handleModalVisible();
-  };
-
   handleUpdateModalVisible = (flag, record) => {
     this.setState({
       modalVisible: !!flag,
@@ -359,7 +361,10 @@ class Staffs extends PureComponent {
   };
 
   handleSubmit = fieldsValue => {
-    const { dispatch } = this.props;
+    const {
+      dispatch,
+      staffs: { queryData },
+    } = this.props;
     const { method } = this.state;
     if (method === 'A') {
       dispatch({
@@ -375,6 +380,9 @@ class Staffs extends PureComponent {
             message.success('添加成功');
             dispatch({
               type: 'staffs/fetch',
+              payload: {
+                ...queryData,
+              },
             });
           }
         },
@@ -393,6 +401,9 @@ class Staffs extends PureComponent {
             message.success('更新成功');
             dispatch({
               type: 'staffs/fetch',
+              payload: {
+                ...queryData,
+              },
             });
           }
         },
@@ -443,7 +454,7 @@ class Staffs extends PureComponent {
 
   render() {
     const {
-      staffs: { staffsList },
+      staffs: { staffsList, pagination },
       loading,
     } = this.props;
     const { modalVisible, formValues } = this.state;
@@ -459,8 +470,8 @@ class Staffs extends PureComponent {
             <StandardTable
               loading={loading}
               data={{ list: staffsList }}
-              scroll={{ x: 1400 }}
-              rowKey="UserID"
+              rowKey="Code"
+              pagination={pagination}
               columns={this.columns}
               onChange={this.handleStandardTableChange}
             />

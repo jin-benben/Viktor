@@ -10,13 +10,12 @@ class Staffs extends PureComponent {
     super(props);
     this.lastFetchId = 0;
     this.fetchUser = debounce(this.fetchUser, 800);
+    this.state = {
+      data: [],
+      value: props.value,
+      fetching: false,
+    };
   }
-
-  state = {
-    data: [],
-    value: [],
-    fetching: false,
-  };
 
   fetchUser = async value => {
     this.lastFetchId += 1;
@@ -58,15 +57,13 @@ class Staffs extends PureComponent {
 
   render() {
     const { fetching, data, value } = this.state;
-    const { defaultValue } = this.props;
     return (
       <Select
         showSearch
         showArrow={false}
         labelInValue
         value={value}
-        defaultValue={defaultValue}
-        placeholder="输入姓名"
+        placeholder="输入名称"
         notFoundContent={fetching ? <Spin size="small" /> : null}
         filterOption={false}
         onSearch={this.fetchUser}

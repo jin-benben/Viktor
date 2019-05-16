@@ -226,6 +226,25 @@ export default {
               component: './inquiry/edit',
             }
           ]
+        },
+        {
+          name: '物料管理',
+          icon: 'smile',
+          path: '/sku',
+          routes:[
+            {
+              name: '物料查询',
+              icon: 'smile',
+              path: '/sku/search',
+              component: './sku/search',
+            },
+            {
+              name: '物料添加',
+              icon: 'smile',
+              path: '/sku/add',
+              component: './sku/add',
+            }
+          ]
         }
       ],
     },

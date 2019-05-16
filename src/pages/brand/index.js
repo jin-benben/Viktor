@@ -16,6 +16,8 @@ import {
   Select,
 } from 'antd';
 import StandardTable from '@/components/StandardTable';
+import Staffs from '@/components/Staffs';
+import Supplier from '@/components/Supplier';
 // import Image from '@/components/Image'
 import styles from './style.less';
 import { checkPhone, chechEmail } from '@/utils/utils';
@@ -121,20 +123,14 @@ class CreateForm extends PureComponent {
               {getFieldDecorator('Purchaser', {
                 rules: [{ required: true, message: '请输入采购员' }],
                 initialValue: formVals.Purchaser,
-              })(<Input placeholder="请输入采购员" />)}
+              })(<Staffs defaultValue={formVals.Purchaser} />)}
             </FormItem>
           </Row>
           <Row>
             <FormItem key="CardCode" {...this.formLayout} label="默认供应商">
               {getFieldDecorator('Gender', {
                 initialValue: formVals.CardCode,
-              })(
-                <Select placeholder="请选供应商">
-                  <Option value="1">好好</Option>
-                  <Option value="2">解决</Option>
-                  <Option value="3">不详</Option>
-                </Select>
-              )}
+              })(<Supplier />)}
             </FormItem>
           </Row>
           <FormItem key="Content" {...this.formLayout} label="品牌介绍">
@@ -147,25 +143,24 @@ class CreateForm extends PureComponent {
               initialValue: formVals.Picture,
             })(
               <Upload
-                action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+                action="http://117.149.160.231:9301/MDMPicUpload/PictureUpLoad"
                 listType="picture-card"
                 fileList={fileList}
-                onPreview={this.handlePreview}
                 onChange={this.handleChange}
               >
                 {fileList.length >= 1 ? null : uploadButton}
               </Upload>
             )}
           </FormItem>
-          <FormItem key="Picture" {...this.formLayout} label="品牌图列表">
-            {getFieldDecorator('Picture', {
-              initialValue: formVals.Picture,
+          <FormItem key="Picture_List" {...this.formLayout} label="品牌图列表">
+            {getFieldDecorator('Picture_List', {
+              initialValue: formVals.Picture_List,
             })(
               <Upload
-                action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+                action="MDM/MDMPicUpload/PictureUpLoad"
                 listType="picture-card"
+                data={{ UserCode: 'jinwentao', Folder: 'TI_Z026', Tonken: '22233' }}
                 fileList={fileList}
-                onPreview={this.handlePreview}
                 onChange={this.handleChange}
               >
                 {fileList.length >= 3 ? null : uploadButton}
@@ -178,14 +173,15 @@ class CreateForm extends PureComponent {
   }
 }
 /* eslint react/no-multi-comp:0 */
-@connect(({ brandList, loading }) => ({
-  brandList,
+@connect(({ brands, loading }) => ({
+  brands,
   loading: loading.models.rule,
 }))
 @Form.create()
 class BrandList extends PureComponent {
   state = {
     modalVisible: false,
+    method: 'A',
     formValues: {
       Name: '',
       Department: '',
@@ -230,14 +226,14 @@ class BrandList extends PureComponent {
       dataIndex: 'CardName',
     },
     {
-      title: '创建时间',
-      dataIndex: 'CreatedAt',
-      render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>,
-    },
-    {
-      title: '更新时间',
-      dataIndex: 'UpdatedAt',
-      render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>,
+      title: '时间',
+      dataIndex: 'time',
+      render: (text, record) => (
+        <Fragment>
+          <p>创建时间：{moment(record.UpdatedAt).format('YYYY-MM-DD HH:mm:ss')}</p>
+          <p>更新时间{moment(record.CreateAt).format('YYYY-MM-DD HH:mm:ss')}</p>
+        </Fragment>
+      ),
     },
     {
       title: '操作',
@@ -252,35 +248,30 @@ class BrandList extends PureComponent {
   ];
 
   componentDidMount() {
-    const { dispatch } = this.props;
+    const {
+      dispatch,
+      brands: { queryData },
+    } = this.props;
     dispatch({
-      type: 'brandList/fetch',
+      type: 'brands/fetch',
+      payload: {
+        ...queryData,
+      },
     });
   }
 
-  handleStandardTableChange = (pagination, filtersArg, sorter) => {
-    const { dispatch } = this.props;
-    const { formValues } = this.state;
-
-    const filters = Object.keys(filtersArg).reduce((obj, key) => {
-      const newObj = { ...obj };
-      newObj[key] = getValue(filtersArg[key]);
-      return newObj;
-    }, {});
-
-    const params = {
-      currentPage: pagination.current,
-      pageSize: pagination.pageSize,
-      ...formValues,
-      ...filters,
-    };
-    if (sorter.field) {
-      params.sorter = `${sorter.field}_${sorter.order}`;
-    }
-
+  handleStandardTableChange = pagination => {
+    const {
+      dispatch,
+      brands: { queryData },
+    } = this.props;
     dispatch({
-      type: 'brandList/fetch',
-      payload: params,
+      type: 'brands/fetch',
+      payload: {
+        ...queryData,
+        page: pagination.current,
+        rows: pagination.pageSize,
+      },
     });
   };
 
@@ -289,67 +280,86 @@ class BrandList extends PureComponent {
     const { dispatch, form } = this.props;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
-      const values = {
-        ...fieldsValue,
-        updatedAt: fieldsValue.updatedAt && fieldsValue.updatedAt.valueOf(),
-      };
-      this.setState({
-        formValues: values,
-      });
-
       dispatch({
-        type: 'brandList/fetch',
-        payload: values,
+        type: 'brands/fetch',
+        payload: {
+          Content: {
+            SearchText: '',
+            SearchKey: 'Name',
+            ...fieldsValue,
+          },
+          page: 1,
+          rows: 30,
+          sidx: 'Code',
+          sord: 'Desc',
+        },
       });
     });
-  };
-
-  handleAdd = fields => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'brandList/add',
-      payload: {
-        desc: fields.desc,
-      },
-    });
-    message.success('添加成功');
-    this.handleModalVisible();
-  };
-
-  handleUpdate = fields => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'brandList/update',
-      payload: {
-        name: fields.name,
-        desc: fields.desc,
-        key: fields.key,
-      },
-    });
-
-    message.success('配置成功');
-    this.handleUpdateModalVisible();
   };
 
   handleUpdateModalVisible = (flag, record) => {
     this.setState({
       modalVisible: !!flag,
+      method: 'U',
       formValues: record,
     });
   };
 
-  handleSubmit = () => {
-    const { form } = this.props;
-    form.validateFields((err, fieldsValue) => {
-      if (err) return;
-      form.resetFields();
-      this.handleAdd(fieldsValue);
-    });
+  handleSubmit = fieldsValue => {
+    const {
+      dispatch,
+      brands: { queryData },
+    } = this.props;
+    const { method } = this.state;
+    if (method === 'A') {
+      dispatch({
+        type: 'brands/add',
+        payload: {
+          Content: {
+            ...fieldsValue,
+          },
+        },
+        callback: response => {
+          if (response.Status === 200) {
+            this.handleModalVisible(false);
+            message.success('添加成功');
+            dispatch({
+              type: 'brands/fetch',
+              payload: {
+                ...queryData,
+              },
+            });
+          }
+        },
+      });
+    } else {
+      dispatch({
+        type: 'brands/update',
+        payload: {
+          Content: {
+            ...fieldsValue,
+          },
+        },
+        callback: response => {
+          if (response.Status === 200) {
+            this.handleModalVisible(false);
+            message.success('更新成功');
+            dispatch({
+              type: 'brands/fetch',
+              payload: {
+                ...queryData,
+              },
+            });
+          }
+        },
+      });
+    }
   };
 
   handleModalVisible = flag => {
     this.setState({
       modalVisible: !!flag,
+      method: 'A',
       formValues: {},
     });
   };
@@ -362,8 +372,8 @@ class BrandList extends PureComponent {
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={8} sm={24}>
-            <FormItem label="规则名称">
-              {getFieldDecorator('name')(<Input placeholder="请输入" />)}
+            <FormItem label="品牌名称">
+              {getFieldDecorator('SearchText')(<Input placeholder="请输入" />)}
             </FormItem>
           </Col>
 
@@ -389,7 +399,7 @@ class BrandList extends PureComponent {
 
   render() {
     const {
-      brandList: { data },
+      brands: { brandsList, pagination },
       loading,
     } = this.props;
     const { modalVisible, formValues } = this.state;
@@ -404,7 +414,9 @@ class BrandList extends PureComponent {
             <div className={styles.tableListForm}>{this.renderSimpleForm()}</div>
             <StandardTable
               loading={loading}
-              data={data}
+              data={{ list: brandsList }}
+              rowKey="Code"
+              pagination={pagination}
               columns={this.columns}
               onChange={this.handleStandardTableChange}
             />
