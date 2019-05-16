@@ -151,6 +151,34 @@ class AddSKU extends PureComponent {
     console.log('ok');
   };
 
+  addLine = () => {
+    const line = {
+      Name: '',
+      BrandName: '',
+      ProductName: '',
+      ManufactureNO: '',
+      Parameters: '',
+      Package: '',
+      Purchaser: '',
+      Unit: '',
+      ManLocation: '',
+      Category1: '',
+      Category2: '',
+      Category3: '',
+      Cate1Name: '',
+      Cate2Name: '',
+      Cate3Name: '',
+      Putaway: '',
+      PutawayDateTime: '',
+      InvoiceName: '',
+      InvoicePro: '',
+      InvoiceMenu: '',
+      HSCode: '',
+      FHSCode: '',
+      SPUCode: '',
+    };
+  };
+
   render() {
     const { TI_Z00901 } = this.state;
     return (

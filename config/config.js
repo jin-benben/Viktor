@@ -245,6 +245,19 @@ export default {
               component: './sku/add',
             }
           ]
+        },
+        {
+          name: '编码管理',
+          icon: 'smile',
+          path: '/code',
+          routes:[
+            {
+              name: 'hscode',
+              icon: 'smile',
+              path: '/code/hscode',
+              component: './code/hscode',
+            }
+          ]
         }
       ],
     },
