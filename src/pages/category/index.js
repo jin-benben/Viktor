@@ -26,11 +26,24 @@ const { Option } = Select;
 class CreateForm extends React.Component {
   constructor(props) {
     super(props);
+    console.log(props.formVals.PicturePath);
     this.state = {
-      PicturePath: props.PicturePath,
-      PicCode: props.PicCode,
-      Status: props.Status ? '1' : '2',
+      PicturePath: props.formVals.PicturePath,
+      PicCode: props.formVals.PicCode,
+      Status: props.formVals.Status ? '1' : '2',
     };
+  }
+
+  static getDerivedStateFromProps(nextProps, prevState) {
+    if (nextProps.formVals.PicturePath !== prevState.PicturePath) {
+      const { PicturePath, PicCode, Status } = nextProps.formVals;
+      return {
+        PicturePath,
+        PicCode,
+        Status,
+      };
+    }
+    return null;
   }
 
   switchChange = Status => {
@@ -181,17 +194,17 @@ class Organization extends PureComponent {
     data.map(item => {
       const popover = (
         <Popover placement="right" content={this.creatNutton(item)} trigger="click">
-          {item.li_attr.Name}
+          {item.Name}
         </Popover>
       );
       if (item.children) {
         return (
-          <TreeNode title={popover} key={item.li_attr.Code} dataRef={item}>
+          <TreeNode title={popover} key={item.Code} dataRef={item}>
             {this.renderTreeNodes(item.children)}
           </TreeNode>
         );
       }
-      return <TreeNode title={popover} key={item.li_attr.Code} dataRef={item} />;
+      return <TreeNode title={popover} key={item.Code} dataRef={item} />;
     });
 
   handleSubmit = fieldsValue => {
@@ -244,7 +257,7 @@ class Organization extends PureComponent {
       type: 'category/single',
       payload: {
         Content: {
-          Code: tree.li_attr.Code,
+          Code: tree.Code,
         },
       },
     });
@@ -261,7 +274,7 @@ class Organization extends PureComponent {
       type: 'category/single',
       payload: {
         Content: {
-          Code: tree.li_attr.Code,
+          Code: tree.Code,
         },
       },
     });

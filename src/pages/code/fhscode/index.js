@@ -116,9 +116,9 @@ class CreateForm extends React.Component {
   }
 }
 /* eslint react/no-multi-comp:0 */
-@connect(({ hscode, loading }) => ({
-  hscode,
-  loading: loading.models.hscode,
+@connect(({ fhscode, loading }) => ({
+  fhscode,
+  loading: loading.models.fhscode,
 }))
 @Form.create()
 class HSCode extends PureComponent {
@@ -153,10 +153,10 @@ class HSCode extends PureComponent {
   componentDidMount() {
     const {
       dispatch,
-      hscode: { queryData },
+      fhscode: { queryData },
     } = this.props;
     dispatch({
-      type: 'hscode/fetch',
+      type: 'fhscode/fetch',
       payload: {
         ...queryData,
       },
@@ -166,10 +166,10 @@ class HSCode extends PureComponent {
   handleStandardTableChange = pagination => {
     const {
       dispatch,
-      hscode: { queryData },
+      fhscode: { queryData },
     } = this.props;
     dispatch({
-      type: 'hscode/fetch',
+      type: 'fhscode/fetch',
       payload: {
         ...queryData,
         page: pagination.current,
@@ -184,7 +184,7 @@ class HSCode extends PureComponent {
     form.validateFields((err, fieldsValue) => {
       if (err) return;
       dispatch({
-        type: 'hscode/fetch',
+        type: 'fhscode/fetch',
         payload: {
           Content: {
             SearchText: '',
@@ -211,13 +211,13 @@ class HSCode extends PureComponent {
   handleSubmit = TI_Z03601 => {
     const {
       dispatch,
-      hscode: { queryData },
+      fhscode: { queryData },
     } = this.props;
     const { method } = this.state;
     console.log(TI_Z03601, method);
     if (method === 'A') {
       dispatch({
-        type: 'hscode/add',
+        type: 'fhscode/add',
         payload: {
           Content: {
             ...TI_Z03601,
@@ -228,7 +228,7 @@ class HSCode extends PureComponent {
             this.handleModalVisible(false);
             message.success('添加成功');
             dispatch({
-              type: 'hscode/fetch',
+              type: 'fhscode/fetch',
               payload: {
                 ...queryData,
               },
@@ -238,7 +238,7 @@ class HSCode extends PureComponent {
       });
     } else {
       dispatch({
-        type: 'hscode/update',
+        type: 'fhscode/update',
         payload: {
           Content: {
             ...TI_Z03601,
@@ -249,7 +249,7 @@ class HSCode extends PureComponent {
             this.handleModalVisible(false);
             message.success('更新成功');
             dispatch({
-              type: 'hscode/fetch',
+              type: 'fhscode/fetch',
               payload: {
                 ...queryData,
               },
@@ -275,7 +275,7 @@ class HSCode extends PureComponent {
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col lg={6} md={8} sm={24}>
+          <Col lg={5} md={8} sm={24}>
             <FormItem label="名称">
               {getFieldDecorator('SearchText')(<Input placeholder="请输入" />)}
             </FormItem>
@@ -303,7 +303,7 @@ class HSCode extends PureComponent {
 
   render() {
     const {
-      hscode: { hscodeList, pagination },
+      fhscode: { fhscodeList, pagination },
       loading,
     } = this.props;
     const { modalVisible, formValues, method } = this.state;
@@ -311,6 +311,7 @@ class HSCode extends PureComponent {
       handleSubmit: this.handleSubmit,
       handleModalVisible: this.handleModalVisible,
     };
+    console.log(formValues);
     return (
       <Fragment>
         <Card bordered={false}>
@@ -318,7 +319,7 @@ class HSCode extends PureComponent {
             <div className="tableListForm">{this.renderSimpleForm()}</div>
             <StandardTable
               loading={loading}
-              data={{ list: hscodeList }}
+              data={{ list: fhscodeList }}
               rowKey="Code"
               pagination={pagination}
               columns={this.columns}

@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
 import { Row, Form, Input, Modal, Select } from 'antd';
+import Address from '@/components/Address';
 import { checkPhone, chechEmail } from '@/utils/utils';
 
 const FormItem = Form.Item;
@@ -46,6 +47,7 @@ class AddressInfo extends PureComponent {
   render() {
     const {
       form: { getFieldDecorator },
+      form,
       modalVisible,
       handleModalVisible,
       handleSubmit,
@@ -70,16 +72,23 @@ class AddressInfo extends PureComponent {
         <Option value="87">+87</Option>
       </Select>
     );
+    const okHandle = () => {
+      form.validateFields((err, fieldsValue) => {
+        if (err) return;
+        form.resetFields();
+        handleSubmit({ ...formVals, ...fieldsValue });
+      });
+    };
     return (
       <Modal
         width={640}
         destroyOnClose
         title="联系人编辑"
         visible={modalVisible}
-        onOk={handleSubmit}
+        onOk={okHandle}
         onCancel={() => handleModalVisible()}
       >
-        <Form {...formItemLayout} onSubmit={this.handleSubmit}>
+        <Form {...formItemLayout}>
           <Row>
             <FormItem key="UserName" {...this.formLayout} label="收货人姓名">
               {getFieldDecorator('UserName', {
@@ -89,16 +98,24 @@ class AddressInfo extends PureComponent {
             </FormItem>
           </Row>
           <Row>
-            <FormItem key="ReceiverPhone" {...this.formLayout} label="手机号">
-              {getFieldDecorator('ReceiverPhone', {
+            <FormItem key="CellphoneNO" {...this.formLayout} label="手机号">
+              {getFieldDecorator('CellphoneNO', {
                 rules: [
                   { required: true, message: '请输入手机号！' },
                   {
                     validator: this.validatorPhone,
                   },
                 ],
-                initialValue: formVals.ReceiverPhone,
+                initialValue: formVals.CellphoneNO,
               })(<Input addonBefore={prefixSelector} placeholder="请输入手机号" />)}
+            </FormItem>
+          </Row>
+          <Row>
+            <FormItem key="address" {...this.formLayout} label="地址">
+              {getFieldDecorator('address', {
+                rules: [{ required: true, message: '请选择地址！' }],
+                initialValue: formVals.ReceiverPhone,
+              })(<Address />)}
             </FormItem>
           </Row>
           <Row>

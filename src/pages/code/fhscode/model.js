@@ -1,10 +1,10 @@
-import { queryRule } from '../service';
+import { queryRule, addRule, updateRule } from './service';
 
 export default {
-  namespace: 'companySearch',
+  namespace: 'fhscode',
 
   state: {
-    companyList: [],
+    fhscodeList: [],
     queryData: {
       Content: {
         SearchText: '',
@@ -33,7 +33,7 @@ export default {
           yield put({
             type: 'save',
             payload: {
-              companyList: [],
+              fhscodeList: [],
             },
           });
         } else {
@@ -41,7 +41,7 @@ export default {
           yield put({
             type: 'save',
             payload: {
-              companyList: rows,
+              fhscodeList: rows,
               pagination: {
                 total: records,
                 pageSize: payload.rows,
@@ -51,6 +51,22 @@ export default {
           });
         }
       }
+    },
+    *add({ payload, callback }, { call, put }) {
+      const response = yield call(addRule, payload);
+      yield put({
+        type: 'save',
+        payload: response,
+      });
+      if (callback) callback(response);
+    },
+    *update({ payload, callback }, { call, put }) {
+      const response = yield call(updateRule, payload);
+      yield put({
+        type: 'save',
+        payload: response,
+      });
+      if (callback) callback(response);
     },
   },
   reducers: {

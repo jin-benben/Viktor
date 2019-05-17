@@ -1,0 +1,84 @@
+import React, { PureComponent } from 'react';
+import { Cascader } from 'antd';
+
+const options = [
+  {
+    value: 'zhejiang',
+    label: 'Zhejiang',
+    children: [
+      {
+        value: 'hangzhou',
+        label: 'Hangzhou',
+        children: [
+          {
+            value: 'xihu',
+            label: 'West Lake',
+            children: [
+              {
+                value: '莫干山',
+                label: '莫干山',
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  },
+];
+
+// function onChange(value,selectedOptions) {
+//   console.log(value,selectedOptions);
+//   if(selectedOptions.length===3){
+//      const [province,city,area,street]= selectedOptions
+//      let address ={
+//       ProvinceID: province.value,
+//       Province:province.label,
+//       CityID: city.value,
+//       City: city.label,
+//       AreaID: area.value,
+//       Area: area.label,
+//       StreetID: street.value,
+//       Street: v,
+//      }
+//   }else{
+//     message.warning("请选择完整的地址")
+//   }
+
+// }
+class AddressCascader extends PureComponent {
+  handleChange = (value, selectedOptions) => {
+    const [province, city, area, street] = selectedOptions;
+    let address;
+    if (selectedOptions.length === 4) {
+      address = {
+        ProvinceID: province.value,
+        Province: province.label,
+        CityID: city.value,
+        City: city.label,
+        AreaID: area.value,
+        Area: area.label,
+        StreetID: street.value,
+        Street: street.label,
+      };
+    }
+    const { onChange } = this.props;
+    console.log(address);
+    if (onChange) {
+      onChange(address);
+    }
+  };
+
+  render() {
+    return (
+      <Cascader
+        changeOnSelect
+        expandTrigger="hover"
+        onChange={this.handleChange}
+        options={options}
+        placeholder="Please select"
+      />
+    );
+  }
+}
+
+export default AddressCascader;

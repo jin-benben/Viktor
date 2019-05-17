@@ -4,6 +4,7 @@
  */
 import { extend } from 'umi-request';
 import { notification } from 'antd';
+import { requestUrl } from './utils';
 
 const codeMessage = {
   200: '服务器成功返回请求的数据。',
@@ -31,6 +32,8 @@ const errorHandler = error => {
   const errortext = codeMessage[response.status] || response.statusText;
   const { status, url } = response;
 
+  console.log(error);
+
   notification.error({
     message: `请求错误 ${status}: ${url}`,
     description: errortext,
@@ -42,7 +45,22 @@ const errorHandler = error => {
  */
 const request = extend({
   errorHandler, // 默认错误处理
-  credentials: 'include', // 默认请求是否带上cookie
+  credentials: 'same-origin', // 默认请求是否带上cookie
 });
+
+request.interceptors.request.use((url, options) => {
+  return {
+    url: requestUrl(url),
+    options: { ...options, interceptors: true },
+  };
+});
+/**
+ * 5. 对于状态码实际是 200 的错误
+ */
+// request.interceptors.response.use(async (response) => {
+//   const data = await response.clone().json();
+
+//   return response;
+// })
 
 export default request;

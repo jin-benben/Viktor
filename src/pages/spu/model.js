@@ -1,10 +1,10 @@
-import { queryRule } from '../service';
+import { queryRule } from './service';
 
 export default {
-  namespace: 'companySearch',
+  namespace: 'spu',
 
   state: {
-    companyList: [],
+    spuList: [],
     queryData: {
       Content: {
         SearchText: '',
@@ -33,7 +33,7 @@ export default {
           yield put({
             type: 'save',
             payload: {
-              companyList: [],
+              spuList: [],
             },
           });
         } else {
@@ -41,7 +41,7 @@ export default {
           yield put({
             type: 'save',
             payload: {
-              companyList: rows,
+              spuList: rows,
               pagination: {
                 total: records,
                 pageSize: payload.rows,

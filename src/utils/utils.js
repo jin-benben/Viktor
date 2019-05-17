@@ -15,3 +15,13 @@ export function chechEmail(email) {
   // 邮箱效验
   return emailReg.test(email);
 }
+
+export function requestUrl(url) {
+  if (url.indexOf('/MDM') !== -1) {
+    return url.replace(/\/MDM/g, 'http://117.149.160.231:9301');
+  }
+  if (url.indexOf('/OMS') !== -1) {
+    return url.replace(/\/OMS/g, 'http://117.149.160.231:9302');
+  }
+  return url;
+}

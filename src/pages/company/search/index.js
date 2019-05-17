@@ -1,25 +1,20 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
-import { Row, Col, Card, Form, Input, Button, Divider } from 'antd';
+import { Row, Col, Card, Form, Input, Button } from 'antd';
 import StandardTable from '@/components/StandardTable';
 
 import styles from './style.less';
 
 const FormItem = Form.Item;
 
-const getValue = obj =>
-  Object.keys(obj)
-    .map(key => obj[key])
-    .join(',');
-
 /* eslint react/no-multi-comp:0 */
-@connect(({ companyList, loading }) => ({
-  companyList,
+@connect(({ companySearch, loading }) => ({
+  companySearch,
   loading: loading.models.rule,
 }))
 @Form.create()
-class companyList extends PureComponent {
+class companySearch extends PureComponent {
   state = {};
 
   columns = [
@@ -56,62 +51,45 @@ class companyList extends PureComponent {
       dataIndex: 'CreditCode',
     },
     {
+      title: '客户类型',
+      dataIndex: 'CardType',
+    },
+    {
+      title: '客户来源',
+      dataIndex: 'CusSource',
+    },
+    {
       title: '状态',
       dataIndex: 'Status',
       render: val => <span>{val === '1' ? '开启' : '禁用'}</span>,
     },
-    // {
-    //   title: '创建时间',
-    //   dataIndex: 'CreatedAt',
-    //   render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>,
-    // },
-    // {
-    //   title: '更新时间',
-    //   dataIndex: 'UpdatedAt',
-    //   render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>,
-    // },
-    {
-      title: '操作',
-      render: (text, record) => (
-        <Fragment>
-          <a onClick={() => this.handleUpdateModalVisible(true, record)}>修改</a>
-          <Divider type="vertical" />
-          <a href="">删除</a>
-        </Fragment>
-      ),
-    },
   ];
 
   componentDidMount() {
-    const { dispatch } = this.props;
+    const {
+      dispatch,
+      companySearch: { queryData },
+    } = this.props;
     dispatch({
-      type: 'companyList/fetch',
+      type: 'companySearch/fetch',
+      payload: {
+        ...queryData,
+      },
     });
   }
 
-  handleStandardTableChange = (pagination, filtersArg, sorter) => {
-    const { dispatch } = this.props;
-    const { formValues } = this.state;
-
-    const filters = Object.keys(filtersArg).reduce((obj, key) => {
-      const newObj = { ...obj };
-      newObj[key] = getValue(filtersArg[key]);
-      return newObj;
-    }, {});
-
-    const params = {
-      currentPage: pagination.current,
-      pageSize: pagination.pageSize,
-      ...formValues,
-      ...filters,
-    };
-    if (sorter.field) {
-      params.sorter = `${sorter.field}_${sorter.order}`;
-    }
-
+  handleStandardTableChange = pagination => {
+    const {
+      dispatch,
+      companySearch: { queryData },
+    } = this.props;
     dispatch({
-      type: 'companyList/fetch',
-      payload: params,
+      type: 'companySearch/fetch',
+      payload: {
+        ...queryData,
+        page: pagination.current,
+        rows: pagination.pageSize,
+      },
     });
   };
 
@@ -120,29 +98,27 @@ class companyList extends PureComponent {
     const { dispatch, form } = this.props;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
-      const values = {
-        ...fieldsValue,
-        updatedAt: fieldsValue.updatedAt && fieldsValue.updatedAt.valueOf(),
-      };
-      this.setState({
-        formValues: values,
-      });
-
       dispatch({
-        type: 'companyList/fetch',
-        payload: values,
+        type: 'staffs/fetch',
+        payload: {
+          Content: {
+            SearchText: '',
+            SearchKey: 'Name',
+            ...fieldsValue,
+          },
+          page: 1,
+          rows: 30,
+          sidx: 'Code',
+          sord: 'Desc',
+        },
       });
     });
   };
 
-  handleSubmit = () => {
-    const { form } = this.props;
-    form.validateFields((err, fieldsValue) => {
-      if (err) return;
-      form.resetFields();
-      this.handleAdd(fieldsValue);
-    });
-  };
+  handleOnRow = record => ({
+    // 详情or修改
+    onClick: () => router.push(`/company/edit?Code=${record.Code}`),
+  });
 
   renderSimpleForm() {
     const {
@@ -152,8 +128,8 @@ class companyList extends PureComponent {
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={8} sm={24}>
-            <FormItem label="规则名称">
-              {getFieldDecorator('name')(<Input placeholder="请输入" />)}
+            <FormItem label="客户名称">
+              {getFieldDecorator('SearchText')(<Input placeholder="请输入客户名称" />)}
             </FormItem>
           </Col>
 
@@ -179,18 +155,21 @@ class companyList extends PureComponent {
 
   render() {
     const {
-      companyList: { data },
+      companySearch: { companyList, pagination },
       loading,
     } = this.props;
 
     return (
       <Fragment>
         <Card bordered={false}>
-          <div className={styles.companyList}>
+          <div className={styles.companySearch}>
             <div className={styles.tableListForm}>{this.renderSimpleForm()}</div>
             <StandardTable
               loading={loading}
-              data={data}
+              data={{ list: companyList }}
+              rowKey="Code"
+              pagination={pagination}
+              onRow={this.handleOnRow}
               columns={this.columns}
               onChange={this.handleStandardTableChange}
             />
@@ -201,4 +180,4 @@ class companyList extends PureComponent {
   }
 }
 
-export default companyList;
+export default companySearch;

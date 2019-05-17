@@ -1,34 +1,16 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
-import {
-  Row,
-  Col,
-  Card,
-  Icon,
-  Form,
-  Input,
-  Modal,
-  Upload,
-  Button,
-  message,
-  Divider,
-  Select,
-} from 'antd';
+import { Row, Col, Card, Icon, Form, Input, Modal, Upload, Button, message, Divider } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import Staffs from '@/components/Staffs';
 import Supplier from '@/components/Supplier';
 // import Image from '@/components/Image'
-import styles from './style.less';
+
 import { checkPhone, chechEmail } from '@/utils/utils';
 
 const { TextArea } = Input;
 const FormItem = Form.Item;
-const { Option } = Select;
-const getValue = obj =>
-  Object.keys(obj)
-    .map(key => obj[key])
-    .join(',');
 
 @Form.create()
 class CreateForm extends PureComponent {
@@ -371,14 +353,14 @@ class BrandList extends PureComponent {
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={8} sm={24}>
+          <Col lg={5} md={8} sm={24}>
             <FormItem label="品牌名称">
               {getFieldDecorator('SearchText')(<Input placeholder="请输入" />)}
             </FormItem>
           </Col>
 
           <Col md={8} sm={24}>
-            <span className={styles.submitButtons}>
+            <span className="submitButtons">
               <Button type="primary" htmlType="submit">
                 查询
               </Button>
@@ -410,8 +392,8 @@ class BrandList extends PureComponent {
     return (
       <Fragment>
         <Card bordered={false}>
-          <div className={styles.brandList}>
-            <div className={styles.tableListForm}>{this.renderSimpleForm()}</div>
+          <div className="tableList">
+            <div className="tableListForm">{this.renderSimpleForm()}</div>
             <StandardTable
               loading={loading}
               data={{ list: brandsList }}

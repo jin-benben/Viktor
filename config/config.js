@@ -228,6 +228,31 @@ export default {
           ]
         },
         {
+          name: '销售报价单',
+          icon: 'smile',
+          path: '/TI_Z029',
+          routes:[
+            {
+              name: '单据查询',
+              icon: 'smile',
+              path: '/TI_Z029/search',
+              component: './TI_Z029/TI_Z02906',
+            },
+            {
+              name: '明细查询',
+              icon: 'smile',
+              path: '/TI_Z029/searchLine',
+              component: './TI_Z029/TI_Z02907',
+            },
+            {
+              name: '添加',
+              icon: 'smile',
+              path: '/TI_Z029/edit',
+              component: './TI_Z029/TI_Z02901',
+            }
+          ]
+        },
+        {
           name: '物料管理',
           icon: 'smile',
           path: '/sku',
@@ -236,13 +261,32 @@ export default {
               name: '物料查询',
               icon: 'smile',
               path: '/sku/search',
-              component: './sku/search',
+              component: './sku/search.js',
             },
             {
               name: '物料添加',
               icon: 'smile',
               path: '/sku/add',
-              component: './sku/add',
+              component: './sku/add.js',
+            }
+          ]
+        },
+        {
+          name: 'SPU管理',
+          icon: 'smile',
+          path: '/spu',
+          routes:[
+            {
+              name: 'SPU查询',
+              icon: 'smile',
+              path: '/spu/search',
+              component: './spu/search.js',
+            },
+            {
+              name: 'SPU添加',
+              icon: 'smile',
+              path: '/spu/add',
+              component: './spu/add.js',
             }
           ]
         },
@@ -256,6 +300,12 @@ export default {
               icon: 'smile',
               path: '/code/hscode',
               component: './code/hscode',
+            },
+            {
+              name: 'fhscode',
+              icon: 'smile',
+              path: '/code/fhscode',
+              component: './code/fhscode',
             }
           ]
         }
@@ -266,12 +316,12 @@ export default {
     "/MDM": {
       "target": "http://117.149.160.231:9301/",
       "changeOrigin": true,
-      "pathRewrite": { "^/MDM" : "" }
+      "pathRewrite": { "^/MDM" : "/" }
     },
     "/OMS": {
       "target": "http://117.149.160.231:9302/",
       "changeOrigin": true,
-      "pathRewrite": { "^/OMS" : "" }
+      "pathRewrite": { "^/OMS" : "/" }
     }
   },
   disableRedirectHoist: true,

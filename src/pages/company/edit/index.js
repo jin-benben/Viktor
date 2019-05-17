@@ -17,7 +17,7 @@ import {
 } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import AddressInfo from '../components/address';
-import styles from './style.less';
+import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import LinkMan from '../components/linkman';
 import { checkPhone, chechEmail } from '@/utils/utils';
 
@@ -26,8 +26,12 @@ const { TabPane } = Tabs;
 const FormItem = Form.Item;
 const { Option } = Select;
 
+@connect(({ companyEdit, loading }) => ({
+  companyEdit,
+  loading: loading.models.rule,
+}))
 @Form.create()
-class CreateForm extends PureComponent {
+class CompanyEdit extends PureComponent {
   linkmanColumns = [
     {
       title: 'ID',
@@ -130,7 +134,21 @@ class CreateForm extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      formVals: props.formVals,
+      formVals: {
+        Code: '',
+        Name: '',
+        OpeningBank: '',
+        BankAccount: '',
+        DutyNo: '',
+        Laddress: '',
+        LPhone: '',
+        CreditCode: '',
+        Status: '1',
+        CardType: '',
+        CusSource: '',
+        PayMent: '',
+        LogisticsCompany: '',
+      },
       tabIndex: '1',
       LinkManmodalVisible: false,
       AddressmodalVisible: false,
@@ -165,41 +183,87 @@ class CreateForm extends PureComponent {
     };
   }
 
+  componentDidMount() {
+    const {
+      dispatch,
+      location: { query },
+    } = this.props;
+    if (query.Code) {
+      dispatch({
+        type: 'companyEdit/fetch',
+        payload: {
+          Content: {
+            Code: query.Code,
+          },
+        },
+      });
+    }
+  }
+
+  componentWillUnmount() {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'companyEdit/save',
+      payload: {
+        companyDetail: {
+          Content: {
+            Code: '',
+            Name: '',
+            OpeningBank: '',
+            BankAccount: '',
+            DutyNo: '',
+            Laddress: '',
+            LPhone: '',
+            CreditCode: '',
+            Status: '1',
+            CardType: '',
+            CusSource: '',
+            PayMent: '',
+            LogisticsCompany: '',
+            TI_Z00602List: [],
+            TI_Z00603List: [],
+          },
+        },
+      },
+    });
+  }
+
   static getDerivedStateFromProps(nextProps, prevState) {
-    if (nextProps.formVals !== prevState.formVals) {
+    if (nextProps.companyEdit.companyDetail !== prevState.formVals) {
       return {
-        formVals: nextProps.formVals,
+        formVals: nextProps.companyEdit.companyDetail,
       };
     }
     return null;
   }
 
-  handleSearch = e => {
-    e.preventDefault();
-    const { dispatch, form } = this.props;
-    form.validateFields((err, fieldsValue) => {
-      if (err) return;
-      const values = {
-        ...fieldsValue,
-        updatedAt: fieldsValue.updatedAt && fieldsValue.updatedAt.valueOf(),
-      };
-      this.setState({
-        formVals: values,
-      });
-
-      dispatch({
-        type: 'tableList/fetch',
-        payload: values,
-      });
+  handleLinkmanSubmit = fields => {
+    const { dispatch } = this.props;
+    const { formVals } = this.state;
+    console.log(fields);
+    dispatch({
+      type: 'companyEdit/linkman',
+      payload: {
+        Content: {
+          ...fields,
+          Code: formVals.Code,
+        },
+      },
     });
+    message.success('添加成功');
+    this.handleModalVisible();
   };
 
-  handleAdd = fields => {
+  handleAddressSubmit = fields => {
     const { dispatch } = this.props;
+    const { formVals } = this.state;
     dispatch({
-      type: 'tableList/add',
+      type: 'companyEdit/linkman',
       payload: {
-        desc: fields.desc,
+        Content: {
+          ...fields,
+          Code: formVals.Code,
+        },
       },
     });
     message.success('添加成功');
@@ -208,12 +272,14 @@ class CreateForm extends PureComponent {
 
   handleUpdate = fields => {
     const { dispatch } = this.props;
+    const { formVals } = this.state;
     dispatch({
-      type: 'tableList/update',
+      type: 'companyEdit/address',
       payload: {
-        name: fields.name,
-        desc: fields.desc,
-        key: fields.key,
+        Content: {
+          ...fields,
+          Code: formVals.Code,
+        },
       },
     });
 
@@ -228,19 +294,33 @@ class CreateForm extends PureComponent {
     });
   };
 
-  handleSubmit = () => {
-    const { form } = this.props;
-    form.validateFields((err, fieldsValue) => {
-      if (err) return;
-      form.resetFields();
-      this.handleAdd(fieldsValue);
-    });
-  };
-
   handleModalVisible = flag => {
     this.setState({
       LinkManmodalVisible: !!flag,
       AddressmodalVisible: !!flag,
+    });
+  };
+
+  saveHandle = () => {
+    // 保存主数据
+    const { form, dispatch } = this.props;
+    const { formVals } = this.state;
+    form.validateFields((err, fieldsValue) => {
+      if (err) return;
+      dispatch({
+        type: 'companyEdit/add',
+        payload: {
+          Content: {
+            ...formVals.Content,
+            ...fieldsValue,
+          },
+        },
+        callback: response => {
+          if (response.Status === 200) {
+            message.success('添加成功');
+          }
+        },
+      });
     });
   };
 
@@ -342,15 +422,15 @@ class CreateForm extends PureComponent {
       },
     };
     const linkmanParentMethods = {
-      handleSubmit: this.handleSubmit,
+      handleSubmit: this.handleLinkmanSubmit,
       handleModalVisible: this.handleModalVisible,
     };
     const addressParentMethods = {
-      handleSubmit: this.handleSubmit,
+      handleSubmit: this.handleAddressSubmit,
       handleModalVisible: this.handleModalVisible,
     };
     return (
-      <Fragment>
+      <Card>
         <Form {...formItemLayout} onSubmit={this.handleSubmit}>
           <Row gutter={8}>
             <Col lg={8} md={12} sm={24}>
@@ -360,7 +440,7 @@ class CreateForm extends PureComponent {
             </Col>
             <Col lg={8} md={12} sm={24}>
               <FormItem key="Name" {...this.formLayout} label="客户名称">
-                {getFieldDecorator('Department', {
+                {getFieldDecorator('Name', {
                   rules: [{ required: true, message: '请输入客户名称！' }],
                   initialValue: formVals.Name,
                 })(<Input placeholder="请输入客户名称" />)}
@@ -417,12 +497,13 @@ class CreateForm extends PureComponent {
             <Col lg={8} md={12} sm={24}>
               <FormItem key="CusSource" {...this.formLayout} label="来源">
                 {getFieldDecorator('CusSource', {
+                  rules: [{ required: true, message: '请选择客户来源！' }],
                   initialValue: formVals.CusSource,
                 })(
-                  <Select placeholder="请选择性别">
-                    <Option value="1">男</Option>
-                    <Option value="2">女</Option>
-                    <Option value="3">不详</Option>
+                  <Select placeholder="请选择来源">
+                    <Option value="1">线下</Option>
+                    <Option value="2">网站</Option>
+                    <Option value="3">其他渠道</Option>
                   </Select>
                 )}
               </FormItem>
@@ -430,6 +511,7 @@ class CreateForm extends PureComponent {
             <Col lg={8} md={12} sm={24}>
               <FormItem key="PayMent" {...this.formLayout} label="付款条款">
                 {getFieldDecorator('PayMent', {
+                  rules: [{ required: true, message: '请选择付款条款！' }],
                   initialValue: formVals.PayMent,
                 })(
                   <Select placeholder="请选择">
@@ -442,11 +524,12 @@ class CreateForm extends PureComponent {
             <Col lg={8} md={12} sm={24}>
               <FormItem key="CardType" {...this.formLayout} label="客户类型">
                 {getFieldDecorator('CardType', {
+                  rules: [{ required: true, message: '请选择客户类型！' }],
                   initialValue: formVals.CardType,
                 })(
-                  <Select placeholder="请选择">
-                    <Option value="1">正常</Option>
-                    <Option value="2">问题</Option>
+                  <Select placeholder="请选择类型">
+                    <Option value="1">分销客户</Option>
+                    <Option value="2">大客户</Option>
                   </Select>
                 )}
               </FormItem>
@@ -454,7 +537,7 @@ class CreateForm extends PureComponent {
             <Col lg={8} md={12} sm={24}>
               <FormItem key="LogisticsCompany" {...this.formLayout} label="默认物流公司">
                 {getFieldDecorator('LogisticsCompany', {
-                  rules: [{ required: true, message: '请选择交易主体！' }],
+                  rules: [{ required: true, message: '请输入默认物流公司！' }],
                   initialValue: formVals.LogisticsCompany,
                 })(<Input placeholder="请输入" />)}
               </FormItem>
@@ -468,148 +551,42 @@ class CreateForm extends PureComponent {
             </Col>
           </Row>
         </Form>
-        <Tabs tabBarExtraContent={this.rightButton(tabIndex)} onChange={this.tabChange}>
-          <TabPane tab="联系人" key="1">
-            <StandardTable
-              data={{ list: formVals.MDM01 }}
-              rowKey="OrderID"
-              columns={this.linkmanColumns}
+
+        {formVals.Code ? (
+          <Fragment>
+            <Tabs tabBarExtraContent={this.rightButton(tabIndex)} onChange={this.tabChange}>
+              <TabPane tab="联系人" key="1">
+                <StandardTable
+                  data={{ list: formVals.MDM01 }}
+                  rowKey="OrderID"
+                  columns={this.linkmanColumns}
+                />
+              </TabPane>
+              <TabPane tab="收货地址" key="2">
+                <StandardTable
+                  data={{ list: formVals.MDM02 }}
+                  rowKey="OrderID"
+                  columns={this.addressColumns}
+                />
+              </TabPane>
+            </Tabs>
+            <LinkMan
+              {...linkmanParentMethods}
+              formVals={linkManVal}
+              modalVisible={LinkManmodalVisible}
             />
-          </TabPane>
-          <TabPane tab="收货地址" key="2">
-            <StandardTable
-              data={{ list: formVals.MDM02 }}
-              rowKey="OrderID"
-              columns={this.addressColumns}
+            <AddressInfo
+              {...addressParentMethods}
+              formVals={addressVal}
+              modalVisible={AddressmodalVisible}
             />
-          </TabPane>
-        </Tabs>
-        <LinkMan
-          {...linkmanParentMethods}
-          formVals={linkManVal}
-          modalVisible={LinkManmodalVisible}
-        />
-        <AddressInfo
-          {...addressParentMethods}
-          formVals={addressVal}
-          modalVisible={AddressmodalVisible}
-        />
-      </Fragment>
-    );
-  }
-}
-/* eslint react/no-multi-comp:0 */
-@connect(({ tableList, loading }) => ({
-  tableList,
-  loading: loading.models.rule,
-}))
-@Form.create()
-class CompanyEdit extends PureComponent {
-  state = {
-    formValues: {
-      Code: 'C00001',
-      Name: '',
-      OpeningBank: '',
-      BankAccount: '',
-      DutyNo: '',
-      Laddress: '',
-      LPhone: '',
-      CreditCode: '',
-      Status: '',
-      CardType: '',
-      CusSource: '',
-      PayMent: '',
-      LogisticsCompany: '',
-      UpdateTimestamp: '',
-      Tagging: '',
-      MDM01: [
-        {
-          Code: '001',
-          OrderID: '1',
-          UserID: '0914',
-          CreateDate: '',
-          UpdateDate: '',
-          CreateUser: '',
-          UpdateUser: '',
-          Name: '晋文涛',
-          CellphoneNO: '17682310914',
-          PhoneNO: '8888888',
-          Email: '528325291@qq.com',
-          Position: '前端工程师',
-          Saler: '马云',
-          CompanyCode: '阿里巴巴',
-        },
-      ],
-      MDM02: [
-        {
-          Code: '',
-          OrderID: '',
-          AddressID: '',
-          CreateDate: '',
-          UpdateDate: '',
-          CreateUser: '',
-          UpdateUser: '',
-          ProvinceID: '',
-          Province: '浙江省',
-          CityID: '',
-          City: '绍兴市',
-          AreaID: '',
-          Area: '越城区',
-          StreetID: '',
-          Street: '灵芝镇',
-          Address: '解放大道158号',
-          UserName: '晋文涛',
-          ReceiverPhone: '17682310914',
-        },
-      ],
-    },
-  };
-
-  componentDidMount() {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'tableList/fetch',
-    });
-  }
-
-  renderSimpleForm() {
-    const {
-      form: { getFieldDecorator },
-    } = this.props;
-    return (
-      <Form onSubmit={this.handleSearch} layout="inline">
-        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={8} sm={24}>
-            <FormItem label="规则名称">
-              {getFieldDecorator('name')(<Input placeholder="请输入" />)}
-            </FormItem>
-          </Col>
-
-          <Col md={8} sm={24}>
-            <span className={styles.submitButtons}>
-              <Button type="primary" htmlType="submit">
-                查询
-              </Button>
-              <Button
-                icon="plus"
-                style={{ marginLeft: 8 }}
-                type="primary"
-                onClick={() => this.handleModalVisible(true)}
-              >
-                新建
-              </Button>
-            </span>
-          </Col>
-        </Row>
-      </Form>
-    );
-  }
-
-  render() {
-    const { formValues } = this.state;
-    return (
-      <Card>
-        <CreateForm formVals={formValues} />
+          </Fragment>
+        ) : null}
+        <FooterToolbar>
+          <Button onClick={this.saveHandle} type="primary">
+            保存
+          </Button>
+        </FooterToolbar>
       </Card>
     );
   }

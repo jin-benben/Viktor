@@ -1,22 +1,13 @@
 import React, { PureComponent } from 'react';
-import { Row, Form, Input, Modal, Col, Button } from 'antd';
-import StandardTable from '@/components/StandardTable';
+import { Row, Form, Input, Modal, Select } from 'antd';
+import Address from '@/components/Address';
 import { checkPhone, chechEmail } from '@/utils/utils';
 
 const FormItem = Form.Item;
+const { Option } = Select;
+const { TextArea } = Input;
 @Form.create()
 class AddressInfo extends PureComponent {
-  columns = [
-    {
-      title: '品牌ID',
-      dataIndex: 'Code',
-    },
-    {
-      title: '品牌名称',
-      dataIndex: 'Name',
-    },
-  ];
-
   constructor(props) {
     super(props);
     this.state = {
@@ -53,25 +44,15 @@ class AddressInfo extends PureComponent {
     }
   };
 
-  handleStandardTableChange = pagination => {
-    const { dispatch } = this.props;
-    const params = {
-      currentPage: pagination.current,
-      pageSize: pagination.pageSize,
-    };
-    dispatch({
-      type: 'brandList/fetch',
-      payload: params,
-    });
-  };
-
   render() {
     const {
       form: { getFieldDecorator },
+      form,
       modalVisible,
       handleModalVisible,
       handleSubmit,
     } = this.props;
+    const { formVals } = this.state;
     const formItemLayout = {
       labelCol: {
         xs: { span: 24 },
@@ -83,36 +64,69 @@ class AddressInfo extends PureComponent {
         md: { span: 10 },
       },
     };
+    const prefixSelector = getFieldDecorator('prefix', {
+      initialValue: '86',
+    })(
+      <Select style={{ width: 70 }}>
+        <Option value="86">+86</Option>
+        <Option value="87">+87</Option>
+      </Select>
+    );
+    const okHandle = () => {
+      form.validateFields((err, fieldsValue) => {
+        if (err) return;
+        form.resetFields();
+        handleSubmit({ ...formVals, ...fieldsValue });
+      });
+    };
     return (
       <Modal
         width={640}
         destroyOnClose
-        title="选择品牌"
+        title="联系人编辑"
         visible={modalVisible}
-        onOk={handleSubmit}
+        onOk={okHandle}
         onCancel={() => handleModalVisible()}
       >
-        <Form {...formItemLayout} onSubmit={this.handleSubmit}>
-          <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-            <Col md={16} sm={24}>
-              <FormItem label="规则名称">
-                {getFieldDecorator('name')(<Input placeholder="请输入" />)}
-              </FormItem>
-            </Col>
-            <Col md={8} sm={24}>
-              <span>
-                <Button type="primary" htmlType="submit">
-                  查询
-                </Button>
-              </span>
-            </Col>
+        <Form {...formItemLayout}>
+          <Row>
+            <FormItem key="UserName" {...this.formLayout} label="收货人姓名">
+              {getFieldDecorator('UserName', {
+                rules: [{ required: true, message: '请输入姓名！' }],
+                initialValue: formVals.UserName,
+              })(<Input placeholder="请输入姓名" />)}
+            </FormItem>
+          </Row>
+          <Row>
+            <FormItem key="CellphoneNO" {...this.formLayout} label="手机号">
+              {getFieldDecorator('CellphoneNO', {
+                rules: [
+                  { required: true, message: '请输入手机号！' },
+                  {
+                    validator: this.validatorPhone,
+                  },
+                ],
+                initialValue: formVals.CellphoneNO,
+              })(<Input addonBefore={prefixSelector} placeholder="请输入手机号" />)}
+            </FormItem>
+          </Row>
+          <Row>
+            <FormItem key="address" {...this.formLayout} label="地址">
+              {getFieldDecorator('address', {
+                rules: [{ required: true, message: '请选择地址！' }],
+                initialValue: formVals.ReceiverPhone,
+              })(<Address />)}
+            </FormItem>
+          </Row>
+          <Row>
+            <FormItem key="Address" {...this.formLayout} label="详细地址">
+              {getFieldDecorator('Address', {
+                rules: [{ required: true, message: '请输入详细地址！' }],
+                initialValue: formVals.Address,
+              })(<TextArea placeholder="请输入详细地址" />)}
+            </FormItem>
           </Row>
         </Form>
-        <StandardTable
-          data={{ list: [] }}
-          columns={this.columns}
-          onChange={this.handleStandardTableChange}
-        />
       </Modal>
     );
   }

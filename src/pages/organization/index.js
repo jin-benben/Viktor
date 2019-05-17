@@ -122,17 +122,17 @@ class Organization extends PureComponent {
     data.map(item => {
       const popover = (
         <Popover placement="right" content={this.creatNutton(item)} trigger="click">
-          {item.li_attr.Name}
+          {item.Name}
         </Popover>
       );
       if (item.children) {
         return (
-          <TreeNode title={popover} key={item.li_attr.Code} dataRef={item}>
+          <TreeNode title={popover} key={item.Code} dataRef={item}>
             {this.renderTreeNodes(item.children)}
           </TreeNode>
         );
       }
-      return <TreeNode title={popover} key={item.li_attr.Code} dataRef={item} />;
+      return <TreeNode title={popover} key={item.Code} dataRef={item} />;
     });
 
   handleSubmit = fieldsValue => {
@@ -183,7 +183,7 @@ class Organization extends PureComponent {
       type: 'organization/single',
       payload: {
         Content: {
-          Code: tree.li_attr.Code,
+          Code: tree.Code,
         },
       },
     });
@@ -200,7 +200,7 @@ class Organization extends PureComponent {
       type: 'organization/single',
       payload: {
         Content: {
-          Code: tree.li_attr.Code,
+          Code: tree.Code,
         },
       },
     });

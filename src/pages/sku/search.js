@@ -4,7 +4,6 @@ import router from 'umi/router';
 import moment from 'moment';
 import { Row, Col, Card, Form, Input, Button } from 'antd';
 import StandardTable from '@/components/StandardTable';
-import styles from './style.less';
 
 const FormItem = Form.Item;
 
@@ -67,7 +66,6 @@ class SkuFetchComponent extends PureComponent {
       dispatch,
       skuFetch: { queryData },
     } = this.props;
-    console.log(queryData);
     dispatch({
       type: 'skuFetch/fetch',
       payload: {
@@ -95,28 +93,15 @@ class SkuFetchComponent extends PureComponent {
     // 搜索
     e.preventDefault();
     const { dispatch, form } = this.props;
-
     form.validateFields((err, fieldsValue) => {
       if (err) return;
-      let DocDateFrom;
-      let DocDateTo;
-      if (fieldsValue.dateArr) {
-        DocDateFrom = moment(fieldsValue.dateArr[0]).format('YYYY-MM-DD');
-        DocDateTo = moment(fieldsValue.dateArr[1]).format('YYYY-MM-DD');
-      }
-      const queryData = {
-        ...fieldsValue,
-        DocDateFrom,
-        DocDateTo,
-        ...fieldsValue.orderNo,
-      };
       dispatch({
         type: 'skuFetch/fetch',
         payload: {
           Content: {
             SearchText: '',
             SearchKey: 'Name',
-            ...queryData,
+            ...fieldsValue,
           },
           page: 1,
           rows: 30,
@@ -175,13 +160,13 @@ class SkuFetchComponent extends PureComponent {
       <Form onSubmit={this.handleSearch} {...formItemLayout}>
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={8} sm={24}>
-            <FormItem key="SearchText" label="客户名称" {...formLayout}>
-              {getFieldDecorator('SearchText')(<Input placeholder="请输入客户名称" />)}
+            <FormItem key="SearchText" label="SKU名称" {...formLayout}>
+              {getFieldDecorator('SearchText')(<Input placeholder="请输入SKU名称" />)}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
             <FormItem key="searchBtn" {...searchFormItemLayout}>
-              <span className={styles.submitButtons}>
+              <span className="submitButtons">
                 <Button type="primary" htmlType="submit">
                   查询
                 </Button>
@@ -206,12 +191,11 @@ class SkuFetchComponent extends PureComponent {
       skuFetch: { skuList, pagination },
       loading,
     } = this.props;
-    console.log(this.props);
     return (
       <Fragment>
-        <Card title="客户询价单查询" bordered={false}>
-          <div className={styles.skuList}>
-            <div className={styles.tableListForm}>{this.renderSimpleForm()}</div>
+        <Card title="SKU查询" bordered={false}>
+          <div className="tableList">
+            <div className="tableListForm">{this.renderSimpleForm()}</div>
             <StandardTable
               loading={loading}
               data={{ list: skuList }}

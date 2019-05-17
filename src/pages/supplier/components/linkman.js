@@ -46,6 +46,7 @@ class LinkManFrom extends PureComponent {
   render() {
     const {
       form: { getFieldDecorator },
+      form,
       modalVisible,
       handleModalVisible,
       handleSubmit,
@@ -70,16 +71,23 @@ class LinkManFrom extends PureComponent {
         <Option value="87">+87</Option>
       </Select>
     );
+    const okHandle = () => {
+      form.validateFields((err, fieldsValue) => {
+        if (err) return;
+        form.resetFields();
+        handleSubmit({ ...formVals, ...fieldsValue });
+      });
+    };
     return (
       <Modal
         width={640}
         destroyOnClose
         title="联系人编辑"
         visible={modalVisible}
-        onOk={handleSubmit}
+        onOk={okHandle}
         onCancel={() => handleModalVisible()}
       >
-        <Form {...formItemLayout} onSubmit={this.handleSubmit}>
+        <Form {...formItemLayout}>
           <Row>
             <Col span={12}>
               <FormItem key="Name" {...this.formLayout} label="姓名">
@@ -127,28 +135,6 @@ class LinkManFrom extends PureComponent {
                 {getFieldDecorator('PhoneNO', {
                   initialValue: formVals.PhoneNO,
                 })(<Input placeholder="请输入电话" />)}
-              </FormItem>
-            </Col>
-            <Col span={12}>
-              <FormItem key="CompanyCode" {...this.formLayout} label="交易主体">
-                {getFieldDecorator('CompanyCode', {
-                  rules: [{ required: true, message: '请选择交易主体！' }],
-                  initialValue: formVals.CompanyCode,
-                })(<Input placeholder="请输入" />)}
-              </FormItem>
-            </Col>
-          </Row>
-          <Row>
-            <Col span={12}>
-              <FormItem key="Saler" {...this.formLayout} label="销售">
-                {getFieldDecorator('Saler', {
-                  initialValue: formVals.Saler,
-                })(
-                  <Select placeholder="请选择">
-                    <Option value="1">正常</Option>
-                    <Option value="2">问题</Option>
-                  </Select>
-                )}
               </FormItem>
             </Col>
           </Row>

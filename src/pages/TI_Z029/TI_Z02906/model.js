@@ -1,18 +1,18 @@
-import { queryRule } from '../service';
+import { TI_Z02906 } from '../service';
 
 export default {
-  namespace: 'companySearch',
+  namespace: 'SalesQuotation',
 
   state: {
-    companyList: [],
+    SalesQuotationList: [],
     queryData: {
       Content: {
         SearchText: '',
-        SearchKey: 'Name',
+        SearchKey: '',
       },
       page: 1,
       rows: 30,
-      sidx: 'Code',
+      sidx: 'DocEntry',
       sord: 'Desc',
     },
     pagination: {
@@ -27,13 +27,13 @@ export default {
 
   effects: {
     *fetch({ payload }, { call, put }) {
-      const response = yield call(queryRule, payload);
+      const response = yield call(TI_Z02906, payload);
       if (response.Status === 200) {
         if (!response.Content) {
           yield put({
             type: 'save',
             payload: {
-              companyList: [],
+              SalesQuotationList: [],
             },
           });
         } else {
@@ -41,7 +41,7 @@ export default {
           yield put({
             type: 'save',
             payload: {
-              companyList: rows,
+              SalesQuotationList: rows,
               pagination: {
                 total: records,
                 pageSize: payload.rows,

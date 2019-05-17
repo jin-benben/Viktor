@@ -46,6 +46,7 @@ class LinkManFrom extends PureComponent {
   render() {
     const {
       form: { getFieldDecorator },
+      form,
       modalVisible,
       handleModalVisible,
       handleSubmit,
@@ -70,16 +71,23 @@ class LinkManFrom extends PureComponent {
         <Option value="87">+87</Option>
       </Select>
     );
+    const okHandle = () => {
+      form.validateFields((err, fieldsValue) => {
+        if (err) return;
+        form.resetFields();
+        handleSubmit({ ...formVals, ...fieldsValue });
+      });
+    };
     return (
       <Modal
         width={640}
         destroyOnClose
         title="联系人编辑"
         visible={modalVisible}
-        onOk={handleSubmit}
+        onOk={okHandle}
         onCancel={() => handleModalVisible()}
       >
-        <Form {...formItemLayout} onSubmit={this.handleSubmit}>
+        <Form {...formItemLayout}>
           <Row>
             <Col span={12}>
               <FormItem key="Name" {...this.formLayout} label="姓名">

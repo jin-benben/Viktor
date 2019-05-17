@@ -1,23 +1,10 @@
 /* eslint-disable no-script-url */
-import React, { PureComponent, Fragment } from 'react';
+import React, { Fragment } from 'react';
 import { connect } from 'dva';
-import {
-  Row,
-  Col,
-  Form,
-  Input,
-  Card,
-  Switch,
-  Tabs,
-  Popconfirm,
-  Button,
-  message,
-  Divider,
-  Select,
-} from 'antd';
+import { Row, Col, Form, Input, Card, Switch, Tabs, Button, message, Select } from 'antd';
 import StandardTable from '@/components/StandardTable';
-import AddressInfo from '../components/address';
-import styles from './style.less';
+import Brand from '@/components/Brand';
+import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import LinkMan from '../components/linkman';
 import { checkPhone, chechEmail } from '@/utils/utils';
 
@@ -26,8 +13,12 @@ const { TabPane } = Tabs;
 const FormItem = Form.Item;
 const { Option } = Select;
 
+@connect(({ supplierEdit, loading }) => ({
+  supplierEdit,
+  loading: loading.models.rule,
+}))
 @Form.create()
-class CreateForm extends PureComponent {
+class CompanyEdit extends React.Component {
   linkmanColumns = [
     {
       title: 'ID',
@@ -55,57 +46,44 @@ class CreateForm extends PureComponent {
       dataIndex: 'Position',
     },
     {
-      title: '销售',
-      dataIndex: 'Saler',
-    },
-    {
-      title: '交易公司',
-      dataIndex: 'CompanyCode',
-    },
-    {
       title: '操作',
       render: (text, record) => (
         <Fragment>
           <a
             onClick={() =>
-              this.handleUpdateModalVisible(true, record, 'linkmanModalVisible', 'linkManVal')
+              this.handleUpdateModalVisible(true, record, 'LinkManmodalVisible', 'linkManVal')
             }
           >
             修改
           </a>
-          <Divider type="vertical" />
+          {/* <Divider type="vertical" />
           <Popconfirm title="确定要删除吗?" onConfirm={() => this.handleDelete(record.key)}>
             <a href="javascript:;">删除</a>
-          </Popconfirm>
+          </Popconfirm> */}
         </Fragment>
       ),
     },
   ];
 
-  brandColumns = [
+  addressColumns = [
     {
-      title: '序号',
+      title: 'ID',
       width: 80,
-      dataIndex: 'OrderID',
+      dataIndex: 'LineID',
     },
     {
-      title: '品牌',
+      title: '品牌ID',
       dataIndex: 'Brand',
     },
     {
       title: '品牌名称',
       dataIndex: 'BrandName',
-    },
-    {
-      title: '联系人',
-      key: 'UserID',
-    },
-    {
-      title: '操作',
       render: (text, record) => (
-        <Popconfirm title="确定要删除吗?" onConfirm={() => this.handleDelete(record.key)}>
-          <a href="javascript:;">删除</a>
-        </Popconfirm>
+        <Brand
+          onChange={val => {
+            this.brandLineChange(val, record);
+          }}
+        />
       ),
     },
   ];
@@ -113,25 +91,26 @@ class CreateForm extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      formVals: props.formVals,
-      tabIndex: '1',
-      linkmanModalVisible: false,
-      brandModalVisible: false,
-      addressVal: {
-        OrderID: '',
-        AddressID: '',
-        ProvinceID: '',
-        Province: '',
-        CityID: '',
-        City: '',
-        AreaID: '',
-        Area: '',
-        StreetID: '',
-        Street: '',
-        Address: '',
-        UserName: '',
-        ReceiverPhone: '',
+      formVals: {
+        Code: '',
+        Name: '',
+        OpeningBank: '',
+        BankAccount: '',
+        DutyNo: '',
+        Laddress: '',
+        LPhone: '',
+        CreditCode: '',
+        Status: '1',
+        CardType: '',
+        CusSource: '',
+        PayMent: '',
+        Currency: '',
+        CheckCompanyName: '',
+        CheckAddreName: '',
+        CheckContacts: '',
       },
+      tabIndex: '1',
+      LinkManmodalVisible: false,
       linkManVal: {
         Name: '',
         CellphoneNO: '',
@@ -148,41 +127,112 @@ class CreateForm extends PureComponent {
     };
   }
 
+  componentDidMount() {
+    const {
+      dispatch,
+      location: { query },
+    } = this.props;
+    if (query.Code) {
+      dispatch({
+        type: 'supplierEdit/fetch',
+        payload: {
+          Content: {
+            Code: query.Code,
+          },
+        },
+      });
+    }
+  }
+
+  componentWillUnmount() {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'supplierEdit/save',
+      payload: {
+        supplierDetail: {},
+      },
+    });
+  }
+
   static getDerivedStateFromProps(nextProps, prevState) {
-    if (nextProps.formVals !== prevState.formVals) {
+    if (
+      nextProps.supplierEdit.supplierDetail.Code &&
+      nextProps.supplierEdit.supplierDetail !== prevState.formVals
+    ) {
       return {
-        formVals: nextProps.formVals,
+        formVals: nextProps.supplierEdit.supplierDetail,
       };
     }
     return null;
   }
 
-  handleSearch = e => {
-    e.preventDefault();
-    const { dispatch, form } = this.props;
-    form.validateFields((err, fieldsValue) => {
-      if (err) return;
-      const values = {
-        ...fieldsValue,
-        updatedAt: fieldsValue.updatedAt && fieldsValue.updatedAt.valueOf(),
-      };
-      this.setState({
-        formVals: values,
-      });
+  brandLineChange = (valuekey, record) => {
+    // 品牌修改添加
+    let { formVals } = this.state;
+    const brandList = formVals.TI_Z00703List;
+    brandList.map(brand => {
+      if (record.OrderID === brand.OrderID) {
+        const newbrand = brand;
+        newbrand.Brand = valuekey.key;
+        newbrand.BrandName = valuekey.label;
+        if (newbrand.Brand && newbrand.BrandName) {
+          this.addBrandFetch(newbrand, record);
+        }
+        return newbrand;
+      }
+      return brand;
+    });
+    formVals = { ...formVals, TI_Z00703List: [...brandList] };
+    this.setState({ formVals });
+  };
 
-      dispatch({
-        type: 'tableList/fetch',
-        payload: values,
-      });
+  addBrandFetch = (newbrand, record) => {
+    // 保存品牌
+    const { formVals } = this.state;
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'supplierEdit/addbrand',
+      payload: {
+        Content: {
+          ...record,
+          ...newbrand,
+          Code: formVals.Code,
+        },
+      },
+      callback: response => {
+        if (response.Status === 200) {
+          message.success('添加成功');
+        }
+      },
     });
   };
 
-  handleAdd = fields => {
+  handleLinkmanSubmit = fields => {
     const { dispatch } = this.props;
+    const { formVals } = this.state;
     dispatch({
-      type: 'tableList/add',
+      type: 'supplierEdit/linkman',
       payload: {
-        desc: fields.desc,
+        Content: {
+          ...fields,
+          Code: formVals.Code,
+        },
+      },
+    });
+    message.success('添加成功');
+    this.handleModalVisible();
+  };
+
+  handleAddressSubmit = fields => {
+    const { dispatch } = this.props;
+    const { formVals } = this.state;
+    dispatch({
+      type: 'supplierEdit/linkman',
+      payload: {
+        Content: {
+          ...fields,
+          Code: formVals.Code,
+        },
       },
     });
     message.success('添加成功');
@@ -191,12 +241,14 @@ class CreateForm extends PureComponent {
 
   handleUpdate = fields => {
     const { dispatch } = this.props;
+    const { formVals } = this.state;
     dispatch({
-      type: 'tableList/update',
+      type: 'supplierEdit/address',
       payload: {
-        name: fields.name,
-        desc: fields.desc,
-        key: fields.key,
+        Content: {
+          ...fields,
+          Code: formVals.Code,
+        },
       },
     });
 
@@ -211,19 +263,56 @@ class CreateForm extends PureComponent {
     });
   };
 
-  handleSubmit = () => {
-    const { form } = this.props;
-    form.validateFields((err, fieldsValue) => {
-      if (err) return;
-      form.resetFields();
-      this.handleAdd(fieldsValue);
+  handleModalVisible = flag => {
+    this.setState({
+      LinkManmodalVisible: !!flag,
     });
   };
 
-  handleModalVisible = flag => {
-    this.setState({
-      linkmanModalVisible: !!flag,
-      brandModalVisible: !!flag,
+  saveHandle = () => {
+    // 保存主数据
+    const { form, dispatch } = this.props;
+    const { formVals } = this.state;
+    form.validateFields((err, fieldsValue) => {
+      if (err) return;
+      console.log({ ...formVals, ...fieldsValue }, formVals);
+      dispatch({
+        type: 'supplierEdit/add',
+        payload: {
+          Content: {
+            ...formVals,
+            ...fieldsValue,
+          },
+        },
+        callback: response => {
+          if (response.Status === 200) {
+            message.success('添加成功');
+          }
+        },
+      });
+    });
+  };
+
+  updateHandle = () => {
+    // 更新主数据
+    const { form, dispatch } = this.props;
+    const { formVals } = this.state;
+    form.validateFields((err, fieldsValue) => {
+      if (err) return;
+      dispatch({
+        type: 'supplierEdit/update',
+        payload: {
+          Content: {
+            ...formVals,
+            ...fieldsValue,
+          },
+        },
+        callback: response => {
+          if (response.Status === 200) {
+            message.success('更新成功');
+          }
+        },
+      });
     });
   };
 
@@ -231,18 +320,31 @@ class CreateForm extends PureComponent {
     this.setState({ tabIndex });
   };
 
+  addBrand = () => {
+    let { formVals } = this.state;
+    const brandList = formVals.TI_Z00703List;
+    let OrderID = 1;
+    console.log(brandList[brandList.length - 1]);
+    if (brandList[brandList.length - 1]) {
+      OrderID = brandList[brandList.length - 1].OrderID + 1;
+    }
+    brandList.push({ Brand: '', BrandName: '', OrderID });
+    formVals = { ...formVals, TI_Z00703List: [...brandList] };
+    this.setState({ formVals });
+  };
+
   rightButton = tabIndex => {
     if (tabIndex === '1') {
       return (
         <Button icon="plus" style={{ marginLeft: 8 }} type="primary" onClick={this.addLinkMan}>
-          新建联系人
+          添加联系人
         </Button>
       );
     }
     if (tabIndex === '2') {
       return (
         <Button icon="plus" style={{ marginLeft: 8 }} type="primary" onClick={this.addBrand}>
-          新建品牌
+          添加品牌
         </Button>
       );
     }
@@ -267,7 +369,7 @@ class CreateForm extends PureComponent {
 
   addLinkMan = () => {
     this.setState({
-      linkmanModalVisible: true,
+      LinkManmodalVisible: true,
       linkManVal: {
         Name: '',
         CellphoneNO: '',
@@ -280,24 +382,11 @@ class CreateForm extends PureComponent {
     });
   };
 
-  addBrand = () => {
-    this.setState({
-      brandModalVisible: true,
-    });
-  };
-
   render() {
     const {
       form: { getFieldDecorator },
     } = this.props;
-    const {
-      formVals,
-      tabIndex,
-      linkmanModalVisible,
-      linkManVal,
-      brandModalVisible,
-      addressVal,
-    } = this.state;
+    const { formVals, tabIndex, LinkManmodalVisible, linkManVal } = this.state;
     const formItemLayout = {
       labelCol: {
         xs: { span: 24 },
@@ -310,28 +399,26 @@ class CreateForm extends PureComponent {
       },
     };
     const linkmanParentMethods = {
-      handleSubmit: this.handleSubmit,
+      handleSubmit: this.handleLinkmanSubmit,
       handleModalVisible: this.handleModalVisible,
     };
-    const addressParentMethods = {
-      handleSubmit: this.handleSubmit,
-      handleModalVisible: this.handleModalVisible,
-    };
+    console.log(formVals);
+
     return (
-      <Fragment>
-        <Form type="flex" {...formItemLayout} onSubmit={this.handleSubmit}>
+      <Card>
+        <Form {...formItemLayout} onSubmit={this.handleSubmit}>
           <Row gutter={8}>
             <Col lg={8} md={12} sm={24}>
-              <FormItem key="Code" {...this.formLayout} label="供应商ID">
+              <FormItem key="Code" {...this.formLayout} label="客户ID">
                 <span>{formVals.Code}</span>
               </FormItem>
             </Col>
             <Col lg={8} md={12} sm={24}>
-              <FormItem key="Name" {...this.formLayout} label="供应商名称">
-                {getFieldDecorator('Department', {
-                  rules: [{ required: true, message: '请输入供应商名称！' }],
+              <FormItem key="Name" {...this.formLayout} label="客户名称">
+                {getFieldDecorator('Name', {
+                  rules: [{ required: true, message: '请输入客户名称！' }],
                   initialValue: formVals.Name,
-                })(<Input placeholder="请输入供应商名称" />)}
+                })(<Input placeholder="请输入客户名称" />)}
               </FormItem>
             </Col>
             <Col lg={8} md={12} sm={24}>
@@ -382,9 +469,24 @@ class CreateForm extends PureComponent {
                 })(<Input placeholder="请输入营业执照信用代码" />)}
               </FormItem>
             </Col>
+            {/* <Col lg={8} md={12} sm={24}>
+              <FormItem key="CusSource" {...this.formLayout} label="来源">
+                {getFieldDecorator('CusSource', {
+                  rules: [{ required: true, message: '请选择来源！' }],
+                  initialValue: formVals.CusSource,
+                })(
+                  <Select placeholder="请选择来源">
+                    <Option value="1">线下</Option>
+                    <Option value="2">网站</Option>
+                    <Option value="3">其他渠道</Option>
+                  </Select>
+                )}
+              </FormItem>
+            </Col> */}
             <Col lg={8} md={12} sm={24}>
               <FormItem key="PayMent" {...this.formLayout} label="付款条款">
                 {getFieldDecorator('PayMent', {
+                  rules: [{ required: true, message: '请选择付款条款！' }],
                   initialValue: formVals.PayMent,
                 })(
                   <Select placeholder="请选择">
@@ -395,36 +497,56 @@ class CreateForm extends PureComponent {
               </FormItem>
             </Col>
             <Col lg={8} md={12} sm={24}>
-              <FormItem key="LogisticsCompany" {...this.formLayout} label="支票汇款公司名称">
-                {getFieldDecorator('LogisticsCompany', {
-                  initialValue: formVals.LogisticsCompany,
-                })(<Input placeholder="请输入支票汇款公司名称" />)}
+              <FormItem key="CardType" {...this.formLayout} label="供应商类型">
+                {getFieldDecorator('CardType', {
+                  rules: [{ required: true, message: '请选择类型！' }],
+                  initialValue: formVals.CardType,
+                })(
+                  <Select placeholder="请选择类型">
+                    <Option value="1">分销客户</Option>
+                    <Option value="2">大客户</Option>
+                  </Select>
+                )}
               </FormItem>
             </Col>
             <Col lg={8} md={12} sm={24}>
-              <FormItem key="LogisticsCompany" {...this.formLayout} label="支票汇款地址">
-                {getFieldDecorator('LogisticsCompany', {
-                  initialValue: formVals.LogisticsCompany,
+              <FormItem key="Currency" {...this.formLayout} label="交易币种 ">
+                {getFieldDecorator('Currency', {
+                  rules: [{ required: true, message: '请输入交易币种！' }],
+                  initialValue: formVals.Currency,
+                })(<Input placeholder="请输入交易币种" />)}
+              </FormItem>
+            </Col>
+            <Col lg={8} md={12} sm={24}>
+              <FormItem key="CompanyCode" {...this.formLayout} label="交易公司 ">
+                {getFieldDecorator('CompanyCode', {
+                  rules: [{ required: true, message: '请输入交易公司！' }],
+                  initialValue: formVals.Currency,
+                })(<Input placeholder="请输入交易公司" />)}
+              </FormItem>
+            </Col>
+            <Col lg={8} md={12} sm={24}>
+              <FormItem key="CheckCompanyName" {...this.formLayout} label="支票汇款公司名称 ">
+                {getFieldDecorator('CheckCompanyName', {
+                  rules: [{ required: true, message: '请输入支票汇款公司名称' }],
+                  initialValue: formVals.CheckCompanyName,
+                })(<Input placeholder="请输入" />)}
+              </FormItem>
+            </Col>
+            <Col lg={8} md={12} sm={24}>
+              <FormItem key="CheckAddreName" {...this.formLayout} label="支票汇款地址">
+                {getFieldDecorator('CheckAddreName', {
+                  rules: [{ required: true, message: '请输入支票汇款地址！' }],
+                  initialValue: formVals.CheckAddreName,
                 })(<Input placeholder="请输入支票汇款地址" />)}
               </FormItem>
             </Col>
             <Col lg={8} md={12} sm={24}>
-              <FormItem key="LogisticsCompany" {...this.formLayout} label="支票汇款联系人">
-                {getFieldDecorator('LogisticsCompany', {
-                  initialValue: formVals.LogisticsCompany,
+              <FormItem key="CheckContacts" {...this.formLayout} label="支票汇款联系人">
+                {getFieldDecorator('CheckContacts', {
+                  rules: [{ required: true, message: '请输入支票汇款联系人！' }],
+                  initialValue: formVals.CheckContacts,
                 })(<Input placeholder="请输入支票汇款联系人" />)}
-              </FormItem>
-            </Col>
-            <Col lg={8} md={12} sm={24}>
-              <FormItem key="CardType" {...this.formLayout} label="供应商类型">
-                {getFieldDecorator('CardType', {
-                  initialValue: formVals.CardType,
-                })(
-                  <Select placeholder="请选择">
-                    <Option value="1">正常</Option>
-                    <Option value="2">问题</Option>
-                  </Select>
-                )}
               </FormItem>
             </Col>
             <Col lg={8} md={12} sm={24}>
@@ -436,148 +558,43 @@ class CreateForm extends PureComponent {
             </Col>
           </Row>
         </Form>
-        <Tabs tabBarExtraContent={this.rightButton(tabIndex)} onChange={this.tabChange}>
-          <TabPane tab="联系人" key="1">
-            <StandardTable
-              data={{ list: formVals.MDM01 }}
-              rowKey="OrderID"
-              columns={this.linkmanColumns}
+
+        {formVals.Code ? (
+          <Fragment>
+            <Tabs tabBarExtraContent={this.rightButton(tabIndex)} onChange={this.tabChange}>
+              <TabPane tab="联系人" key="1">
+                <StandardTable
+                  data={{ list: formVals.TI_Z00702List }}
+                  rowKey="OrderID"
+                  columns={this.linkmanColumns}
+                />
+              </TabPane>
+              <TabPane tab="品牌" key="2">
+                <StandardTable
+                  data={{ list: formVals.TI_Z00703List }}
+                  rowKey="OrderID"
+                  columns={this.addressColumns}
+                />
+              </TabPane>
+            </Tabs>
+            <LinkMan
+              {...linkmanParentMethods}
+              formVals={linkManVal}
+              modalVisible={LinkManmodalVisible}
             />
-          </TabPane>
-          <TabPane tab="品牌" key="2">
-            <StandardTable
-              data={{ list: formVals.MDM02 }}
-              rowKey="OrderID"
-              columns={this.brandColumns}
-            />
-          </TabPane>
-        </Tabs>
-        <LinkMan
-          {...linkmanParentMethods}
-          formVals={linkManVal}
-          modalVisible={linkmanModalVisible}
-        />
-        <AddressInfo
-          {...addressParentMethods}
-          formVals={addressVal}
-          modalVisible={brandModalVisible}
-        />
-      </Fragment>
-    );
-  }
-}
-/* eslint react/no-multi-comp:0 */
-@connect(({ tableList, loading }) => ({
-  tableList,
-  loading: loading.models.rule,
-}))
-@Form.create()
-class CompanyEdit extends PureComponent {
-  state = {
-    formValues: {
-      Code: 'C00001',
-      Name: '',
-      OpeningBank: '',
-      BankAccount: '',
-      DutyNo: '',
-      Laddress: '',
-      LPhone: '',
-      CreditCode: '',
-      Status: '',
-      CardType: '',
-      CusSource: '',
-      PayMent: '',
-      LogisticsCompany: '',
-      UpdateTimestamp: '',
-      Tagging: '',
-      MDM01: [
-        {
-          Code: '001',
-          OrderID: '1',
-          UserID: '0914',
-          CreateDate: '',
-          UpdateDate: '',
-          CreateUser: '',
-          UpdateUser: '',
-          Name: '晋文涛',
-          CellphoneNO: '17682310914',
-          PhoneNO: '8888888',
-          Email: '528325291@qq.com',
-          Position: '前端工程师',
-          Saler: '马云',
-          CompanyCode: '阿里巴巴',
-        },
-      ],
-      MDM02: [
-        {
-          Code: '',
-          OrderID: '1',
-          AddressID: '',
-          CreateDate: '',
-          UpdateDate: '',
-          CreateUser: '',
-          UpdateUser: '',
-          ProvinceID: '',
-          Province: '浙江省',
-          CityID: '',
-          City: '绍兴市',
-          AreaID: '',
-          Area: '越城区',
-          StreetID: '',
-          Street: '灵芝镇',
-          Address: '解放大道158号',
-          UserName: '晋文涛',
-          ReceiverPhone: '17682310914',
-        },
-      ],
-    },
-  };
-
-  componentDidMount() {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'tableList/fetch',
-    });
-  }
-
-  renderSimpleForm() {
-    const {
-      form: { getFieldDecorator },
-    } = this.props;
-    return (
-      <Form onSubmit={this.handleSearch} layout="inline">
-        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={8} sm={24}>
-            <FormItem label="规则名称">
-              {getFieldDecorator('name')(<Input placeholder="请输入" />)}
-            </FormItem>
-          </Col>
-
-          <Col md={8} sm={24}>
-            <span className={styles.submitButtons}>
-              <Button type="primary" htmlType="submit">
-                查询
-              </Button>
-              <Button
-                icon="plus"
-                style={{ marginLeft: 8 }}
-                type="primary"
-                onClick={() => this.handleModalVisible(true)}
-              >
-                新建
-              </Button>
-            </span>
-          </Col>
-        </Row>
-      </Form>
-    );
-  }
-
-  render() {
-    const { formValues } = this.state;
-    return (
-      <Card>
-        <CreateForm formVals={formValues} />
+          </Fragment>
+        ) : null}
+        <FooterToolbar>
+          {formVals.Code ? (
+            <Button onClick={this.updateHandle} type="primary">
+              更新
+            </Button>
+          ) : (
+            <Button onClick={this.saveHandle} type="primary">
+              保存
+            </Button>
+          )}
+        </FooterToolbar>
       </Card>
     );
   }
