@@ -9,7 +9,7 @@ class Brand extends PureComponent {
   constructor(props) {
     super(props);
     this.lastFetchId = 0;
-    this.fetchUser = debounce(this.fetchUser, 800);
+    this.fetchUser = debounce(this.fetchUser, 1000);
   }
 
   state = {
@@ -30,7 +30,7 @@ class Brand extends PureComponent {
           SearchKey: 'Name',
         },
         page: 1,
-        rows: 1000,
+        rows: 100,
         sidx: 'Code',
         sord: 'DESC',
       },

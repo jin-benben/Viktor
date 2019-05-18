@@ -82,6 +82,7 @@ class CreateForm extends React.Component {
     const { TI_Z03601 } = this.state;
     const columns = this.columns.map(col => {
       if (col.dataIndex === 'Code' && method === 'U') {
+        // eslint-disable-next-line no-param-reassign
         col.editable = false;
         return col;
       }
@@ -214,7 +215,6 @@ class HSCode extends PureComponent {
       hscode: { queryData },
     } = this.props;
     const { method } = this.state;
-    console.log(TI_Z03601, method);
     if (method === 'A') {
       dispatch({
         type: 'hscode/add',
@@ -274,8 +274,8 @@ class HSCode extends PureComponent {
     } = this.props;
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
-        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col lg={6} md={8} sm={24}>
+        <Row gutter={{ md: 8, lg: 12, xl: 48 }}>
+          <Col md={8} sm={24}>
             <FormItem label="名称">
               {getFieldDecorator('SearchText')(<Input placeholder="请输入" />)}
             </FormItem>

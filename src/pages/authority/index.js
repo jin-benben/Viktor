@@ -8,18 +8,18 @@ import {
   Col,
   Form,
   Input,
-  Select,
   Button,
+  message,
   Modal,
+  Select,
   Popover,
   Divider,
-  Popconfirm,
 } from 'antd';
 
 const FormItem = Form.Item;
+const { TextArea } = Input;
 const { TreeNode } = Tree;
 const { Option } = Select;
-const { TextArea } = Input;
 @Form.create()
 class CreateForm extends PureComponent {
   constructor(props) {
@@ -45,7 +45,9 @@ class CreateForm extends PureComponent {
   render() {
     const {
       form: { getFieldDecorator },
+      form,
       modalVisible,
+      method,
       handleModalVisible,
       handleSubmit,
     } = this.props;
@@ -61,22 +63,23 @@ class CreateForm extends PureComponent {
         md: { span: 10 },
       },
     };
-
+    const okHandle = () => {
+      form.validateFields((err, fieldsValue) => {
+        if (err) return;
+        form.resetFields();
+        handleSubmit({ ...formVals, ...fieldsValue });
+      });
+    };
     return (
       <Modal
         width={640}
         destroyOnClose
         title="权限编辑"
         visible={modalVisible}
-        onOk={handleSubmit}
+        onOk={okHandle}
         onCancel={() => handleModalVisible()}
       >
-        <Form {...formItemLayout} onSubmit={this.handleSubmit}>
-          <FormItem key="Code" {...this.formLayout} label="权限ID">
-            {getFieldDecorator('Code', {
-              initialValue: formVals.Code,
-            })(<Input disabled />)}
-          </FormItem>
+        <Form {...formItemLayout}>
           <FormItem key="PCode" {...this.formLayout} label="父级代码">
             {getFieldDecorator('PCode', {
               initialValue: formVals.PCode,
@@ -86,6 +89,11 @@ class CreateForm extends PureComponent {
             {getFieldDecorator('Level', {
               initialValue: formVals.Level,
             })(<Input disabled />)}
+          </FormItem>
+          <FormItem key="Code" {...this.formLayout} label="权限ID">
+            {getFieldDecorator('Code', {
+              initialValue: formVals.Code,
+            })(<Input disabled={method === 'U'} />)}
           </FormItem>
           <FormItem key="Name" {...this.formLayout} label="权限名称">
             {getFieldDecorator('Name', {
@@ -130,37 +138,25 @@ class CreateForm extends PureComponent {
 /* eslint react/no-multi-comp:0 */
 @connect(({ authority, loading }) => ({
   authority,
-  loading: loading.models.rule,
+  loading,
 }))
-class Authority extends PureComponent {
-  state = {
-    modalVisible: false,
-    formValues: {},
-    treeData: [
-      { Name: '上海亚仑', Code: '0', Level: 1, FatherCode: '' },
-      { Name: '绍兴亚仑', Code: '1', Level: 1, FatherCode: '' },
-    ],
-  };
+@Form.create()
+class Organization extends PureComponent {
+  constructor(props) {
+    super(props);
+    this.state = {
+      modalVisible: false,
+      method: 'A',
+      singleInfo: {},
+    };
+  }
 
-  onLoadData = treeNode =>
-    new Promise(resolve => {
-      const { treeData } = this.state;
-      if (treeNode.props.children) {
-        resolve();
-        return;
-      }
-      setTimeout(() => {
-        // eslint-disable-next-line no-param-reassign
-        treeNode.props.dataRef.children = [
-          { Name: 'Child Node', Code: `${treeNode.props.eventKey}-0` },
-          { Name: 'Child Node', Code: `${treeNode.props.eventKey}-1` },
-        ];
-        this.setState({
-          treeData: [...treeData],
-        });
-        resolve();
-      }, 1000);
+  componentDidMount() {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'authority/fetch',
     });
+  }
 
   renderTreeNodes = data =>
     data.map(item => {
@@ -179,45 +175,116 @@ class Authority extends PureComponent {
       return <TreeNode title={popover} key={item.Code} dataRef={item} />;
     });
 
-  handleSubmit = () => {
-    const { form } = this.props;
-    form.validateFields((err, fieldsValue) => {
-      if (err) return;
-      form.resetFields();
-      this.handleAdd(fieldsValue);
+  handleSubmit = fieldsValue => {
+    const { dispatch } = this.props;
+    const { method } = this.state;
+    if (method === 'A') {
+      console.log(fieldsValue);
+      dispatch({
+        type: 'authority/add',
+        payload: {
+          Content: {
+            ...fieldsValue,
+          },
+        },
+        callback: response => {
+          if (response.Status === 200) {
+            this.handleModalVisible(false);
+            message.success('添加成功');
+            dispatch({
+              type: 'authority/fetch',
+            });
+          }
+        },
+      });
+    } else {
+      dispatch({
+        type: 'authority/update',
+        payload: {
+          Content: {
+            ...fieldsValue,
+          },
+        },
+        callback: response => {
+          if (response.Status === 200) {
+            this.handleModalVisible(false);
+            message.success('更新成功');
+            dispatch({
+              type: 'authority/fetch',
+            });
+          }
+        },
+      });
+    }
+  };
+
+  addOrg = tree => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'authority/single',
+      payload: {
+        Content: {
+          Code: tree.Code,
+        },
+      },
+    });
+    this.setState({
+      modalVisible: true,
+      method: 'A',
+    });
+  };
+
+  updateOrg = tree => {
+    const { dispatch } = this.props;
+
+    dispatch({
+      type: 'authority/single',
+      payload: {
+        Content: {
+          Code: tree.Code,
+        },
+      },
+    });
+    this.setState({
+      modalVisible: true,
+      method: 'U',
     });
   };
 
   handleModalVisible = flag => {
     this.setState({
       modalVisible: !!flag,
-      formValues: {},
+      singleInfo: {
+        Code: '',
+        Name: '',
+        PCode: '',
+        Level: 1,
+        Type: '',
+        Action: '',
+        Method: '',
+      },
     });
   };
 
-  creatNutton = tree => {
-    console.log(tree);
-    return (
-      <Fragment>
-        <a href="javascript:;">添加</a>
-        <Divider type="vertical" />
-        <a href="javascript:;">修改</a>
-        <Divider type="vertical" />
-        <Popconfirm title="确定要删除吗?" onConfirm={() => this.deleteCategory(tree.Code)}>
-          <a href="javascript:;">删除</a>
-        </Popconfirm>
-      </Fragment>
-    );
-  };
-
-  deleteCategory = Code => {
-    console.log(Code);
-  };
+  creatNutton = tree => (
+    <Fragment>
+      <a href="javascript:;" onClick={() => this.addOrg(tree)}>
+        添加
+      </a>
+      <Divider type="vertical" />
+      <a href="javascript:;" onClick={() => this.updateOrg(tree)}>
+        修改
+      </a>
+      <Divider type="vertical" />
+    </Fragment>
+  );
 
   render() {
-    const { loading } = this.props;
-    console.log(loading);
-    const { modalVisible, formValues, treeData } = this.state;
+    const {
+      authority: { treeData },
+    } = this.props;
+    const { modalVisible, method, singleInfo } = this.state;
+
     const parentMethods = {
       handleSubmit: this.handleSubmit,
       handleModalVisible: this.handleModalVisible,
@@ -225,7 +292,7 @@ class Authority extends PureComponent {
 
     return (
       <div>
-        <Card>
+        <Card title="权限管理">
           <Button
             icon="plus"
             style={{ marginLeft: 8, marginBottom: 28, marginTop: 28 }}
@@ -234,16 +301,26 @@ class Authority extends PureComponent {
           >
             新建根节点
           </Button>
+
           <Row>
             <Col lg={12} md={12} sm={24}>
-              <Tree loadData={this.onLoadData}>{this.renderTreeNodes(treeData)}</Tree>
+              <Tree className="trees" defaultExpandAll>
+                {this.renderTreeNodes(treeData)}
+              </Tree>
             </Col>
           </Row>
-          <CreateForm {...parentMethods} formVals={formValues} modalVisible={modalVisible} />
+          {
+            <CreateForm
+              {...parentMethods}
+              method={method}
+              formVals={singleInfo}
+              modalVisible={modalVisible}
+            />
+          }
         </Card>
       </div>
     );
   }
 }
 
-export default Authority;
+export default Organization;

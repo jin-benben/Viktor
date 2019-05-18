@@ -1,44 +1,39 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
-import { Row, Col, Card, Form, Input, Button } from 'antd';
+import moment from 'moment';
+import { Row, Col, Card, Form, Input, Button, Icon } from 'antd';
 import StandardTable from '@/components/StandardTable';
 
 const FormItem = Form.Item;
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ spu, loading }) => ({
-  spu,
+@connect(({ authorityGroup, loading }) => ({
+  authorityGroup,
   loading: loading.models.rule,
 }))
 @Form.create()
-class SkuFetchComponent extends PureComponent {
+class inquiryList extends PureComponent {
+  state = {
+    expandForm: false,
+  };
+
   columns = [
     {
-      title: 'SPU代码',
+      title: '角色代码',
       dataIndex: 'Code',
     },
     {
-      title: '名称',
-      dataIndex: 'CardName',
+      title: '角色名称',
+      dataIndex: 'Name',
     },
     {
-      title: '品牌',
-      dataIndex: 'BrandName',
-    },
-    {
-      title: '单位',
-      dataIndex: 'Unit',
-    },
-    {
-      title: '产地',
-      dataIndex: 'ManLocation',
-    },
-    {
-      title: '分类',
-      dataIndex: 'category',
+      title: '权限设置',
+      dataIndex: 'contact',
       render: (text, record) => (
-        <span>{`${record.Cate1Name}/${record.Cate2Name}/${record.Cate3Name}`}</span>
+        <a href={`/inquiry/edit?Code=${record.Code}`}>
+          <Icon type="setting" theme="twoTone" />
+        </a>
       ),
     },
   ];
@@ -46,10 +41,11 @@ class SkuFetchComponent extends PureComponent {
   componentDidMount() {
     const {
       dispatch,
-      spu: { queryData },
+      authorityGroup: { queryData },
     } = this.props;
+    console.log(queryData);
     dispatch({
-      type: 'spu/fetch',
+      type: 'authorityGroup/fetch',
       payload: {
         ...queryData,
       },
@@ -59,10 +55,10 @@ class SkuFetchComponent extends PureComponent {
   handleStandardTableChange = pagination => {
     const {
       dispatch,
-      spu: { queryData },
+      authorityGroup: { queryData },
     } = this.props;
     dispatch({
-      type: 'spu/fetch',
+      type: 'authorityGroup/fetch',
       payload: {
         ...queryData,
         page: pagination.current,
@@ -75,15 +71,28 @@ class SkuFetchComponent extends PureComponent {
     // 搜索
     e.preventDefault();
     const { dispatch, form } = this.props;
+
     form.validateFields((err, fieldsValue) => {
       if (err) return;
+      let DocDateFrom;
+      let DocDateTo;
+      if (fieldsValue.dateArr) {
+        DocDateFrom = moment(fieldsValue.dateArr[0]).format('YYYY-MM-DD');
+        DocDateTo = moment(fieldsValue.dateArr[1]).format('YYYY-MM-DD');
+      }
+      const queryData = {
+        ...fieldsValue,
+        DocDateFrom,
+        DocDateTo,
+        ...fieldsValue.orderNo,
+      };
       dispatch({
-        type: 'spu/fetch',
+        type: 'authorityGroup/fetch',
         payload: {
           Content: {
             SearchText: '',
             SearchKey: 'Name',
-            ...fieldsValue,
+            ...queryData,
           },
           page: 1,
           rows: 30,
@@ -94,9 +103,17 @@ class SkuFetchComponent extends PureComponent {
     });
   };
 
+  toggleForm = () => {
+    // 是否展开
+    const { expandForm } = this.state;
+    this.setState({
+      expandForm: !expandForm,
+    });
+  };
+
   handleOnRow = record => ({
     // 详情or修改
-    onClick: () => router.push(`/spu/edit?Code=${record.Code}`),
+    onClick: () => router.push(`/inquiry/edit?DocEntry=${record.Code}`),
   });
 
   renderSimpleForm() {
@@ -105,7 +122,7 @@ class SkuFetchComponent extends PureComponent {
     } = this.props;
     const formLayout = {
       labelCol: { span: 8 },
-      wrapperCol: { span: 12 },
+      wrapperCol: { span: 16 },
     };
     const formItemLayout = {
       labelCol: {
@@ -131,14 +148,14 @@ class SkuFetchComponent extends PureComponent {
       },
     };
     return (
-      <Form onSubmit={this.handleSearch} {...formItemLayout} layout="inline">
+      <Form onSubmit={this.handleSearch} {...formItemLayout}>
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col lg={8} md={8} sm={24}>
-            <FormItem key="SearchText" label="SPU名称" {...formLayout}>
-              {getFieldDecorator('SearchText')(<Input placeholder="请输入SPU名称" />)}
+          <Col md={6} sm={24}>
+            <FormItem key="SearchText" label="角色名称" {...formLayout}>
+              {getFieldDecorator('SearchText')(<Input placeholder="请输入角色名称" />)}
             </FormItem>
           </Col>
-          <Col md={8} sm={24}>
+          <Col md={6} sm={24}>
             <FormItem key="searchBtn" {...searchFormItemLayout}>
               <span className="submitButtons">
                 <Button type="primary" htmlType="submit">
@@ -148,7 +165,7 @@ class SkuFetchComponent extends PureComponent {
                   icon="plus"
                   style={{ marginLeft: 8 }}
                   type="primary"
-                  onClick={() => router.push('/spu/add')}
+                  onClick={() => router.push('/TI_Z014/edit')}
                 >
                   新建
                 </Button>
@@ -162,17 +179,18 @@ class SkuFetchComponent extends PureComponent {
 
   render() {
     const {
-      spu: { spuList, pagination },
+      authorityGroup: { authorityGroupList, pagination },
       loading,
     } = this.props;
+    console.log(this.props);
     return (
       <Fragment>
-        <Card title="SPU查询" bordered={false}>
-          <div className="tableLis">
+        <Card title="角色查询" bordered={false}>
+          <div className="tableList">
             <div className="tableListForm">{this.renderSimpleForm()}</div>
             <StandardTable
               loading={loading}
-              data={{ list: spuList }}
+              data={{ list: authorityGroupList }}
               pagination={pagination}
               rowKey="Code"
               columns={this.columns}
@@ -186,4 +204,4 @@ class SkuFetchComponent extends PureComponent {
   }
 }
 
-export default SkuFetchComponent;
+export default inquiryList;

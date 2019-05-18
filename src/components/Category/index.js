@@ -8,39 +8,25 @@ class CategoryCascader extends React.Component {
   };
 
   componentDidMount() {
-    this.getCategory({ PCode: '0', Level: '1' });
+    this.getCategory();
   }
 
-  getCategory = async ({ PCode, Level }) => {
-    const response = await request('/MDM/TI_Z010/TI_Z01005', {
+  // eslint-disable-next-line consistent-return
+  getCategory = async () => {
+    const response = await request('/MDM/TI_Z010/TI_Z01002', {
       method: 'POST',
       data: {
-        Content: {
-          PCode,
-          Level,
-        },
+        Content: {},
       },
     });
     if (response.Status !== 200) {
       return false;
     }
-    this.setState({ options: response.Content.rows });
+    this.setState({ options: response.Content });
   };
 
   onChange = (value, selectedOptions) => {
     console.log(value, selectedOptions);
-  };
-
-  loadData = selectedOptions => {
-    console.log(selectedOptions);
-    const targetOption = selectedOptions[selectedOptions.length - 1];
-    targetOption.loading = true;
-
-    this.getCategory({ PCode: targetOption.Code, Level: targetOption.Level + 1 });
-    targetOption.loading = false;
-    const { options } = this.state;
-    targetOption.children = [...options];
-    this.setState({ ...targetOption });
   };
 
   render() {
@@ -49,9 +35,8 @@ class CategoryCascader extends React.Component {
       <Cascader
         options={options}
         fieldNames={{ label: 'Name', value: 'Code', children: 'children' }}
-        loadData={this.loadData}
         onChange={this.onChange}
-        changeOnSelect
+        expandTrigger="hover"
       />
     );
   }

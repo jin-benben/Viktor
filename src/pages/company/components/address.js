@@ -11,7 +11,7 @@ class AddressInfo extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      formVals: props.formVals,
+      formVals: {},
     };
     this.formLayout = {
       labelCol: { span: 7 },
@@ -76,7 +76,7 @@ class AddressInfo extends PureComponent {
       form.validateFields((err, fieldsValue) => {
         if (err) return;
         form.resetFields();
-        handleSubmit({ ...formVals, ...fieldsValue });
+        handleSubmit({ ...formVals, ...fieldsValue, ...fieldsValue.address });
       });
     };
     return (
@@ -98,15 +98,15 @@ class AddressInfo extends PureComponent {
             </FormItem>
           </Row>
           <Row>
-            <FormItem key="CellphoneNO" {...this.formLayout} label="手机号">
-              {getFieldDecorator('CellphoneNO', {
+            <FormItem key="ReceiverPhone" {...this.formLayout} label="手机号">
+              {getFieldDecorator('ReceiverPhone', {
                 rules: [
                   { required: true, message: '请输入手机号！' },
                   {
                     validator: this.validatorPhone,
                   },
                 ],
-                initialValue: formVals.CellphoneNO,
+                initialValue: formVals.ReceiverPhone,
               })(<Input addonBefore={prefixSelector} placeholder="请输入手机号" />)}
             </FormItem>
           </Row>
@@ -115,7 +115,7 @@ class AddressInfo extends PureComponent {
               {getFieldDecorator('address', {
                 rules: [{ required: true, message: '请选择地址！' }],
                 initialValue: formVals.ReceiverPhone,
-              })(<Address />)}
+              })(<Address {...formVals} />)}
             </FormItem>
           </Row>
           <Row>

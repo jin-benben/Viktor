@@ -1,18 +1,18 @@
-import { queryRule, addRule } from './service';
+import { queryRule } from '../service';
 
 export default {
-  namespace: 'spu',
+  namespace: 'authorityGroup',
 
   state: {
-    spuList: [],
+    authorityGroupList: [],
     queryData: {
       Content: {
         SearchText: '',
-        SearchKey: 'Name',
+        SearchKey: '',
       },
       page: 1,
       rows: 30,
-      sidx: 'Code',
+      sidx: 'DocEntry',
       sord: 'Desc',
     },
     pagination: {
@@ -33,7 +33,7 @@ export default {
           yield put({
             type: 'save',
             payload: {
-              spuList: [],
+              authorityGroupList: [],
             },
           });
         } else {
@@ -41,7 +41,7 @@ export default {
           yield put({
             type: 'save',
             payload: {
-              spuList: rows,
+              authorityGroupList: rows,
               pagination: {
                 total: records,
                 pageSize: payload.rows,
@@ -51,15 +51,6 @@ export default {
           });
         }
       }
-    },
-    *add({ payload, callback }, { call, put }) {
-      console.log(payload);
-      const response = yield call(addRule, payload);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
-      if (callback) callback(response);
     },
   },
   reducers: {

@@ -31,47 +31,48 @@ class CreateForm extends React.Component {
       return item;
     });
     this.state = {
-      TI_Z03601: formVals,
+      TI_Z03701: formVals,
     };
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
     if (nextProps.formVals !== prevState.formVals) {
       return {
-        TI_Z03601: nextProps.formVals,
+        TI_Z03701: nextProps.formVals,
       };
     }
     return null;
   }
 
   rowChange = record => {
-    const { TI_Z03601 } = this.state;
-    TI_Z03601.map(item => {
+    const { TI_Z03701 } = this.state;
+    const TI_Z03702 = TI_Z03701.map(item => {
       if (item.key === record.key) {
         return record;
       }
       return item;
     });
-    this.setState({ TI_Z03601: [...TI_Z03601] });
+
+    this.setState({ TI_Z03701: [...TI_Z03702] });
   };
 
   okHandle = () => {
     const { handleSubmit } = this.props;
-    const { TI_Z03601 } = this.state;
-    handleSubmit({ TI_Z03601 });
+    const { TI_Z03701 } = this.state;
+    handleSubmit({ TI_Z03701 });
   };
 
   addLine = () => {
-    const { TI_Z03601 } = this.state;
-    if (!TI_Z03601.length) {
-      TI_Z03601.push({ Code: '', Name: '', key: 1 });
-      this.setState({ TI_Z03601: [...TI_Z03601] });
+    const { TI_Z03701 } = this.state;
+    if (!TI_Z03701.length) {
+      TI_Z03701.push({ Code: '', Name: '', key: 1 });
+      this.setState({ TI_Z03701: [...TI_Z03701] });
       return;
     }
-    const last = TI_Z03601[TI_Z03601.length - 1];
+    const last = TI_Z03701[TI_Z03701.length - 1];
     if (last.Code && last.Name) {
-      TI_Z03601.push({ Code: '', Name: '', key: last.key + 1 });
-      this.setState({ TI_Z03601: [...TI_Z03601] });
+      TI_Z03701.push({ Code: '', Name: '', key: last.key + 1 });
+      this.setState({ TI_Z03701: [...TI_Z03701] });
     } else {
       message.warning('请先填完上一个');
     }
@@ -79,9 +80,10 @@ class CreateForm extends React.Component {
 
   render() {
     const { modalVisible, handleModalVisible, method } = this.props;
-    const { TI_Z03601 } = this.state;
+    const { TI_Z03701 } = this.state;
     const columns = this.columns.map(col => {
       if (col.dataIndex === 'Code' && method === 'U') {
+        // eslint-disable-next-line no-param-reassign
         col.editable = false;
         return col;
       }
@@ -108,7 +110,7 @@ class CreateForm extends React.Component {
             rowChange={this.rowChange}
             pagination={false}
             columns={columns}
-            data={TI_Z03601}
+            data={TI_Z03701}
           />
         </Fragment>
       </Modal>
@@ -208,19 +210,19 @@ class HSCode extends PureComponent {
     });
   };
 
-  handleSubmit = TI_Z03601 => {
+  handleSubmit = TI_Z03701 => {
     const {
       dispatch,
       fhscode: { queryData },
     } = this.props;
     const { method } = this.state;
-    console.log(TI_Z03601, method);
+
     if (method === 'A') {
       dispatch({
         type: 'fhscode/add',
         payload: {
           Content: {
-            ...TI_Z03601,
+            ...TI_Z03701,
           },
         },
         callback: response => {
@@ -241,7 +243,7 @@ class HSCode extends PureComponent {
         type: 'fhscode/update',
         payload: {
           Content: {
-            ...TI_Z03601,
+            ...TI_Z03701,
           },
         },
         callback: response => {
@@ -274,7 +276,7 @@ class HSCode extends PureComponent {
     } = this.props;
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
-        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
+        <Row gutter={{ md: 8, lg: 12, xl: 48 }}>
           <Col lg={5} md={8} sm={24}>
             <FormItem label="名称">
               {getFieldDecorator('SearchText')(<Input placeholder="请输入" />)}

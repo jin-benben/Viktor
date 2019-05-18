@@ -9,7 +9,7 @@ class Staffs extends PureComponent {
   constructor(props) {
     super(props);
     this.lastFetchId = 0;
-    this.fetchUser = debounce(this.fetchUser, 800);
+    this.fetchUser = debounce(this.fetchUser, 1000);
     this.state = {
       data: [],
       value: props.value,
@@ -21,7 +21,7 @@ class Staffs extends PureComponent {
     this.lastFetchId += 1;
     const fetchId = this.lastFetchId;
     this.setState({ data: [], fetching: true });
-    const response = await request('/MDM/TI_Z004/TI_Z00402', {
+    const response = await request('/MDM/TI_Z007/TI_Z00702', {
       method: 'POST',
       data: {
         Content: {
@@ -29,7 +29,7 @@ class Staffs extends PureComponent {
           SearchKey: 'Name',
         },
         page: 1,
-        rows: 1000,
+        rows: 100,
         sidx: 'Code',
         sord: 'DESC',
       },
@@ -57,12 +57,14 @@ class Staffs extends PureComponent {
 
   render() {
     const { fetching, data, value } = this.state;
+    const { initialValue, labelInValue } = this.props;
     return (
       <Select
         showSearch
         showArrow={false}
-        labelInValue
+        labelInValue={labelInValue}
         value={value}
+        defaultValue={initialValue}
         placeholder="输入名称"
         notFoundContent={fetching ? <Spin size="small" /> : null}
         filterOption={false}

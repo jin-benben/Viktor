@@ -28,23 +28,14 @@ export default {
       if (callback) callback(response);
     },
 
-    *linkman({ payload, callback }, { call, put }) {
+    *linkman({ payload, callback }, { call }) {
       const response = yield call(linkmanRule, payload);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
-
-      if (callback) callback();
+      if (callback) callback(response);
     },
 
-    *address({ payload, callback }, { call, put }) {
+    *address({ payload, callback }, { call }) {
       const response = yield call(addressRule, payload);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
-      if (callback) callback();
+      if (callback) callback(response);
     },
 
     *update({ payload, callback }, { call, put }) {
@@ -53,7 +44,7 @@ export default {
         type: 'save',
         payload: response,
       });
-      if (callback) callback();
+      if (callback) callback(response);
     },
   },
 

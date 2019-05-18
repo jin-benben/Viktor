@@ -1,13 +1,11 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
-import { Row, Col, Card, Icon, Form, Input, Modal, Upload, Button, message, Divider } from 'antd';
+import { Row, Col, Card, Form, Input, Modal, Button, message, Divider } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import Staffs from '@/components/Staffs';
 import Supplier from '@/components/Supplier';
-// import Image from '@/components/Image'
-
-import { checkPhone, chechEmail } from '@/utils/utils';
+import Upload from '@/components/Upload';
 
 const { TextArea } = Input;
 const FormItem = Form.Item;
@@ -34,25 +32,10 @@ class CreateForm extends PureComponent {
     return null;
   }
 
-  validatorPhone = (rule, value, callback) => {
-    if (value && !checkPhone(value)) {
-      callback(new Error('手机号格式不正确'));
-    } else {
-      callback();
-    }
-  };
-
-  validatorEmail = (rule, value, callback) => {
-    if (value && !chechEmail(value)) {
-      callback(new Error('邮箱格式不正确'));
-    } else {
-      callback();
-    }
-  };
-
   render() {
     const {
       form: { getFieldDecorator },
+      form,
       modalVisible,
       handleModalVisible,
       handleSubmit,
@@ -69,52 +52,40 @@ class CreateForm extends PureComponent {
         md: { span: 10 },
       },
     };
-    const uploadButton = (
-      <div>
-        <Icon type="plus" />
-        <div className="ant-upload-text">Upload</div>
-      </div>
-    );
-    const fileList = [
-      {
-        uid: '-1',
-        name: 'xxx.png',
-        status: 'done',
-        url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-      },
-    ];
+    const okHandle = () => {
+      form.validateFields((err, fieldsValue) => {
+        if (err) return;
+        form.resetFields();
+        console.log(fieldsValue);
+        handleSubmit({ ...formVals, ...fieldsValue });
+      });
+    };
     return (
       <Modal
         width={640}
         destroyOnClose
-        title="添加品牌"
+        title="品牌编辑"
         visible={modalVisible}
-        onOk={handleSubmit}
+        onOk={okHandle}
         onCancel={() => handleModalVisible()}
       >
-        <Form {...formItemLayout} onSubmit={this.handleSubmit}>
+        <Form {...formItemLayout}>
           <FormItem key="Name" {...this.formLayout} label="名称">
             {getFieldDecorator('Name', {
               rules: [{ required: true, message: '请输入名称！' }],
               initialValue: formVals.Name,
             })(<Input placeholder="请输入名称！" />)}
           </FormItem>
-
-          <Row>
-            <FormItem key="Purchaser" {...this.formLayout} label="采购员">
-              {getFieldDecorator('Purchaser', {
-                rules: [{ required: true, message: '请输入采购员' }],
-                initialValue: formVals.Purchaser,
-              })(<Staffs defaultValue={formVals.Purchaser} />)}
-            </FormItem>
-          </Row>
-          <Row>
-            <FormItem key="CardCode" {...this.formLayout} label="默认供应商">
-              {getFieldDecorator('Gender', {
-                initialValue: formVals.CardCode,
-              })(<Supplier />)}
-            </FormItem>
-          </Row>
+          <FormItem key="Purchaser" {...this.formLayout} label="采购员">
+            {getFieldDecorator('Purchaser', {
+              initialValue: formVals.Purchaser,
+            })(<Staffs labelInValue={false} initialValue={formVals.Purchaser} />)}
+          </FormItem>
+          <FormItem key="CardCode" {...this.formLayout} label="默认供应商">
+            {getFieldDecorator('CardCode', {
+              initialValue: formVals.CardCode,
+            })(<Supplier labelInValue={false} initialValue={formVals.CardCode} />)}
+          </FormItem>
           <FormItem key="Content" {...this.formLayout} label="品牌介绍">
             {getFieldDecorator('Content', {
               initialValue: formVals.Content,
@@ -123,31 +94,12 @@ class CreateForm extends PureComponent {
           <FormItem key="Picture" {...this.formLayout} label="品牌主图">
             {getFieldDecorator('Picture', {
               initialValue: formVals.Picture,
-            })(
-              <Upload
-                action="http://117.149.160.231:9301/MDMPicUpload/PictureUpLoad"
-                listType="picture-card"
-                fileList={fileList}
-                onChange={this.handleChange}
-              >
-                {fileList.length >= 1 ? null : uploadButton}
-              </Upload>
-            )}
+            })(<Upload initialValue={formVals.Picture} />)}
           </FormItem>
           <FormItem key="Picture_List" {...this.formLayout} label="品牌图列表">
             {getFieldDecorator('Picture_List', {
               initialValue: formVals.Picture_List,
-            })(
-              <Upload
-                action="MDM/MDMPicUpload/PictureUpLoad"
-                listType="picture-card"
-                data={{ UserCode: 'jinwentao', Folder: 'TI_Z026', Tonken: '22233' }}
-                fileList={fileList}
-                onChange={this.handleChange}
-              >
-                {fileList.length >= 3 ? null : uploadButton}
-              </Upload>
-            )}
+            })(<Upload initialValue={formVals.Picture_List} />)}
           </FormItem>
         </Form>
       </Modal>
@@ -353,7 +305,7 @@ class BrandList extends PureComponent {
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col lg={5} md={8} sm={24}>
+          <Col lg={8} md={8} sm={24}>
             <FormItem label="品牌名称">
               {getFieldDecorator('SearchText')(<Input placeholder="请输入" />)}
             </FormItem>

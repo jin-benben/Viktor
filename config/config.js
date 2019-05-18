@@ -272,6 +272,25 @@ export default {
           ]
         },
         {
+          name: '角色管理',
+          icon: 'smile',
+          path: '/TI_Z014',
+          routes:[
+            {
+              name: '查询',
+              icon: 'smile',
+              path: '/TI_Z014/search',
+              component: './TI_Z014/search',
+            },
+            {
+              name: '添加',
+              icon: 'smile',
+              path: '/TI_Z014/edit',
+              component: './TI_Z014/add',
+            }
+          ]
+        },
+        {
           name: 'SPU管理',
           icon: 'smile',
           path: '/spu',

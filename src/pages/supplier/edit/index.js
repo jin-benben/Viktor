@@ -80,6 +80,7 @@ class CompanyEdit extends React.Component {
       dataIndex: 'BrandName',
       render: (text, record) => (
         <Brand
+          defaultValue={record}
           onChange={val => {
             this.brandLineChange(val, record);
           }}
@@ -199,11 +200,6 @@ class CompanyEdit extends React.Component {
           Code: formVals.Code,
         },
       },
-      callback: response => {
-        if (response.Status === 200) {
-          message.success('添加成功');
-        }
-      },
     });
   };
 
@@ -219,41 +215,6 @@ class CompanyEdit extends React.Component {
         },
       },
     });
-    message.success('添加成功');
-    this.handleModalVisible();
-  };
-
-  handleAddressSubmit = fields => {
-    const { dispatch } = this.props;
-    const { formVals } = this.state;
-    dispatch({
-      type: 'supplierEdit/linkman',
-      payload: {
-        Content: {
-          ...fields,
-          Code: formVals.Code,
-        },
-      },
-    });
-    message.success('添加成功');
-    this.handleModalVisible();
-  };
-
-  handleUpdate = fields => {
-    const { dispatch } = this.props;
-    const { formVals } = this.state;
-    dispatch({
-      type: 'supplierEdit/address',
-      payload: {
-        Content: {
-          ...fields,
-          Code: formVals.Code,
-        },
-      },
-    });
-
-    message.success('配置成功');
-    this.handleUpdateModalVisible();
   };
 
   handleUpdateModalVisible = (flag, record, modalkey, valkey) => {
@@ -282,6 +243,7 @@ class CompanyEdit extends React.Component {
           Content: {
             ...formVals,
             ...fieldsValue,
+            Status: fieldsValue.Status ? '1' : '2',
           },
         },
         callback: response => {
@@ -305,6 +267,7 @@ class CompanyEdit extends React.Component {
           Content: {
             ...formVals,
             ...fieldsValue,
+            Status: fieldsValue.Status ? '1' : '2',
           },
         },
         callback: response => {
@@ -324,7 +287,6 @@ class CompanyEdit extends React.Component {
     let { formVals } = this.state;
     const brandList = formVals.TI_Z00703List;
     let OrderID = 1;
-    console.log(brandList[brandList.length - 1]);
     if (brandList[brandList.length - 1]) {
       OrderID = brandList[brandList.length - 1].OrderID + 1;
     }
@@ -406,7 +368,7 @@ class CompanyEdit extends React.Component {
 
     return (
       <Card>
-        <Form {...formItemLayout} onSubmit={this.handleSubmit}>
+        <Form {...formItemLayout}>
           <Row gutter={8}>
             <Col lg={8} md={12} sm={24}>
               <FormItem key="Code" {...this.formLayout} label="客户ID">
@@ -552,8 +514,9 @@ class CompanyEdit extends React.Component {
             <Col lg={8} md={12} sm={24}>
               <FormItem key="Status" {...this.formLayout} label="状态">
                 {getFieldDecorator('Status', {
-                  initialValue: formVals.Status,
-                })(<Switch checkedChildren="开启" unCheckedChildren="禁用" defaultChecked />)}
+                  valuePropName: 'checked',
+                  initialValue: formVals.Status === '1',
+                })(<Switch checkedChildren="开启" unCheckedChildren="禁用" />)}
               </FormItem>
             </Col>
           </Row>
@@ -565,14 +528,14 @@ class CompanyEdit extends React.Component {
               <TabPane tab="联系人" key="1">
                 <StandardTable
                   data={{ list: formVals.TI_Z00702List }}
-                  rowKey="OrderID"
+                  rowKey="UserID"
                   columns={this.linkmanColumns}
                 />
               </TabPane>
               <TabPane tab="品牌" key="2">
                 <StandardTable
                   data={{ list: formVals.TI_Z00703List }}
-                  rowKey="OrderID"
+                  rowKey="Brand"
                   columns={this.addressColumns}
                 />
               </TabPane>

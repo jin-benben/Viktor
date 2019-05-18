@@ -62,15 +62,17 @@ class AddressCascader extends PureComponent {
       };
     }
     const { onChange } = this.props;
-    console.log(address);
     if (onChange) {
       onChange(address);
     }
   };
 
   render() {
+    const { ProvinceID, CityID, AreaID, StreetID } = this.props;
+    const defaultValue = [ProvinceID, CityID, AreaID, StreetID];
     return (
       <Cascader
+        defaultValue={defaultValue}
         changeOnSelect
         expandTrigger="hover"
         onChange={this.handleChange}

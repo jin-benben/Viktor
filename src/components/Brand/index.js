@@ -58,14 +58,16 @@ class Brand extends PureComponent {
 
   render() {
     const { fetching, data, value } = this.state;
-    const { defaultValue } = this.props;
+    let { defaultValue } = this.props;
+    defaultValue = { key: defaultValue.Brand, value: defaultValue.BrandName };
+    console.log(defaultValue);
     return (
       <Select
         showSearch
         showArrow={false}
         labelInValue
         value={value}
-        defaultValue={defaultValue}
+        defaultValue={[defaultValue]}
         placeholder="输入名称"
         notFoundContent={fetching ? <Spin size="small" /> : null}
         filterOption={false}

@@ -1,20 +1,7 @@
 /* eslint-disable no-script-url */
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import {
-  Row,
-  Col,
-  Form,
-  Input,
-  Card,
-  Switch,
-  Tabs,
-  Button,
-  Popconfirm,
-  message,
-  Divider,
-  Select,
-} from 'antd';
+import { Row, Col, Form, Input, Card, Switch, Tabs, Button, message, Select } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import AddressInfo from '../components/address';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
@@ -35,8 +22,8 @@ class CompanyEdit extends PureComponent {
   linkmanColumns = [
     {
       title: 'ID',
-      dataIndex: 'LineID',
-      width: 80,
+      dataIndex: 'UserID',
+      width: 50,
     },
     {
       title: '姓名',
@@ -77,10 +64,6 @@ class CompanyEdit extends PureComponent {
           >
             修改
           </a>
-          <Divider type="vertical" />
-          <Popconfirm title="确定要删除吗?" onConfirm={() => this.handleDelete(record.key)}>
-            <a href="javascript:;">删除</a>
-          </Popconfirm>
         </Fragment>
       ),
     },
@@ -89,7 +72,7 @@ class CompanyEdit extends PureComponent {
   addressColumns = [
     {
       title: 'ID',
-      width: 80,
+      width: 50,
       dataIndex: 'AddressID',
     },
     {
@@ -122,10 +105,6 @@ class CompanyEdit extends PureComponent {
           >
             修改
           </a>
-          <Divider type="vertical" />
-          <Popconfirm title="确定要删除吗?" onConfirm={() => this.handleDelete(record.key)}>
-            <a href="javascript:;">删除</a>
-          </Popconfirm>
         </Fragment>
       ),
     },
@@ -184,20 +163,7 @@ class CompanyEdit extends PureComponent {
   }
 
   componentDidMount() {
-    const {
-      dispatch,
-      location: { query },
-    } = this.props;
-    if (query.Code) {
-      dispatch({
-        type: 'companyEdit/fetch',
-        payload: {
-          Content: {
-            Code: query.Code,
-          },
-        },
-      });
-    }
+    this.getSingle();
   }
 
   componentWillUnmount() {
@@ -228,7 +194,25 @@ class CompanyEdit extends PureComponent {
     });
   }
 
+  getSingle() {
+    const {
+      dispatch,
+      location: { query },
+    } = this.props;
+    if (query.Code) {
+      dispatch({
+        type: 'companyEdit/fetch',
+        payload: {
+          Content: {
+            Code: query.Code,
+          },
+        },
+      });
+    }
+  }
+
   static getDerivedStateFromProps(nextProps, prevState) {
+    console.log(nextProps);
     if (nextProps.companyEdit.companyDetail !== prevState.formVals) {
       return {
         formVals: nextProps.companyEdit.companyDetail,
@@ -240,7 +224,6 @@ class CompanyEdit extends PureComponent {
   handleLinkmanSubmit = fields => {
     const { dispatch } = this.props;
     const { formVals } = this.state;
-    console.log(fields);
     dispatch({
       type: 'companyEdit/linkman',
       payload: {
@@ -249,25 +232,37 @@ class CompanyEdit extends PureComponent {
           Code: formVals.Code,
         },
       },
+      callback: response => {
+        if (response.Status === 200) {
+          message.success('保存成功');
+          this.handleModalVisible();
+          this.getSingle();
+        }
+      },
     });
-    message.success('添加成功');
-    this.handleModalVisible();
   };
 
   handleAddressSubmit = fields => {
     const { dispatch } = this.props;
     const { formVals } = this.state;
+    // eslint-disable-next-line no-param-reassign
+    delete fields.address;
     dispatch({
-      type: 'companyEdit/linkman',
+      type: 'companyEdit/address',
       payload: {
         Content: {
           ...fields,
           Code: formVals.Code,
         },
       },
+      callback: response => {
+        if (response.Status === 200) {
+          message.success('保存成功');
+          this.handleModalVisible();
+          this.getSingle();
+        }
+      },
     });
-    message.success('添加成功');
-    this.handleModalVisible();
   };
 
   handleUpdate = fields => {
@@ -318,6 +313,29 @@ class CompanyEdit extends PureComponent {
         callback: response => {
           if (response.Status === 200) {
             message.success('添加成功');
+          }
+        },
+      });
+    });
+  };
+
+  updateHandle = () => {
+    // 更新主数据
+    const { form, dispatch } = this.props;
+    const { formVals } = this.state;
+    form.validateFields((err, fieldsValue) => {
+      if (err) return;
+      dispatch({
+        type: 'companyEdit/update',
+        payload: {
+          Content: {
+            ...formVals,
+            ...fieldsValue,
+          },
+        },
+        callback: response => {
+          if (response.Status === 200) {
+            message.success('更新成功');
           }
         },
       });
@@ -381,8 +399,8 @@ class CompanyEdit extends PureComponent {
     this.setState({
       AddressmodalVisible: true,
       addressVal: {
-        OrderID: '',
-        AddressID: '',
+        OrderID: 0,
+        AddressID: 0,
         ProvinceID: '',
         Province: '',
         CityID: '',
@@ -429,6 +447,7 @@ class CompanyEdit extends PureComponent {
       handleSubmit: this.handleAddressSubmit,
       handleModalVisible: this.handleModalVisible,
     };
+    console.log(formVals);
     return (
       <Card>
         <Form {...formItemLayout} onSubmit={this.handleSubmit}>
@@ -557,15 +576,15 @@ class CompanyEdit extends PureComponent {
             <Tabs tabBarExtraContent={this.rightButton(tabIndex)} onChange={this.tabChange}>
               <TabPane tab="联系人" key="1">
                 <StandardTable
-                  data={{ list: formVals.MDM01 }}
-                  rowKey="OrderID"
+                  data={{ list: formVals.TI_Z00602List }}
+                  rowKey="UserID"
                   columns={this.linkmanColumns}
                 />
               </TabPane>
               <TabPane tab="收货地址" key="2">
                 <StandardTable
-                  data={{ list: formVals.MDM02 }}
-                  rowKey="OrderID"
+                  data={{ list: formVals.TI_Z00603List }}
+                  rowKey="AddressID"
                   columns={this.addressColumns}
                 />
               </TabPane>
@@ -583,9 +602,15 @@ class CompanyEdit extends PureComponent {
           </Fragment>
         ) : null}
         <FooterToolbar>
-          <Button onClick={this.saveHandle} type="primary">
-            保存
-          </Button>
+          {formVals.Code ? (
+            <Button onClick={this.updateHandle} type="primary">
+              更新
+            </Button>
+          ) : (
+            <Button onClick={this.saveHandle} type="primary">
+              保存
+            </Button>
+          )}
         </FooterToolbar>
       </Card>
     );

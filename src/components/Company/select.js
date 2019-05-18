@@ -9,7 +9,7 @@ class Staffs extends PureComponent {
   constructor(props) {
     super(props);
     this.lastFetchId = 0;
-    this.fetchCompany = debounce(this.fetchCompany, 800);
+    this.fetchCompany = debounce(this.fetchCompany, 1000);
   }
 
   state = {
@@ -30,7 +30,7 @@ class Staffs extends PureComponent {
           SearchKey: 'Name',
         },
         page: 1,
-        rows: 1000,
+        rows: 100,
         sidx: 'Code',
         sord: 'DESC',
       },

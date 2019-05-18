@@ -9,7 +9,7 @@ class Staffs extends PureComponent {
   constructor(props) {
     super(props);
     this.lastFetchId = 0;
-    this.fetchUser = debounce(this.fetchUser, 800);
+    this.fetchUser = debounce(this.fetchUser, 1000);
   }
 
   state = {
@@ -30,7 +30,7 @@ class Staffs extends PureComponent {
           SearchKey: 'Name',
         },
         page: 1,
-        rows: 1000,
+        rows: 100,
         sidx: 'Code',
         sord: 'DESC',
       },
@@ -58,14 +58,14 @@ class Staffs extends PureComponent {
 
   render() {
     const { fetching, data, value } = this.state;
-    const { defaultValue } = this.props;
+    const { initialValue, labelInValue } = this.props;
     return (
       <Select
         showSearch
         showArrow={false}
-        labelInValue
+        labelInValue={labelInValue}
         value={value}
-        defaultValue={defaultValue}
+        defaultValue={initialValue}
         placeholder="输入姓名"
         notFoundContent={fetching ? <Spin size="small" /> : null}
         filterOption={false}

@@ -3,6 +3,7 @@ import { connect } from 'dva';
 import moment from 'moment';
 import { Row, Col, Card, Form, Input, Modal, Button, DatePicker, message, Select } from 'antd';
 import StandardTable from '@/components/StandardTable';
+import Organization from '@/components/Organization';
 
 import styles from './style.less';
 import { checkPhone, chechEmail } from '@/utils/utils';
@@ -92,7 +93,7 @@ class CreateForm extends PureComponent {
                 {getFieldDecorator('Department', {
                   rules: [{ required: true, message: '请选择部门！' }],
                   initialValue: formVals.Department,
-                })(<Input placeholder="请输入" />)}
+                })(<Organization initialValue={formVals.Department} />)}
               </FormItem>
             </Col>
             <Col span={12}>
@@ -143,8 +144,8 @@ class CreateForm extends PureComponent {
                   initialValue: formVals.Dmanager,
                 })(
                   <Select placeholder="请选择">
-                    <Option value="Y">是</Option>
-                    <Option value="N">否</Option>
+                    <Option value="1">是</Option>
+                    <Option value="2">否</Option>
                   </Select>
                 )}
               </FormItem>
@@ -172,14 +173,18 @@ class CreateForm extends PureComponent {
             <Col span={12}>
               <FormItem key="EntryTime" {...formLayout} label="入职时间">
                 {getFieldDecorator('EntryTime', {
-                  initialValue: moment(formVals.EntryTime, 'YYYY/MM/DD'),
+                  initialValue: formVals.ResignationTime
+                    ? moment(formVals.EntryTime, 'YYYY/MM/DD')
+                    : null,
                 })(<DatePicker style={{ width: '100%' }} />)}
               </FormItem>
             </Col>
             <Col span={12}>
               <FormItem key="ResignationTime" {...formLayout} label="离职时间">
                 {getFieldDecorator('ResignationTime', {
-                  initialValue: moment(formVals.ResignationTime, 'YYYY/MM/DD'),
+                  initialValue: formVals.ResignationTime
+                    ? moment(formVals.ResignationTime, 'YYYY/MM/DD')
+                    : null,
                 })(<DatePicker style={{ width: '100%' }} />)}
               </FormItem>
             </Col>

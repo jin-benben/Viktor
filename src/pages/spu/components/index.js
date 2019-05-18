@@ -1,16 +1,9 @@
 import React, { Fragment } from 'react';
 import { Card, Icon, Button, message } from 'antd';
 import EditableFormTable from '@/components/EditableFormTable';
-
 import Brand from '@/components/Brand';
 import Category from '@/components/Category';
-import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
-import { connect } from 'dva';
 
-@connect(({ spu, loading }) => ({
-  spu,
-  loading: loading.models.spu,
-}))
 class AddSKU extends React.Component {
   state = {
     TI_Z01101: [],
@@ -152,11 +145,6 @@ class AddSKU extends React.Component {
           columns={this.skuColumns}
           data={TI_Z01101}
         />
-        <FooterToolbar>
-          <Button loading={loading} onClick={this.addskulist} type="primary">
-            保存
-          </Button>
-        </FooterToolbar>
       </Card>
     );
   }
