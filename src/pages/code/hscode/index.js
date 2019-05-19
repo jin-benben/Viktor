@@ -275,14 +275,11 @@ class HSCode extends PureComponent {
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 12, xl: 48 }}>
-          <Col md={8} sm={24}>
+          <Col className="submitButtons">
             <FormItem label="名称">
               {getFieldDecorator('SearchText')(<Input placeholder="请输入" />)}
             </FormItem>
-          </Col>
-
-          <Col md={8} sm={24}>
-            <span className="submitButtons">
+            <FormItem>
               <Button type="primary" htmlType="submit">
                 查询
               </Button>
@@ -294,7 +291,7 @@ class HSCode extends PureComponent {
               >
                 新建
               </Button>
-            </span>
+            </FormItem>
           </Col>
         </Row>
       </Form>

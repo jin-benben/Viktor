@@ -25,17 +25,24 @@ class CategoryCascader extends React.Component {
     this.setState({ options: response.Content });
   };
 
-  onChange = (value, selectedOptions) => {
-    console.log(value, selectedOptions);
+  handleChange = (value, selectedOptions) => {
+    const { onChange } = this.props;
+    if (onChange) {
+      onChange(selectedOptions);
+    }
   };
 
   render() {
     const { options } = this.state;
+    const { initialValue } = this.props;
+    console.log(initialValue);
     return (
       <Cascader
         options={options}
+        defaultValue={initialValue}
+        placeholder="请选择分类"
         fieldNames={{ label: 'Name', value: 'Code', children: 'children' }}
-        onChange={this.onChange}
+        onChange={this.handleChange}
         expandTrigger="hover"
       />
     );

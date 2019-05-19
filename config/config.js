@@ -264,6 +264,13 @@ export default {
               component: './sku/search.js',
             },
             {
+              name: '物料详情',
+              icon: 'smile',
+              hideInMenu: true,
+              path: '/sku/detail',
+              component: './sku/detail',
+            },
+            {
               name: '物料添加',
               icon: 'smile',
               path: '/sku/add',
@@ -281,6 +288,13 @@ export default {
               icon: 'smile',
               path: '/TI_Z014/search',
               component: './TI_Z014/search',
+            },
+            {
+              name: '权限设置',
+              icon: 'smile',
+              hideInMenu: true,
+              path: '/TI_Z014/set',
+              component: './TI_Z014/set',
             },
             {
               name: '添加',

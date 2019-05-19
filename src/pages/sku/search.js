@@ -1,7 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
-import moment from 'moment';
 import { Row, Col, Card, Form, Input, Button } from 'antd';
 import StandardTable from '@/components/StandardTable';
 
@@ -122,7 +121,7 @@ class SkuFetchComponent extends PureComponent {
 
   handleOnRow = record => ({
     // 详情or修改
-    onClick: () => router.push(`/sku/edit?Code=${record.Code}`),
+    onClick: () => router.push(`/sku/detail?Code=${record.Code}`),
   });
 
   renderSimpleForm() {
@@ -133,52 +132,26 @@ class SkuFetchComponent extends PureComponent {
       labelCol: { span: 8 },
       wrapperCol: { span: 16 },
     };
-    const formItemLayout = {
-      labelCol: {
-        xs: { span: 24 },
-        sm: { span: 10 },
-      },
-      wrapperCol: {
-        xs: { span: 24 },
-        sm: { span: 14 },
-        md: { span: 10 },
-      },
-    };
-    const searchFormItemLayout = {
-      wrapperCol: {
-        xs: {
-          span: 24,
-          offset: 0,
-        },
-        sm: {
-          span: 16,
-          offset: 8,
-        },
-      },
-    };
+
     return (
-      <Form onSubmit={this.handleSearch} {...formItemLayout}>
+      <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={8} sm={24}>
+          <Col className="submitButtons">
             <FormItem key="SearchText" label="SKU名称" {...formLayout}>
               {getFieldDecorator('SearchText')(<Input placeholder="请输入SKU名称" />)}
             </FormItem>
-          </Col>
-          <Col md={8} sm={24}>
-            <FormItem key="searchBtn" {...searchFormItemLayout}>
-              <span className="submitButtons">
-                <Button type="primary" htmlType="submit">
-                  查询
-                </Button>
-                <Button
-                  icon="plus"
-                  style={{ marginLeft: 8 }}
-                  type="primary"
-                  onClick={() => router.push('/sku/add')}
-                >
-                  新建
-                </Button>
-              </span>
+            <FormItem>
+              <Button type="primary" htmlType="submit">
+                查询
+              </Button>
+              <Button
+                icon="plus"
+                style={{ marginLeft: 8 }}
+                type="primary"
+                onClick={() => router.push('/sku/add')}
+              >
+                新建
+              </Button>
             </FormItem>
           </Col>
         </Row>

@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import request from '@/utils/request';
-import { Select, Spin, message } from 'antd';
+import { Select, Spin, message, Empty } from 'antd';
 import debounce from 'lodash/debounce';
 
 const { Option } = Select;
@@ -18,6 +18,7 @@ class Staffs extends PureComponent {
   }
 
   fetchUser = async value => {
+    if (!value) return;
     this.lastFetchId += 1;
     const fetchId = this.lastFetchId;
     this.setState({ data: [], fetching: true });
@@ -66,7 +67,7 @@ class Staffs extends PureComponent {
         value={value}
         defaultValue={initialValue}
         placeholder="输入名称"
-        notFoundContent={fetching ? <Spin size="small" /> : null}
+        notFoundContent={fetching ? <Spin size="small" /> : <Empty />}
         filterOption={false}
         onSearch={this.fetchUser}
         onChange={this.handleChange}

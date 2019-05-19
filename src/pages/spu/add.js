@@ -29,9 +29,9 @@ class AddSKU extends React.Component {
       dataIndex: 'BrandName',
       render: (text, record, index) => (
         <Brand
-          defaultValue={{ BrandName: record.BrandName }}
-          onChange={({ label }) => {
-            this.codeChange(label, record, index, 'BrandName');
+          defaultValue={record.BrandName}
+          onChange={value => {
+            this.codeChange(value, record, index, 'BrandName');
           }}
         />
       ),
@@ -58,7 +58,13 @@ class AddSKU extends React.Component {
     {
       title: '分类',
       dataIndex: 'category',
-      render: (text, record, index) => <Category />,
+      render: (text, record, index) => (
+        <Category
+          onChange={selectedOptions => {
+            this.categoryChange(selectedOptions, record, index);
+          }}
+        />
+      ),
     },
 
     {
@@ -80,7 +86,23 @@ class AddSKU extends React.Component {
   ];
 
   deleteLine = (record, index) => {
-    console.log(record, index);
+    const { TI_Z01101 } = this.state;
+    TI_Z01101.splice(index, 1);
+    this.setState({ TI_Z01101 });
+  };
+
+  categoryChange = (selectedOptions, record, index) => {
+    const category = {
+      Cate1Name: selectedOptions[0].Name,
+      Cate2Name: selectedOptions[1].Name,
+      Cate3Name: selectedOptions[2].Name,
+      Category1: selectedOptions[1].Code,
+      Category2: selectedOptions[2].Code,
+      Category3: selectedOptions[3].Code,
+    };
+    const { TI_Z01101 } = this.state;
+    TI_Z01101[index] = { ...record, ...category };
+    this.setState({ TI_Z01101 });
   };
 
   rowChange = record => {
@@ -122,19 +144,18 @@ class AddSKU extends React.Component {
       : 1;
     const line = {
       LineID: lastLine,
-      Name: '名字',
-      BrandName: '名字',
-      ProductName: '名字',
-      Unit: '名字',
-      ManLocation: '名字',
-      Category1: '名字',
-      Category2: '名字',
-      Category3: '名字',
-      Cate1Name: '名字',
-      Cate2Name: '名字',
-      Cate3Name: '名字',
+      Name: '',
+      BrandName: '',
+      ProductName: '',
+      Unit: '',
+      ManLocation: '',
+      Category1: '',
+      Category2: '',
+      Category3: '',
+      Cate1Name: '',
+      Cate2Name: '',
+      Cate3Name: '',
     };
-
     TI_Z01101.push(line);
     this.setState({ TI_Z01101 });
   };

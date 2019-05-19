@@ -1,4 +1,4 @@
-import { queryRule, addRule } from './service';
+import { queryRule, addRule, updateRule } from './service';
 
 export default {
   namespace: 'spu',
@@ -52,13 +52,12 @@ export default {
         }
       }
     },
-    *add({ payload, callback }, { call, put }) {
-      console.log(payload);
+    *add({ payload, callback }, { call }) {
       const response = yield call(addRule, payload);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
+      if (callback) callback(response);
+    },
+    *update({ payload, callback }, { call }) {
+      const response = yield call(updateRule, payload);
       if (callback) callback(response);
     },
   },

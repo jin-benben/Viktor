@@ -1,3 +1,4 @@
+/* eslint-disable array-callback-return */
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { Row, Col, Card, Form, Input, Button, Divider, Icon, message } from 'antd';
@@ -36,13 +37,14 @@ class authorityGroup extends PureComponent {
   ];
 
   state = {
-    authorityGroupAddDetail: {
+    authorityGroupDetail: {
       Content: {
-        Code: 'string',
-        Name: 'string',
+        Code: '',
+        Name: '',
         TI_Z01402: [],
       },
     },
+    method: 'A',
     modalVisible: false,
     employeeList: [],
   };
@@ -51,12 +53,23 @@ class authorityGroup extends PureComponent {
     this.getSingle();
   }
 
+  static getDerivedStateFromProps(nextProps, prevState) {
+    if (nextProps.authorityGroupAdd.authorityGroupDetail !== prevState.authorityGroupDetail) {
+      return {
+        authorityGroupDetail: nextProps.authorityGroupAdd.authorityGroupDetail,
+        employeeList: nextProps.authorityGroupAdd.authorityGroupDetail.TI_Z01402,
+      };
+    }
+    return null;
+  }
+
   getSingle() {
     const {
       dispatch,
       location: { query },
     } = this.props;
     if (query.Code) {
+      this.setState({ method: 'U' });
       dispatch({
         type: 'authorityGroupAdd/fetch',
         payload: {
@@ -66,15 +79,6 @@ class authorityGroup extends PureComponent {
         },
       });
     }
-  }
-
-  static getDerivedStateFromProps(nextProps, prevState) {
-    if (nextProps.authorityGroupAdd.companyDetail !== prevState.formVals) {
-      return {
-        formVals: nextProps.companyEdit.companyDetail,
-      };
-    }
-    return null;
   }
 
   deleteLine = index => {
@@ -89,18 +93,31 @@ class authorityGroup extends PureComponent {
 
   addEmployee = rows => {
     // 添加行
-    const { employeeList } = this.state;
+    const { employeeList, authorityGroupDetail } = this.state;
     const isnull = employeeList.length === 0;
-    rows.map(item => {
-      if (!isnull) {
-        employeeList.map(employee => {
-          if (item.Code !== employee.EmployeeCode) {
-            employeeList.push({ EmployeeCode: item.Code, EmployeeName: item.Name });
-          }
+    if (isnull) {
+      rows.map(item => {
+        employeeList.push({
+          EmployeeCode: item.Code,
+          EmployeeName: item.Name,
+          Code: authorityGroupDetail.Code,
         });
-      }
-      employeeList.push({ EmployeeCode: item.Code, EmployeeName: item.Name });
-    });
+      });
+    } else {
+      rows.map(item => {
+        if (!isnull) {
+          employeeList.map(employee => {
+            if (item.Code !== employee.EmployeeCode) {
+              employeeList.push({
+                EmployeeCode: item.Code,
+                EmployeeName: item.Name,
+                Code: authorityGroupDetail.Code,
+              });
+            }
+          });
+        }
+      });
+    }
     this.setState({ employeeList: [...employeeList] });
     this.handleModalVisible(false);
   };
@@ -152,7 +169,7 @@ class authorityGroup extends PureComponent {
   };
 
   render() {
-    const { authorityGroupAddDetail, employeeList, modalVisible } = this.state;
+    const { authorityGroupDetail, employeeList, modalVisible, method } = this.state;
     const {
       form: { getFieldDecorator },
     } = this.props;
@@ -171,41 +188,44 @@ class authorityGroup extends PureComponent {
       handleSubmit: this.addEmployee,
       handleModalVisible: this.handleModalVisible,
     };
-    console.log(authorityGroupAddDetail.Code);
     return (
       <Card title="角色编辑">
         <Form {...formItemLayout}>
           <Row gutter={8}>
-            <Col lg={8} md={12} sm={24}>
+            <Col lg={6} md={12} sm={24}>
               <FormItem key="Code" {...this.formLayout} label="角色ID">
                 {getFieldDecorator('Code', {
                   rules: [{ required: true, message: '请输入角色ID！' }],
-                  initialValue: authorityGroupAddDetail.Code,
-                })(<Input placeholder="请输入角色ID" />)}
+                  initialValue: authorityGroupDetail.Code,
+                })(<Input disabled={method === 'U'} placeholder="请输入角色ID" />)}
               </FormItem>
             </Col>
-            <Col lg={8} md={12} sm={24}>
+            <Col lg={6} md={12} sm={24}>
               <FormItem key="Name" {...this.formLayout} label="角色名称">
                 {getFieldDecorator('Name', {
                   rules: [{ required: true, message: '请输入角色名称！' }],
-                  initialValue: authorityGroupAddDetail.Name,
+                  initialValue: authorityGroupDetail.Name,
                 })(<Input placeholder="请输入角色名称" />)}
+              </FormItem>
+            </Col>
+            <Col lg={6} md={12} sm={24}>
+              <FormItem key="Name" {...this.formLayout}>
+                <Button
+                  icon="plus"
+                  style={{ marginBottom: 20 }}
+                  type="primary"
+                  onClick={() => this.handleModalVisible(true)}
+                >
+                  添加成员
+                </Button>
               </FormItem>
             </Col>
           </Row>
         </Form>
-        <Divider orientation="left">成员列表</Divider>
-        <Button
-          icon="plus"
-          style={{ marginLeft: 8 }}
-          type="primary"
-          onClick={() => this.handleModalVisible(true)}
-        >
-          新建
-        </Button>
+
         <StandardTable data={{ list: employeeList }} rowKey="EmployeeCode" columns={this.columns} />
         <FooterToolbar>
-          {authorityGroupAddDetail.Code ? (
+          {method === 'U' ? (
             <Button onClick={this.updateHandle} type="primary">
               更新
             </Button>

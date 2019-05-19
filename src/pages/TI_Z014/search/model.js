@@ -12,7 +12,7 @@ export default {
       },
       page: 1,
       rows: 30,
-      sidx: 'DocEntry',
+      sidx: 'Code',
       sord: 'Desc',
     },
     pagination: {

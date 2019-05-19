@@ -25,7 +25,15 @@ class CreateForm extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      formVals: props.formVals,
+      formVals: {
+        Code: '',
+        Name: '',
+        PCode: '',
+        Level: 1,
+        Type: '',
+        Action: '',
+        Method: '',
+      },
     };
     this.formLayout = {
       labelCol: { span: 7 },
@@ -35,8 +43,20 @@ class CreateForm extends PureComponent {
 
   static getDerivedStateFromProps(nextProps, prevState) {
     if (nextProps.formVals !== prevState.formVals) {
+      let option;
+      if (nextProps.method === 'A') {
+        option = {
+          Code: '',
+          Name: '',
+          PCode: nextProps.formVals.Code,
+          Level: nextProps.formVals.Level + 1,
+          Type: '',
+          Action: '',
+          Method: '',
+        };
+      }
       return {
-        formVals: nextProps.formVals,
+        formVals: { ...nextProps.formVals, ...option },
       };
     }
     return null;
@@ -70,6 +90,7 @@ class CreateForm extends PureComponent {
         handleSubmit({ ...formVals, ...fieldsValue });
       });
     };
+
     return (
       <Modal
         width={640}
@@ -147,7 +168,15 @@ class Organization extends PureComponent {
     this.state = {
       modalVisible: false,
       method: 'A',
-      singleInfo: {},
+      singleInfo: {
+        Code: '',
+        Name: '',
+        PCode: '',
+        Level: 1,
+        Type: '',
+        Action: '',
+        Method: '',
+      },
     };
   }
 
@@ -156,6 +185,15 @@ class Organization extends PureComponent {
     dispatch({
       type: 'authority/fetch',
     });
+  }
+
+  static getDerivedStateFromProps(nextProps, prevState) {
+    if (nextProps.authority.singleInfo !== prevState.singleInfo) {
+      return {
+        singleInfo: nextProps.authority.singleInfo,
+      };
+    }
+    return null;
   }
 
   renderTreeNodes = data =>
@@ -254,11 +292,12 @@ class Organization extends PureComponent {
   handleModalVisible = flag => {
     this.setState({
       modalVisible: !!flag,
+      method: 'A',
       singleInfo: {
         Code: '',
         Name: '',
         PCode: '',
-        Level: 1,
+        Level: 0,
         Type: '',
         Action: '',
         Method: '',
@@ -289,7 +328,6 @@ class Organization extends PureComponent {
       handleSubmit: this.handleSubmit,
       handleModalVisible: this.handleModalVisible,
     };
-
     return (
       <div>
         <Card title="权限管理">

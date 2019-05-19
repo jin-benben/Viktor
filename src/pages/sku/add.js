@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react';
-import { Card, Icon, Button, message } from 'antd';
+import { Card, Icon, Button, message, Select } from 'antd';
 import EditableFormTable from '@/components/EditableFormTable';
 import request from '@/utils/request';
 import Staffs from '@/components/Staffs';
@@ -9,6 +9,8 @@ import FHSCode from '@/components/FHSCode';
 import SPUCode from '@/components/SPUCode';
 import Category from '@/components/Category';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
+
+const { Option } = Select;
 
 class AddSKU extends React.Component {
   state = {
@@ -99,7 +101,13 @@ class AddSKU extends React.Component {
       title: '分类',
       width: 150,
       dataIndex: 'category',
-      render: (text, record, index) => <Category />,
+      render: (text, record, index) => (
+        <Category
+          onChange={selectedOptions => {
+            this.categoryChange(selectedOptions, record, index);
+          }}
+        />
+      ),
     },
     {
       title: '开票名称',
@@ -125,7 +133,27 @@ class AddSKU extends React.Component {
     {
       title: '上架状态',
       width: 100,
+      selectList: [
+        {
+          lable: '是',
+          value: '1',
+        },
+        {
+          lable: '否',
+          value: '2',
+        },
+      ],
       dataIndex: 'Putaway',
+      render: (text, record, index) => (
+        <Select
+          defaultValue={record.Putaway}
+          style={{ width: 120 }}
+          onChange={value => this.codeChange(value, record, index, 'Putaway')}
+        >
+          <Option value="1">是</Option>
+          <Option value="2">否</Option>
+        </Select>
+      ),
     },
     {
       title: '上架日期',
@@ -191,7 +219,23 @@ class AddSKU extends React.Component {
   ];
 
   deleteLine = (record, index) => {
-    console.log(record, index);
+    const { TI_Z00901 } = this.state;
+    TI_Z00901.splice(index, 1);
+    this.setState({ TI_Z00901 });
+  };
+
+  categoryChange = (selectedOptions, record, index) => {
+    const category = {
+      Cate1Name: selectedOptions[0].Name,
+      Cate2Name: selectedOptions[1].Name,
+      Cate3Name: selectedOptions[2].Name,
+      Category1: selectedOptions[1].Code,
+      Category2: selectedOptions[2].Code,
+      Category3: selectedOptions[3].Code,
+    };
+    const { TI_Z00901 } = this.state;
+    TI_Z00901[index] = { ...record, ...category };
+    this.setState({ TI_Z00901 });
   };
 
   codeChange = (value, row, index, key) => {
@@ -236,30 +280,30 @@ class AddSKU extends React.Component {
       : 1;
     const line = {
       LineID: lastLine,
-      Name: '名字',
-      BrandName: '名字',
-      ProductName: '名字',
-      ManufactureNO: '名字',
-      Parameters: 'P0001',
-      PurchaserName: '名字',
-      Package: '名字',
-      Purchaser: '名字',
-      Unit: '名字',
-      ManLocation: '名字',
-      Category1: '名字',
-      Category2: '名字',
-      Category3: '名字',
-      Cate1Name: '名字',
-      Cate2Name: '名字',
-      Cate3Name: '名字',
-      Putaway: '名字',
-      PutawayDateTime: '名字',
-      InvoiceName: '名字',
-      InvoicePro: '名字',
-      InvoiceMenu: '名字',
-      HSCode: '名字',
-      FHSCode: '名字',
-      SPUCode: '名字',
+      Name: '',
+      BrandName: '',
+      ProductName: '',
+      ManufactureNO: '',
+      Parameters: '',
+      PurchaserName: '',
+      Package: '',
+      Purchaser: '',
+      Unit: '',
+      ManLocation: '',
+      Category1: '',
+      Category2: '',
+      Category3: '',
+      Cate1Name: '',
+      Cate2Name: '',
+      Cate3Name: '',
+      Putaway: '',
+      PutawayDateTime: '',
+      InvoiceName: '',
+      InvoicePro: '',
+      InvoiceMenu: '',
+      HSCode: '',
+      FHSCode: '',
+      SPUCode: '',
     };
 
     TI_Z00901.push(line);
@@ -276,7 +320,7 @@ class AddSKU extends React.Component {
         <EditableFormTable
           rowChange={this.rowChange}
           rowKey="LineID"
-          scroll={{ x: 1800 }}
+          scroll={{ x: 2100 }}
           columns={this.skuColumns}
           data={TI_Z00901}
         />

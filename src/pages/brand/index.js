@@ -1,7 +1,7 @@
+/* eslint-disable no-param-reassign */
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import moment from 'moment';
-import { Row, Col, Card, Form, Input, Modal, Button, message, Divider } from 'antd';
+import { Row, Col, Card, Form, Input, Modal, Button, message } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import Staffs from '@/components/Staffs';
 import Supplier from '@/components/Supplier';
@@ -56,7 +56,6 @@ class CreateForm extends PureComponent {
       form.validateFields((err, fieldsValue) => {
         if (err) return;
         form.resetFields();
-        console.log(fieldsValue);
         handleSubmit({ ...formVals, ...fieldsValue });
       });
     };
@@ -76,15 +75,15 @@ class CreateForm extends PureComponent {
               initialValue: formVals.Name,
             })(<Input placeholder="请输入名称！" />)}
           </FormItem>
-          <FormItem key="Purchaser" {...this.formLayout} label="采购员">
-            {getFieldDecorator('Purchaser', {
-              initialValue: formVals.Purchaser,
-            })(<Staffs labelInValue={false} initialValue={formVals.Purchaser} />)}
+          <FormItem key="purchaser" {...this.formLayout} label="采购员">
+            {getFieldDecorator('purchaser', {
+              initialValue: { key: formVals.Purchaser, label: formVals.PurchaserName },
+            })(<Staffs labelInValue />)}
           </FormItem>
-          <FormItem key="CardCode" {...this.formLayout} label="默认供应商">
-            {getFieldDecorator('CardCode', {
-              initialValue: formVals.CardCode,
-            })(<Supplier labelInValue={false} initialValue={formVals.CardCode} />)}
+          <FormItem key="supplier" {...this.formLayout} label="默认供应商">
+            {getFieldDecorator('supplier', {
+              initialValue: { key: formVals.CardCode, label: formVals.CardName },
+            })(<Supplier labelInValue />)}
           </FormItem>
           <FormItem key="Content" {...this.formLayout} label="品牌介绍">
             {getFieldDecorator('Content', {
@@ -116,16 +115,7 @@ class BrandList extends PureComponent {
   state = {
     modalVisible: false,
     method: 'A',
-    formValues: {
-      Name: '',
-      Department: '',
-      Password: '',
-      Gender: '',
-      CompanyCode: '',
-      Position: '',
-      Mobile: '',
-      Email: '',
-    },
+    formValues: {},
   };
 
   columns = [
@@ -144,38 +134,26 @@ class BrandList extends PureComponent {
     {
       title: '主图',
       dataIndex: 'Picture',
-      //  render: val => <Image src={val} />
+      render: val => <img style={{ width: 50, height: 50 }} src={val} alt="主图" />,
     },
     {
       title: '列表图',
-      dataIndex: 'Mobile',
-      //  render: val => <Image src={val} />
+      dataIndex: 'Picture_List',
+      render: val => <img style={{ width: 50, height: 50 }} src={val} alt="主图" />,
     },
     {
       title: '采购员',
-      dataIndex: 'Purchaser',
+      dataIndex: 'PurchaserName',
     },
     {
       title: '默认供应商',
       dataIndex: 'CardName',
     },
     {
-      title: '时间',
-      dataIndex: 'time',
-      render: (text, record) => (
-        <Fragment>
-          <p>创建时间：{moment(record.UpdatedAt).format('YYYY-MM-DD HH:mm:ss')}</p>
-          <p>更新时间{moment(record.CreateAt).format('YYYY-MM-DD HH:mm:ss')}</p>
-        </Fragment>
-      ),
-    },
-    {
       title: '操作',
       render: (text, record) => (
         <Fragment>
           <a onClick={() => this.handleUpdateModalVisible(true, record)}>修改</a>
-          <Divider type="vertical" />
-          <a href="">删除</a>
         </Fragment>
       ),
     },
@@ -214,6 +192,7 @@ class BrandList extends PureComponent {
     const { dispatch, form } = this.props;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
+
       dispatch({
         type: 'brands/fetch',
         payload: {
@@ -245,12 +224,35 @@ class BrandList extends PureComponent {
       brands: { queryData },
     } = this.props;
     const { method } = this.state;
+    this.setState({
+      formValues: {
+        ...fieldsValue,
+      },
+    });
+    let supplier;
+    if (fieldsValue.supplier) {
+      supplier = {
+        CardCode: fieldsValue.supplier.key,
+        CardName: fieldsValue.supplier.label,
+      };
+    }
+    let purchaser;
+    if (fieldsValue.purchaser) {
+      purchaser = {
+        Purchaser: fieldsValue.purchaser.key,
+        PurchaserName: fieldsValue.purchaser.label,
+      };
+    }
+    delete fieldsValue.purchaser;
+    delete fieldsValue.supplier;
     if (method === 'A') {
       dispatch({
         type: 'brands/add',
         payload: {
           Content: {
             ...fieldsValue,
+            ...supplier,
+            ...purchaser,
           },
         },
         callback: response => {
@@ -272,6 +274,8 @@ class BrandList extends PureComponent {
         payload: {
           Content: {
             ...fieldsValue,
+            ...supplier,
+            ...purchaser,
           },
         },
         callback: response => {
@@ -305,14 +309,11 @@ class BrandList extends PureComponent {
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col lg={8} md={8} sm={24}>
+          <Col className="submitButtons">
             <FormItem label="品牌名称">
               {getFieldDecorator('SearchText')(<Input placeholder="请输入" />)}
             </FormItem>
-          </Col>
-
-          <Col md={8} sm={24}>
-            <span className="submitButtons">
+            <FormItem>
               <Button type="primary" htmlType="submit">
                 查询
               </Button>
@@ -324,7 +325,7 @@ class BrandList extends PureComponent {
               >
                 新建
               </Button>
-            </span>
+            </FormItem>
           </Col>
         </Row>
       </Form>

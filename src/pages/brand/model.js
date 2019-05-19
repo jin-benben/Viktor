@@ -33,7 +33,7 @@ export default {
           yield put({
             type: 'save',
             payload: {
-              staffsList: [],
+              brandsList: [],
             },
           });
         } else {
@@ -41,7 +41,7 @@ export default {
           yield put({
             type: 'save',
             payload: {
-              staffsList: rows,
+              brandsList: rows,
               pagination: {
                 total: records,
                 pageSize: payload.rows,

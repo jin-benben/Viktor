@@ -35,3 +35,21 @@ export async function updateRule(params) {
     },
   });
 }
+
+export async function setRule(params) {
+  return request('/MDM/TI_Z015/TI_Z01501', {
+    method: 'POST',
+    data: {
+      ...params,
+    },
+  });
+}
+
+export async function getTreeRule(params) {
+  return request('/MDM/TI_Z015/TI_Z01502', {
+    method: 'POST',
+    data: {
+      ...params,
+    },
+  });
+}

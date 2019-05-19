@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import request from '@/utils/request';
-import { Select, Spin, message } from 'antd';
+import { Select, Spin, message, Empty } from 'antd';
 import debounce from 'lodash/debounce';
 
 const { Option } = Select;
@@ -66,7 +66,7 @@ class Brand extends PureComponent {
         value={value}
         defaultValue={defaultValue}
         placeholder="输入名称"
-        notFoundContent={fetching ? <Spin size="small" /> : null}
+        notFoundContent={fetching ? <Spin size="small" /> : <Empty />}
         filterOption={false}
         onSearch={this.fetchUser}
         onChange={this.handleChange}

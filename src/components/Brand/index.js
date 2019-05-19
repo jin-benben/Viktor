@@ -1,28 +1,28 @@
 import React, { PureComponent } from 'react';
 import request from '@/utils/request';
-import { Select, Spin, message } from 'antd';
+import { Select, Spin, message, Empty } from 'antd';
 import debounce from 'lodash/debounce';
 
 const { Option } = Select;
 
-class Brand extends PureComponent {
+class Brands extends PureComponent {
   constructor(props) {
     super(props);
     this.lastFetchId = 0;
-    this.fetchUser = debounce(this.fetchUser, 800);
+    this.fetchUser = debounce(this.fetchUser, 1000);
+    this.state = {
+      data: [],
+      value: props.value,
+      fetching: false,
+    };
   }
 
-  state = {
-    data: [],
-    value: [],
-    fetching: false,
-  };
-
   fetchUser = async value => {
+    if (!value) return;
     this.lastFetchId += 1;
     const fetchId = this.lastFetchId;
     this.setState({ data: [], fetching: true });
-    const response = await request('/MDM/TI_Z004/TI_Z00402', {
+    const response = await request('/MDM/TI_Z005/TI_Z00502', {
       method: 'POST',
       data: {
         Content: {
@@ -30,7 +30,7 @@ class Brand extends PureComponent {
           SearchKey: 'Name',
         },
         page: 1,
-        rows: 1000,
+        rows: 100,
         sidx: 'Code',
         sord: 'DESC',
       },
@@ -58,25 +58,24 @@ class Brand extends PureComponent {
 
   render() {
     const { fetching, data, value } = this.state;
-    let { defaultValue } = this.props;
-    defaultValue = { key: defaultValue.BrandName };
-    console.log(defaultValue);
+    const { initialValue, labelInValue, keyType } = this.props;
+    const attribute = keyType || 'Code';
     return (
       <Select
         showSearch
         showArrow={false}
-        labelInValue
+        labelInValue={labelInValue}
         value={value}
-        defaultValue={[defaultValue]}
+        defaultValue={initialValue}
         placeholder="输入名称"
-        notFoundContent={fetching ? <Spin size="small" /> : null}
+        notFoundContent={fetching ? <Spin size="small" /> : <Empty />}
         filterOption={false}
         onSearch={this.fetchUser}
         onChange={this.handleChange}
         style={{ width: '100%' }}
       >
         {data.map(option => (
-          <Option key={option.Code} value={option.Code}>
+          <Option key={option.Code} value={option[attribute]}>
             {option.Name}
           </Option>
         ))}
@@ -85,4 +84,4 @@ class Brand extends PureComponent {
   }
 }
 
-export default Brand;
+export default Brands;

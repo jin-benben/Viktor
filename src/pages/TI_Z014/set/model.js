@@ -1,38 +1,23 @@
-import { queryRule, addRule, updateRule, querySingleRule } from './service';
+import { getTreeRule, addRule, updateRule } from '../service';
 
 export default {
-  namespace: 'authority',
+  namespace: 'authoritySet',
 
   state: {
-    treeData: [],
-    singleInfo: {
-      Code: '',
-      Name: '',
-      PCode: '',
-      Level: 0,
-      Type: '',
-      Action: '',
-      Method: '',
-    },
+    authorityList: [],
   },
+
   effects: {
     *fetch({ payload }, { call, put }) {
-      const response = yield call(queryRule, payload);
-      yield put({
-        type: 'save',
-        payload: {
-          treeData: response.Content,
-        },
-      });
-    },
-    *single({ payload }, { call, put }) {
-      const response = yield call(querySingleRule, payload);
-      yield put({
-        type: 'save',
-        payload: {
-          singleInfo: response.Content,
-        },
-      });
+      const response = yield call(getTreeRule, payload);
+      if (response.Status === 200) {
+        yield put({
+          type: 'save',
+          payload: {
+            authorityList: response.Content.rows,
+          },
+        });
+      }
     },
     *add({ payload, callback }, { call, put }) {
       const response = yield call(addRule, payload);
@@ -42,6 +27,7 @@ export default {
       });
       if (callback) callback(response);
     },
+
     *update({ payload, callback }, { call, put }) {
       const response = yield call(updateRule, payload);
       yield put({
@@ -51,6 +37,7 @@ export default {
       if (callback) callback(response);
     },
   },
+
   reducers: {
     save(state, action) {
       return {

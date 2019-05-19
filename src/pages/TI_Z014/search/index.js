@@ -31,7 +31,7 @@ class inquiryList extends PureComponent {
       title: '权限设置',
       dataIndex: 'contact',
       render: (text, record) => (
-        <a href={`/inquiry/edit?Code=${record.Code}`}>
+        <a href={`/TI_Z014/set?Code=${record.Code}`}>
           <Icon type="setting" theme="twoTone" />
         </a>
       ),
@@ -113,7 +113,7 @@ class inquiryList extends PureComponent {
 
   handleOnRow = record => ({
     // 详情or修改
-    onClick: () => router.push(`/inquiry/edit?DocEntry=${record.Code}`),
+    onClick: () => router.push(`/TI_Z014/edit?Code=${record.Code}`),
   });
 
   renderSimpleForm() {
@@ -148,16 +148,14 @@ class inquiryList extends PureComponent {
       },
     };
     return (
-      <Form onSubmit={this.handleSearch} {...formItemLayout}>
-        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
+      <Form onSubmit={this.handleSearch} {...formItemLayout} layout="inline">
+        <Row gutter={{ md: 8, lg: 24, xl: 48 }} className="submitButtons">
           <Col md={6} sm={24}>
             <FormItem key="SearchText" label="角色名称" {...formLayout}>
               {getFieldDecorator('SearchText')(<Input placeholder="请输入角色名称" />)}
             </FormItem>
-          </Col>
-          <Col md={6} sm={24}>
             <FormItem key="searchBtn" {...searchFormItemLayout}>
-              <span className="submitButtons">
+              <span>
                 <Button type="primary" htmlType="submit">
                   查询
                 </Button>
