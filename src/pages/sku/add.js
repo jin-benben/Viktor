@@ -28,6 +28,7 @@ class AddSKU extends React.Component {
       dataIndex: 'BrandName',
       render: (text, record, index) => (
         <Brand
+          defaultValue={{ BrandName: record.BrandName }}
           onChange={({ label }) => {
             this.codeChange(label, record, index, 'BrandName');
           }}
@@ -65,11 +66,11 @@ class AddSKU extends React.Component {
     {
       title: '采购员',
       width: 150,
-      dataIndex: 'Purchaser',
+      dataIndex: 'PurchaserName',
       render: (text, record, index) => (
         <Staffs
           onChange={staffs => {
-            this.codeChange(staffs, record, index, 'Purchaser');
+            this.codeChange(staffs, record, index, 'PurchaserName');
           }}
         />
       ),
@@ -239,7 +240,8 @@ class AddSKU extends React.Component {
       BrandName: '名字',
       ProductName: '名字',
       ManufactureNO: '名字',
-      Parameters: '名字',
+      Parameters: 'P0001',
+      PurchaserName: '名字',
       Package: '名字',
       Purchaser: '名字',
       Unit: '名字',

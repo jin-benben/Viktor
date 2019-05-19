@@ -1,9 +1,9 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Row, Col, Card, Form, Input, Button, Divider, Icon } from 'antd';
+import { Row, Col, Card, Form, Input, Button, Divider, Icon, message } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
-import StaffsModal from "@/components/Modal/Staffs"
+import StaffsModal from '@/components/Modal/Staffs';
 
 const FormItem = Form.Item;
 
@@ -17,11 +17,11 @@ class authorityGroup extends PureComponent {
   columns = [
     {
       title: '成员ID',
-      dataIndex: 'Code',
+      dataIndex: 'EmployeeCode',
     },
     {
       title: '成员姓名',
-      dataIndex: 'Name',
+      dataIndex: 'EmployeeName',
     },
     {
       title: '删除',
@@ -36,7 +36,7 @@ class authorityGroup extends PureComponent {
   ];
 
   state = {
-    supplierDetail: {
+    authorityGroupAddDetail: {
       Content: {
         Code: 'string',
         Name: 'string',
@@ -45,8 +45,37 @@ class authorityGroup extends PureComponent {
     },
     modalVisible: false,
     employeeList: [],
-    method: 'A',
   };
+
+  componentDidMount() {
+    this.getSingle();
+  }
+
+  getSingle() {
+    const {
+      dispatch,
+      location: { query },
+    } = this.props;
+    if (query.Code) {
+      dispatch({
+        type: 'authorityGroupAdd/fetch',
+        payload: {
+          Content: {
+            Code: query.Code,
+          },
+        },
+      });
+    }
+  }
+
+  static getDerivedStateFromProps(nextProps, prevState) {
+    if (nextProps.authorityGroupAdd.companyDetail !== prevState.formVals) {
+      return {
+        formVals: nextProps.companyEdit.companyDetail,
+      };
+    }
+    return null;
+  }
 
   deleteLine = index => {
     const { employeeList } = this.state;
@@ -58,16 +87,72 @@ class authorityGroup extends PureComponent {
     this.setState({ modalVisible: !!flag });
   };
 
-  onSelectRow = selection => {
-    console.log(selection);
+  addEmployee = rows => {
+    // 添加行
+    const { employeeList } = this.state;
+    const isnull = employeeList.length === 0;
+    rows.map(item => {
+      if (!isnull) {
+        employeeList.map(employee => {
+          if (item.Code !== employee.EmployeeCode) {
+            employeeList.push({ EmployeeCode: item.Code, EmployeeName: item.Name });
+          }
+        });
+      }
+      employeeList.push({ EmployeeCode: item.Code, EmployeeName: item.Name });
+    });
+    this.setState({ employeeList: [...employeeList] });
+    this.handleModalVisible(false);
   };
 
-  addEmployee() {
-    // 添加行
-  }
+  saveHandle = () => {
+    // 保存主数据
+    const { form, dispatch } = this.props;
+    const { employeeList } = this.state;
+    form.validateFields((err, fieldsValue) => {
+      if (err) return;
+      dispatch({
+        type: 'authorityGroupAdd/add',
+        payload: {
+          Content: {
+            ...fieldsValue,
+            TI_Z01402: employeeList,
+          },
+        },
+        callback: response => {
+          if (response.Status === 200) {
+            message.success('添加成功');
+          }
+        },
+      });
+    });
+  };
+
+  updateHandle = () => {
+    // 更新主数据
+    const { form, dispatch } = this.props;
+    const { employeeList } = this.state;
+    form.validateFields((err, fieldsValue) => {
+      if (err) return;
+      dispatch({
+        type: 'authorityGroupAdd/update',
+        payload: {
+          Content: {
+            ...fieldsValue,
+            TI_Z01402: employeeList,
+          },
+        },
+        callback: response => {
+          if (response.Status === 200) {
+            message.success('更新成功');
+          }
+        },
+      });
+    });
+  };
 
   render() {
-    const { supplierDetail, employeeList, modalVisible } = this.state;
+    const { authorityGroupAddDetail, employeeList, modalVisible } = this.state;
     const {
       form: { getFieldDecorator },
     } = this.props;
@@ -81,11 +166,12 @@ class authorityGroup extends PureComponent {
         sm: { span: 14 },
         md: { span: 10 },
       },
-		};
-		const parentMethods = {
+    };
+    const parentMethods = {
       handleSubmit: this.addEmployee,
       handleModalVisible: this.handleModalVisible,
     };
+    console.log(authorityGroupAddDetail.Code);
     return (
       <Card title="角色编辑">
         <Form {...formItemLayout}>
@@ -94,7 +180,7 @@ class authorityGroup extends PureComponent {
               <FormItem key="Code" {...this.formLayout} label="角色ID">
                 {getFieldDecorator('Code', {
                   rules: [{ required: true, message: '请输入角色ID！' }],
-                  initialValue: supplierDetail.Code,
+                  initialValue: authorityGroupAddDetail.Code,
                 })(<Input placeholder="请输入角色ID" />)}
               </FormItem>
             </Col>
@@ -102,7 +188,7 @@ class authorityGroup extends PureComponent {
               <FormItem key="Name" {...this.formLayout} label="角色名称">
                 {getFieldDecorator('Name', {
                   rules: [{ required: true, message: '请输入角色名称！' }],
-                  initialValue: supplierDetail.Name,
+                  initialValue: authorityGroupAddDetail.Name,
                 })(<Input placeholder="请输入角色名称" />)}
               </FormItem>
             </Col>
@@ -117,14 +203,9 @@ class authorityGroup extends PureComponent {
         >
           新建
         </Button>
-        <StandardTable
-          data={{ list: employeeList }}
-          rowKey="EmployeeCode"
-          columns={this.columns}
-          onSelectRow={this.onSelectRow}
-        />
+        <StandardTable data={{ list: employeeList }} rowKey="EmployeeCode" columns={this.columns} />
         <FooterToolbar>
-          {supplierDetail.method === 'A' ? (
+          {authorityGroupAddDetail.Code ? (
             <Button onClick={this.updateHandle} type="primary">
               更新
             </Button>

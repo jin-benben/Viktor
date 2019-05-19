@@ -11,6 +11,7 @@ const FormItem = Form.Item;
 class StaffsModal extends PureComponent {
   state = {
     staffsList: [],
+    selectedRows: [],
     queryData: {
       Content: {
         SearchText: '',
@@ -34,7 +35,7 @@ class StaffsModal extends PureComponent {
   columns = [
     {
       title: '员工ID',
-      dataIndex: 'Code'
+      dataIndex: 'Code',
     },
     {
       title: '姓名',
@@ -48,8 +49,17 @@ class StaffsModal extends PureComponent {
   }
 
   okHandle = () => {
+    const { selectedRows } = this.state;
     const { handleSubmit } = this.props;
-    handleSubmit();
+    if (selectedRows.length) {
+      handleSubmit(selectedRows);
+    } else {
+      message.warning('请先选择');
+    }
+  };
+
+  onSelectRow = selectedRows => {
+    this.setState({ selectedRows: [...selectedRows] });
   };
 
   handleStandardTableChange = pagination => {
@@ -107,20 +117,17 @@ class StaffsModal extends PureComponent {
       form: { getFieldDecorator },
     } = this.props;
     return (
-      <Form onSubmit={this.handleSearch}>
+      <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8 }}>
-          <Col md={8}>
+          <Col className="submitButtons">
             <FormItem label="员工姓名">
               {getFieldDecorator('SearchText')(<Input placeholder="请输入" />)}
             </FormItem>
-          </Col>
-
-          <Col md={8}>
-            <span className="submitButtons">
+            <FormItem>
               <Button type="primary" htmlType="submit">
                 查询
               </Button>
-            </span>
+            </FormItem>
           </Col>
         </Row>
       </Form>
@@ -147,6 +154,9 @@ class StaffsModal extends PureComponent {
             rowKey="Code"
             pagination={pagination}
             columns={this.columns}
+            rowSelection={{
+              onSelectRow: this.onSelectRow,
+            }}
             onChange={this.handleStandardTableChange}
           />
         </div>

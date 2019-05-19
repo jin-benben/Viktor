@@ -29,6 +29,7 @@ class AddSKU extends React.Component {
       dataIndex: 'BrandName',
       render: (text, record, index) => (
         <Brand
+          defaultValue={{ BrandName: record.BrandName }}
           onChange={({ label }) => {
             this.codeChange(label, record, index, 'BrandName');
           }}

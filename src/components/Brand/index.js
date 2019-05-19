@@ -59,7 +59,7 @@ class Brand extends PureComponent {
   render() {
     const { fetching, data, value } = this.state;
     let { defaultValue } = this.props;
-    defaultValue = { key: defaultValue.Brand, value: defaultValue.BrandName };
+    defaultValue = { key: defaultValue.BrandName };
     console.log(defaultValue);
     return (
       <Select
