@@ -1,12 +1,22 @@
 /* eslint-disable array-callback-return */
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Row, Col, Card, Form, Input, Button, Divider, Icon, message } from 'antd';
+import { Switch, Card, Form, Button, message } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
-import StaffsModal from '@/components/Modal/Staffs';
 
-const FormItem = Form.Item;
+function switchType(Type) {
+  switch (Type) {
+    case '1':
+      return '节点';
+    case '2':
+      return 'Action';
+    case '3':
+      return '数据列';
+    default:
+      return '未知';
+  }
+}
 
 /* eslint react/no-multi-comp:0 */
 @connect(({ authoritySet, loading }) => ({
@@ -17,33 +27,35 @@ const FormItem = Form.Item;
 class authorityGroup extends PureComponent {
   columns = [
     {
-      title: '成员ID',
-      dataIndex: 'EmployeeCode',
+      title: '权限代码',
+      dataIndex: 'PermissionCode',
     },
     {
-      title: '成员姓名',
-      dataIndex: 'EmployeeName',
+      title: '权限名称',
+      dataIndex: 'PermissionName',
     },
     {
-      title: '删除',
-      dataIndex: 'contact',
+      title: '权限类型',
+      dataIndex: 'Type',
+      render: text => <span>{switchType(text)}</span>,
+    },
+    {
+      title: '权限',
+      dataIndex: 'Permission',
       render: (text, record, index) => (
-        // eslint-disable-next-line no-script-url
-        <a href="javascript:;" onClick={() => this.deleteLine(index)}>
-          <Icon type="delete" theme="twoTone" />
-        </a>
+        <Switch
+          checkedChildren="开"
+          onChange={value => {
+            this.permissionChange(value, record, index);
+          }}
+          unCheckedChildren="关"
+          defaultChecked={record.Permission === 'Y'}
+        />
       ),
     },
   ];
 
   state = {
-    authorityList: {
-      Content: {
-        Code: '',
-        Name: '',
-        TI_Z01402: [],
-      },
-    },
     method: 'A',
     authorityList: [],
   };
@@ -56,7 +68,6 @@ class authorityGroup extends PureComponent {
     if (nextProps.authoritySet.authorityList !== prevState.authorityList) {
       return {
         authorityList: nextProps.authoritySet.authorityList,
-        employeeList: nextProps.authoritySet.authorityList.TI_Z01402,
       };
     }
     return null;
@@ -79,6 +90,14 @@ class authorityGroup extends PureComponent {
       });
     }
   }
+
+  permissionChange = (value, record, index) => {
+    const { authorityList } = this.state;
+    // eslint-disable-next-line no-param-reassign
+    record.Permission = value ? 'Y' : 'N';
+    authorityList[index] = record;
+    this.setState({ authorityList });
+  };
 
   saveHandle = () => {
     // 保存主数据
@@ -105,24 +124,24 @@ class authorityGroup extends PureComponent {
 
   updateHandle = () => {
     // 更新主数据
-    const { form, dispatch } = this.props;
-    const { employeeList } = this.state;
-    form.validateFields((err, fieldsValue) => {
-      if (err) return;
-      dispatch({
-        type: 'authoritySet/update',
-        payload: {
-          Content: {
-            ...fieldsValue,
-            TI_Z01402: employeeList,
-          },
+    const {
+      dispatch,
+      location: { query },
+    } = this.props;
+    const { authorityList } = this.state;
+    dispatch({
+      type: 'authoritySet/update',
+      payload: {
+        Content: {
+          Code: query.Code,
+          TI_Z01501: authorityList,
         },
-        callback: response => {
-          if (response.Status === 200) {
-            message.success('更新成功');
-          }
-        },
-      });
+      },
+      callback: response => {
+        if (response.Status === 200) {
+          message.success('更新成功');
+        }
+      },
     });
   };
 
@@ -133,7 +152,7 @@ class authorityGroup extends PureComponent {
       <Card title="角色权限设置">
         <StandardTable
           data={{ list: authorityList }}
-          rowKey="EmployeeCode"
+          rowKey="PermissionCode"
           columns={this.columns}
         />
         <FooterToolbar>

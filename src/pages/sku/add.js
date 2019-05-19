@@ -229,9 +229,9 @@ class AddSKU extends React.Component {
       Cate1Name: selectedOptions[0].Name,
       Cate2Name: selectedOptions[1].Name,
       Cate3Name: selectedOptions[2].Name,
-      Category1: selectedOptions[1].Code,
-      Category2: selectedOptions[2].Code,
-      Category3: selectedOptions[3].Code,
+      Category1: selectedOptions[0].Code,
+      Category2: selectedOptions[1].Code,
+      Category3: selectedOptions[2].Code,
     };
     const { TI_Z00901 } = this.state;
     TI_Z00901[index] = { ...record, ...category };

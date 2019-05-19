@@ -14,25 +14,48 @@ const FormItem = Form.Item;
 }))
 @Form.create()
 class inquiryList extends PureComponent {
-  state = {
-    expandForm: false,
-  };
-
   columns = [
     {
       title: '角色代码',
+      align: 'center',
       dataIndex: 'Code',
     },
     {
       title: '角色名称',
+      align: 'center',
       dataIndex: 'Name',
     },
     {
       title: '权限设置',
+      align: 'center',
       dataIndex: 'contact',
       render: (text, record) => (
-        <a href={`/TI_Z014/set?Code=${record.Code}`}>
+        // eslint-disable-next-line no-script-url
+        <a
+          onClick={e => {
+            e.preventDefault();
+            router.push(`/TI_Z014/set?Code=${record.Code}`);
+          }}
+          href="javascript:;"
+        >
           <Icon type="setting" theme="twoTone" />
+        </a>
+      ),
+    },
+    {
+      title: '角色修改',
+      align: 'center',
+      dataIndex: 'contact',
+      render: (text, record) => (
+        // eslint-disable-next-line no-script-url
+        <a
+          onClick={e => {
+            e.preventDefault();
+            router.push(`/TI_Z014/edit?Code=${record.Code}`);
+          }}
+          href="javascript:;"
+        >
+          <Icon type="edit" theme="twoTone" />
         </a>
       ),
     },
@@ -103,19 +126,6 @@ class inquiryList extends PureComponent {
     });
   };
 
-  toggleForm = () => {
-    // 是否展开
-    const { expandForm } = this.state;
-    this.setState({
-      expandForm: !expandForm,
-    });
-  };
-
-  handleOnRow = record => ({
-    // 详情or修改
-    onClick: () => router.push(`/TI_Z014/edit?Code=${record.Code}`),
-  });
-
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
@@ -180,7 +190,6 @@ class inquiryList extends PureComponent {
       authorityGroup: { authorityGroupList, pagination },
       loading,
     } = this.props;
-    console.log(this.props);
     return (
       <Fragment>
         <Card title="角色查询" bordered={false}>
@@ -192,7 +201,6 @@ class inquiryList extends PureComponent {
               pagination={pagination}
               rowKey="Code"
               columns={this.columns}
-              onRow={this.handleOnRow}
               onChange={this.handleStandardTableChange}
             />
           </div>

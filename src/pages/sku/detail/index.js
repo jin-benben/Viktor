@@ -162,19 +162,19 @@ class SKUDetail extends PureComponent {
       <Card>
         <Form {...formItemLayout} onSubmit={this.handleSubmit}>
           <Row gutter={8}>
-            <Col lg={8} md={12} sm={24}>
+            <Col lg={12} md={12} sm={24}>
               <FormItem key="SKU" {...this.formLayout} label="SKU">
                 {formVals.SKU}
               </FormItem>
             </Col>
-            <Col lg={8} md={12} sm={24}>
+            <Col lg={12} md={12} sm={24}>
               <FormItem key="Name" {...this.formLayout} label="描述">
                 {formVals.Name}
               </FormItem>
             </Col>
           </Row>
           <Row gutter={8}>
-            <Col lg={8} md={12} sm={24}>
+            <Col lg={12} md={12} sm={24}>
               <FormItem key="BrandName" {...this.formLayout} label="品牌">
                 {getFieldDecorator('BrandName', {
                   rules: [{ required: true, message: '请输入品牌名称！' }],
@@ -182,7 +182,7 @@ class SKUDetail extends PureComponent {
                 })(<Brand />)}
               </FormItem>
             </Col>
-            <Col lg={8} md={12} sm={24}>
+            <Col lg={12} md={12} sm={24}>
               <FormItem key="ProductName" {...this.formLayout} label="名称">
                 {getFieldDecorator('ProductName', {
                   initialValue: formVals.ProductName,
@@ -191,14 +191,14 @@ class SKUDetail extends PureComponent {
             </Col>
           </Row>
           <Row gutter={8}>
-            <Col lg={8} md={12} sm={24}>
+            <Col lg={12} md={12} sm={24}>
               <FormItem key="Parameters" {...this.formLayout} label="参数">
                 {getFieldDecorator('Parameters', {
                   initialValue: formVals.Parameters,
                 })(<Input placeholder="请输入参数" />)}
               </FormItem>
             </Col>
-            <Col lg={8} md={12} sm={24}>
+            <Col lg={12} md={12} sm={24}>
               <FormItem key="Package" {...this.formLayout} label="包装 ">
                 {getFieldDecorator('Package', {
                   initialValue: formVals.Package,
@@ -207,14 +207,14 @@ class SKUDetail extends PureComponent {
             </Col>
           </Row>
           <Row gutter={8}>
-            <Col lg={8} md={12} sm={24}>
+            <Col lg={12} md={12} sm={24}>
               <FormItem key="Unit" {...this.formLayout} label="单位">
                 {getFieldDecorator('Unit', {
                   initialValue: formVals.Unit,
                 })(<Input placeholder="请输入单位" />)}
               </FormItem>
             </Col>
-            <Col lg={8} md={12} sm={24}>
+            <Col lg={12} md={12} sm={24}>
               <FormItem key="ManLocation" {...this.formLayout} label="产地">
                 {getFieldDecorator('ManLocation', {
                   initialValue: formVals.ManLocation,
@@ -223,14 +223,14 @@ class SKUDetail extends PureComponent {
             </Col>
           </Row>
           <Row gutter={8}>
-            <Col lg={8} md={12} sm={24}>
+            <Col lg={12} md={12} sm={24}>
               <FormItem key="Unit" {...this.formLayout} label="采购员">
                 {getFieldDecorator('Unit', {
                   initialValue: formVals.Unit,
                 })(<Input placeholder="请输入单位" />)}
               </FormItem>
             </Col>
-            <Col lg={8} md={12} sm={24}>
+            <Col lg={12} md={12} sm={24}>
               <FormItem key="ManLocation" {...this.formLayout} label="分类">
                 {getFieldDecorator('ManLocation', {
                   initialValue: formVals.ManLocation,
@@ -239,14 +239,14 @@ class SKUDetail extends PureComponent {
             </Col>
           </Row>
           <Row gutter={8}>
-            <Col lg={8} md={12} sm={24}>
+            <Col lg={12} md={12} sm={24}>
               <FormItem key="InvoiceName" {...this.formLayout} label="开票名称">
                 {getFieldDecorator('InvoiceName', {
                   initialValue: formVals.InvoiceName,
                 })(<Input placeholder="请输入开票名称" />)}
               </FormItem>
             </Col>
-            <Col lg={8} md={12} sm={24}>
+            <Col lg={12} md={12} sm={24}>
               <FormItem key="InvoicePro" {...this.formLayout} label="开票核心规格">
                 {getFieldDecorator('InvoicePro', {
                   initialValue: formVals.InvoicePro,
@@ -255,14 +255,14 @@ class SKUDetail extends PureComponent {
             </Col>
           </Row>
           <Row gutter={8}>
-            <Col lg={8} md={12} sm={24}>
+            <Col lg={12} md={12} sm={24}>
               <FormItem key="InvoiceMenu" {...this.formLayout} label="开票目录分类">
                 {getFieldDecorator('InvoiceMenu', {
                   initialValue: formVals.InvoiceMenu,
                 })(<Input placeholder="请输入开票名称" />)}
               </FormItem>
             </Col>
-            <Col lg={8} md={12} sm={24}>
+            <Col lg={12} md={12} sm={24}>
               <FormItem key="HSCode" {...this.formLayout} label="国内海关编码">
                 {getFieldDecorator('HSCode', {
                   initialValue: formVals.HSCode,
@@ -271,14 +271,14 @@ class SKUDetail extends PureComponent {
             </Col>
           </Row>
           <Row gutter={8}>
-            <Col lg={8} md={12} sm={24}>
+            <Col lg={12} md={12} sm={24}>
               <FormItem key="FHSCode" {...this.formLayout} label="国外海关编码">
                 {getFieldDecorator('FHSCode', {
                   initialValue: formVals.FHSCode,
                 })(<Input placeholder="请输入名称" />)}
               </FormItem>
             </Col>
-            <Col lg={8} md={12} sm={24}>
+            <Col lg={12} md={12} sm={24}>
               <FormItem key="SPUCode" {...this.formLayout} label="SPU代码">
                 {getFieldDecorator('SPUCode', {
                   initialValue: formVals.SPUCode,

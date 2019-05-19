@@ -1,4 +1,4 @@
-import { getTreeRule, addRule, updateRule } from '../service';
+import { getTreeRule, setRule } from '../service';
 
 export default {
   namespace: 'authoritySet',
@@ -19,17 +19,9 @@ export default {
         });
       }
     },
-    *add({ payload, callback }, { call, put }) {
-      const response = yield call(addRule, payload);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
-      if (callback) callback(response);
-    },
 
     *update({ payload, callback }, { call, put }) {
-      const response = yield call(updateRule, payload);
+      const response = yield call(setRule, payload);
       yield put({
         type: 'save',
         payload: response,

@@ -36,10 +36,12 @@ export default {
   routes: [
     {
       path: '/user',
+      hideInMenu: true,
       component: '../layouts/UserLayout',
       routes: [
         {
           path: '/user',
+          hideInMenu: true,
           component: './Welcome',
         },
       ],
@@ -50,18 +52,21 @@ export default {
       routes: [
         {
           path: '/',
+          hideInMenu: true,
           redirect: '/welcome',
         },
         // dashboard
         {
           path: '/welcome',
           name: 'welcome',
+          hideInMenu: true,
           icon: 'smile',
           component: './Welcome',
         },
         {
           path: 'https://github.com/umijs/umi-blocks/tree/master/ant-design-pro',
           name: 'more-blocks',
+          hideInMenu: true,
           icon: 'block',
         },
         {
@@ -105,6 +110,7 @@ export default {
         {
           name: '消息管理',
           icon: 'smile',
+          hideInMenu: true,
           path: '/message',
           routes: [
             {
@@ -174,6 +180,7 @@ export default {
           name: '用户查询',
           icon: 'smile',
           path: '/users',
+          hideInMenu: true,
           component: './users',
         },
         {

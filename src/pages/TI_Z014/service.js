@@ -37,7 +37,7 @@ export async function updateRule(params) {
 }
 
 export async function setRule(params) {
-  return request('/MDM/TI_Z015/TI_Z01501', {
+  return request('/MDM/TI_Z015/TI_Z01504', {
     method: 'POST',
     data: {
       ...params,
