@@ -1,72 +1,84 @@
-import { querySingleRule, addRule, updateRule } from './service';
+import { querySingleRule, addRule, updateRule, cancelRule, confirmRule } from './service';
 
 export default {
   namespace: 'inquiryEdit',
 
   state: {
     inquiryDetail: {
-      Content: {
-        Comment: '',
-        SDocStatus: '',
-        PDocStatus: '',
-        Closed: '',
-        ClosedBy: '',
-        SourceType: '',
-        OrderType: '',
-        CardCode: '',
-        CardName: '',
-        UserID: 0,
-        Contacts: '',
-        CellphoneNO: '',
-        PhoneNO: '',
-        Email: '',
-        CompanyCode: '',
-        DueDate: '',
-        ToDate: '',
-        InquiryDocTotal: 0,
-        DocTotal: 0,
-        ProvinceID: '',
-        Province: '',
-        CityID: '',
-        City: '',
-        AreaID: '',
-        Area: '',
-        StreetID: '',
-        Street: '',
-        Address: '',
-        NumAtCard: '',
-        Owner: '',
-        IsInquiry: '',
-        TI_Z02602: [],
-        TI_Z02603: [],
-      },
+      Comment: '',
+      SDocStatus: '',
+      PDocStatus: '',
+      Closed: '',
+      ClosedBy: '',
+      SourceType: '',
+      OrderType: '',
+      DocDate: null,
+      CreateDate: null,
+      CardCode: '',
+      CardName: '',
+      UserID: '',
+      Contacts: '',
+      CellphoneNO: '',
+      PhoneNO: '',
+      Email: '',
+      CompanyCode: '',
+      DueDate: null,
+      ToDate: null,
+      InquiryDocTotal: '',
+      DocTotal: '',
+      ProvinceID: '',
+      Province: '',
+      CityID: '',
+      City: '',
+      AreaID: '',
+      Area: '',
+      StreetID: '',
+      Street: '',
+      Address: '',
+      NumAtCard: '',
+      Owner: '',
+      IsInquiry: '',
+      TI_Z02602: [],
+      TI_Z02603: [],
     },
   },
 
   effects: {
     *fetch({ payload }, { call, put }) {
       const response = yield call(querySingleRule, payload);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
+      if (response.Status === 200) {
+        yield put({
+          type: 'save',
+          payload: {
+            inquiryDetail: response.Content,
+          },
+        });
+      }
     },
-    *add({ payload, callback }, { call, put }) {
+    *add({ payload, callback }, { call }) {
       const response = yield call(addRule, payload);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
-      if (callback) callback();
+      if (callback) callback(response);
     },
 
-    *update({ payload, callback }, { call, put }) {
+    *update({ payload, callback }, { call }) {
       const response = yield call(updateRule, payload);
+      if (callback) callback(response);
+    },
+    *cancel({ payload, callback }, { call, put }) {
+      const response = yield call(cancelRule, payload);
       yield put({
         type: 'save',
         payload: response,
       });
-      if (callback) callback();
+      if (callback) callback(response);
+    },
+    *confirm({ payload, callback }, { call, put }) {
+      const response = yield call(confirmRule, payload);
+      yield put({
+        type: 'save',
+        payload: response,
+      });
+      if (callback) callback(response);
     },
   },
 
@@ -74,7 +86,7 @@ export default {
     save(state, action) {
       return {
         ...state,
-        data: action.payload,
+        ...action.payload,
       };
     },
   },

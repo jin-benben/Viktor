@@ -99,7 +99,7 @@ class companySearch extends PureComponent {
     form.validateFields((err, fieldsValue) => {
       if (err) return;
       dispatch({
-        type: 'staffs/fetch',
+        type: 'companySearch/fetch',
         payload: {
           Content: {
             SearchText: '',

@@ -260,6 +260,31 @@ export default {
           ]
         },
         {
+          name: '供应商询价单',
+          icon: 'smile',
+          path: '/TI_Z027',
+          routes:[
+            {
+              name: '单据查询',
+              icon: 'smile',
+              path: '/TI_Z027/search',
+              component: './TI_Z027/TI_Z02706',
+            },
+            {
+              name: '明细查询',
+              icon: 'smile',
+              path: '/TI_Z027/searchLine',
+              component: './TI_Z027/TI_Z02707',
+            },
+            {
+              name: '添加',
+              icon: 'smile',
+              path: '/TI_Z027/edit',
+              component: './TI_Z027/TI_Z02701',
+            }
+          ]
+        },
+        {
           name: '物料管理',
           icon: 'smile',
           path: '/sku',

@@ -58,6 +58,7 @@ class UpdateLoad extends PureComponent {
         md: { span: 10 },
       },
     };
+    const { AttachmentCode, AttachmentPath } = this.state;
     const uploadButton = (
       <div>
         <Icon type="plus" />
@@ -92,7 +93,11 @@ class UpdateLoad extends PureComponent {
               data={{ UserCode: 'jinwentao', Folder: 'TI_Z026', Tonken: '22233' }}
               onChange={this.handleChange}
             >
-              {uploadButton}
+              {AttachmentCode ? (
+                <img style={{ width: 80, height: 80 }} src={AttachmentPath} alt="avatar" />
+              ) : (
+                uploadButton
+              )}
             </Upload>
           </FormItem>
         </Form>

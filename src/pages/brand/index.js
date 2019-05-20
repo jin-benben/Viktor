@@ -78,7 +78,12 @@ class CreateForm extends PureComponent {
           <FormItem key="purchaser" {...this.formLayout} label="采购员">
             {getFieldDecorator('purchaser', {
               initialValue: { key: formVals.Purchaser, label: formVals.PurchaserName },
-            })(<Staffs labelInValue />)}
+            })(
+              <Staffs
+                initialValue={{ key: formVals.Purchaser, label: formVals.PurchaserName }}
+                labelInValue
+              />
+            )}
           </FormItem>
           <FormItem key="supplier" {...this.formLayout} label="默认供应商">
             {getFieldDecorator('supplier', {

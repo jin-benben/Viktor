@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import request from '@/utils/request';
-import { Select, Spin, message, Empty } from 'antd';
+import { Select, Spin, Empty } from 'antd';
 import debounce from 'lodash/debounce';
 
 const { Option } = Select;
@@ -14,9 +14,18 @@ class Staffs extends PureComponent {
 
   state = {
     data: [],
-    value: [],
     fetching: false,
+    initialValue: '',
   };
+
+  static getDerivedStateFromProps(nextProps, prevState) {
+    if (!prevState.initialValue && nextProps.initialValue !== prevState.initialValue) {
+      return {
+        initialValue: nextProps.initialValue,
+      };
+    }
+    return null;
+  }
 
   fetchUser = async value => {
     if (!value) return;
@@ -40,16 +49,14 @@ class Staffs extends PureComponent {
     if (response.Status !== 200 || fetchId !== this.lastFetchId) {
       return;
     }
-    if (!response.Content || !response.Content.rows.length) {
-      message.warn('暂无匹配');
-    }
     this.setState({ data: response.Content ? response.Content.rows : [], fetching: false });
   };
 
   handleChange = value => {
+    console.log(value);
     this.setState({
-      value,
       fetching: false,
+      initialValue: value,
     });
     const { onChange } = this.props;
     if (onChange) {
@@ -58,16 +65,15 @@ class Staffs extends PureComponent {
   };
 
   render() {
-    const { fetching, data, value } = this.state;
-    const { initialValue, labelInValue } = this.props;
-    console.log(initialValue, this.props);
+    const { fetching, data, initialValue } = this.state;
+    const { labelInValue } = this.props;
+    console.log(initialValue);
     return (
       <Select
         showSearch
         showArrow={false}
         labelInValue={labelInValue}
-        value={value}
-        defaultValue={initialValue}
+        value={initialValue}
         placeholder="输入名称"
         notFoundContent={fetching ? <Spin size="small" /> : <Empty />}
         filterOption={false}

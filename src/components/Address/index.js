@@ -26,25 +26,6 @@ const options = [
   },
 ];
 
-// function onChange(value,selectedOptions) {
-//   console.log(value,selectedOptions);
-//   if(selectedOptions.length===3){
-//      const [province,city,area,street]= selectedOptions
-//      let address ={
-//       ProvinceID: province.value,
-//       Province:province.label,
-//       CityID: city.value,
-//       City: city.label,
-//       AreaID: area.value,
-//       Area: area.label,
-//       StreetID: street.value,
-//       Street: v,
-//      }
-//   }else{
-//     message.warning("请选择完整的地址")
-//   }
-
-// }
 class AddressCascader extends PureComponent {
   handleChange = (value, selectedOptions) => {
     const [province, city, area, street] = selectedOptions;
@@ -68,16 +49,16 @@ class AddressCascader extends PureComponent {
   };
 
   render() {
-    const { ProvinceID, CityID, AreaID, StreetID } = this.props;
-    const defaultValue = [ProvinceID, CityID, AreaID, StreetID];
+    const { initialValue, style } = this.props;
     return (
       <Cascader
-        defaultValue={defaultValue}
+        style={style}
+        defaultValue={initialValue}
         changeOnSelect
         expandTrigger="hover"
         onChange={this.handleChange}
         options={options}
-        placeholder="Please select"
+        placeholder="请选择地址"
       />
     );
   }

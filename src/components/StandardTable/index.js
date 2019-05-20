@@ -80,6 +80,7 @@ class StandardTable extends PureComponent {
     }
     if (rowSelection) {
       rowSelection = {
+        ...rowSelection,
         selectedRowKeys,
         onChange: this.handleRowSelectChange,
         getCheckboxProps: record => ({

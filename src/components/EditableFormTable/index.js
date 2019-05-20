@@ -14,7 +14,7 @@ class EditableCell extends PureComponent {
           />
         );
       case 'textArea':
-        return <TextArea onChange={e => this.dateChange(e, dataIndex, record)} />;
+        return <TextArea onChange={e => this.InputChange(e, dataIndex, record)} />;
       case 'select':
         return (
           <Select
@@ -106,6 +106,7 @@ class EditableTable extends React.Component {
     return (
       <Table
         components={components}
+        pagination={false}
         rowKey={rowKey || 'key'}
         bordered
         size="middle"

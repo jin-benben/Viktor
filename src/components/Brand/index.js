@@ -68,7 +68,7 @@ class Brands extends PureComponent {
         value={value}
         defaultValue={initialValue}
         placeholder="输入名称"
-        notFoundContent={fetching ? <Spin size="small" /> : <Empty />}
+        notFoundContent={fetching ? <Spin size="small" /> : <Empty style={{ width: '100%' }} />}
         filterOption={false}
         onSearch={this.fetchUser}
         onChange={this.handleChange}

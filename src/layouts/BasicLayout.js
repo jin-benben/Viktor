@@ -5,6 +5,7 @@ import isEqual from 'lodash/isEqual';
 import memoizeOne from 'memoize-one';
 import { connect } from 'dva';
 import { ContainerQuery } from 'react-container-query';
+import { Scrollbars } from 'react-custom-scrollbars';
 import classNames from 'classnames';
 import pathToRegexp from 'path-to-regexp';
 import Media from 'react-media';
@@ -155,38 +156,40 @@ class BasicLayout extends React.PureComponent {
     const routerConfig = this.getRouterAuthority(pathname, routes);
     const contentStyle = !fixedHeader ? { paddingTop: 0 } : {};
     const layout = (
-      <Layout>
-        {isTop && !isMobile ? null : (
-          <SiderMenu
-            logo={logo}
-            theme={navTheme}
-            onCollapse={this.handleMenuCollapse}
-            menuData={menuData}
-            isMobile={isMobile}
-            {...this.props}
-          />
-        )}
-        <Layout
-          style={{
-            ...this.getLayoutStyle(),
-            minHeight: '100vh',
-          }}
-        >
-          <Header
-            menuData={menuData}
-            handleMenuCollapse={this.handleMenuCollapse}
-            logo={logo}
-            isMobile={isMobile}
-            {...this.props}
-          />
-          <Content className={styles.content} style={contentStyle}>
-            <Authorized authority={routerConfig} noMatch={<p>Exception403</p>}>
-              {children}
-            </Authorized>
-          </Content>
-          <Footer />
+      <Scrollbars style={{ minHeight: '100vh' }}>
+        <Layout>
+          {isTop && !isMobile ? null : (
+            <SiderMenu
+              logo={logo}
+              theme={navTheme}
+              onCollapse={this.handleMenuCollapse}
+              menuData={menuData}
+              isMobile={isMobile}
+              {...this.props}
+            />
+          )}
+          <Layout
+            style={{
+              ...this.getLayoutStyle(),
+              minHeight: '100vh',
+            }}
+          >
+            <Header
+              menuData={menuData}
+              handleMenuCollapse={this.handleMenuCollapse}
+              logo={logo}
+              isMobile={isMobile}
+              {...this.props}
+            />
+            <Content className={styles.content} style={contentStyle}>
+              <Authorized authority={routerConfig} noMatch={<p>Exception403</p>}>
+                {children}
+              </Authorized>
+            </Content>
+            <Footer />
+          </Layout>
         </Layout>
-      </Layout>
+      </Scrollbars>
     );
     return (
       <React.Fragment>

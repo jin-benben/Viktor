@@ -18,10 +18,10 @@ export function chechEmail(email) {
 
 export function requestUrl(url) {
   if (url.indexOf('/MDM') !== -1) {
-    return url.replace(/\/MDM/g, 'http://117.149.160.231:9301');
+    return url.replace(/\/MDM/g, 'http://47.104.65.49:8002');
   }
   if (url.indexOf('/OMS') !== -1) {
-    return url.replace(/\/OMS/g, 'http://117.149.160.231:9302');
+    return url.replace(/\/OMS/g, 'http://47.104.65.49:8001');
   }
   return url;
 }

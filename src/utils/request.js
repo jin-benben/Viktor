@@ -57,10 +57,17 @@ request.interceptors.request.use((url, options) => {
 /**
  * 5. 对于状态码实际是 200 的错误
  */
-// request.interceptors.response.use(async (response) => {
-//   const data = await response.clone().json();
-
-//   return response;
-// })
+request.interceptors.response.use(async response => {
+  // const {url} =response
+  const data = await response.clone().json();
+  console.log(data);
+  if (data.Status !== 200) {
+    notification.error({
+      message: `请求错误 ${data.Status}`,
+      description: data.Message,
+    });
+  }
+  return response;
+});
 
 export default request;
