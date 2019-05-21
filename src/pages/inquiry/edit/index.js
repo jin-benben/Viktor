@@ -19,6 +19,8 @@ import {
   Select,
 } from 'antd';
 import moment from 'moment';
+import round from 'lodash/round';
+import cloneDeep from 'lodash/cloneDeep';
 import StandardTable from '@/components/StandardTable';
 import EditableFormTable from '@/components/EditableFormTable';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
@@ -46,21 +48,23 @@ class InquiryEdit extends React.Component {
       dataIndex: 'LineID',
       width: 50,
       align: 'center',
+      render: (text, record) => (record.lastIndex ? '合计' : text),
     },
     {
       title: 'SKU',
       dataIndex: 'SKU',
       align: 'center',
       width: 150,
-      render: (text, record, index) => (
-        <Input
-          value={record.SKU}
-          placeholder="选择SKU"
-          onClick={() => {
-            this.focusLine(record, index);
-          }}
-        />
-      ),
+      render: (text, record, index) =>
+        record.lastIndex ? null : (
+          <Input
+            value={record.SKU}
+            placeholder="选择SKU"
+            onClick={() => {
+              this.focusLine(record, index);
+            }}
+          />
+        ),
     },
     {
       title: '产品描述',
@@ -75,15 +79,16 @@ class InquiryEdit extends React.Component {
       width: 150,
       align: 'center',
       dataIndex: 'BrandName',
-      render: (text, record, index) => (
-        <Brand
-          defaultValue={record.BrandName}
-          keyType="Name"
-          onChange={value => {
-            this.brandChange(value, record, index, 'BrandName');
-          }}
-        />
-      ),
+      render: (text, record, index) =>
+        record.lastIndex ? null : (
+          <Brand
+            defaultValue={record.BrandName}
+            keyType="Name"
+            onChange={value => {
+              this.brandChange(value, record, index, 'BrandName');
+            }}
+          />
+        ),
     },
     {
       title: '名称',
@@ -149,16 +154,16 @@ class InquiryEdit extends React.Component {
       align: 'center',
     },
     {
-      title: '询价最终价格',
-      width: 100,
+      title: '询价最终价',
+      width: 120,
       inputType: 'text',
       dataIndex: 'InquiryPrice',
       editable: true,
       align: 'center',
     },
     {
-      title: '销售建议价格',
-      width: 100,
+      title: '销售建议价',
+      width: 120,
       inputType: 'text',
       dataIndex: 'Price',
       editable: true,
@@ -203,6 +208,12 @@ class InquiryEdit extends React.Component {
       dataIndex: 'InquiryLineTotal',
     },
     {
+      title: '询价行总计(本币)',
+      width: 120,
+      align: 'center',
+      dataIndex: 'InquiryLineTotalLocal',
+    },
+    {
       title: '销售行总计',
       width: 150,
       align: 'center',
@@ -213,30 +224,31 @@ class InquiryEdit extends React.Component {
       fixed: 'right',
       align: 'center',
       width: 80,
-      render: (text, record, index) => (
-        <Fragment>
-          <Icon
-            title="预览"
-            type="eye"
-            onClick={() => this.lookLineAttachment(record, index)}
-            style={{ color: '#08c', marginRight: 5 }}
-          />
-          <Icon
-            title="上传附件"
-            className="icons"
-            style={{ color: '#08c', marginRight: 5, marginLeft: 5 }}
-            type="cloud-upload"
-            onClick={() => this.skuLineAttachment(record, index)}
-          />
-          <Icon
-            title="删除行"
-            className="icons"
-            type="delete"
-            theme="twoTone"
-            onClick={() => this.deleteSKULine(record, index)}
-          />
-        </Fragment>
-      ),
+      render: (text, record, index) =>
+        record.lastIndex ? null : (
+          <Fragment>
+            <Icon
+              title="预览"
+              type="eye"
+              onClick={() => this.lookLineAttachment(record, index)}
+              style={{ color: '#08c', marginRight: 5 }}
+            />
+            <Icon
+              title="上传附件"
+              className="icons"
+              style={{ color: '#08c', marginRight: 5, marginLeft: 5 }}
+              type="cloud-upload"
+              onClick={() => this.skuLineAttachment(record, index)}
+            />
+            <Icon
+              title="删除行"
+              className="icons"
+              type="delete"
+              theme="twoTone"
+              onClick={() => this.deleteSKULine(record, index)}
+            />
+          </Fragment>
+        ),
     },
   ];
 
@@ -296,14 +308,15 @@ class InquiryEdit extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      formVals: {},
-      tabIndex: '1',
-      uploadmodalVisible: false,
-      attachmentVisible: false,
-      skuModalVisible: false,
-      LineID: Number,
-      linkmanList: [],
+      formVals: {}, // 单据信息
+      tabIndex: '1', // tab
+      uploadmodalVisible: false, // 上传Modal
+      attachmentVisible: false, // 附件Modal
+      skuModalVisible: false, // 物料选择 Modal
+      LineID: Number, // 当前选中行index
+      linkmanList: [], // 联系人list
       thisLine: {
+        // 当前行
         TI_Z02604: [],
       },
     };
@@ -342,19 +355,44 @@ class InquiryEdit extends React.Component {
   //  行内容改变
   rowChange = record => {
     const { formVals } = this.state;
-    let DocTotal = 0;
-    let InquiryDocTotalLocal = 0;
-    let InquiryDocTotl = 0;
     formVals.TI_Z02602.map(item => {
       if (item.key === record.key) {
-        record.InquiryLineTotalLocal = record.Quantity * record.InquiryLineTotal;
-        record.LineTotalLocal;
         return record;
       }
       return item;
     });
-    // console.log(data)
-    this.setState({ formVals: { ...formVals } });
+    this.setState({ formVals }, () => {
+      this.getTotal();
+    });
+  };
+
+  //  计算总计
+  getTotal = () => {
+    const { formVals } = this.state;
+    let DocTotal = 0;
+    let InquiryDocTotalLocal = 0;
+    let InquiryDocTotal = 0;
+    // eslint-disable-next-line array-callback-return
+    formVals.TI_Z02602.map(record => {
+      record.InquiryLineTotalLocal = isNaN(record.Quantity * record.InquiryPrice)
+        ? 0
+        : record.Quantity * record.InquiryPrice;
+      record.InquiryLineTotalLocal = round(record.InquiryLineTotalLocal, 2);
+      record.InquiryLineTotal = isNaN(record.Quantity * record.InquiryPrice * record.DocRate)
+        ? 0
+        : record.Quantity * record.InquiryPrice * record.DocRate;
+      record.InquiryLineTotal = round(record.InquiryLineTotal, 2);
+      record.LineTotal = isNaN(record.Quantity * record.Price) ? 0 : record.Quantity * record.Price;
+      record.LineTotal = round(record.LineTotal, 2);
+      DocTotal += record.LineTotal;
+      InquiryDocTotalLocal += record.InquiryLineTotalLocal;
+      InquiryDocTotal += record.InquiryLineTotal;
+    });
+    formVals.DocTotal = DocTotal;
+    formVals.InquiryDocTotalLocal = InquiryDocTotalLocal;
+    formVals.InquiryDocTotal = InquiryDocTotal;
+    formVals.DocTotal = DocTotal;
+    this.setState({ formVals });
   };
 
   // 品牌
@@ -407,7 +445,9 @@ class InquiryEdit extends React.Component {
   deleteSKULine = (record, index) => {
     const { formVals } = this.state;
     formVals.TI_Z02602.splice(index, 1);
-    this.setState({ formVals: { ...formVals } });
+    this.setState({ formVals }, () => {
+      this.getTotal();
+    });
   };
 
   // 获取上传成功附件，插入到对应数组
@@ -455,6 +495,7 @@ class InquiryEdit extends React.Component {
     });
   };
 
+  // change tab
   tabChange = tabIndex => {
     this.setState({ tabIndex });
   };
@@ -573,8 +614,8 @@ class InquiryEdit extends React.Component {
     });
   };
 
+  // 更新主数据
   updateHandle = () => {
-    // 更新主数据
     const { form, dispatch } = this.props;
     const { formVals } = this.state;
     form.validateFields((err, fieldsValue) => {
@@ -640,7 +681,17 @@ class InquiryEdit extends React.Component {
       handleSubmit: this.changeLineSKU,
       handleModalVisible: this.handleModalVisible,
     };
-    console.log(linkmanList);
+    console.log(formVals);
+    const newdata = [...formVals.TI_Z02602];
+    if (newdata.length > 0) {
+      newdata.push({
+        LineID: newdata[newdata.length - 1].LineID + 1,
+        lastIndex: true,
+        InquiryLineTotal: formVals.InquiryDocTotal,
+        InquiryLineTotalLocal: formVals.InquiryDocTotalLocal,
+        LineTotal: formVals.DocTotal,
+      });
+    }
     return (
       <Card>
         <Form {...formItemLayout}>
@@ -734,11 +785,10 @@ class InquiryEdit extends React.Component {
           <TabPane tab="物料" key="1">
             <EditableFormTable
               rowChange={this.rowChange}
-              page
               rowKey="LineID"
-              scroll={{ x: 2400 }}
+              scroll={{ x: 2500 }}
               columns={this.skuColumns}
-              data={formVals.TI_Z02602}
+              data={newdata}
             />
             <Row style={{ marginTop: 20 }} gutter={8}>
               <Col lg={8} md={12} sm={24}>
@@ -756,22 +806,6 @@ class InquiryEdit extends React.Component {
                       ? moment(formVals.CreateDate, 'YYYY-MM-DD')
                       : null,
                   })(<DatePicker style={{ width: '100%' }} />)}
-                </FormItem>
-              </Col>
-            </Row>
-            <Row gutter={8}>
-              <Col lg={8} md={12} sm={24}>
-                <FormItem key="DocTotal" {...this.formLayout} label="销售总计">
-                  {getFieldDecorator('DocTotal', {
-                    initialValue: formVals.DocTotal,
-                  })(<Input disabled />)}
-                </FormItem>
-              </Col>
-              <Col lg={8} md={12} sm={24}>
-                <FormItem key="InquiryDocTotal" {...this.formLayout} label="询价总计(外币)">
-                  {getFieldDecorator('InquiryDocTotal', {
-                    initialValue: formVals.InquiryDocTotal,
-                  })(<Input disabled />)}
                 </FormItem>
               </Col>
             </Row>

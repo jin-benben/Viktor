@@ -16,10 +16,10 @@ const { Option } = Select;
 /* eslint react/no-multi-comp:0 */
 @connect(({ inquiryFetch, loading }) => ({
   inquiryFetch,
-  loading: loading.models.rule,
+  loading: loading.models.inquiryFetch,
 }))
 @Form.create()
-class inquiryList extends PureComponent {
+class inquiryListPage extends PureComponent {
   state = {
     expandForm: false,
   };
@@ -333,4 +333,4 @@ class inquiryList extends PureComponent {
   }
 }
 
-export default inquiryList;
+export default inquiryListPage;

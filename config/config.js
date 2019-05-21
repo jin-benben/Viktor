@@ -86,6 +86,13 @@ export default {
               icon: 'smile',
               component: './company/edit',
             },
+            {
+              path: `/company/detail/:id`,
+              name: '客户详情',
+              hideInMenu: true,
+              icon: 'smile',
+              component: './company/edit',
+            },
           ],
         },
         {

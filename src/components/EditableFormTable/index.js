@@ -62,12 +62,13 @@ class EditableCell extends PureComponent {
       inputType,
       rowChange,
       record,
+      lastIndex,
       index,
       ...restProps
     } = this.props;
     return (
       <td {...restProps}>
-        {editing ? this.getInput(dataIndex, record, index) : restProps.children}
+        {editing && !lastIndex ? this.getInput(dataIndex, record, index) : restProps.children}
       </td>
     );
   }
@@ -99,7 +100,9 @@ class EditableTable extends React.Component {
           inputType: col.inputType,
           dataIndex: col.dataIndex,
           title: col.title,
-          editing: col.editable, // this.isEditing(record)
+          editing: col.editable,
+          lastIndex: record.lastIndex || false,
+          render: col.render, // this.isEditing(record)
         }),
       };
     });
