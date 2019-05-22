@@ -61,10 +61,13 @@ class CompanySelect extends React.Component {
     this.setState({
       fetching: false,
     });
-    console.log('ss');
-    const { onChange } = this.props;
+    const { onChange, keyType } = this.props;
     if (onChange) {
-      onChange(value);
+      if (keyType === 'Code') {
+        onChange({ key: value.label, label: value.key });
+      } else {
+        onChange(value);
+      }
     }
   };
 
@@ -87,7 +90,6 @@ class CompanySelect extends React.Component {
       handleModalVisible: this.handleModalVisible,
     };
     const { keyType } = this.props;
-    console.log(initialValue);
     const attribute = keyType || 'Code';
     return (
       <Fragment>
@@ -95,6 +97,7 @@ class CompanySelect extends React.Component {
           showSearch
           value={initialValue}
           defaultValue={initialValue}
+          labelInValue
           suffixIcon={
             <Icon
               onClick={() => {
@@ -110,11 +113,17 @@ class CompanySelect extends React.Component {
           onChange={this.handleChange}
           style={{ width: '100%' }}
         >
-          {data.map(option => (
-            <Option key={option.Code} value={option[attribute]}>
-              {option.Name}
-            </Option>
-          ))}
+          {data.map(option =>
+            attribute === 'Code' ? (
+              <Option key={option.Name} value={option.Name}>
+                {option.Code}
+              </Option>
+            ) : (
+              <Option key={option.Code} value={option.Code}>
+                {option.Name}
+              </Option>
+            )
+          )}
         </Select>
         <CompanyModal {...companyParentMethods} modalVisible={companyModal} />
       </Fragment>

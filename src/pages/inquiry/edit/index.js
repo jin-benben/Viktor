@@ -1,6 +1,7 @@
+/* eslint-disable camelcase */
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-script-url */
-import React, { PureComponent, Fragment } from 'react';
+import React, { Fragment } from 'react';
 import { connect } from 'dva';
 import {
   Row,
@@ -13,14 +14,16 @@ import {
   Icon,
   Switch,
   Modal,
-  Popconfirm,
   message,
   DatePicker,
   Select,
 } from 'antd';
 import moment from 'moment';
 import round from 'lodash/round';
-import cloneDeep from 'lodash/cloneDeep';
+import router from 'umi/router';
+import CompanyCode from '@/components/Select/CompanyCode';
+import CancelOrder from '@/components/Modal/CancelOrder';
+import WhsCode from '@/components/Select/WhsCode';
 import StandardTable from '@/components/StandardTable';
 import EditableFormTable from '@/components/EditableFormTable';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
@@ -30,6 +33,7 @@ import Address from '@/components/Address';
 import Staffs from '@/components/Staffs';
 import Brand from '@/components/Brand';
 import LinkMan from '../components/linkman';
+import NeedAskPrice from '../components/needAskPrice';
 import CompanySelect from '@/components/Company/select';
 import { checkPhone, chechEmail } from '@/utils/utils';
 
@@ -70,13 +74,13 @@ class InquiryEdit extends React.Component {
       title: '产品描述',
       dataIndex: 'SKUName',
       inputType: 'textArea',
-      width: 150,
+      width: 200,
       editable: true,
       align: 'center',
     },
     {
       title: '品牌',
-      width: 150,
+      width: 200,
       align: 'center',
       dataIndex: 'BrandName',
       render: (text, record, index) =>
@@ -85,7 +89,7 @@ class InquiryEdit extends React.Component {
             defaultValue={record.BrandName}
             keyType="Name"
             onChange={value => {
-              this.brandChange(value, record, index, 'BrandName');
+              this.rowSelectChange(value, record, index, 'BrandName');
             }}
           />
         ),
@@ -124,7 +128,7 @@ class InquiryEdit extends React.Component {
     },
     {
       title: '采购员',
-      width: 150,
+      width: 200,
       dataIndex: 'Purchaser',
       editable: true,
       align: 'center',
@@ -154,6 +158,22 @@ class InquiryEdit extends React.Component {
       align: 'center',
     },
     {
+      title: '仓库',
+      width: 150,
+      dataIndex: 'WhsCode',
+      align: 'center',
+      render: (text, record, index) =>
+        record.lastIndex ? null : (
+          <WhsCode
+            defaultValue={record.WhsCode}
+            keyType="Name"
+            onChange={value => {
+              this.rowSelectChange(value, record, index, 'WhsCode');
+            }}
+          />
+        ),
+    },
+    {
       title: '询价最终价',
       width: 120,
       inputType: 'text',
@@ -179,14 +199,13 @@ class InquiryEdit extends React.Component {
     },
     {
       title: '单据汇率',
-      width: 150,
+      width: 100,
       inputType: 'text',
       dataIndex: 'DocRate',
-      editable: true,
       align: 'center',
     },
     {
-      title: '询价最终交期',
+      title: '最终交期',
       width: 150,
       inputType: 'date',
       dataIndex: 'InquiryDueDate',
@@ -209,7 +228,7 @@ class InquiryEdit extends React.Component {
     },
     {
       title: '询价行总计(本币)',
-      width: 120,
+      width: 150,
       align: 'center',
       dataIndex: 'InquiryLineTotalLocal',
     },
@@ -257,12 +276,13 @@ class InquiryEdit extends React.Component {
       title: '序号',
       width: 80,
       align: 'center',
-      dataIndex: 'OrderID',
+      dataIndex: 'LineID',
     },
     {
       title: '来源类型',
       align: 'center',
       dataIndex: 'BaseType',
+      render: text => <span>{text === '1' ? '正常订单' : '未知'}</span>,
     },
     {
       title: '来源单号',
@@ -313,6 +333,7 @@ class InquiryEdit extends React.Component {
       uploadmodalVisible: false, // 上传Modal
       attachmentVisible: false, // 附件Modal
       skuModalVisible: false, // 物料选择 Modal
+      needmodalVisible: false,
       LineID: Number, // 当前选中行index
       linkmanList: [], // 联系人list
       thisLine: {
@@ -341,6 +362,52 @@ class InquiryEdit extends React.Component {
         },
       });
     }
+  }
+
+  componentWillUnmount() {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'inquiryEdit/save',
+      payload: {
+        inquiryDetail: {
+          Comment: '',
+          SDocStatus: '',
+          PDocStatus: '',
+          Closed: '',
+          ClosedBy: '',
+          SourceType: '',
+          OrderType: '',
+          DocDate: null,
+          CreateDate: null,
+          CardCode: '',
+          CardName: '',
+          UserID: '1',
+          Contacts: '',
+          CellphoneNO: '',
+          PhoneNO: '',
+          Email: '',
+          CompanyCode: '',
+          DueDate: null,
+          ToDate: null,
+          InquiryDocTotal: '',
+          DocTotal: '',
+          ProvinceID: '',
+          Province: '',
+          CityID: '',
+          City: '',
+          AreaID: '',
+          Area: '',
+          StreetID: '',
+          Street: '',
+          Address: '',
+          NumAtCard: '',
+          Owner: '',
+          IsInquiry: '',
+          TI_Z02602: [],
+          TI_Z02603: [],
+        },
+      },
+    });
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
@@ -395,11 +462,11 @@ class InquiryEdit extends React.Component {
     this.setState({ formVals });
   };
 
-  // 品牌
+  // 品牌,仓库改变
 
-  brandChange = (value, record, index) => {
+  rowSelectChange = (value, record, index, key) => {
     const { formVals } = this.state;
-    record.BrandName = value;
+    record[key] = value;
     formVals.TI_Z02602[index] = record;
     this.setState({ formVals: { ...formVals } });
   };
@@ -491,6 +558,7 @@ class InquiryEdit extends React.Component {
       uploadmodalVisible: !!flag,
       attachmentVisible: !!flag,
       skuModalVisible: !!flag,
+      needmodalVisible: !!flag,
       LineID: Number,
     });
   };
@@ -527,10 +595,11 @@ class InquiryEdit extends React.Component {
 
   // change 客户
   changeCompany = company => {
+    const { TI_Z00602List } = company;
     const { formVals } = this.state;
-    formVals.CardCode = company.Code;
-    formVals.CardName = company.Name;
-    this.setState({ formVals: { ...formVals }, linkmanList: [...company.TI_Z00602List] });
+    formVals.CardCode = company.Code || company.key;
+    formVals.CardName = company.Name || company.label;
+    this.setState({ formVals, linkmanList: TI_Z00602List || [] });
   };
 
   validatorPhone = (rule, value, callback) => {
@@ -547,6 +616,13 @@ class InquiryEdit extends React.Component {
     } else {
       callback();
     }
+  };
+
+  // 联系人change
+  linkmanChange = Contacts => {
+    const { formVals } = this.state;
+    formVals.Contacts = Contacts;
+    this.setState({ formVals });
   };
 
   addLineSku = () => {
@@ -575,7 +651,7 @@ class InquiryEdit extends React.Component {
       InquiryLineTotalLocal: '',
       LineTotal: '',
       Currency: '',
-      DocRate: '',
+      DocRate: 1,
       TI_Z02604: [],
     });
     this.setState({ formVals });
@@ -592,6 +668,8 @@ class InquiryEdit extends React.Component {
         address = { ...fieldsValue.address };
       }
       delete fieldsValue.address;
+      delete fieldsValue.CardCode;
+      delete fieldsValue.CardName;
       dispatch({
         type: 'inquiryEdit/add',
         payload: {
@@ -608,6 +686,7 @@ class InquiryEdit extends React.Component {
         callback: response => {
           if (response.Status === 200) {
             message.success('添加成功');
+            router.push(`/inquiry/detail?DocEntry=${response.Content.DocEntry}`);
           }
         },
       });
@@ -625,6 +704,8 @@ class InquiryEdit extends React.Component {
         address = { ...fieldsValue.address };
       }
       delete fieldsValue.address;
+      delete fieldsValue.CardCode;
+      delete fieldsValue.CardName;
       dispatch({
         type: 'inquiryEdit/update',
         payload: {
@@ -647,6 +728,61 @@ class InquiryEdit extends React.Component {
     });
   };
 
+  // 取消单据
+
+  cancelSubmit = ClosedComment => {
+    const { dispatch } = this.props;
+    const { formVals } = this.state;
+    dispatch({
+      type: 'inquiryEdit/cancel',
+      payload: {
+        Content: {
+          DocEntry: formVals.DocEntry,
+          ClosedComment,
+        },
+      },
+      callback: response => {
+        if (response.Status === 200) {
+          message.success('取消成功');
+        }
+      },
+    });
+  };
+
+  // 发送需询价
+  submitNeedLine = select => {
+    const { dispatch } = this.props;
+    const loItemList = select.map(item => ({
+      DocEntry: item.DocEntry,
+      LineID: item.LineID,
+    }));
+    dispatch({
+      type: 'inquiryEdit/confirm',
+      payload: {
+        Content: {
+          loItemList,
+        },
+      },
+      callback: response => {
+        if (response.Status === 200) {
+          message.success('提交成功');
+
+          this.setState({ needmodalVisible: false });
+        }
+      },
+    });
+  };
+
+  // 确认需要采购询价
+  selectNeed = () => {
+    const { selectedRows } = this.state;
+    if (selectedRows.length) {
+      this.handleModalVisible(true);
+    } else {
+      message.warning('请先选择');
+    }
+  };
+
   render() {
     const {
       form: { getFieldDecorator },
@@ -658,6 +794,7 @@ class InquiryEdit extends React.Component {
       linkmanList,
       uploadmodalVisible,
       skuModalVisible,
+      needmodalVisible,
       attachmentVisible,
     } = this.state;
     const formItemLayout = {
@@ -681,6 +818,11 @@ class InquiryEdit extends React.Component {
       handleSubmit: this.changeLineSKU,
       handleModalVisible: this.handleModalVisible,
     };
+
+    const needParentMethods = {
+      handleSubmit: this.submitNeedLine,
+      handleModalVisible: this.handleModalVisible,
+    };
     console.log(formVals);
     const newdata = [...formVals.TI_Z02602];
     if (newdata.length > 0) {
@@ -696,21 +838,21 @@ class InquiryEdit extends React.Component {
       <Card>
         <Form {...formItemLayout}>
           <Row gutter={8}>
-            <Col lg={8} md={12} sm={24}>
+            <Col lg={10} md={12} sm={24}>
               <FormItem key="CardCode" {...this.formLayout} label="客户ID">
                 {getFieldDecorator('CardCode', {
                   rules: [{ required: true, message: '请选择客户！' }],
-                  initialValue: formVals.CardCode,
+                  initialValue: { key: formVals.CardName, label: formVals.CardCode },
                 })(
                   <CompanySelect
-                    initialValue={formVals.CardCode}
+                    initialValue={{ key: formVals.CardName, label: formVals.CardCode }}
                     onChange={this.changeCompany}
                     keyType="Code"
                   />
                 )}
               </FormItem>
             </Col>
-            <Col lg={8} md={12} sm={24}>
+            <Col lg={10} md={12} sm={24}>
               <FormItem key="DocEntry" {...this.formLayout} label="单号">
                 {getFieldDecorator('DocEntry', {
                   initialValue: formVals.DocEntry,
@@ -719,21 +861,21 @@ class InquiryEdit extends React.Component {
             </Col>
           </Row>
           <Row gutter={8}>
-            <Col lg={8} md={12} sm={24}>
+            <Col lg={10} md={12} sm={24}>
               <FormItem key="CardName" {...this.formLayout} label="客户名称">
                 {getFieldDecorator('CardName', {
                   rules: [{ required: true, message: '请输入客户名称！' }],
-                  initialValue: formVals.CardName,
+                  initialValue: { key: formVals.CardCode, label: formVals.CardName },
                 })(
                   <CompanySelect
-                    initialValue={formVals.CardName}
+                    initialValue={{ key: formVals.CardCode, label: formVals.CardName }}
                     onChange={this.changeCompany}
                     keyType="Name"
                   />
                 )}
               </FormItem>
             </Col>
-            <Col lg={8} md={12} sm={24}>
+            <Col lg={10} md={12} sm={24}>
               <FormItem key="DocDate" {...this.formLayout} label="单据日期">
                 {getFieldDecorator('DocDate', {
                   rules: [{ required: true, message: '请选择单据日期！' }],
@@ -743,15 +885,21 @@ class InquiryEdit extends React.Component {
             </Col>
           </Row>
           <Row gutter={8}>
-            <Col lg={8} md={12} sm={24}>
+            <Col lg={10} md={12} sm={24}>
               <FormItem key="Contacts" {...this.formLayout} label="联系人">
                 {getFieldDecorator('Contacts', {
                   rules: [{ required: true, message: '请输入联系人！' }],
                   initialValue: formVals.Contacts,
-                })(<LinkMan data={linkmanList} />)}
+                })(
+                  <LinkMan
+                    initialValue={formVals.Contacts}
+                    onChange={this.linkmanChange}
+                    data={linkmanList}
+                  />
+                )}
               </FormItem>
             </Col>
-            <Col lg={8} md={12} sm={24}>
+            <Col lg={10} md={12} sm={24}>
               <FormItem key="OrderType" {...this.formLayout} label="订单类型">
                 {getFieldDecorator('OrderType', {
                   initialValue: formVals.OrderType,
@@ -765,7 +913,7 @@ class InquiryEdit extends React.Component {
             </Col>
           </Row>
           <Row gutter={8}>
-            <Col lg={8} md={12} sm={24}>
+            <Col lg={10} md={12} sm={24}>
               <FormItem key="NumAtCard" {...this.formLayout} label="客户参考号">
                 {getFieldDecorator('NumAtCard', {
                   initialValue: formVals.NumAtCard,
@@ -773,7 +921,7 @@ class InquiryEdit extends React.Component {
               </FormItem>
             </Col>
             {formVals.DocStatus ? (
-              <Col lg={8} md={12} sm={24}>
+              <Col lg={10} md={12} sm={24}>
                 <FormItem key="DocStatus" {...this.formLayout} label="状态">
                   <span>{formVals.DocStatus === 'O' ? '未清' : '已清'}</span>
                 </FormItem>
@@ -786,7 +934,7 @@ class InquiryEdit extends React.Component {
             <EditableFormTable
               rowChange={this.rowChange}
               rowKey="LineID"
-              scroll={{ x: 2500 }}
+              scroll={{ x: 2800 }}
               columns={this.skuColumns}
               data={newdata}
             />
@@ -796,7 +944,7 @@ class InquiryEdit extends React.Component {
                   {getFieldDecorator('Owner', {
                     initialValue: formVals.Owner,
                     rules: [{ required: true, message: '请选择所有人！' }],
-                  })(<Staffs />)}
+                  })(<Staffs initialValue={formVals.Owner} />)}
                 </FormItem>
               </Col>
               <Col lg={8} md={12} sm={24}>
@@ -845,7 +993,17 @@ class InquiryEdit extends React.Component {
                       formVals.AreaID,
                       formVals.StreetID,
                     ],
-                  })(<Address style={{ width: '100%' }} />)}
+                  })(
+                    <Address
+                      initialValue={[
+                        formVals.ProvinceID,
+                        formVals.CityID,
+                        formVals.AreaID,
+                        formVals.StreetID,
+                      ]}
+                      style={{ width: '100%' }}
+                    />
+                  )}
                 </FormItem>
               </Col>
               <Col lg={8} md={12} sm={24}>
@@ -856,11 +1014,13 @@ class InquiryEdit extends React.Component {
                   })(<Input placeholder="请输入详细地址！" />)}
                 </FormItem>
               </Col>
+
               <Col lg={8} md={12} sm={24}>
                 <FormItem key="CompanyCode" {...this.formLayout} label="交易公司">
                   {getFieldDecorator('CompanyCode', {
                     initialValue: formVals.CompanyCode,
-                  })(<Input />)}
+                    rules: [{ required: true, message: '请选择交易公司！' }],
+                  })(<CompanyCode />)}
                 </FormItem>
               </Col>
               <Col lg={8} md={12} sm={24}>
@@ -913,29 +1073,34 @@ class InquiryEdit extends React.Component {
               </Col>
               <Col lg={8} md={12} sm={24}>
                 <FormItem key="CreateUser" {...this.formLayout} label="创建人">
-                  <span>创建人</span>
+                  <span>{formVals.CreateUser}</span>
                 </FormItem>
               </Col>
               {formVals.DocEntry ? (
                 <Fragment>
                   <Col lg={8} md={12} sm={24}>
-                    <FormItem key="InquiryDocTotal" {...this.formLayout} label="主单状态">
-                      <span>主单状态</span>
+                    <FormItem key="SDocStatus" {...this.formLayout} label="销售报价状态">
+                      <span>{formVals.PDocStatus}</span>
+                    </FormItem>
+                  </Col>
+                  <Col lg={8} md={12} sm={24}>
+                    <FormItem key="PDocStatus" {...this.formLayout} label="采购询价状态">
+                      <span>{formVals.SDocStatus}</span>
                     </FormItem>
                   </Col>
                   <Col lg={8} md={12} sm={24}>
                     <FormItem key="Closed" {...this.formLayout} label="关闭状态">
                       <Switch
-                        checkedChildren="开"
+                        checkedChildren="已关闭"
                         disabled
-                        unCheckedChildren="关"
+                        unCheckedChildren="开启中"
                         checked={formVals.Closed === 'Y'}
                       />
                     </FormItem>
                   </Col>
                   <Col lg={8} md={12} sm={24}>
                     <FormItem key="ClosedBy " {...this.formLayout} label="关闭人">
-                      <span>关闭人</span>
+                      <span>{formVals.ClosedBy}</span>
                     </FormItem>
                   </Col>
                 </Fragment>
@@ -953,9 +1118,19 @@ class InquiryEdit extends React.Component {
 
         <FooterToolbar>
           {formVals.DocEntry ? (
-            <Button onClick={this.updateHandle} type="primary">
-              更新
-            </Button>
+            <Fragment>
+              <CancelOrder cancelSubmit={this.cancelSubmit} />
+              <Button
+                style={{ marginLeft: 10, marginRight: 10 }}
+                onClick={this.updateHandle}
+                type="primary"
+              >
+                更新
+              </Button>
+              <Button onClick={() => this.setState({ needmodalVisible: true })} type="primary">
+                确认需采购询价
+              </Button>
+            </Fragment>
           ) : (
             <Button onClick={this.saveHandle} type="primary">
               保存
@@ -978,6 +1153,11 @@ class InquiryEdit extends React.Component {
             columns={this.attachmentColumns}
           />
         </Modal>
+        <NeedAskPrice
+          data={formVals.TI_Z02602}
+          {...needParentMethods}
+          modalVisible={needmodalVisible}
+        />
       </Card>
     );
   }

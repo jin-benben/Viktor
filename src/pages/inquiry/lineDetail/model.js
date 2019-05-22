@@ -1,10 +1,10 @@
-import { queryRule } from '../service';
+import { orderLineRule, confirmRule } from '../service';
 
 export default {
-  namespace: 'inquiryFetch',
+  namespace: 'orderLine',
 
   state: {
-    inquiryList: [],
+    orderLineList: [],
     queryData: {
       Content: {
         SearchText: '',
@@ -27,13 +27,13 @@ export default {
 
   effects: {
     *fetch({ payload }, { call, put }) {
-      const response = yield call(queryRule, payload);
+      const response = yield call(orderLineRule, payload);
       if (response.Status === 200) {
         if (!response.Content) {
           yield put({
             type: 'save',
             payload: {
-              inquiryList: [],
+              orderLineList: [],
             },
           });
         } else {
@@ -41,7 +41,7 @@ export default {
           yield put({
             type: 'save',
             payload: {
-              inquiryList: rows,
+              orderLineList: rows,
               pagination: {
                 total: records,
                 pageSize: payload.rows,
@@ -51,6 +51,11 @@ export default {
           });
         }
       }
+    },
+
+    *need({ payload, callback }, { call }) {
+      const response = yield call(confirmRule, payload);
+      if (callback) callback(response);
     },
   },
   reducers: {

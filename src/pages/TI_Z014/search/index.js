@@ -28,7 +28,7 @@ class inquiryList extends PureComponent {
     {
       title: '权限设置',
       align: 'center',
-      dataIndex: 'contact',
+      dataIndex: 'set',
       render: (text, record) => (
         // eslint-disable-next-line no-script-url
         <a
@@ -45,7 +45,7 @@ class inquiryList extends PureComponent {
     {
       title: '角色修改',
       align: 'center',
-      dataIndex: 'contact',
+      dataIndex: 'change',
       render: (text, record) => (
         // eslint-disable-next-line no-script-url
         <a

@@ -36,6 +36,23 @@ class StandardTable extends PureComponent {
     };
   }
 
+  static getDerivedStateFromProps(nextProps) {
+    // clean state
+    if (nextProps.isAll) {
+      return {
+        selectedRowKeys: [...Array(nextProps.selectedRows.length).keys()],
+      };
+    }
+    if (!nextProps.selectedRows) return null;
+
+    if (nextProps.selectedRows.length === 0) {
+      return {
+        selectedRowKeys: [],
+      };
+    }
+    return null;
+  }
+
   handleTableChange = (pagination, filters, sorter) => {
     const { onChange } = this.props;
     if (onChange) {
@@ -61,6 +78,7 @@ class StandardTable extends PureComponent {
     if (onSelectRow) {
       onSelectRow(selectedRows);
     }
+
     this.setState({ selectedRowKeys });
   };
 
@@ -97,6 +115,7 @@ class StandardTable extends PureComponent {
         onResize: this.handleResize(index),
       }),
     }));
+    console.log(rowSelection);
     return (
       <div className={styles.standardTable}>
         <Table

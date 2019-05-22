@@ -1,10 +1,10 @@
-import { queryRule } from '../service';
+import { TI_Z02906 } from '../service';
 
 export default {
-  namespace: 'inquiryFetch',
+  namespace: 'SalesQuotation',
 
   state: {
-    inquiryList: [],
+    SalesQuotationList: [],
     queryData: {
       Content: {
         SearchText: '',
@@ -27,13 +27,13 @@ export default {
 
   effects: {
     *fetch({ payload }, { call, put }) {
-      const response = yield call(queryRule, payload);
+      const response = yield call(TI_Z02906, payload);
       if (response.Status === 200) {
         if (!response.Content) {
           yield put({
             type: 'save',
             payload: {
-              inquiryList: [],
+              SalesQuotationList: [],
             },
           });
         } else {
@@ -41,7 +41,7 @@ export default {
           yield put({
             type: 'save',
             payload: {
-              inquiryList: rows,
+              SalesQuotationList: rows,
               pagination: {
                 total: records,
                 pageSize: payload.rows,

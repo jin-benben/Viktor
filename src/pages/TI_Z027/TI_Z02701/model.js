@@ -1,13 +1,16 @@
-import { queryRule } from '../service';
+import { orderLineRule } from '../../inquiry/service';
+import { addRule } from '../service';
 
 export default {
-  namespace: 'inquiryFetch',
+  namespace: 'supplierAsk',
 
   state: {
-    inquiryList: [],
+    orderLineList: [],
     queryData: {
       Content: {
         SearchText: '',
+        SLineStatus: 'O',
+        IsInquiry: 'Y',
         SearchKey: '',
       },
       page: 1,
@@ -27,13 +30,13 @@ export default {
 
   effects: {
     *fetch({ payload }, { call, put }) {
-      const response = yield call(queryRule, payload);
+      const response = yield call(orderLineRule, payload);
       if (response.Status === 200) {
         if (!response.Content) {
           yield put({
             type: 'save',
             payload: {
-              inquiryList: [],
+              orderLineList: [],
             },
           });
         } else {
@@ -41,7 +44,7 @@ export default {
           yield put({
             type: 'save',
             payload: {
-              inquiryList: rows,
+              orderLineList: rows,
               pagination: {
                 total: records,
                 pageSize: payload.rows,
@@ -51,6 +54,11 @@ export default {
           });
         }
       }
+    },
+
+    *add({ payload, callback }, { call }) {
+      const response = yield call(addRule, payload);
+      if (callback) callback(response);
     },
   },
   reducers: {

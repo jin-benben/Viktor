@@ -6,35 +6,44 @@ const { Option } = Select;
 
 class LinkMan extends PureComponent {
   state = {
-    value: [],
+    initialValue: '',
     fetching: false,
   };
 
-  handleChange = (value, option) => {
+  static getDerivedStateFromProps(nextProps, prevState) {
+    if (nextProps.initialValue !== prevState.initialValue) {
+      return {
+        initialValue: nextProps.initialValue,
+      };
+    }
+    return null;
+  }
+
+  handleChange = initialValue => {
     this.setState({
-      value,
+      initialValue,
       fetching: false,
     });
     const { onChange } = this.props;
+    console.log(initialValue);
     if (onChange) {
-      onChange(value);
+      onChange(initialValue);
     }
   };
 
   render() {
-    const { fetching, value } = this.state;
-    const { initialValue, data } = this.props;
-    console.log(initialValue, this.props);
+    const { fetching, initialValue } = this.state;
+    const { data } = this.props;
+    console.log(initialValue);
     return (
       <Select
-        showSearch
         showArrow={false}
-        value={value}
+        value={initialValue}
         defaultValue={initialValue}
-        placeholder="输入名称"
+        placeholder="请选择联系人"
         notFoundContent={fetching ? <Spin size="small" /> : <Empty />}
         filterOption={false}
-        onChange={this.handleChange}
+        onSelect={this.handleChange}
         style={{ width: '100%' }}
       >
         {data.map(option => (

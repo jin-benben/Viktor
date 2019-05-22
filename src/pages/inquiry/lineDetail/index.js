@@ -10,14 +10,17 @@ import {
   Input,
   Button,
   Divider,
-  Select,
   Badge,
+  Select,
   DatePicker,
-  Icon,
+  Checkbox,
+  message,
 } from 'antd';
+import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import StandardTable from '@/components/StandardTable';
 import Staffs from '@/components/Staffs';
 import DocEntryFrom from '@/components/DocEntryFrom';
+import NeedAskPrice from '../components/needAskPrice';
 
 const { RangePicker } = DatePicker;
 
@@ -25,32 +28,40 @@ const FormItem = Form.Item;
 const { Option } = Select;
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ inquiryFetch, loading }) => ({
-  inquiryFetch,
-  loading: loading.models.inquiryFetch,
+@connect(({ orderLine, loading }) => ({
+  orderLine,
+  loading: loading.models.orderLine,
 }))
 @Form.create()
-class inquiryListPage extends PureComponent {
+class orderLine extends PureComponent {
   state = {
     expandForm: false,
+    modalVisible: false,
+    selectedRows: [],
   };
 
   columns = [
     {
       title: '单号',
       width: 50,
+      fixed: 'left',
       dataIndex: 'DocEntry',
     },
     {
+      title: '行号',
+      width: 50,
+      dataIndex: 'LineID',
+    },
+    {
       title: '单据日期',
-      width: 100,
       dataIndex: 'DocDate',
+      width: 100,
       render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
     {
       title: '创建日期',
-      dataIndex: 'CreateDate',
       width: 100,
+      dataIndex: 'CreateDate',
       render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
     {
@@ -84,8 +95,31 @@ class inquiryListPage extends PureComponent {
     },
     {
       title: '客户',
-      width: 150,
       dataIndex: 'CardName',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {' '}
+          {text}{' '}
+        </Ellipsis>
+      ),
+    },
+    {
+      title: '联系人',
+      width: 100,
+      dataIndex: 'Contacts',
+    },
+    {
+      title: '联系方式',
+      width: 100,
+      dataIndex: 'contact',
+      render: (text, record) => (
+        <Ellipsis tooltip lines={1}>
+          {' '}
+          {record.CellphoneNO}
+          {record.PhoneNO ? <Divider type="vertical" /> : null}
+          {record.PhoneNO}
+        </Ellipsis>
+      ),
     },
     {
       title: '客户参考号',
@@ -93,51 +127,112 @@ class inquiryListPage extends PureComponent {
       dataIndex: 'NumAtCard',
     },
     {
-      title: '联系方式',
-      width: 120,
-      dataIndex: 'contact',
-      render: (text, record) => (
-        <span>
-          {record.CellphoneNO}
-          {record.CellphoneNO ? <Divider type="vertical" /> : null}
-          {record.PhoneNO}
-        </span>
+      title: 'SKU',
+      width: 80,
+      dataIndex: 'SKU',
+    },
+    {
+      title: '产品描述',
+      width: 150,
+      dataIndex: 'SKUName',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {' '}
+          {text}{' '}
+        </Ellipsis>
       ),
     },
     {
-      title: '送货地址',
-      dataIndex: 'address',
-      width: 300,
-      render: (text, record) => (
-        <span>{`${record.Province}/${record.City}/${record.Area}/${record.Street}/${
-          record.Address
-        }`}</span>
-      ),
+      title: '品牌',
+      width: 80,
+      dataIndex: 'BrandName',
     },
     {
-      title: '所有人',
+      title: '名称',
       width: 100,
-      dataIndex: 'Owner',
+      dataIndex: 'ProductName',
     },
     {
-      title: '询价总计',
+      title: '型号',
       width: 100,
-      dataIndex: 'InquiryDocTotal',
+      dataIndex: 'ManufactureNO',
+    },
+    {
+      title: '参数',
+      width: 100,
+      dataIndex: 'Parameters',
+    },
+    {
+      title: '包装',
+      width: 100,
+      dataIndex: 'Package',
+    },
+    {
+      title: '采购员',
+      width: 80,
+      dataIndex: 'Purchaser',
+    },
+    {
+      title: '数量',
+      width: 80,
+      dataIndex: 'Quantity',
+    },
+    {
+      title: '单位',
+      width: 80,
+      dataIndex: 'Unit',
+    },
+    {
+      title: '要求交期',
+      dataIndex: 'DueDate',
+      width: 100,
+      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
+    },
+    {
+      title: '价格',
+      width: 100,
+      dataIndex: 'Price',
+    },
+    {
+      title: '询价交期',
+      width: 100,
+      dataIndex: 'InquiryDueDate',
+      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
+    },
+    {
+      title: '行备注',
+      width: 80,
+      dataIndex: 'LineComment',
     },
     {
       title: '销售总计',
       width: 100,
-      dataIndex: 'DocTotal',
+      dataIndex: 'LineTotal',
+    },
+    {
+      title: '询价总计',
+      width: 100,
+      dataIndex: 'InquiryLineTotalLocal',
+    },
+    {
+      title: '采购员',
+      width: 80,
+      dataIndex: 'PurchaseName',
+    },
+    {
+      title: '所有人',
+      width: 80,
+      dataIndex: 'Owner',
     },
   ];
 
   componentDidMount() {
     const {
       dispatch,
-      inquiryFetch: { queryData },
+      orderLine: { queryData },
     } = this.props;
     dispatch({
-      type: 'inquiryFetch/fetch',
+      type: 'orderLine/fetch',
       payload: {
         ...queryData,
       },
@@ -147,10 +242,10 @@ class inquiryListPage extends PureComponent {
   handleStandardTableChange = pagination => {
     const {
       dispatch,
-      inquiryFetch: { queryData },
+      orderLine: { queryData },
     } = this.props;
     dispatch({
-      type: 'inquiryFetch/fetch',
+      type: 'orderLine/fetch',
       payload: {
         ...queryData,
         page: pagination.current,
@@ -177,9 +272,10 @@ class inquiryListPage extends PureComponent {
         DocDateFrom,
         DocDateTo,
         ...fieldsValue.orderNo,
+        IsInquiry: fieldsValue.fieldsValue && fieldsValue.fieldsValue ? 'Y' : 'N',
       };
       dispatch({
-        type: 'inquiryFetch/fetch',
+        type: 'orderLine/fetch',
         payload: {
           Content: {
             SearchText: '',
@@ -208,14 +304,65 @@ class inquiryListPage extends PureComponent {
     onClick: () => router.push(`/inquiry/detail?DocEntry=${record.DocEntry}`),
   });
 
+  onSelectRow = selectedRows => {
+    this.setState({ selectedRows: [...selectedRows] });
+  };
+
+  // 发送需询价
+  submitNeedLine = select => {
+    const {
+      dispatch,
+      orderLine: { queryData },
+    } = this.props;
+    const loItemList = select.map(item => ({
+      DocEntry: item.DocEntry,
+      LineID: item.LineID,
+    }));
+    dispatch({
+      type: 'orderLine/need',
+      payload: {
+        Content: {
+          loItemList,
+        },
+      },
+      callback: response => {
+        if (response.Status === 200) {
+          message.success('提交成功');
+          dispatch({
+            type: 'orderLine/fetch',
+            payload: {
+              ...queryData,
+            },
+          });
+          this.setState({ modalVisible: false, selectedRows: [] });
+        }
+      },
+    });
+  };
+
+  // 确认需要采购询价
+  selectNeed = () => {
+    const { selectedRows } = this.state;
+    if (selectedRows.length) {
+      this.handleModalVisible(true);
+    } else {
+      message.warning('请先选择');
+    }
+  };
+
+  // 需询价弹窗
+  handleModalVisible = flag => {
+    this.setState({ modalVisible: !!flag });
+  };
+
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
     } = this.props;
     const { expandForm } = this.state;
     const formLayout = {
-      labelCol: { span: 8 },
-      wrapperCol: { span: 16 },
+      labelCol: { span: 6 },
+      wrapperCol: { span: 18 },
     };
     const formItemLayout = {
       labelCol: {
@@ -236,7 +383,7 @@ class inquiryListPage extends PureComponent {
         },
         sm: {
           span: 16,
-          offset: 8,
+          offset: 6,
         },
       },
     };
@@ -256,11 +403,11 @@ class inquiryListPage extends PureComponent {
             </FormItem>
           </Col>
           <Col md={6} sm={24}>
-            <FormItem key="SDocStatus" {...formLayout} label="报价状态">
-              {getFieldDecorator('SDocStatus')(
+            <FormItem key="SLineStatus" {...formLayout} label="报价状态">
+              {getFieldDecorator('SLineStatus')(
                 <Select placeholder="请选择">
                   <Option value="C">已报价</Option>
-                  <Option value="O">报价</Option>
+                  <Option value="O">未报价</Option>
                 </Select>
               )}
             </FormItem>
@@ -270,7 +417,13 @@ class inquiryListPage extends PureComponent {
               {getFieldDecorator('Owner')(<Staffs />)}
             </FormItem>
           </Col>
-
+          <Col md={6} sm={24}>
+            <FormItem {...searchFormItemLayout}>
+              {getFieldDecorator('IsInquiry', { valuePropName: 'checked', initialValue: true })(
+                <Checkbox>显示无需报价</Checkbox>
+              )}
+            </FormItem>
+          </Col>
           {expandForm ? (
             <Fragment>
               <Col md={6} sm={24}>
@@ -278,6 +431,16 @@ class inquiryListPage extends PureComponent {
                   {getFieldDecorator('orderNo', {
                     initialValue: { DocEntryFrom: '', DocEntryTo: '' },
                   })(<DocEntryFrom />)}
+                </FormItem>
+              </Col>
+              <Col md={6} sm={24}>
+                <FormItem key="PLineStatus" {...formLayout} label="询价状态">
+                  {getFieldDecorator('PLineStatus')(
+                    <Select placeholder="请选择">
+                      <Option value="C">已询价</Option>
+                      <Option value="O">未询价</Option>
+                    </Select>
+                  )}
                 </FormItem>
               </Col>
               <Col md={6} sm={24}>
@@ -290,26 +453,6 @@ class inquiryListPage extends PureComponent {
                   )}
                 </FormItem>
               </Col>
-              <Col md={6} sm={24}>
-                <FormItem key="InquiryStatus" {...formLayout} label="询价状态">
-                  {getFieldDecorator('InquiryStatus')(
-                    <Select placeholder="请选择">
-                      <Option value="C">已询价</Option>
-                      <Option value="O">未询价</Option>
-                    </Select>
-                  )}
-                </FormItem>
-              </Col>
-              <Col md={6} sm={24}>
-                <FormItem key="IsInquiry" {...formLayout} label="需要采购询价">
-                  {getFieldDecorator('IsInquiry')(
-                    <Select placeholder="请选择">
-                      <Option value="Y">是</Option>
-                      <Option value="N">否</Option>
-                    </Select>
-                  )}
-                </FormItem>
-              </Col>
             </Fragment>
           ) : null}
           <Col md={6} sm={24}>
@@ -318,7 +461,7 @@ class inquiryListPage extends PureComponent {
                 <Button type="primary" htmlType="submit">
                   查询
                 </Button>
-                <Button
+                {/* <Button
                   icon="plus"
                   style={{ marginLeft: 8 }}
                   type="primary"
@@ -336,7 +479,7 @@ class inquiryListPage extends PureComponent {
                       展开 <Icon type="down" />
                     </span>
                   )}
-                </a>
+                </a> */}
               </span>
             </FormItem>
           </Col>
@@ -347,24 +490,45 @@ class inquiryListPage extends PureComponent {
 
   render() {
     const {
-      inquiryFetch: { inquiryList, pagination },
+      orderLine: { orderLineList, pagination },
       loading,
     } = this.props;
+    const { selectedRows, modalVisible } = this.state;
+
+    const columns = this.columns.map(item => {
+      // eslint-disable-next-line no-param-reassign
+      item.align = 'Center';
+      return item;
+    });
+
+    const parentMethods = {
+      handleSubmit: this.submitNeedLine,
+      handleModalVisible: this.handleModalVisible,
+    };
+
     return (
       <Fragment>
-        <Card title="客户询价单查询" bordered={false}>
+        <Card title="客户询价单物料查询" bordered={false}>
           <div className="tableList">
             <div className="tableListForm">{this.renderSimpleForm()}</div>
             <StandardTable
               loading={loading}
-              data={{ list: inquiryList }}
+              data={{ list: orderLineList }}
               pagination={pagination}
-              rowKey="DocEntry"
-              columns={this.columns}
-              scroll={{ x: 1500, y: 800 }}
+              //  rowKey="CreateDate"
+              scroll={{ x: 2600, y: 500 }}
+              columns={columns}
+              rowSelection={{
+                onSelectRow: this.onSelectRow,
+              }}
+              selectedRows={selectedRows}
               onRow={this.handleOnRow}
               onChange={this.handleStandardTableChange}
             />
+            <Button style={{ marginTop: 20 }} onClick={this.selectNeed} type="primary">
+              确认需采购询价
+            </Button>
+            <NeedAskPrice data={selectedRows} {...parentMethods} modalVisible={modalVisible} />
           </div>
         </Card>
       </Fragment>
@@ -372,4 +536,4 @@ class inquiryListPage extends PureComponent {
   }
 }
 
-export default inquiryListPage;
+export default orderLine;

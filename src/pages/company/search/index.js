@@ -117,7 +117,7 @@ class companySearch extends PureComponent {
 
   handleOnRow = record => ({
     // 详情or修改
-    onClick: () => router.push(`/company/edit?Code=${record.Code}`),
+    onClick: () => router.push(`/company/detail?Code=${record.Code}`),
   });
 
   renderSimpleForm() {

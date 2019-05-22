@@ -50,6 +50,7 @@ class AddressCascader extends PureComponent {
 
   render() {
     const { initialValue, style } = this.props;
+    console.log(initialValue);
     return (
       <Cascader
         style={style}

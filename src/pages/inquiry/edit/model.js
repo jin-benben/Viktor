@@ -1,4 +1,4 @@
-import { querySingleRule, addRule, updateRule, cancelRule, confirmRule } from './service';
+import { querySingleRule, addRule, updateRule, cancelRule, confirmRule } from '../service';
 
 export default {
   namespace: 'inquiryEdit',
@@ -16,7 +16,7 @@ export default {
       CreateDate: null,
       CardCode: '',
       CardName: '',
-      UserID: '',
+      UserID: '1',
       Contacts: '',
       CellphoneNO: '',
       PhoneNO: '',
@@ -64,20 +64,12 @@ export default {
       const response = yield call(updateRule, payload);
       if (callback) callback(response);
     },
-    *cancel({ payload, callback }, { call, put }) {
+    *cancel({ payload, callback }, { call }) {
       const response = yield call(cancelRule, payload);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
       if (callback) callback(response);
     },
-    *confirm({ payload, callback }, { call, put }) {
+    *confirm({ payload, callback }, { call }) {
       const response = yield call(confirmRule, payload);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
       if (callback) callback(response);
     },
   },

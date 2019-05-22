@@ -87,7 +87,7 @@ export default {
               component: './company/edit',
             },
             {
-              path: `/company/detail/:id`,
+              path: `/company/detail`,
               name: '客户详情',
               hideInMenu: true,
               icon: 'smile',
@@ -234,9 +234,54 @@ export default {
               component: './inquiry/list',
             },
             {
+              name: '物料明细查询',
+              icon: 'smile',
+              path: '/inquiry/lineDetail',
+              component: './inquiry/lineDetail',
+            },
+            {
               name: '客户询价单编辑',
               icon: 'smile',
               path: '/inquiry/edit',
+              component: './inquiry/edit',
+            },
+            {
+              name: '客户询价单详情',
+              icon: 'smile',
+              path: '/inquiry/detail',
+              hideInMenu: true,
+              component: './inquiry/edit',
+            }
+          ]
+        },
+        {
+          name: '采购询价确认单',
+          icon: 'smile',
+          path: '/TI_Z028',
+          routes:[
+            {
+              name: '采购询价确认单查询',
+              icon: 'smile',
+              path: '/TI_Z028/TI_Z02803',
+              component: './inquiry/list',
+            },
+            {
+              name: '采购询价确认物料明细查询',
+              icon: 'smile',
+              path: '/TI_Z028/TI_Z02804',
+              component: './TI_Z028/TI_Z02804',
+            },
+            {
+              name: '采购询价确认编辑',
+              icon: 'smile',
+              path: '/TI_Z028/TI_Z028',
+              component: './TI_Z028/TI_Z02801',
+            },
+            {
+              name: '采购询价确认详情',
+              icon: 'smile',
+              path: '/inquiry/detail',
+              hideInMenu: true,
               component: './inquiry/edit',
             }
           ]
