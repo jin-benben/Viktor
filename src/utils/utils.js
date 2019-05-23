@@ -18,10 +18,21 @@ export function chechEmail(email) {
 
 export function requestUrl(url) {
   if (url.indexOf('/MDM') !== -1) {
-    return url.replace(/\/MDM/g, 'http://47.104.65.49:8002');
+    return url.replace(/\/MDM/i, 'http://47.104.65.49:8002');
   }
   if (url.indexOf('/OMS') !== -1) {
-    return url.replace(/\/OMS/g, 'http://47.104.65.49:8001');
+    return url.replace(/\/OMS/i, 'http://47.104.65.49:8001');
   }
   return url;
+}
+
+export function getName(arr, code) {
+  let name;
+  arr.some(item => {
+    if (item.Key === code) {
+      name = item.Value;
+      return true;
+    }
+  });
+  return name;
 }

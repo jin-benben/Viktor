@@ -3,13 +3,16 @@ import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import { Row, Col, Card, Form, Input, Modal, Button, message } from 'antd';
 import StandardTable from '@/components/StandardTable';
-import Staffs from '@/components/Staffs';
 import Supplier from '@/components/Supplier';
 import Upload from '@/components/Upload';
+import MDMCommonality from '@/components/Select';
+import { getName } from '@/utils/utils';
 
 const { TextArea } = Input;
 const FormItem = Form.Item;
-
+@connect(({ global }) => ({
+  global,
+}))
 @Form.create()
 class CreateForm extends PureComponent {
   constructor(props) {
@@ -21,6 +24,18 @@ class CreateForm extends PureComponent {
       labelCol: { span: 7 },
       wrapperCol: { span: 13 },
     };
+  }
+
+  componentDidMount() {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'global/getMDMCommonality',
+      payload: {
+        Content: {
+          CodeList: ['Purchaser'],
+        },
+      },
+    });
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
@@ -35,6 +50,7 @@ class CreateForm extends PureComponent {
   render() {
     const {
       form: { getFieldDecorator },
+      global: { Purchaser },
       form,
       modalVisible,
       handleModalVisible,
@@ -75,15 +91,11 @@ class CreateForm extends PureComponent {
               initialValue: formVals.Name,
             })(<Input placeholder="请输入名称！" />)}
           </FormItem>
-          <FormItem key="purchaser" {...this.formLayout} label="采购员">
-            {getFieldDecorator('purchaser', {
-              initialValue: { key: formVals.Purchaser, label: formVals.PurchaserName },
-            })(
-              <Staffs
-                initialValue={{ key: formVals.Purchaser, label: formVals.PurchaserName }}
-                labelInValue
-              />
-            )}
+          <FormItem key="Purchaser" {...this.formLayout} label="采购员">
+            {getFieldDecorator('Purchaser', {
+              rules: [{ required: true, message: '请选择采购员！' }],
+              initialValue: formVals.Purchaser,
+            })(<MDMCommonality initialValue={formVals.Purchaser} data={Purchaser} />)}
           </FormItem>
           <FormItem key="supplier" {...this.formLayout} label="默认供应商">
             {getFieldDecorator('supplier', {
@@ -111,8 +123,9 @@ class CreateForm extends PureComponent {
   }
 }
 /* eslint react/no-multi-comp:0 */
-@connect(({ brands, loading }) => ({
+@connect(({ brands, loading, global }) => ({
   brands,
+  global,
   loading: loading.models.rule,
 }))
 @Form.create()
@@ -148,7 +161,13 @@ class BrandList extends PureComponent {
     },
     {
       title: '采购员',
-      dataIndex: 'PurchaserName',
+      dataIndex: 'Purchaser',
+      render: text => {
+        const {
+          global: { Purchaser },
+        } = this.props;
+        return <span>{getName(Purchaser, text)}</span>;
+      },
     },
     {
       title: '默认供应商',

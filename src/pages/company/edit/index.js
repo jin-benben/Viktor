@@ -6,15 +6,17 @@ import StandardTable from '@/components/StandardTable';
 import AddressInfo from '../components/address';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import LinkMan from '../components/linkman';
-import { checkPhone, chechEmail } from '@/utils/utils';
+import MDMCommonality from '@/components/Select';
+import { checkPhone, chechEmail, getName } from '@/utils/utils';
 
 const { TabPane } = Tabs;
 
 const FormItem = Form.Item;
 const { Option } = Select;
 
-@connect(({ companyEdit, loading }) => ({
+@connect(({ companyEdit, loading, global }) => ({
   companyEdit,
+  global,
   loading: loading.models.rule,
 }))
 @Form.create()
@@ -48,10 +50,22 @@ class CompanyEdit extends PureComponent {
     {
       title: '销售',
       dataIndex: 'Saler',
+      render: text => {
+        const {
+          global: { Saler },
+        } = this.props;
+        return <span>{getName(Saler, text)}</span>;
+      },
     },
     {
       title: '交易公司',
       dataIndex: 'CompanyCode',
+      render: text => {
+        const {
+          global: { Company },
+        } = this.props;
+        return <span>{getName(Company, text)}</span>;
+      },
     },
     {
       title: '操作',
@@ -163,6 +177,16 @@ class CompanyEdit extends PureComponent {
   }
 
   componentDidMount() {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'global/getMDMCommonality',
+      payload: {
+        Content: {
+          CodeList: ['Company', '', 'PayMent', 'Trnsp', 'Saler'],
+        },
+      },
+    });
+
     this.getSingle();
   }
 
@@ -306,6 +330,7 @@ class CompanyEdit extends PureComponent {
           Content: {
             ...formVals.Content,
             ...fieldsValue,
+            Status: fieldsValue.Status ? '1' : '2',
           },
         },
         callback: response => {
@@ -323,12 +348,14 @@ class CompanyEdit extends PureComponent {
     const { formVals } = this.state;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
+      console.log(fieldsValue);
       dispatch({
         type: 'companyEdit/update',
         payload: {
           Content: {
             ...formVals,
             ...fieldsValue,
+            Status: fieldsValue.Status ? '1' : '2',
           },
         },
         callback: response => {
@@ -417,6 +444,7 @@ class CompanyEdit extends PureComponent {
   render() {
     const {
       form: { getFieldDecorator },
+      global: { Company, PayMent, Trnsp, Saler },
     } = this.props;
     const {
       formVals,
@@ -445,7 +473,7 @@ class CompanyEdit extends PureComponent {
       handleSubmit: this.handleAddressSubmit,
       handleModalVisible: this.handleModalVisible,
     };
-    console.log(formVals);
+    console.log(Company, PayMent, Trnsp, Saler);
     return (
       <Card>
         <Form {...formItemLayout} onSubmit={this.handleSubmit}>
@@ -530,12 +558,7 @@ class CompanyEdit extends PureComponent {
                 {getFieldDecorator('PayMent', {
                   rules: [{ required: true, message: '请选择付款条款！' }],
                   initialValue: formVals.PayMent,
-                })(
-                  <Select placeholder="请选择">
-                    <Option value="Y">是</Option>
-                    <Option value="N">否</Option>
-                  </Select>
-                )}
+                })(<MDMCommonality initialValue={formVals.PayMent} data={PayMent} />)}
               </FormItem>
             </Col>
             <Col lg={8} md={12} sm={24}>
@@ -556,14 +579,15 @@ class CompanyEdit extends PureComponent {
                 {getFieldDecorator('LogisticsCompany', {
                   rules: [{ required: true, message: '请输入默认物流公司！' }],
                   initialValue: formVals.LogisticsCompany,
-                })(<Input placeholder="请输入" />)}
+                })(<MDMCommonality initialValue={formVals.LogisticsCompany} data={Trnsp} />)}
               </FormItem>
             </Col>
             <Col lg={8} md={12} sm={24}>
               <FormItem key="Status" {...this.formLayout} label="状态">
                 {getFieldDecorator('Status', {
-                  initialValue: formVals.Status,
-                })(<Switch checkedChildren="开启" unCheckedChildren="禁用" defaultChecked />)}
+                  valuePropName: 'checked',
+                  initialValue: formVals.Status === '1',
+                })(<Switch checkedChildren="开启" unCheckedChildren="禁用" />)}
               </FormItem>
             </Col>
           </Row>

@@ -4,6 +4,7 @@ import moment from 'moment';
 import { Row, Col, Card, Form, Input, Modal, Button, DatePicker, message, Select } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import Organization from '@/components/Organization';
+import MDMCommonality from '@/components/Select';
 
 import styles from './style.less';
 import { checkPhone, chechEmail } from '@/utils/utils';
@@ -11,8 +12,24 @@ import { checkPhone, chechEmail } from '@/utils/utils';
 const FormItem = Form.Item;
 const { Option } = Select;
 const { TextArea } = Input;
+@connect(({ global }) => ({
+  global,
+}))
 @Form.create()
 class CreateForm extends PureComponent {
+  componentDidMount() {
+    const { dispatch } = this.props;
+
+    dispatch({
+      type: 'global/getMDMCommonality',
+      payload: {
+        Content: {
+          CodeList: ['Company', 'WhsCode'],
+        },
+      },
+    });
+  }
+
   validatorPhone = (rule, value, callback) => {
     if (value && !checkPhone(value)) {
       callback(new Error('手机号格式不正确'));
@@ -41,6 +58,7 @@ class CreateForm extends PureComponent {
   render() {
     const {
       form: { getFieldDecorator },
+      global: { Company, WhsCode },
       formVals,
       modalVisible,
       handleModalVisible,
@@ -167,7 +185,7 @@ class CreateForm extends PureComponent {
                 {getFieldDecorator('CompanyCode', {
                   rules: [{ required: true, message: '请选择交易主体！' }],
                   initialValue: formVals.CompanyCode,
-                })(<Input placeholder="请输入" />)}
+                })(<MDMCommonality initialValue={formVals.CompanyCode} data={Company} />)}
               </FormItem>
             </Col>
             <Col span={12}>
@@ -191,13 +209,9 @@ class CreateForm extends PureComponent {
             <Col span={12}>
               <FormItem key="DefaultWhsCode" {...formLayout} label="默认仓库">
                 {getFieldDecorator('DefaultWhsCode', {
+                  rules: [{ message: '请选择仓库！' }],
                   initialValue: formVals.DefaultWhsCode,
-                })(
-                  <Select placeholder="请选择">
-                    <Option value="1">正常</Option>
-                    <Option value="2">问题</Option>
-                  </Select>
-                )}
+                })(<MDMCommonality initialValue={formVals.DefaultWhsCode} data={WhsCode} />)}
               </FormItem>
             </Col>
             <Col span={12}>

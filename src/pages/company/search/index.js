@@ -4,14 +4,12 @@ import router from 'umi/router';
 import { Row, Col, Card, Form, Input, Button } from 'antd';
 import StandardTable from '@/components/StandardTable';
 
-import styles from './style.less';
-
 const FormItem = Form.Item;
 
 /* eslint react/no-multi-comp:0 */
 @connect(({ companySearch, loading }) => ({
   companySearch,
-  loading: loading.models.rule,
+  loading: loading.models.companySearch,
 }))
 @Form.create()
 class companySearch extends PureComponent {
@@ -20,22 +18,27 @@ class companySearch extends PureComponent {
   columns = [
     {
       title: '客户ID',
+      width: 120,
       dataIndex: 'Code',
     },
     {
       title: '客户名称',
+      width: 200,
       dataIndex: 'Name',
     },
     {
       title: '开户行',
+      width: 150,
       dataIndex: 'OpeningBank',
     },
     {
       title: '账号',
+      width: 150,
       dataIndex: 'BankAccount',
     },
     {
       title: '税号',
+      width: 150,
       dataIndex: 'DutyNo',
     },
     {
@@ -44,23 +47,30 @@ class companySearch extends PureComponent {
     },
     {
       title: '电话',
+      width: 150,
       dataIndex: 'LPhone',
     },
     {
       title: '信用代码',
+      width: 150,
       dataIndex: 'CreditCode',
     },
     {
       title: '客户类型',
+      width: 100,
       dataIndex: 'CardType',
+      render: val => <span>{val === '1' ? '分销客户' : '大客户'}</span>,
     },
     {
       title: '客户来源',
+      width: 100,
       dataIndex: 'CusSource',
+      render: val => <span>{val === '1' ? '线下' : val === '2' ? '网站' : '其他'}</span>,
     },
     {
       title: '状态',
       dataIndex: 'Status',
+      width: 100,
       render: val => <span>{val === '1' ? '开启' : '禁用'}</span>,
     },
   ];
@@ -134,7 +144,7 @@ class companySearch extends PureComponent {
           </Col>
 
           <Col md={8} sm={24}>
-            <span className={styles.submitButtons}>
+            <span className="submitButtons">
               <Button type="primary" htmlType="submit">
                 查询
               </Button>
@@ -162,11 +172,12 @@ class companySearch extends PureComponent {
     return (
       <Fragment>
         <Card bordered={false}>
-          <div className={styles.companySearch}>
-            <div className={styles.tableListForm}>{this.renderSimpleForm()}</div>
+          <div className="tableList">
+            <div className="tableListForm">{this.renderSimpleForm()}</div>
             <StandardTable
               loading={loading}
               data={{ list: companyList }}
+              scroll={{ x: 1800 }}
               rowKey="Code"
               pagination={pagination}
               onRow={this.handleOnRow}

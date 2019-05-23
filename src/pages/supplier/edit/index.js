@@ -6,6 +6,7 @@ import StandardTable from '@/components/StandardTable';
 import Brand from '@/components/Brand';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import LinkMan from '../components/linkman';
+import MDMCommonality from '@/components/Select';
 import { checkPhone, chechEmail } from '@/utils/utils';
 
 const { TabPane } = Tabs;
@@ -13,9 +14,10 @@ const { TabPane } = Tabs;
 const FormItem = Form.Item;
 const { Option } = Select;
 
-@connect(({ supplierEdit, loading }) => ({
+@connect(({ supplierEdit, loading, global }) => ({
   supplierEdit,
-  loading: loading.models.rule,
+  global,
+  loading: loading.models.supplierEdit,
 }))
 @Form.create()
 class CompanyEdit extends React.Component {
@@ -35,7 +37,7 @@ class CompanyEdit extends React.Component {
     },
     {
       title: '电话号码',
-      dataIndex: 'PhoneNo',
+      dataIndex: 'PhoneNO',
     },
     {
       title: 'Email',
@@ -143,6 +145,14 @@ class CompanyEdit extends React.Component {
         },
       });
     }
+    dispatch({
+      type: 'global/getMDMCommonality',
+      payload: {
+        Content: {
+          CodeList: ['Company', '', 'PayMent'],
+        },
+      },
+    });
   }
 
   componentWillUnmount() {
@@ -347,6 +357,7 @@ class CompanyEdit extends React.Component {
   render() {
     const {
       form: { getFieldDecorator },
+      global: { Company, PayMent },
     } = this.props;
     const { formVals, tabIndex, LinkManmodalVisible, linkManVal } = this.state;
     const formItemLayout = {
@@ -450,12 +461,7 @@ class CompanyEdit extends React.Component {
                 {getFieldDecorator('PayMent', {
                   rules: [{ required: true, message: '请选择付款条款！' }],
                   initialValue: formVals.PayMent,
-                })(
-                  <Select placeholder="请选择">
-                    <Option value="Y">是</Option>
-                    <Option value="N">否</Option>
-                  </Select>
-                )}
+                })(<MDMCommonality initialValue={formVals.PayMent} data={PayMent} />)}
               </FormItem>
             </Col>
             <Col lg={8} md={12} sm={24}>
@@ -480,11 +486,11 @@ class CompanyEdit extends React.Component {
               </FormItem>
             </Col>
             <Col lg={8} md={12} sm={24}>
-              <FormItem key="CompanyCode" {...this.formLayout} label="交易公司 ">
+              <FormItem key="CompanyCode" {...this.formLayout} label="交易主体">
                 {getFieldDecorator('CompanyCode', {
-                  rules: [{ required: true, message: '请输入交易公司！' }],
-                  initialValue: formVals.Currency,
-                })(<Input placeholder="请输入交易公司" />)}
+                  rules: [{ required: true, message: '请选择交易主体！' }],
+                  initialValue: formVals.CompanyCode,
+                })(<MDMCommonality initialValue={formVals.CompanyCode} data={Company} />)}
               </FormItem>
             </Col>
             <Col lg={8} md={12} sm={24}>

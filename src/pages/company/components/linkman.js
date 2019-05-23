@@ -1,10 +1,14 @@
 import React, { PureComponent } from 'react';
 import { Row, Col, Form, Input, Modal, Select } from 'antd';
+import MDMCommonality from '@/components/Select';
+import { connect } from 'dva';
 import { checkPhone, chechEmail } from '@/utils/utils';
 
 const FormItem = Form.Item;
 const { Option } = Select;
-
+@connect(({ global }) => ({
+  global,
+}))
 @Form.create()
 class LinkManFrom extends PureComponent {
   constructor(props) {
@@ -46,6 +50,7 @@ class LinkManFrom extends PureComponent {
   render() {
     const {
       form: { getFieldDecorator },
+      global: { Company, Saler },
       form,
       modalVisible,
       handleModalVisible,
@@ -78,6 +83,7 @@ class LinkManFrom extends PureComponent {
         handleSubmit({ ...formVals, ...fieldsValue });
       });
     };
+    console.log(Company, Saler);
     return (
       <Modal
         width={640}
@@ -142,7 +148,7 @@ class LinkManFrom extends PureComponent {
                 {getFieldDecorator('CompanyCode', {
                   rules: [{ required: true, message: '请选择交易主体！' }],
                   initialValue: formVals.CompanyCode,
-                })(<Input placeholder="请输入" />)}
+                })(<MDMCommonality initialValue={formVals.CompanyCode} data={Company} />)}
               </FormItem>
             </Col>
           </Row>
@@ -151,12 +157,7 @@ class LinkManFrom extends PureComponent {
               <FormItem key="Saler" {...this.formLayout} label="销售">
                 {getFieldDecorator('Saler', {
                   initialValue: formVals.Saler,
-                })(
-                  <Select placeholder="请选择">
-                    <Option value="1">正常</Option>
-                    <Option value="2">问题</Option>
-                  </Select>
-                )}
+                })(<MDMCommonality initialValue={formVals.Saler} data={Saler} />)}
               </FormItem>
             </Col>
           </Row>
