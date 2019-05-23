@@ -1,23 +1,23 @@
 import request from '@/utils/request';
 
-export async function TI_Z02906(params) {
-  return request(`/OMS/TI_Z029/TI_Z02906`, {
+export async function TI_Z02806(params) {
+  return request(`/OMS/TI_Z028/TI_Z02806`, {
     method: 'POST',
     data: {
       ...params,
     },
   });
 }
-export async function TI_Z02907(params) {
-  return request(`/OMS/TI_Z029/TI_Z02907`, {
+export async function TI_Z02807(params) {
+  return request(`/OMS/TI_Z028/TI_Z02807`, {
     method: 'POST',
     data: {
       ...params,
     },
   });
 }
-export async function querySingleRule(params) {
-  return request('/OMS/TI_Z029/TI_Z02903', {
+export async function TI_Z02803(params) {
+  return request('/OMS/TI_Z028/TI_Z02803', {
     method: 'POST',
     data: {
       ...params,
@@ -26,7 +26,7 @@ export async function querySingleRule(params) {
 }
 
 export async function addRule(params) {
-  return request('/OMS/TI_Z029/TI_Z02901', {
+  return request('/OMS/TI_Z028/TI_Z02801', {
     method: 'POST',
     data: {
       ...params,
@@ -34,8 +34,17 @@ export async function addRule(params) {
   });
 }
 
-export async function updateRule(params) {
-  return request('/OMS/TI_Z029/TI_Z02904', {
+export async function TI_Z02805(params) {
+  return request('/OMS/TI_Z028/TI_Z02805', {
+    method: 'POST',
+    data: {
+      ...params,
+    },
+  });
+}
+
+export async function TI_Z02804(params) {
+  return request('/OMS/TI_Z028/TI_Z02804', {
     method: 'POST',
     data: {
       ...params,

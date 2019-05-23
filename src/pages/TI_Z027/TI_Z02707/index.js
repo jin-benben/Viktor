@@ -2,7 +2,19 @@ import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
 import moment from 'moment';
-import { Row, Col, Card, Form, Input, Button, Divider, Select, DatePicker, Icon } from 'antd';
+import {
+  Row,
+  Col,
+  Card,
+  Form,
+  Input,
+  Button,
+  Divider,
+  Badge,
+  Select,
+  DatePicker,
+  Icon,
+} from 'antd';
 import StandardTable from '@/components/StandardTable';
 import Staffs from '@/components/Staffs';
 import DocEntryFrom from '@/components/DocEntryFrom';
@@ -47,11 +59,22 @@ class supplierQuotationSku extends PureComponent {
     {
       title: '单据状态',
       dataIndex: 'Status',
+      width: 100,
       render: (text, record) => (
         <Fragment>
-          <span>销售报价状态{record.SDocStatus}</span>
-          <span>关闭状态{record.Closed}</span>
-          <span>采购询价确认状态{record.PDocStatus}</span>
+          {record.Closed === 'Y' ? (
+            <Badge color="red" text="已关闭" />
+          ) : (
+            <Fragment>
+              <span>
+                {record.LineStatus === 'O' ? (
+                  <Badge color="green" text="未询价" />
+                ) : (
+                  <Badge color="blue" text="已询价" />
+                )}
+              </span>
+            </Fragment>
+          )}
         </Fragment>
       ),
     },
@@ -139,20 +162,12 @@ class supplierQuotationSku extends PureComponent {
       dataIndex: 'LineComment',
     },
     {
-      title: '询价行总计(外币)',
-      dataIndex: 'LineTotal',
-    },
-    {
-      title: '询价行总计(本币)',
-      dataIndex: 'InquiryLineTotalLocal',
-    },
-    {
       title: '采购员',
       dataIndex: 'Purchase',
     },
     {
-      title: '所有人',
-      dataIndex: 'Owner',
+      title: '销售员',
+      dataIndex: 'Saler',
     },
   ];
 

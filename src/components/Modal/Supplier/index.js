@@ -8,7 +8,7 @@ import request from '@/utils/request';
 const FormItem = Form.Item;
 
 @Form.create()
-class CompanyModal extends PureComponent {
+class SupplierModal extends PureComponent {
   state = {
     staffsList: [],
     selectedRows: [],
@@ -34,19 +34,19 @@ class CompanyModal extends PureComponent {
 
   columns = [
     {
-      title: '客户代码',
+      title: '供应商代码',
       dataIndex: 'Code',
     },
     {
-      title: '客户名称',
+      title: '供应商名称',
       dataIndex: 'Name',
     },
   ];
 
-  componentDidMount() {
-    const { queryData } = this.state;
-    this.getCompany(queryData);
-  }
+  // componentDidMount() {
+  //   const { queryData } = this.state;
+  //   this.getCompany(queryData);
+  // }
 
   okHandle = () => {
     const { selectedRows } = this.state;
@@ -94,7 +94,7 @@ class CompanyModal extends PureComponent {
   };
 
   getCompany = async params => {
-    const response = await request('/MDM/TI_Z006/TI_Z00602', {
+    const response = await request('/MDM/TI_Z007/TI_Z00702', {
       method: 'POST',
       data: {
         ...params,
@@ -122,11 +122,11 @@ class CompanyModal extends PureComponent {
         <Row gutter={{ md: 8 }}>
           <Col className="submitButtons">
             {queryData.SearchKey === 'Name' ? (
-              <FormItem label="客户名称">
+              <FormItem label="供应商名称">
                 {getFieldDecorator('SearchText')(<Input placeholder="请输入" />)}
               </FormItem>
             ) : (
-              <FormItem label="客户ID">
+              <FormItem label="供应商ID">
                 {getFieldDecorator('SearchText')(<Input placeholder="请输入" />)}
               </FormItem>
             )}
@@ -148,7 +148,7 @@ class CompanyModal extends PureComponent {
       <Modal
         width={960}
         destroyOnClose
-        title="客户选择"
+        title="供应商选择"
         visible={modalVisible}
         onOk={this.okHandle}
         onCancel={() => handleModalVisible()}
@@ -173,4 +173,4 @@ class CompanyModal extends PureComponent {
   }
 }
 
-export default CompanyModal;
+export default SupplierModal;

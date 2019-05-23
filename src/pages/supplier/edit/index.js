@@ -80,7 +80,7 @@ class CompanyEdit extends React.Component {
       dataIndex: 'BrandName',
       render: (text, record) => (
         <Brand
-          defaultValue={record}
+          initialValue={{ key: record.Brand, label: record.BrandName }}
           onChange={val => {
             this.brandLineChange(val, record);
           }}

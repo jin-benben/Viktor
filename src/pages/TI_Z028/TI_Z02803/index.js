@@ -2,36 +2,25 @@ import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
 import moment from 'moment';
-import { Row, Col, Card, Form, Input, Button, Divider, Select, DatePicker, Icon } from 'antd';
+import { Row, Col, Card, Form, Input, Button, DatePicker } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import Staffs from '@/components/Staffs';
-import DocEntryFrom from '@/components/DocEntryFrom';
 
 const { RangePicker } = DatePicker;
-
 const FormItem = Form.Item;
-const { Option } = Select;
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ SalesQuotation, loading }) => ({
-  SalesQuotation,
-  loading: loading.models.SalesQuotation,
+@connect(({ TI_Z02803, loading }) => ({
+  TI_Z02803,
+  loading: loading.models.TI_Z02803,
 }))
 @Form.create()
-class SalesQuotation extends PureComponent {
-  state = {
-    expandForm: false,
-  };
-
+class TI_Z02803 extends PureComponent {
   columns = [
     {
       title: '单号',
       width: 50,
       dataIndex: 'DocEntry',
-    },
-    {
-      title: '类型',
-      dataIndex: 'OrderType',
     },
     {
       title: '单据日期',
@@ -44,75 +33,26 @@ class SalesQuotation extends PureComponent {
       render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
     {
-      title: '单据状态',
-      dataIndex: 'Status',
-      render: (text, record) => (
-        <Fragment>
-          <span>销售报价状态{record.SDocStatus}</span>
-          <span>关闭状态{record.Closed}</span>
-          <span>采购询价确认状态{record.PDocStatus}</span>
-        </Fragment>
-      ),
-    },
-    {
-      title: '客户',
-      dataIndex: 'CardName',
-    },
-    {
-      title: '客户参考号',
-      dataIndex: 'NumAtCard',
-    },
-    {
-      title: '联系方式',
-      dataIndex: 'contact',
-      render: (text, record) => (
-        <span>
-          {record.CellphoneNO}
-          {record.CellphoneNO ? <Divider type="vertical" /> : null}
-          {record.PhoneNO}
-        </span>
-      ),
-    },
-    {
-      title: '送货地址',
-      dataIndex: 'address',
-      render: (text, record) => (
-        <span>
-          {`${record.Province}/${record.City}/${record.Area}/${record.Street}/${record.Adress}`}
-        </span>
-      ),
-    },
-    {
       title: '所有人',
       dataIndex: 'Owner',
     },
     {
-      title: '采购总计',
+      title: '询价总计',
       dataIndex: 'InquiryDocTotal',
     },
     {
-      title: '销售总计',
-      dataIndex: 'DocTotal',
-    },
-    {
-      title: '成本总计',
-      dataIndex: 'OtherTotal',
-    },
-    {
-      title: '要求交期',
-      dataIndex: 'DueDate',
-      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
+      title: '备注',
+      dataIndex: 'Comment',
     },
   ];
 
   componentDidMount() {
     const {
       dispatch,
-      SalesQuotation: { queryData },
+      TI_Z02803: { queryData },
     } = this.props;
-    console.log(queryData);
     dispatch({
-      type: 'SalesQuotation/fetch',
+      type: 'TI_Z02803/fetch',
       payload: {
         ...queryData,
       },
@@ -122,10 +62,10 @@ class SalesQuotation extends PureComponent {
   handleStandardTableChange = pagination => {
     const {
       dispatch,
-      SalesQuotation: { queryData },
+      TI_Z02803: { queryData },
     } = this.props;
     dispatch({
-      type: 'SalesQuotation/fetch',
+      type: 'TI_Z02803/fetch',
       payload: {
         ...queryData,
         page: pagination.current,
@@ -151,10 +91,9 @@ class SalesQuotation extends PureComponent {
         ...fieldsValue,
         DocDateFrom,
         DocDateTo,
-        ...fieldsValue.orderNo,
       };
       dispatch({
-        type: 'SalesQuotation/fetch',
+        type: 'TI_Z02803/fetch',
         payload: {
           Content: {
             SearchText: '',
@@ -170,24 +109,16 @@ class SalesQuotation extends PureComponent {
     });
   };
 
-  toggleForm = () => {
-    // 是否展开
-    const { expandForm } = this.state;
-    this.setState({
-      expandForm: !expandForm,
-    });
-  };
-
   handleOnRow = record => ({
     // 详情or修改
-    onClick: () => router.push(`/TI_Z029/edit?DocEntry=${record.DocEntry}`),
+    onClick: () => router.push(`/TI_Z028/edit?DocEntry=${record.DocEntry}`),
   });
 
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
     } = this.props;
-    const { expandForm } = this.state;
+
     const formLayout = {
       labelCol: { span: 8 },
       wrapperCol: { span: 16 },
@@ -218,80 +149,25 @@ class SalesQuotation extends PureComponent {
     return (
       <Form onSubmit={this.handleSearch} {...formItemLayout}>
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={6} sm={24}>
+          <Col md={8} sm={24}>
             <FormItem key="SearchText" label="客户名称" {...formLayout}>
               {getFieldDecorator('SearchText')(<Input placeholder="请输入客户名称" />)}
             </FormItem>
           </Col>
-          <Col md={6} sm={24}>
+          <Col md={8} sm={24}>
             <FormItem label="日期" {...formLayout}>
               {getFieldDecorator('dateArr', { rules: [{ type: 'array' }] })(
                 <RangePicker style={{ width: '100%' }} />
               )}
             </FormItem>
           </Col>
-          <Col md={6} sm={24}>
-            <FormItem key="SDocStatus" {...formLayout} label="销售报价状态">
-              {getFieldDecorator('SDocStatus')(
-                <Select placeholder="请选择">
-                  <Option value="1">已报价</Option>
-                  <Option value="2">未报价</Option>
-                  <Option value="3">不详</Option>
-                </Select>
-              )}
-            </FormItem>
-          </Col>
-          <Col md={6} sm={24}>
+          <Col md={8} sm={24}>
             <FormItem label="所有者" {...formLayout}>
               {getFieldDecorator('Owner')(<Staffs />)}
             </FormItem>
           </Col>
 
-          {expandForm ? (
-            <Fragment>
-              <Col md={6} sm={24}>
-                <FormItem key="orderNo" {...formLayout} label="单号">
-                  {getFieldDecorator('orderNo', {
-                    initialValue: { DocEntryFrom: '', DocEntryTo: '' },
-                  })(<DocEntryFrom />)}
-                </FormItem>
-              </Col>
-              <Col md={6} sm={24}>
-                <FormItem key="Closed" {...formLayout} label="关闭状态">
-                  {getFieldDecorator('Closed')(
-                    <Select placeholder="请选择">
-                      <Option value="1">已关闭</Option>
-                      <Option value="2">未关闭</Option>
-                      <Option value="3">全部</Option>
-                    </Select>
-                  )}
-                </FormItem>
-              </Col>
-              <Col md={6} sm={24}>
-                <FormItem key="InquiryStatus" {...formLayout} label="采购询价状态">
-                  {getFieldDecorator('InquiryStatus')(
-                    <Select placeholder="请选择">
-                      <Option value="1">已报价</Option>
-                      <Option value="2">未报价</Option>
-                      <Option value="3">不详</Option>
-                    </Select>
-                  )}
-                </FormItem>
-              </Col>
-              <Col md={6} sm={24}>
-                <FormItem key="IsInquiry" {...formLayout} label="需要采购询价">
-                  {getFieldDecorator('IsInquiry')(
-                    <Select placeholder="请选择">
-                      <Option value="1">是</Option>
-                      <Option value="2">否</Option>
-                      <Option value="3">全部</Option>
-                    </Select>
-                  )}
-                </FormItem>
-              </Col>
-            </Fragment>
-          ) : null}
-          <Col md={6} sm={24}>
+          <Col md={8} sm={24}>
             <FormItem key="searchBtn" {...searchFormItemLayout}>
               <span className="submitButtons">
                 <Button type="primary" htmlType="submit">
@@ -305,17 +181,6 @@ class SalesQuotation extends PureComponent {
                 >
                   新建
                 </Button>
-                <a style={{ marginLeft: 8 }} onClick={this.toggleForm}>
-                  {expandForm ? (
-                    <span>
-                      收起 <Icon type="up" />
-                    </span>
-                  ) : (
-                    <span>
-                      展开 <Icon type="down" />
-                    </span>
-                  )}
-                </a>
               </span>
             </FormItem>
           </Col>
@@ -326,17 +191,17 @@ class SalesQuotation extends PureComponent {
 
   render() {
     const {
-      SalesQuotation: { SalesQuotationList, pagination },
+      TI_Z02803: { orderList, pagination },
       loading,
     } = this.props;
     return (
       <Fragment>
-        <Card title="销售报价单查询" bordered={false}>
+        <Card title="采购询价确认单查询" bordered={false}>
           <div className="tableList">
             <div className="tableListForm">{this.renderSimpleForm()}</div>
             <StandardTable
               loading={loading}
-              data={{ list: SalesQuotationList }}
+              data={{ list: orderList }}
               pagination={pagination}
               rowKey="DocEntry"
               columns={this.columns}
@@ -350,4 +215,4 @@ class SalesQuotation extends PureComponent {
   }
 }
 
-export default SalesQuotation;
+export default TI_Z02803;

@@ -14,7 +14,7 @@ export default {
         SearchKey: '',
       },
       page: 1,
-      rows: 30,
+      rows: 10,
       sidx: 'DocEntry',
       sord: 'Desc',
     },

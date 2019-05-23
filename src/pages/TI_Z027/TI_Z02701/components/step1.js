@@ -1,9 +1,11 @@
-import React, { PureComponent, Fragment } from 'react';
+/* eslint-disable no-param-reassign */
+import React, { Fragment } from 'react';
 
 import moment from 'moment';
 import { Row, Col, Form, Input, Button, DatePicker, Checkbox, message } from 'antd';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import StandardTable from '@/components/StandardTable';
+import SupplierSelect from '@/components/Select/Supplier';
 import Staffs from '@/components/Staffs';
 
 import NeedAskPrice from '../../../inquiry/components/needAskPrice';
@@ -13,21 +15,29 @@ const { RangePicker } = DatePicker;
 const FormItem = Form.Item;
 
 @Form.create()
-class NeedTabl extends PureComponent {
+class NeedTabl extends React.Component {
   state = {
     modalVisible: false,
     selectedRows: [],
+    orderLineList: [],
   };
 
   columns = [
     {
       title: '供应商',
-      width: 150,
+      width: 200,
       dataIndex: 'DocEntry',
+      render: (text, record, index) => (
+        <SupplierSelect
+          initialValue={{ key: record.SupplierCode, label: record.SupplierName }}
+          onChange={value => this.changeSupplier(value, record, index)}
+          keyType="Name"
+        />
+      ),
     },
     {
       title: '单号',
-      width: 50,
+      width: 100,
       dataIndex: 'DocEntry',
     },
     {
@@ -50,6 +60,7 @@ class NeedTabl extends PureComponent {
     {
       title: '客户',
       dataIndex: 'CardName',
+      width: 200,
       render: text => (
         <Ellipsis tooltip lines={1}>
           {' '}
@@ -64,7 +75,7 @@ class NeedTabl extends PureComponent {
     },
     {
       title: '客户参考号',
-      width: 100,
+      width: 150,
       dataIndex: 'NumAtCard',
     },
     {
@@ -74,7 +85,6 @@ class NeedTabl extends PureComponent {
     },
     {
       title: '产品描述',
-      width: 150,
       dataIndex: 'SKUName',
       render: text => (
         <Ellipsis tooltip lines={1}>
@@ -147,6 +157,23 @@ class NeedTabl extends PureComponent {
     },
   ];
 
+  static getDerivedStateFromProps(nextProps, prevState) {
+    if (nextProps.orderLineList !== prevState.orderLineList) {
+      return {
+        orderLineList: nextProps.orderLineList,
+      };
+    }
+    return null;
+  }
+
+  changeSupplier = (value, record, index) => {
+    record.SupplierCode = value.Code || value.key;
+    record.SupplierName = value.Name || value.label;
+    const { orderLineList } = this.state;
+    orderLineList[index] = record;
+    this.setState({ orderLineList: [...orderLineList] });
+  };
+
   handleStandardTableChange = pagination => {
     const { tabChange } = this.props;
     if (tabChange) {
@@ -157,7 +184,7 @@ class NeedTabl extends PureComponent {
   submitNeedLine = select => {
     const { nextStep } = this.props;
     if (nextStep) {
-      nextStep(select);
+      nextStep(select, 1);
     }
   };
 
@@ -278,8 +305,8 @@ class NeedTabl extends PureComponent {
   }
 
   render() {
-    const { orderLineList, pagination, loading } = this.props;
-    const { selectedRows, modalVisible } = this.state;
+    const { pagination, loading } = this.props;
+    const { selectedRows, modalVisible, orderLineList } = this.state;
 
     const columns = this.columns.map(item => {
       // eslint-disable-next-line no-param-reassign
@@ -291,7 +318,6 @@ class NeedTabl extends PureComponent {
       handleSubmit: this.submitNeedLine,
       handleModalVisible: this.handleModalVisible,
     };
-
     return (
       <Fragment>
         <div className="tableList">
@@ -300,15 +326,15 @@ class NeedTabl extends PureComponent {
             loading={loading}
             data={{ list: orderLineList }}
             pagination={pagination}
-            //  rowKey="CreateDate"
-            scroll={{ x: 1800, y: 500 }}
+            rowKey="Key"
+            scroll={{ x: 2400, y: 500 }}
             columns={columns}
             rowSelection={{
               onSelectRow: this.onSelectRow,
             }}
             onChange={this.handleStandardTableChange}
           />
-          <Button style={{ marginTop: 20 }} onClick={this.selectNeed} type="primary">
+          <Button onClick={this.selectNeed} type="primary">
             下一步
           </Button>
           <NeedAskPrice data={selectedRows} {...parentMethods} modalVisible={modalVisible} />

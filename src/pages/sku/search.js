@@ -41,7 +41,7 @@ class SkuFetchComponent extends PureComponent {
     },
     {
       title: '包装',
-      dataIndex: 'package',
+      dataIndex: 'Package',
     },
     {
       title: '分类',

@@ -263,7 +263,7 @@ export default {
               name: '采购询价确认单查询',
               icon: 'smile',
               path: '/TI_Z028/TI_Z02803',
-              component: './inquiry/list',
+              component: './TI_Z028/TI_Z02803',
             },
             {
               name: '采购询价确认物料明细查询',
@@ -327,6 +327,13 @@ export default {
               icon: 'smile',
               path: '/TI_Z027/searchLine',
               component: './TI_Z027/TI_Z02707',
+            },
+            {
+              name: '供应商询价单更新',
+              icon: 'smile',
+              hideInMenu: true,
+              path: '/TI_Z027/TI_Z02702',
+              component: './TI_Z027/TI_Z02702',
             },
             {
               name: '添加',

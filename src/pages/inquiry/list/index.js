@@ -109,9 +109,9 @@ class inquiryListPage extends PureComponent {
       dataIndex: 'address',
       width: 300,
       render: (text, record) => (
-        <span>{`${record.Province}/${record.City}/${record.Area}/${record.Street}/${
-          record.Address
-        }`}</span>
+        <span>
+          {`${record.Province}/${record.City}/${record.Area}/${record.Street}/${record.Address}`}
+        </span>
       ),
     },
     {

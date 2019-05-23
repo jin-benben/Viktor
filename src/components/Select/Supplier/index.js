@@ -1,16 +1,16 @@
 import React, { PureComponent, Fragment } from 'react';
 import request from '@/utils/request';
-import CompanyModal from '@/components/Modal/Company';
+import SupplierModal from '@/components/Modal/Supplier';
 import { Select, Spin, Icon, Empty } from 'antd';
 import debounce from 'lodash/debounce';
 
 const { Option } = Select;
 
-class CompanySelect extends React.Component {
+class SupplierSelect extends PureComponent {
   constructor(props) {
     super(props);
     this.lastFetchId = 0;
-    this.fetchCompany = debounce(this.fetchCompany, 1000);
+    this.fetchSupplier = debounce(this.fetchSupplier, 1000);
   }
 
   state = {
@@ -22,7 +22,6 @@ class CompanySelect extends React.Component {
 
   static getDerivedStateFromProps(nextProps, prevState) {
     if (nextProps.initialValue !== prevState.initialValue) {
-      console.log(nextProps.initialValue);
       return {
         initialValue: nextProps.initialValue,
       };
@@ -30,13 +29,13 @@ class CompanySelect extends React.Component {
     return null;
   }
 
-  fetchCompany = async value => {
+  fetchSupplier = async value => {
     if (!value) return;
     const { keyType } = this.props;
     this.lastFetchId += 1;
     const fetchId = this.lastFetchId;
     this.setState({ data: [], fetching: true });
-    const response = await request('/MDM/TI_Z006/TI_Z00602', {
+    const response = await request('/MDM/TI_Z007/TI_Z00702', {
       method: 'POST',
       data: {
         Content: {
@@ -61,17 +60,13 @@ class CompanySelect extends React.Component {
     this.setState({
       fetching: false,
     });
-    const { onChange, keyType } = this.props;
+    const { onChange } = this.props;
     if (onChange) {
-      if (keyType === 'Code') {
-        onChange({ key: value.label, label: value.key });
-      } else {
-        onChange(value);
-      }
+      onChange(value);
     }
   };
 
-  changeCompany = select => {
+  changeSupplier = select => {
     const { onChange } = this.props;
     if (onChange) {
       onChange(select);
@@ -86,11 +81,9 @@ class CompanySelect extends React.Component {
   render() {
     const { fetching, data, companyModal, initialValue } = this.state;
     const companyParentMethods = {
-      handleSubmit: this.changeCompany,
+      handleSubmit: this.changeSupplier,
       handleModalVisible: this.handleModalVisible,
     };
-    const { keyType } = this.props;
-    const attribute = keyType || 'Code';
     return (
       <Fragment>
         <Select
@@ -109,26 +102,20 @@ class CompanySelect extends React.Component {
           placeholder="输入内容"
           notFoundContent={fetching ? <Spin size="small" /> : <Empty style={{ width: '100%' }} />}
           filterOption={false}
-          onSearch={this.fetchCompany}
+          onSearch={this.fetchSupplier}
           onChange={this.handleChange}
           style={{ width: '100%' }}
         >
-          {data.map(option =>
-            attribute === 'Code' ? (
-              <Option key={option.Name} value={option.Name}>
-                {option.Code}
-              </Option>
-            ) : (
-              <Option key={option.Code} value={option.Code}>
-                {option.Name}
-              </Option>
-            )
-          )}
+          {data.map(option => (
+            <Option key={option.Code} value={option.Code}>
+              {option.Name}
+            </Option>
+          ))}
         </Select>
-        <CompanyModal {...companyParentMethods} modalVisible={companyModal} />
+        <SupplierModal {...companyParentMethods} modalVisible={companyModal} />
       </Fragment>
     );
   }
 }
 
-export default CompanySelect;
+export default SupplierSelect;

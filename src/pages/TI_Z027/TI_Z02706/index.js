@@ -2,7 +2,19 @@ import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
 import moment from 'moment';
-import { Row, Col, Card, Form, Input, Button, Divider, Select, DatePicker, Icon } from 'antd';
+import {
+  Row,
+  Col,
+  Card,
+  Form,
+  Input,
+  Button,
+  Divider,
+  Select,
+  Badge,
+  DatePicker,
+  Icon,
+} from 'antd';
 import StandardTable from '@/components/StandardTable';
 import Staffs from '@/components/Staffs';
 import DocEntryFrom from '@/components/DocEntryFrom';
@@ -31,22 +43,35 @@ class supplierQuotation extends PureComponent {
     },
     {
       title: '单据日期',
+      width: 100,
       dataIndex: 'DocDate',
       render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
     {
       title: '创建日期',
+      width: 100,
       dataIndex: 'CreateDate',
       render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
     {
       title: '单据状态',
       dataIndex: 'Status',
+      width: 100,
       render: (text, record) => (
         <Fragment>
-          <span>销售报价状态{record.SDocStatus}</span>
-          <span>关闭状态{record.Closed}</span>
-          <span>采购询价确认状态{record.PDocStatus}</span>
+          {record.Closed === 'Y' ? (
+            <Badge color="red" text="已关闭" />
+          ) : (
+            <Fragment>
+              <span>
+                {record.DocStatus === 'O' ? (
+                  <Badge color="green" text="未询价" />
+                ) : (
+                  <Badge color="blue" text="已询价" />
+                )}
+              </span>
+            </Fragment>
+          )}
         </Fragment>
       ),
     },
@@ -75,6 +100,7 @@ class supplierQuotation extends PureComponent {
     },
     {
       title: '所有人',
+      width: 80,
       dataIndex: 'Owner',
     },
     {
@@ -84,14 +110,6 @@ class supplierQuotation extends PureComponent {
     {
       title: '询价总计(本币)',
       dataIndex: 'InquiryDocTotalLocal',
-    },
-    {
-      title: '询价币种',
-      dataIndex: 'Currency',
-    },
-    {
-      title: '单据汇率',
-      dataIndex: 'DocRate',
     },
   ];
 
@@ -170,7 +188,7 @@ class supplierQuotation extends PureComponent {
 
   handleOnRow = record => ({
     // 详情or修改
-    onClick: () => router.push(`/TI_Z029/edit?DocEntry=${record.DocEntry}`),
+    onClick: () => router.push(`/TI_Z027/TI_Z02702?DocEntry=${record.DocEntry}`),
   });
 
   renderSimpleForm() {

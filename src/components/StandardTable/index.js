@@ -75,6 +75,7 @@ class StandardTable extends PureComponent {
     const {
       rowSelection: { onSelectRow },
     } = this.props;
+    console.log(selectedRows);
     if (onSelectRow) {
       onSelectRow(selectedRows);
     }
@@ -83,7 +84,7 @@ class StandardTable extends PureComponent {
   };
 
   render() {
-    const { data = {}, rowKey, ...rest } = this.props;
+    const { data = {}, size, rowKey, ...rest } = this.props;
     let { rowSelection } = this.props;
 
     const { list = [], pagination } = data;
@@ -115,7 +116,7 @@ class StandardTable extends PureComponent {
         onResize: this.handleResize(index),
       }),
     }));
-    console.log(rowSelection);
+
     return (
       <div className={styles.standardTable}>
         <Table
@@ -124,7 +125,7 @@ class StandardTable extends PureComponent {
           rowKey={rowKey || 'key'}
           dataSource={list}
           pagination={paginationProps}
-          size="middle"
+          size={size || 'small'}
           onChange={this.handleTableChange}
           {...rest}
           rowSelection={rowSelection}

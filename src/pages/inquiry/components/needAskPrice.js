@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-
+import moment from 'moment';
 import { Form, Modal, message } from 'antd';
 import StandardTable from '@/components/StandardTable';
 
@@ -56,7 +56,6 @@ class OrderLine extends PureComponent {
       title: '型号',
       width: 150,
       dataIndex: 'ManufactureNO',
-
       align: 'center',
     },
     {
@@ -75,34 +74,28 @@ class OrderLine extends PureComponent {
     },
     {
       title: '采购员',
-      width: 200,
-      dataIndex: 'Purchaser',
-
+      width: 100,
+      dataIndex: 'PurchaserName',
       align: 'center',
     },
     {
       title: '数量',
-      width: 120,
-
+      width: 100,
       dataIndex: 'Quantity',
-
       align: 'center',
     },
     {
       title: '单位',
       width: 80,
-
       dataIndex: 'Unit',
-
       align: 'center',
     },
     {
       title: '要求交期',
       width: 150,
-
       dataIndex: 'DueDate',
-
       align: 'center',
+      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
     {
       title: '仓库',
@@ -111,42 +104,9 @@ class OrderLine extends PureComponent {
       align: 'center',
     },
     {
-      title: '询价最终价',
-      width: 120,
-
-      dataIndex: 'InquiryPrice',
-
-      align: 'center',
-    },
-    {
       title: '销售建议价',
       width: 120,
-
       dataIndex: 'Price',
-
-      align: 'center',
-    },
-    {
-      title: '询价币种',
-      width: 150,
-
-      dataIndex: 'Currency',
-
-      align: 'center',
-    },
-    {
-      title: '单据汇率',
-      width: 100,
-
-      dataIndex: 'DocRate',
-      align: 'center',
-    },
-    {
-      title: '最终交期',
-      width: 150,
-
-      dataIndex: 'InquiryDueDate',
-
       align: 'center',
     },
     {
@@ -156,18 +116,6 @@ class OrderLine extends PureComponent {
       width: 150,
 
       align: 'center',
-    },
-    {
-      title: '询价行总计',
-      width: 120,
-      align: 'center',
-      dataIndex: 'InquiryLineTotal',
-    },
-    {
-      title: '询价行总计(本币)',
-      width: 150,
-      align: 'center',
-      dataIndex: 'InquiryLineTotalLocal',
     },
     {
       title: '销售行总计',
@@ -216,9 +164,9 @@ class OrderLine extends PureComponent {
         <div className="tableList">
           <StandardTable
             data={{ list: data }}
-            rowKey="Code"
+            rowKey="Key"
             columns={this.skuColumns}
-            scroll={{ x: 2800 }}
+            scroll={{ x: 2000 }}
             rowSelection={{
               onSelectRow: this.onSelectRow,
             }}

@@ -515,7 +515,7 @@ class orderLine extends PureComponent {
               loading={loading}
               data={{ list: orderLineList }}
               pagination={pagination}
-              //  rowKey="CreateDate"
+              rowKey="Key"
               scroll={{ x: 2600, y: 500 }}
               columns={columns}
               rowSelection={{

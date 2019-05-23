@@ -1,4 +1,4 @@
-import { queryNotices } from '@/services/user';
+import { queryNotices, getMDMCommonalityRule } from '@/services/user';
 
 export default {
   namespace: 'global',
@@ -6,6 +6,10 @@ export default {
   state: {
     collapsed: false,
     notices: [],
+    SalerList: [],
+    Purchaser: [],
+    CompanyCode: [],
+    WhsCode: [],
   },
 
   effects: {
@@ -64,6 +68,18 @@ export default {
           unreadCount: notices.filter(item => !item.read).length,
         },
       });
+    },
+    *getMDMCommonality({ payload }, { put, call }) {
+      const response = yield call(getMDMCommonalityRule, payload);
+      if (response && response.Statues === 200) {
+        //  const {} = response.Content
+        yield put({
+          type: 'save',
+          payload: {
+            treeData: response.Content,
+          },
+        });
+      }
     },
   },
 

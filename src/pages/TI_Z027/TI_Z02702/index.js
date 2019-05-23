@@ -17,6 +17,7 @@ import {
   Modal,
   message,
   DatePicker,
+  Popconfirm,
   Select,
 } from 'antd';
 import moment from 'moment';
@@ -28,22 +29,22 @@ import WhsCode from '@/components/Select/WhsCode';
 import StandardTable from '@/components/StandardTable';
 import EditableFormTable from '@/components/EditableFormTable';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
-import UpdateLoad from '../components/modal';
+import UpdateLoad from '../../inquiry/components/modal';
 import SKUModal from '@/components/Modal/SKU';
 import Address from '@/components/Address';
 import Staffs from '@/components/Staffs';
 import Brand from '@/components/Brand';
-import LinkMan from '../components/linkman';
-import NeedAskPrice from '../components/needAskPrice';
+import LinkMan from '../../inquiry/components/linkman';
+import NeedAskPrice from '../../inquiry/components/needAskPrice';
 import CompanySelect from '@/components/Company/index';
 import { checkPhone, chechEmail } from '@/utils/utils';
 
 const { TabPane } = Tabs;
 const FormItem = Form.Item;
 const { Option } = Select;
-@connect(({ inquiryEdit, loading }) => ({
-  inquiryEdit,
-  loading: loading.models.inquiryEdit,
+@connect(({ supplierAskDetail, loading }) => ({
+  supplierAskDetail,
+  loading: loading.models.supplierAskDetail,
 }))
 @Form.create()
 class InquiryEdit extends React.Component {
@@ -52,10 +53,8 @@ class InquiryEdit extends React.Component {
       title: '行号',
       dataIndex: 'LineID',
       width: 50,
-      fixed: 'left',
       align: 'center',
-      render: (text, record) =>
-        record.lastIndex ? <span style={{ fontWeight: 'bolder' }}>合计</span> : text,
+      render: (text, record) => (record.lastIndex ? '合计' : text),
     },
     {
       title: 'SKU',
@@ -176,7 +175,14 @@ class InquiryEdit extends React.Component {
           />
         ),
     },
-
+    {
+      title: '询价最终价',
+      width: 120,
+      inputType: 'text',
+      dataIndex: 'InquiryPrice',
+      editable: true,
+      align: 'center',
+    },
     {
       title: '销售建议价',
       width: 120,
@@ -186,15 +192,11 @@ class InquiryEdit extends React.Component {
       align: 'center',
     },
     {
-      title: '询价最终价',
-      width: 120,
-      dataIndex: 'InquiryPrice',
-      align: 'center',
-    },
-    {
       title: '询价币种',
-      width: 100,
+      width: 150,
+      inputType: 'text',
       dataIndex: 'Currency',
+      editable: true,
       align: 'center',
     },
     {
@@ -207,13 +209,17 @@ class InquiryEdit extends React.Component {
     {
       title: '最终交期',
       width: 150,
+      inputType: 'date',
       dataIndex: 'InquiryDueDate',
+      editable: true,
       align: 'center',
     },
     {
       title: '询价备注',
       dataIndex: 'InquiryComment',
+      inputType: 'textArea',
       width: 150,
+      editable: true,
       align: 'center',
     },
     {
@@ -255,13 +261,14 @@ class InquiryEdit extends React.Component {
               type="cloud-upload"
               onClick={() => this.skuLineAttachment(record, index)}
             />
-            <Icon
-              title="删除行"
-              className="icons"
-              type="delete"
-              theme="twoTone"
-              onClick={() => this.deleteSKULine(record, index)}
-            />
+            <Popconfirm
+              title="确定要删除吗？(更新后有效)"
+              onConfirm={() => this.deleteSKULine(record, index)}
+              okText="删除"
+              cancelText="取消"
+            >
+              <Icon title="删除行" className="icons" type="delete" theme="twoTone" />
+            </Popconfirm>
           </Fragment>
         ),
     },
@@ -329,12 +336,11 @@ class InquiryEdit extends React.Component {
       uploadmodalVisible: false, // 上传Modal
       attachmentVisible: false, // 附件Modal
       skuModalVisible: false, // 物料选择 Modal
-      needmodalVisible: false,
       LineID: Number, // 当前选中行index
       linkmanList: [], // 联系人list
       thisLine: {
         // 当前行
-        TI_Z02604: [],
+        TI_Z02704: [],
       },
     };
     this.formLayout = {
@@ -350,7 +356,7 @@ class InquiryEdit extends React.Component {
     } = this.props;
     if (query.DocEntry) {
       dispatch({
-        type: 'inquiryEdit/fetch',
+        type: 'supplierAskDetail/fetch',
         payload: {
           Content: {
             DocEntry: query.DocEntry,
@@ -363,9 +369,9 @@ class InquiryEdit extends React.Component {
   componentWillUnmount() {
     const { dispatch } = this.props;
     dispatch({
-      type: 'inquiryEdit/save',
+      type: 'supplierAskDetail/save',
       payload: {
-        inquiryDetail: {
+        supplierAskDetailInfo: {
           Comment: '',
           SDocStatus: '',
           PDocStatus: '',
@@ -399,17 +405,17 @@ class InquiryEdit extends React.Component {
           NumAtCard: '',
           Owner: '',
           IsInquiry: '',
-          TI_Z02602: [],
-          TI_Z02603: [],
+          TI_Z02702: [],
+          TI_Z02703: [],
         },
       },
     });
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    if (nextProps.inquiryEdit.inquiryDetail !== prevState.formVals) {
+    if (nextProps.supplierAskDetail.supplierAskDetailInfo !== prevState.formVals) {
       return {
-        formVals: nextProps.inquiryEdit.inquiryDetail,
+        formVals: nextProps.supplierAskDetail.supplierAskDetailInfo,
       };
     }
     return null;
@@ -418,7 +424,7 @@ class InquiryEdit extends React.Component {
   //  行内容改变
   rowChange = record => {
     const { formVals } = this.state;
-    formVals.TI_Z02602.map(item => {
+    formVals.TI_Z02702.map(item => {
       if (item.key === record.key) {
         return record;
       }
@@ -436,7 +442,7 @@ class InquiryEdit extends React.Component {
     let InquiryDocTotalLocal = 0;
     let InquiryDocTotal = 0;
     // eslint-disable-next-line array-callback-return
-    formVals.TI_Z02602.map(record => {
+    formVals.TI_Z02702.map(record => {
       record.InquiryLineTotalLocal = isNaN(record.Quantity * record.InquiryPrice)
         ? 0
         : record.Quantity * record.InquiryPrice;
@@ -463,7 +469,7 @@ class InquiryEdit extends React.Component {
   rowSelectChange = (value, record, index, key) => {
     const { formVals } = this.state;
     record[key] = value;
-    formVals.TI_Z02602[index] = record;
+    formVals.TI_Z02702[index] = record;
     this.setState({ formVals: { ...formVals } });
   };
 
@@ -477,7 +483,7 @@ class InquiryEdit extends React.Component {
   changeLineSKU = selection => {
     const [select] = selection;
     const { thisLine, LineID, formVals } = this.state;
-    formVals.TI_Z02602[LineID] = { ...thisLine, ...select, SKU: select.Code, SKUName: select.Name };
+    formVals.TI_Z02702[LineID] = { ...thisLine, ...select, SKU: select.Code, SKUName: select.Name };
     this.setState({ formVals: { ...formVals } });
     this.handleModalVisible(false);
   };
@@ -486,9 +492,9 @@ class InquiryEdit extends React.Component {
   deleteLine = (record, index) => {
     const { formVals, LineID } = this.state;
     if (LineID >= 0) {
-      formVals.TI_Z02602[LineID].TI_Z02604.splice(index, 1);
+      formVals.TI_Z02702[LineID].TI_Z02704.splice(index, 1);
     } else {
-      formVals.TI_Z02603.splice(index, 1);
+      formVals.TI_Z02703.splice(index, 1);
     }
     this.setState({ formVals: { ...formVals } });
   };
@@ -507,7 +513,7 @@ class InquiryEdit extends React.Component {
   // 删除行物料
   deleteSKULine = (record, index) => {
     const { formVals } = this.state;
-    formVals.TI_Z02602.splice(index, 1);
+    formVals.TI_Z02702.splice(index, 1);
     this.setState({ formVals }, () => {
       this.getTotal();
     });
@@ -517,13 +523,13 @@ class InquiryEdit extends React.Component {
   handleSubmit = fieldsValue => {
     const { AttachmentPath, AttachmentCode, AttachmentName } = fieldsValue;
     const { formVals, LineID } = this.state;
-    const lastsku = formVals.TI_Z02603[formVals.TI_Z02603.length - 1];
+    const lastsku = formVals.TI_Z02703[formVals.TI_Z02703.length - 1];
     if (fieldsValue.AttachmentPath) {
       if (LineID >= 0) {
-        const thisLine = formVals.TI_Z02602[LineID].TI_Z02604;
+        const thisLine = formVals.TI_Z02702[LineID].TI_Z02704;
         const last = thisLine[thisLine.length - 1];
         const ID = last ? last.LineID + 1 : 1;
-        formVals.TI_Z02602[LineID].TI_Z02604.push({
+        formVals.TI_Z02702[LineID].TI_Z02704.push({
           LineID: ID,
           BaseType: formVals.OrderType,
           BaseEntry: formVals.BaseEntry ? formVals.BaseEntry : 1,
@@ -533,7 +539,7 @@ class InquiryEdit extends React.Component {
           AttachmentName,
         });
       } else {
-        formVals.TI_Z02603.push({
+        formVals.TI_Z02703.push({
           LineID: lastsku ? lastsku.LineID + 1 : 1,
           BaseType: formVals.OrderType,
           BaseEntry: formVals.BaseEntry ? formVals.BaseEntry : 1,
@@ -554,7 +560,6 @@ class InquiryEdit extends React.Component {
       uploadmodalVisible: !!flag,
       attachmentVisible: !!flag,
       skuModalVisible: !!flag,
-      needmodalVisible: !!flag,
       LineID: Number,
     });
   };
@@ -565,13 +570,6 @@ class InquiryEdit extends React.Component {
   };
 
   rightButton = tabIndex => {
-    if (tabIndex === '1') {
-      return (
-        <Button icon="plus" style={{ marginLeft: 8 }} type="primary" onClick={this.addLineSku}>
-          添加新物料
-        </Button>
-      );
-    }
     if (tabIndex === '3') {
       return (
         <Button
@@ -589,7 +587,7 @@ class InquiryEdit extends React.Component {
     return null;
   };
 
-  // change 客户
+  // change 供应商
   changeCompany = company => {
     const { TI_Z00602List } = company;
     const { formVals } = this.state;
@@ -621,38 +619,6 @@ class InquiryEdit extends React.Component {
     this.setState({ formVals });
   };
 
-  addLineSku = () => {
-    // 添加物料
-    const { formVals } = this.state;
-    const last = formVals.TI_Z02602[formVals.TI_Z02602.length - 1];
-    const LineID = last ? last.LineID + 1 : 1;
-    formVals.TI_Z02602.push({
-      LineID,
-      SKU: '',
-      SKUName: '',
-      BrandName: '',
-      ProductName: '',
-      ManufactureNO: '',
-      Parameters: '',
-      Package: '',
-      Purchaser: '',
-      Quantity: '',
-      Unit: '',
-      DueDate: '',
-      InquiryPrice: '',
-      Price: '',
-      InquiryDueDate: '',
-      InquiryComment: '',
-      InquiryLineTotal: '',
-      InquiryLineTotalLocal: '',
-      LineTotal: '',
-      Currency: '',
-      DocRate: '',
-      TI_Z02604: [],
-    });
-    this.setState({ formVals });
-  };
-
   saveHandle = () => {
     // 保存主数据
     const { form, dispatch } = this.props;
@@ -667,7 +633,7 @@ class InquiryEdit extends React.Component {
       delete fieldsValue.CardCode;
       delete fieldsValue.CardName;
       dispatch({
-        type: 'inquiryEdit/add',
+        type: 'supplierAskDetail/add',
         payload: {
           Content: {
             ...formVals,
@@ -703,7 +669,7 @@ class InquiryEdit extends React.Component {
       delete fieldsValue.CardCode;
       delete fieldsValue.CardName;
       dispatch({
-        type: 'inquiryEdit/update',
+        type: 'supplierAskDetail/update',
         payload: {
           Content: {
             ...formVals,
@@ -730,7 +696,7 @@ class InquiryEdit extends React.Component {
     const { dispatch } = this.props;
     const { formVals } = this.state;
     dispatch({
-      type: 'inquiryEdit/cancel',
+      type: 'supplierAskDetail/cancel',
       payload: {
         Content: {
           DocEntry: formVals.DocEntry,
@@ -745,40 +711,6 @@ class InquiryEdit extends React.Component {
     });
   };
 
-  // 发送需询价
-  submitNeedLine = select => {
-    const { dispatch } = this.props;
-    const loItemList = select.map(item => ({
-      DocEntry: item.DocEntry,
-      LineID: item.LineID,
-    }));
-    dispatch({
-      type: 'inquiryEdit/confirm',
-      payload: {
-        Content: {
-          loItemList,
-        },
-      },
-      callback: response => {
-        if (response.Status === 200) {
-          message.success('提交成功');
-
-          this.setState({ needmodalVisible: false });
-        }
-      },
-    });
-  };
-
-  // 确认需要采购询价
-  selectNeed = () => {
-    const { selectedRows } = this.state;
-    if (selectedRows.length) {
-      this.handleModalVisible(true);
-    } else {
-      message.warning('请先选择');
-    }
-  };
-
   render() {
     const {
       form: { getFieldDecorator },
@@ -790,7 +722,6 @@ class InquiryEdit extends React.Component {
       linkmanList,
       uploadmodalVisible,
       skuModalVisible,
-      needmodalVisible,
       attachmentVisible,
     } = this.state;
     const formItemLayout = {
@@ -815,12 +746,8 @@ class InquiryEdit extends React.Component {
       handleModalVisible: this.handleModalVisible,
     };
 
-    const needParentMethods = {
-      handleSubmit: this.submitNeedLine,
-      handleModalVisible: this.handleModalVisible,
-    };
     console.log(formVals);
-    const newdata = [...formVals.TI_Z02602];
+    const newdata = [...formVals.TI_Z02702];
     if (newdata.length > 0) {
       newdata.push({
         LineID: newdata[newdata.length - 1].LineID + 1,
@@ -835,9 +762,9 @@ class InquiryEdit extends React.Component {
         <Form {...formItemLayout}>
           <Row gutter={8}>
             <Col lg={10} md={12} sm={24}>
-              <FormItem key="CardCode" {...this.formLayout} label="客户ID">
+              <FormItem key="CardCode" {...this.formLayout} label="供应商ID">
                 {getFieldDecorator('CardCode', {
-                  rules: [{ required: true, message: '请选择客户！' }],
+                  rules: [{ required: true, message: '请选择供应商！' }],
                   initialValue: { key: formVals.CardName, label: formVals.CardCode },
                 })(
                   <CompanySelect
@@ -858,9 +785,9 @@ class InquiryEdit extends React.Component {
           </Row>
           <Row gutter={8}>
             <Col lg={10} md={12} sm={24}>
-              <FormItem key="CardName" {...this.formLayout} label="客户名称">
+              <FormItem key="CardName" {...this.formLayout} label="供应商名称">
                 {getFieldDecorator('CardName', {
-                  rules: [{ required: true, message: '请输入客户名称！' }],
+                  rules: [{ required: true, message: '请输入供应商名称！' }],
                   initialValue: { key: formVals.CardCode, label: formVals.CardName },
                 })(
                   <CompanySelect
@@ -896,33 +823,19 @@ class InquiryEdit extends React.Component {
               </FormItem>
             </Col>
             <Col lg={10} md={12} sm={24}>
-              <FormItem key="OrderType" {...this.formLayout} label="订单类型">
-                {getFieldDecorator('OrderType', {
-                  initialValue: formVals.OrderType,
-                  rules: [{ required: true, message: '请选择订单类型！' }],
-                })(
-                  <Select placeholder="请选择订单类型">
-                    <Option value="1">正常订单</Option>
-                  </Select>
-                )}
+              <FormItem key="DocStatus" {...this.formLayout} label="询价状态">
+                <span>{formVals.DocStatus === 'O' ? '未询价' : '已询价'}</span>
               </FormItem>
             </Col>
           </Row>
           <Row gutter={8}>
             <Col lg={10} md={12} sm={24}>
-              <FormItem key="NumAtCard" {...this.formLayout} label="客户参考号">
+              <FormItem key="NumAtCard" {...this.formLayout} label="参考号">
                 {getFieldDecorator('NumAtCard', {
                   initialValue: formVals.NumAtCard,
-                })(<Input placeholder="请输入客户参考号" />)}
+                })(<Input placeholder="请输入供应商参考号" />)}
               </FormItem>
             </Col>
-            {formVals.DocStatus ? (
-              <Col lg={10} md={12} sm={24}>
-                <FormItem key="DocStatus" {...this.formLayout} label="状态">
-                  <span>{formVals.DocStatus === 'O' ? '未清' : '已清'}</span>
-                </FormItem>
-              </Col>
-            ) : null}
           </Row>
         </Form>
         <Tabs tabBarExtraContent={this.rightButton(tabIndex)} onChange={this.tabChange}>
@@ -957,10 +870,10 @@ class InquiryEdit extends React.Component {
           <TabPane tab="常规" key="2">
             <Row gutter={8}>
               <Col lg={8} md={12} sm={24}>
-                <FormItem key="CellphoneNO" {...this.formLayout} label="联系人手机号码">
+                <FormItem key="CellphoneNO" {...this.formLayout} label="手机号码">
                   {getFieldDecorator('CellphoneNO', {
                     initialValue: formVals.CellphoneNO,
-                    rules: [{ required: true, message: '请输入联系人手机号码！' }],
+                    rules: [{ required: true, message: '请输入手机号码！' }],
                   })(<Input placeholder="联系人手机号码" />)}
                 </FormItem>
               </Col>
@@ -1020,19 +933,6 @@ class InquiryEdit extends React.Component {
                 </FormItem>
               </Col>
               <Col lg={8} md={12} sm={24}>
-                <FormItem key="SourceType" {...this.formLayout} label="来源类型">
-                  {getFieldDecorator('SourceType', {
-                    initialValue: formVals.SourceType,
-                    rules: [{ required: true, message: '请选择来源类型！' }],
-                  })(
-                    <Select style={{ width: '100%' }} placeholder="请选择">
-                      <Option value="1">销售下单</Option>
-                      <Option value="2">网站下单</Option>
-                    </Select>
-                  )}
-                </FormItem>
-              </Col>
-              <Col lg={8} md={12} sm={24}>
                 <FormItem key="Comment" {...this.formLayout} label="备注">
                   {getFieldDecorator('Comment', {
                     initialValue: formVals.Comment,
@@ -1055,57 +955,35 @@ class InquiryEdit extends React.Component {
                 </FormItem>
               </Col>
               <Col lg={8} md={12} sm={24}>
-                <FormItem key="IsInquiry" {...this.formLayout} label="是否询价">
-                  {getFieldDecorator('IsInquiry', {
-                    initialValue: formVals.IsInquiry,
-                    rules: [{ required: true, message: '请选择是否询价！' }],
-                  })(
-                    <Select style={{ width: '100%' }} placeholder="请选择是否询价">
-                      <Option value="Y">是</Option>
-                      <Option value="N">否</Option>
-                    </Select>
-                  )}
-                </FormItem>
-              </Col>
-              <Col lg={8} md={12} sm={24}>
                 <FormItem key="CreateUser" {...this.formLayout} label="创建人">
                   <span>{formVals.CreateUser}</span>
                 </FormItem>
               </Col>
-              {formVals.DocEntry ? (
-                <Fragment>
-                  <Col lg={8} md={12} sm={24}>
-                    <FormItem key="SDocStatus" {...this.formLayout} label="销售报价状态">
-                      <span>{formVals.PDocStatus}</span>
-                    </FormItem>
-                  </Col>
-                  <Col lg={8} md={12} sm={24}>
-                    <FormItem key="PDocStatus" {...this.formLayout} label="采购询价状态">
-                      <span>{formVals.SDocStatus}</span>
-                    </FormItem>
-                  </Col>
-                  <Col lg={8} md={12} sm={24}>
-                    <FormItem key="Closed" {...this.formLayout} label="关闭状态">
-                      <Switch
-                        checkedChildren="已关闭"
-                        disabled
-                        unCheckedChildren="开启中"
-                        checked={formVals.Closed === 'Y'}
-                      />
-                    </FormItem>
-                  </Col>
-                  <Col lg={8} md={12} sm={24}>
-                    <FormItem key="ClosedBy " {...this.formLayout} label="关闭人">
-                      <span>{formVals.ClosedBy}</span>
-                    </FormItem>
-                  </Col>
-                </Fragment>
-              ) : null}
+              <Col lg={8} md={12} sm={24}>
+                <FormItem key="Closed" {...this.formLayout} label="关闭状态">
+                  <Switch
+                    checkedChildren="已关闭"
+                    disabled
+                    unCheckedChildren="开启中"
+                    checked={formVals.Closed === 'Y'}
+                  />
+                </FormItem>
+              </Col>
+              <Col lg={8} md={12} sm={24}>
+                <FormItem key="ClosedComment " {...this.formLayout} label="关闭原因">
+                  <span>{formVals.ClosedComment}</span>
+                </FormItem>
+              </Col>
+              <Col lg={8} md={12} sm={24}>
+                <FormItem key="ClosedBy " {...this.formLayout} label="关闭人">
+                  <span>{formVals.ClosedBy}</span>
+                </FormItem>
+              </Col>
             </Row>
           </TabPane>
           <TabPane tab="附件" key="3">
             <StandardTable
-              data={{ list: formVals.TI_Z02603 }}
+              data={{ list: formVals.TI_Z02703 }}
               rowKey="LineID"
               columns={this.attachmentColumns}
             />
@@ -1122,9 +1000,6 @@ class InquiryEdit extends React.Component {
                 type="primary"
               >
                 更新
-              </Button>
-              <Button onClick={() => this.setState({ needmodalVisible: true })} type="primary">
-                确认需采购询价
               </Button>
             </Fragment>
           ) : (
@@ -1144,16 +1019,11 @@ class InquiryEdit extends React.Component {
           onCancel={() => this.handleModalVisible(false)}
         >
           <StandardTable
-            data={{ list: thisLine.TI_Z02604 }}
+            data={{ list: thisLine.TI_Z02704 }}
             rowKey="LineID"
             columns={this.attachmentColumns}
           />
         </Modal>
-        <NeedAskPrice
-          data={formVals.TI_Z02602}
-          {...needParentMethods}
-          modalVisible={needmodalVisible}
-        />
       </Card>
     );
   }

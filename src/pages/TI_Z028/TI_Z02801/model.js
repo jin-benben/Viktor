@@ -1,7 +1,7 @@
-import { TI_Z02804 } from '../service';
+import { TI_Z02805 } from '../service';
 
 export default {
-  namespace: 'TI_Z02804',
+  namespace: 'TI_Z02801',
 
   state: {
     orderList: [],
@@ -27,7 +27,7 @@ export default {
 
   effects: {
     *fetch({ payload }, { call, put }) {
-      const response = yield call(TI_Z02804, payload);
+      const response = yield call(TI_Z02805, payload);
       if (response.Status === 200) {
         if (!response.Content) {
           yield put({
