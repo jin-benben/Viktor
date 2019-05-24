@@ -436,7 +436,7 @@ class SalesQuotationSku extends PureComponent {
     } = this.props;
     return (
       <Fragment>
-        <Card title="销售报价单物料查询" bordered={false}>
+        <Card title="销售合同物料查询" bordered={false}>
           <div className="tableList">
             <div className="tableListForm">{this.renderSimpleForm()}</div>
             <StandardTable

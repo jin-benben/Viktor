@@ -16,8 +16,9 @@ import {
   Icon,
 } from 'antd';
 import StandardTable from '@/components/StandardTable';
-import Staffs from '@/components/Staffs';
+import MDMCommonality from '@/components/Select';
 import DocEntryFrom from '@/components/DocEntryFrom';
+import { getName } from '@/utils/utils';
 
 const { RangePicker } = DatePicker;
 
@@ -25,8 +26,9 @@ const FormItem = Form.Item;
 const { Option } = Select;
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ inquiryFetch, loading }) => ({
+@connect(({ inquiryFetch, loading, global }) => ({
   inquiryFetch,
+  global,
   loading: loading.models.inquiryFetch,
 }))
 @Form.create()
@@ -118,6 +120,12 @@ class inquiryListPage extends PureComponent {
       title: '所有人',
       width: 100,
       dataIndex: 'Owner',
+      render: text => {
+        const {
+          global: { Saler },
+        } = this.props;
+        return <span>{getName(Saler, text)}</span>;
+      },
     },
     {
       title: '询价总计',
@@ -140,6 +148,14 @@ class inquiryListPage extends PureComponent {
       type: 'inquiryFetch/fetch',
       payload: {
         ...queryData,
+      },
+    });
+    dispatch({
+      type: 'global/getMDMCommonality',
+      payload: {
+        Content: {
+          CodeList: ['Saler'],
+        },
       },
     });
   }
@@ -211,6 +227,7 @@ class inquiryListPage extends PureComponent {
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
+      global: { Saler },
     } = this.props;
     const { expandForm } = this.state;
     const formLayout = {
@@ -266,8 +283,8 @@ class inquiryListPage extends PureComponent {
             </FormItem>
           </Col>
           <Col md={6} sm={24}>
-            <FormItem label="所有者" {...formLayout}>
-              {getFieldDecorator('Owner')(<Staffs />)}
+            <FormItem key="Owner" {...this.formLayout} label="所有者">
+              {getFieldDecorator('Owner', {})(<MDMCommonality data={Saler} />)}
             </FormItem>
           </Col>
 

@@ -1,10 +1,10 @@
-import { TI_Z02805, addRule } from '../service';
+import { TI_Z02906 } from '../service';
 
 export default {
-  namespace: 'TI_Z02801',
+  namespace: 'SalesQuotation',
 
   state: {
-    orderList: [],
+    SalesQuotationList: [],
     queryData: {
       Content: {
         SearchText: '',
@@ -27,13 +27,13 @@ export default {
 
   effects: {
     *fetch({ payload }, { call, put }) {
-      const response = yield call(TI_Z02805, payload);
+      const response = yield call(TI_Z02906, payload);
       if (response.Status === 200) {
         if (!response.Content) {
           yield put({
             type: 'save',
             payload: {
-              orderList: [],
+              SalesQuotationList: [],
             },
           });
         } else {
@@ -41,7 +41,7 @@ export default {
           yield put({
             type: 'save',
             payload: {
-              orderList: rows,
+              SalesQuotationList: rows,
               pagination: {
                 total: records,
                 pageSize: payload.rows,
@@ -51,10 +51,6 @@ export default {
           });
         }
       }
-    },
-    *add({ payload, callback }, { call }) {
-      const response = yield call(addRule, payload);
-      if (callback) callback(response);
     },
   },
   reducers: {

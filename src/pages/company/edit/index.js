@@ -444,7 +444,7 @@ class CompanyEdit extends PureComponent {
   render() {
     const {
       form: { getFieldDecorator },
-      global: { Company, PayMent, Trnsp, Saler },
+      global: { PayMent, Trnsp },
     } = this.props;
     const {
       formVals,
@@ -473,7 +473,6 @@ class CompanyEdit extends PureComponent {
       handleSubmit: this.handleAddressSubmit,
       handleModalVisible: this.handleModalVisible,
     };
-    console.log(Company, PayMent, Trnsp, Saler);
     return (
       <Card>
         <Form {...formItemLayout} onSubmit={this.handleSubmit}>

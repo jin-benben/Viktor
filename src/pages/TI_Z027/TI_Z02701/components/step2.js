@@ -176,7 +176,7 @@ class SelectionLine extends Component {
       <div>
         <StandardTable
           data={{ list: orderLineList }}
-          //  rowKey="CreateDate"
+          rowKey="key"
           scroll={{ x: 1500 }}
           columns={this.columns}
           isAll

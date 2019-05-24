@@ -280,9 +280,9 @@ export default {
             {
               name: '采购询价确认详情',
               icon: 'smile',
-              path: '/inquiry/detail',
+              path: '/TI_Z028/TI_Z02802',
               hideInMenu: true,
-              component: './inquiry/edit',
+              component: './TI_Z028/TI_Z02802',
             }
           ]
         },
@@ -292,22 +292,47 @@ export default {
           path: '/TI_Z029',
           routes:[
             {
-              name: '单据查询',
+              name: '销售报价单据查询',
               icon: 'smile',
               path: '/TI_Z029/search',
               component: './TI_Z029/TI_Z02906',
             },
             {
-              name: '明细查询',
+              name: '销售报价单明细查询',
               icon: 'smile',
               path: '/TI_Z029/searchLine',
               component: './TI_Z029/TI_Z02907',
             },
             {
-              name: '添加',
+              name: '销售报价单添加',
               icon: 'smile',
               path: '/TI_Z029/edit',
               component: './TI_Z029/TI_Z02901',
+            }
+          ]
+        },
+        {
+          name: '销售合同',
+          icon: 'smile',
+          path: '/TI_Z030',
+          routes:[
+            {
+              name: '销售合同单据查询',
+              icon: 'smile',
+              path: '/TI_Z030/search',
+              component: './TI_Z030/TI_Z03006',
+            },
+            {
+              name: '销售合同明细查询',
+              icon: 'smile',
+              path: '/TI_Z030/searchLine',
+              component: './TI_Z030/TI_Z03007',
+            },
+            {
+              name: '销售合同添加',
+              icon: 'smile',
+              path: '/TI_Z030/edit',
+              component: './TI_Z030/TI_Z03001',
             }
           ]
         },

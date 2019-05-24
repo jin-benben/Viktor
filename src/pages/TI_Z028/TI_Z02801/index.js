@@ -1,19 +1,22 @@
+/* eslint-disable array-callback-return */
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
 import moment from 'moment';
-import { Row, Col, Card, Form, Input, Button, DatePicker, Modal, message } from 'antd';
+import { Row, Col, Card, Form, Input, Button, DatePicker, message } from 'antd';
 import StandardTable from '@/components/StandardTable';
-import Staffs from '@/components/Staffs';
+import MDMCommonality from '@/components/Select';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import OrderPreview from './components';
+import { getName } from '@/utils/utils';
 
 const { RangePicker } = DatePicker;
 const FormItem = Form.Item;
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ TI_Z02801, loading }) => ({
+@connect(({ TI_Z02801, loading, global }) => ({
   TI_Z02801,
+  global,
   loading: loading.models.TI_Z02801,
 }))
 @Form.create()
@@ -44,7 +47,13 @@ class TI_Z02801 extends PureComponent {
     {
       title: '销售员',
       width: 80,
-      dataIndex: 'Owner',
+      dataIndex: 'Saler',
+      render: text => {
+        const {
+          global: { Saler },
+        } = this.props;
+        return <span>{getName(Saler, text)}</span>;
+      },
     },
     {
       title: '客户参考号',
@@ -96,6 +105,12 @@ class TI_Z02801 extends PureComponent {
       title: '采购员',
       width: 80,
       dataIndex: 'Purchaser',
+      render: text => {
+        const {
+          global: { Purchaser },
+        } = this.props;
+        return <span>{getName(Purchaser, text)}</span>;
+      },
     },
     {
       title: '数量',
@@ -208,19 +223,25 @@ class TI_Z02801 extends PureComponent {
         ...queryData,
       },
     });
+    dispatch({
+      type: 'global/getMDMCommonality',
+      payload: {
+        Content: {
+          CodeList: ['Saler', 'Company', 'Purchaser'],
+        },
+      },
+    });
   }
 
-  expandedRowRender = (record, index) => {
-    return (
-      <StandardTable
-        data={{ list: record.TI_Z02803 }}
-        rowSelection={{
-          onSelectRow: selectRows => this.childOnSelectRow(selectRows, index),
-        }}
-        columns={this.childColumns}
-      />
-    );
-  };
+  expandedRowRender = (record, index) => (
+    <StandardTable
+      data={{ list: record.TI_Z02803 }}
+      rowSelection={{
+        onSelectRow: selectRows => this.childOnSelectRow(selectRows, index),
+      }}
+      columns={this.childColumns}
+    />
+  );
 
   childOnSelectRow = (selectRows, index) => {
     const { selectedRows } = this.state;
@@ -284,6 +305,7 @@ class TI_Z02801 extends PureComponent {
   // });
 
   onSelectRow = selectedRows => {
+    console.log(selectedRows);
     this.setState({ selectedRows: [...selectedRows] });
   };
 
@@ -295,15 +317,42 @@ class TI_Z02801 extends PureComponent {
     this.setState({ modalVisible: true });
   };
 
-  okHandle = () => {
-    const { selectedRows } = this.state;
-    console.log(selectedRows);
+  okHandle = (selectedRows, fieldsValue) => {
+    const { dispatch } = this.props;
+    let InquiryDocTotal = 0;
+    let InquiryDocTotalLocal = 0;
+    selectedRows.map(item => {
+      InquiryDocTotal += item.LineTotal;
+      InquiryDocTotalLocal += item.InquiryLineTotalLocal;
+    });
+    dispatch({
+      type: 'TI_Z02801/add',
+      payload: {
+        Content: {
+          InquiryDocTotal,
+          InquiryDocTotalLocal,
+          ...fieldsValue,
+          TI_Z02802: [...selectedRows],
+        },
+      },
+      callback: response => {
+        if (response.Status === 200) {
+          message.success('添加成功');
+          router.push(`/TI_Z028/TI_Z02802?DocEntry=${response.Content.DocEntry}`);
+        }
+      },
+    });
+  };
+
+  handleModalVisible = flag => {
+    this.setState({ modalVisible: !!flag });
   };
 
   // form表单
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
+      global: { Saler },
     } = this.props;
 
     const formLayout = {
@@ -349,8 +398,10 @@ class TI_Z02801 extends PureComponent {
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
-            <FormItem label="所有者" {...formLayout}>
-              {getFieldDecorator('Owner')(<Staffs />)}
+            <FormItem key="Owner" {...formLayout} label="所有者">
+              {getFieldDecorator('Owner', { rules: [{ required: true, message: '请选择所有者' }] })(
+                <MDMCommonality data={Saler} />
+              )}
             </FormItem>
           </Col>
 
@@ -371,18 +422,19 @@ class TI_Z02801 extends PureComponent {
   render() {
     const {
       TI_Z02801: { orderList, pagination },
+      global: { Purchaser, Company, Saler },
       loading,
     } = this.props;
     const { modalVisible, selectedRows } = this.state;
-    let tabelwidth = 0;
+
     const columns = this.columns.map(item => {
       item.align = 'center';
-      if (item.width) {
-        tabelwidth += item.width;
-      }
       return item;
     });
-    console.log(tabelwidth);
+    const parentMethods = {
+      handleSubmit: this.okHandle,
+      handleModalVisible: this.handleModalVisible,
+    };
     return (
       <Fragment>
         <Card title="采购询价确认单查询" bordered={false}>
@@ -399,28 +451,20 @@ class TI_Z02801 extends PureComponent {
               }}
               expandedRowRender={this.expandedRowRender}
               columns={columns}
-              //   onRow={this.handleOnRow}
               onChange={this.handleStandardTableChange}
             />
             <Button type="primary" onClick={this.confrimModel}>
               确认
             </Button>
-            <Modal
-              width={1200}
-              destroyOnClose
-              title="确认选择"
-              visible={modalVisible}
-              onOk={this.okHandle}
-              onCancel={() => this.setState({ modalVisible: false })}
-            >
-              <div className="tableList">
-                <OrderPreview
-                  orderLineList={selectedRows}
-                  columns={columns}
-                  childColumns={this.childColumns}
-                />
-              </div>
-            </Modal>
+            <OrderPreview
+              orderLineList={selectedRows}
+              Purchaser={Purchaser}
+              Company={Company}
+              Saler={Saler}
+              {...parentMethods}
+              modalVisible={modalVisible}
+              childColumns={this.childColumns}
+            />
           </div>
         </Card>
       </Fragment>

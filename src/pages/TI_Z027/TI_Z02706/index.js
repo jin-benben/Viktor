@@ -16,7 +16,7 @@ import {
   Icon,
 } from 'antd';
 import StandardTable from '@/components/StandardTable';
-import Staffs from '@/components/Staffs';
+import MDMCommonality from '@/components/Select';
 import DocEntryFrom from '@/components/DocEntryFrom';
 
 const { RangePicker } = DatePicker;
@@ -25,8 +25,9 @@ const FormItem = Form.Item;
 const { Option } = Select;
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ supplierQuotation, loading }) => ({
+@connect(({ supplierQuotation, loading, global }) => ({
   supplierQuotation,
+  global,
   loading: loading.models.supplierQuotation,
 }))
 @Form.create()
@@ -118,11 +119,18 @@ class supplierQuotation extends PureComponent {
       dispatch,
       supplierQuotation: { queryData },
     } = this.props;
-    console.log(queryData);
     dispatch({
       type: 'supplierQuotation/fetch',
       payload: {
         ...queryData,
+      },
+    });
+    dispatch({
+      type: 'global/getMDMCommonality',
+      payload: {
+        Content: {
+          CodeList: ['Saler', 'Purchaser'],
+        },
       },
     });
   }
@@ -194,6 +202,7 @@ class supplierQuotation extends PureComponent {
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
+      global: { Purchaser },
     } = this.props;
     const { expandForm } = this.state;
     const formLayout = {
@@ -251,7 +260,7 @@ class supplierQuotation extends PureComponent {
           </Col>
           <Col md={6} sm={24}>
             <FormItem label="所有者" {...formLayout}>
-              {getFieldDecorator('Owner')(<Staffs />)}
+              {getFieldDecorator('Owner')(<MDMCommonality data={Purchaser} />)}
             </FormItem>
           </Col>
 

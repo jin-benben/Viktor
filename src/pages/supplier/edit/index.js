@@ -149,7 +149,7 @@ class CompanyEdit extends React.Component {
       type: 'global/getMDMCommonality',
       payload: {
         Content: {
-          CodeList: ['Company', '', 'PayMent'],
+          CodeList: ['Company', 'PayMent', 'Curr'],
         },
       },
     });
@@ -357,7 +357,7 @@ class CompanyEdit extends React.Component {
   render() {
     const {
       form: { getFieldDecorator },
-      global: { Company, PayMent },
+      global: { Company, PayMent, Curr },
     } = this.props;
     const { formVals, tabIndex, LinkManmodalVisible, linkManVal } = this.state;
     const formItemLayout = {
@@ -482,7 +482,13 @@ class CompanyEdit extends React.Component {
                 {getFieldDecorator('Currency', {
                   rules: [{ required: true, message: '请输入交易币种！' }],
                   initialValue: formVals.Currency,
-                })(<Input placeholder="请输入交易币种" />)}
+                })(
+                  <MDMCommonality
+                    initialValue={formVals.CompanyCode}
+                    data={Curr}
+                    placeholder="请输入交易币种"
+                  />
+                )}
               </FormItem>
             </Col>
             <Col lg={8} md={12} sm={24}>

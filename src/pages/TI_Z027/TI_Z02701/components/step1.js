@@ -3,17 +3,20 @@ import React, { Fragment } from 'react';
 
 import moment from 'moment';
 import { Row, Col, Form, Input, Button, DatePicker, Checkbox, message } from 'antd';
+import { connect } from 'dva';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import StandardTable from '@/components/StandardTable';
 import SupplierSelect from '@/components/Select/Supplier';
-import Staffs from '@/components/Staffs';
-
-import NeedAskPrice from '../../../inquiry/components/needAskPrice';
+import MDMCommonality from '@/components/Select';
+import { getName } from '@/utils/utils';
+import OrderModal from './orderModal';
 
 const { RangePicker } = DatePicker;
 
 const FormItem = Form.Item;
-
+@connect(({ global }) => ({
+  global,
+}))
 @Form.create()
 class NeedTabl extends React.Component {
   state = {
@@ -26,7 +29,8 @@ class NeedTabl extends React.Component {
     {
       title: '供应商',
       width: 200,
-      dataIndex: 'DocEntry',
+      fixed: 'left',
+      dataIndex: 'supplier',
       render: (text, record, index) => (
         <SupplierSelect
           initialValue={{ key: record.SupplierCode, label: record.SupplierName }}
@@ -72,6 +76,12 @@ class NeedTabl extends React.Component {
       title: '销售员',
       width: 100,
       dataIndex: 'Owner',
+      render: text => {
+        const {
+          global: { Saler },
+        } = this.props;
+        return <span>{getName(Saler, text)}</span>;
+      },
     },
     {
       title: '客户参考号',
@@ -121,7 +131,13 @@ class NeedTabl extends React.Component {
     {
       title: '采购员',
       width: 80,
-      dataIndex: 'PurchaseName',
+      dataIndex: 'Purchaser',
+      render: text => {
+        const {
+          global: { Purchaser },
+        } = this.props;
+        return <span>{getName(Purchaser, text)}</span>;
+      },
     },
     {
       title: '数量',
@@ -144,7 +160,6 @@ class NeedTabl extends React.Component {
       width: 100,
       dataIndex: 'Price',
     },
-
     {
       title: '行备注',
       width: 80,
@@ -206,7 +221,7 @@ class NeedTabl extends React.Component {
         DocDateFrom,
         DocDateTo,
         ...fieldsValue.orderNo,
-        SLineStatus: fieldsValue.SLineStatus && fieldsValue.SLineStatus ? 'O' : 'C',
+        SLineStatus: fieldsValue.SLineStatus && fieldsValue.SLineStatus ? 'C' : 'O',
       };
       seachHandle(queryData);
     });
@@ -234,6 +249,7 @@ class NeedTabl extends React.Component {
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
+      global: { Saler },
     } = this.props;
     const formLayout = {
       labelCol: { span: 6 },
@@ -280,12 +296,12 @@ class NeedTabl extends React.Component {
 
           <Col md={6} sm={24}>
             <FormItem label="销售员" {...formLayout}>
-              {getFieldDecorator('Owner')(<Staffs />)}
+              {getFieldDecorator('Owner')(<MDMCommonality data={Saler} />)}
             </FormItem>
           </Col>
           <Col md={6} sm={24}>
             <FormItem {...searchFormItemLayout}>
-              {getFieldDecorator('SLineStatus', { valuePropName: 'checked', initialValue: true })(
+              {getFieldDecorator('SLineStatus', { valuePropName: 'checked', initialValue: false })(
                 <Checkbox>已询价</Checkbox>
               )}
             </FormItem>
@@ -337,7 +353,7 @@ class NeedTabl extends React.Component {
           <Button onClick={this.selectNeed} type="primary">
             下一步
           </Button>
-          <NeedAskPrice data={selectedRows} {...parentMethods} modalVisible={modalVisible} />
+          <OrderModal data={selectedRows} {...parentMethods} modalVisible={modalVisible} />
         </div>
       </Fragment>
     );

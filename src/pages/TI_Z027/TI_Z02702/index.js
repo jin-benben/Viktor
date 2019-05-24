@@ -18,14 +18,13 @@ import {
   message,
   DatePicker,
   Popconfirm,
-  Select,
 } from 'antd';
 import moment from 'moment';
 import round from 'lodash/round';
 import router from 'umi/router';
 import CompanyCode from '@/components/Select/CompanyCode';
 import CancelOrder from '@/components/Modal/CancelOrder';
-import WhsCode from '@/components/Select/WhsCode';
+import MDMCommonality from '@/components/Select';
 import StandardTable from '@/components/StandardTable';
 import EditableFormTable from '@/components/EditableFormTable';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
@@ -35,15 +34,14 @@ import Address from '@/components/Address';
 import Staffs from '@/components/Staffs';
 import Brand from '@/components/Brand';
 import LinkMan from '../../inquiry/components/linkman';
-import NeedAskPrice from '../../inquiry/components/needAskPrice';
 import CompanySelect from '@/components/Company/index';
 import { checkPhone, chechEmail } from '@/utils/utils';
 
 const { TabPane } = Tabs;
 const FormItem = Form.Item;
-const { Option } = Select;
-@connect(({ supplierAskDetail, loading }) => ({
+@connect(({ supplierAskDetail, loading, global }) => ({
   supplierAskDetail,
+  global,
   loading: loading.models.supplierAskDetail,
 }))
 @Form.create()
@@ -52,6 +50,7 @@ class InquiryEdit extends React.Component {
     {
       title: '行号',
       dataIndex: 'LineID',
+      left: 'left',
       width: 50,
       align: 'center',
       render: (text, record) => (record.lastIndex ? '合计' : text),
@@ -164,16 +163,23 @@ class InquiryEdit extends React.Component {
       width: 150,
       dataIndex: 'WhsCode',
       align: 'center',
-      render: (text, record, index) =>
-        record.lastIndex ? null : (
-          <WhsCode
-            defaultValue={record.WhsCode}
-            keyType="Name"
-            onChange={value => {
-              this.rowSelectChange(value, record, index, 'WhsCode');
-            }}
-          />
-        ),
+      render: (text, record, index) => {
+        const {
+          global: { WhsCode },
+        } = this.props;
+        if (!record.lastIndex) {
+          return (
+            <MDMCommonality
+              initialValue={text}
+              data={WhsCode}
+              onChange={value => {
+                this.rowSelectChange(value, record, index, 'WhsCode');
+              }}
+            />
+          );
+        }
+        return null;
+      },
     },
     {
       title: '询价最终价',
@@ -364,6 +370,14 @@ class InquiryEdit extends React.Component {
         },
       });
     }
+    dispatch({
+      type: 'global/getMDMCommonality',
+      payload: {
+        Content: {
+          CodeList: ['Saler', 'Company', 'Purchaser', 'WhsCode'],
+        },
+      },
+    });
   }
 
   componentWillUnmount() {
@@ -745,8 +759,6 @@ class InquiryEdit extends React.Component {
       handleSubmit: this.changeLineSKU,
       handleModalVisible: this.handleModalVisible,
     };
-
-    console.log(formVals);
     const newdata = [...formVals.TI_Z02702];
     if (newdata.length > 0) {
       newdata.push({

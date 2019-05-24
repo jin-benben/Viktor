@@ -25,6 +25,7 @@ class LinkMan extends PureComponent {
       fetching: false,
     });
     const { onChange } = this.props;
+    console.log(initialValue);
     if (onChange) {
       onChange(initialValue);
     }
@@ -33,6 +34,7 @@ class LinkMan extends PureComponent {
   render() {
     const { fetching, initialValue } = this.state;
     const { data } = this.props;
+    console.log(initialValue);
     return (
       <Select
         showArrow={false}

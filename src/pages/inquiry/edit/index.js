@@ -22,27 +22,26 @@ import {
 import moment from 'moment';
 import round from 'lodash/round';
 import router from 'umi/router';
-import CompanyCode from '@/components/Select/CompanyCode';
 import CancelOrder from '@/components/Modal/CancelOrder';
-import WhsCode from '@/components/Select/WhsCode';
 import StandardTable from '@/components/StandardTable';
 import EditableFormTable from '@/components/EditableFormTable';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import UpdateLoad from '../components/modal';
 import SKUModal from '@/components/Modal/SKU';
 import Address from '@/components/Address';
-import Staffs from '@/components/Staffs';
 import Brand from '@/components/Brand';
 import LinkMan from '../components/linkman';
+import MDMCommonality from '@/components/Select';
 import NeedAskPrice from '../components/needAskPrice';
 import CompanySelect from '@/components/Company/index';
-import { checkPhone, chechEmail } from '@/utils/utils';
+import { checkPhone, getName, chechEmail } from '@/utils/utils';
 
 const { TabPane } = Tabs;
 const FormItem = Form.Item;
 const { Option } = Select;
-@connect(({ inquiryEdit, loading }) => ({
+@connect(({ inquiryEdit, loading, global }) => ({
   inquiryEdit,
+  global,
   loading: loading.models.inquiryEdit,
 }))
 @Form.create()
@@ -76,9 +75,7 @@ class InquiryEdit extends React.Component {
     {
       title: '产品描述',
       dataIndex: 'SKUName',
-      inputType: 'textArea',
       width: 200,
-      editable: true,
       align: 'center',
     },
     {
@@ -130,13 +127,6 @@ class InquiryEdit extends React.Component {
       align: 'center',
     },
     {
-      title: '采购员',
-      width: 200,
-      dataIndex: 'Purchaser',
-      editable: true,
-      align: 'center',
-    },
-    {
       title: '数量',
       width: 120,
       inputType: 'text',
@@ -165,16 +155,23 @@ class InquiryEdit extends React.Component {
       width: 150,
       dataIndex: 'WhsCode',
       align: 'center',
-      render: (text, record, index) =>
-        record.lastIndex ? null : (
-          <WhsCode
-            defaultValue={record.WhsCode}
-            keyType="Name"
-            onChange={value => {
-              this.rowSelectChange(value, record, index, 'WhsCode');
-            }}
-          />
-        ),
+      render: (text, record, index) => {
+        const {
+          global: { WhsCode },
+        } = this.props;
+        if (!record.lastIndex) {
+          return (
+            <MDMCommonality
+              onChange={value => {
+                this.rowSelectChange(value, record, index, 'WhsCode');
+              }}
+              initialValue={text}
+              data={WhsCode}
+            />
+          );
+        }
+        return null;
+      },
     },
 
     {
@@ -209,6 +206,18 @@ class InquiryEdit extends React.Component {
       width: 150,
       dataIndex: 'InquiryDueDate',
       align: 'center',
+    },
+    {
+      title: '采购员',
+      width: 200,
+      dataIndex: 'Purchaser',
+      align: 'center',
+      render: text => {
+        const {
+          global: { Purchaser },
+        } = this.props;
+        return <span>{getName(Purchaser, text)}</span>;
+      },
     },
     {
       title: '询价备注',
@@ -358,6 +367,14 @@ class InquiryEdit extends React.Component {
         },
       });
     }
+    dispatch({
+      type: 'global/getMDMCommonality',
+      payload: {
+        Content: {
+          CodeList: ['Saler', 'Purchaser', 'WhsCode', 'Company'],
+        },
+      },
+    });
   }
 
   componentWillUnmount() {
@@ -782,6 +799,7 @@ class InquiryEdit extends React.Component {
   render() {
     const {
       form: { getFieldDecorator },
+      global: { Saler, Company },
     } = this.props;
     const {
       formVals,
@@ -819,7 +837,6 @@ class InquiryEdit extends React.Component {
       handleSubmit: this.submitNeedLine,
       handleModalVisible: this.handleModalVisible,
     };
-    console.log(formVals);
     const newdata = [...formVals.TI_Z02602];
     if (newdata.length > 0) {
       newdata.push({
@@ -830,6 +847,7 @@ class InquiryEdit extends React.Component {
         LineTotal: formVals.DocTotal,
       });
     }
+
     return (
       <Card>
         <Form {...formItemLayout}>
@@ -930,17 +948,17 @@ class InquiryEdit extends React.Component {
             <EditableFormTable
               rowChange={this.rowChange}
               rowKey="LineID"
-              scroll={{ x: 2800 }}
+              scroll={{ x: 3150, y: 600 }}
               columns={this.skuColumns}
               data={newdata}
             />
             <Row style={{ marginTop: 20 }} gutter={8}>
               <Col lg={8} md={12} sm={24}>
-                <FormItem key="Owner" {...this.formLayout} label="所有人">
+                <FormItem key="Owner" {...this.formLayout} label="所有者">
                   {getFieldDecorator('Owner', {
                     initialValue: formVals.Owner,
-                    rules: [{ required: true, message: '请选择所有人！' }],
-                  })(<Staffs initialValue={formVals.Owner} />)}
+                    rules: [{ required: true, message: '请选择所有者！' }],
+                  })(<MDMCommonality initialValue={formVals.Owner} data={Saler} />)}
                 </FormItem>
               </Col>
               <Col lg={8} md={12} sm={24}>
@@ -957,11 +975,11 @@ class InquiryEdit extends React.Component {
           <TabPane tab="常规" key="2">
             <Row gutter={8}>
               <Col lg={8} md={12} sm={24}>
-                <FormItem key="CellphoneNO" {...this.formLayout} label="联系人手机号码">
+                <FormItem key="CellphoneNO" {...this.formLayout} label="手机号码">
                   {getFieldDecorator('CellphoneNO', {
                     initialValue: formVals.CellphoneNO,
-                    rules: [{ required: true, message: '请输入联系人手机号码！' }],
-                  })(<Input placeholder="联系人手机号码" />)}
+                    rules: [{ required: true, message: '请输入手机号码！' }],
+                  })(<Input placeholder="手机号码" />)}
                 </FormItem>
               </Col>
               <Col lg={8} md={12} sm={24}>
@@ -1016,7 +1034,7 @@ class InquiryEdit extends React.Component {
                   {getFieldDecorator('CompanyCode', {
                     initialValue: formVals.CompanyCode,
                     rules: [{ required: true, message: '请选择交易公司！' }],
-                  })(<CompanyCode />)}
+                  })(<MDMCommonality initialValue={formVals.CompanyCode} data={Company} />)}
                 </FormItem>
               </Col>
               <Col lg={8} md={12} sm={24}>
@@ -1069,18 +1087,18 @@ class InquiryEdit extends React.Component {
               </Col>
               <Col lg={8} md={12} sm={24}>
                 <FormItem key="CreateUser" {...this.formLayout} label="创建人">
-                  <span>{formVals.CreateUser}</span>
+                  <span>{getName(Saler, formVals.CreateUser)}</span>
                 </FormItem>
               </Col>
               {formVals.DocEntry ? (
                 <Fragment>
                   <Col lg={8} md={12} sm={24}>
-                    <FormItem key="SDocStatus" {...this.formLayout} label="销售报价状态">
+                    <FormItem key="SDocStatus" {...this.formLayout} label="报价状态">
                       <span>{formVals.PDocStatus}</span>
                     </FormItem>
                   </Col>
                   <Col lg={8} md={12} sm={24}>
-                    <FormItem key="PDocStatus" {...this.formLayout} label="采购询价状态">
+                    <FormItem key="PDocStatus" {...this.formLayout} label="询价状态">
                       <span>{formVals.SDocStatus}</span>
                     </FormItem>
                   </Col>

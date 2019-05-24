@@ -15,7 +15,7 @@ class SupplierSelect extends PureComponent {
 
   state = {
     data: [],
-    initialValue: '',
+    initialValue: { key: '', label: '' },
     companyModal: false,
     fetching: false,
   };

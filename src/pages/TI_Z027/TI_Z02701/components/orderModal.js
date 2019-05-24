@@ -1,8 +1,7 @@
 import React, { PureComponent } from 'react';
 import moment from 'moment';
 import { connect } from 'dva';
-import { Form, Modal, message } from 'antd';
-import StandardTable from '@/components/StandardTable';
+import { Form, Modal, Table, message } from 'antd';
 import { getName } from '@/utils/utils';
 
 @connect(({ global }) => ({
@@ -13,20 +12,20 @@ class OrderLine extends PureComponent {
   state = {
     data: [],
     selectedRows: [],
+    selectedRowKeys: [],
   };
 
   skuColumns = [
     {
       title: '单号',
-      width: 50,
+      width: 80,
       fixed: 'left',
       dataIndex: 'DocEntry',
     },
     {
       title: '行号',
       dataIndex: 'LineID',
-      fixed: 'left',
-      width: 50,
+      width: 80,
       align: 'center',
     },
     {
@@ -38,9 +37,7 @@ class OrderLine extends PureComponent {
     {
       title: '产品描述',
       dataIndex: 'SKUName',
-
       width: 200,
-
       align: 'center',
     },
     {
@@ -52,9 +49,7 @@ class OrderLine extends PureComponent {
     {
       title: '名称',
       dataIndex: 'ProductName',
-
       width: 150,
-
       align: 'center',
     },
     {
@@ -129,9 +124,7 @@ class OrderLine extends PureComponent {
     {
       title: '询价备注',
       dataIndex: 'InquiryComment',
-
       width: 150,
-
       align: 'center',
     },
     {
@@ -147,6 +140,7 @@ class OrderLine extends PureComponent {
       return {
         data: nextProps.data,
         selectedRows: nextProps.data,
+        selectedRowKeys: nextProps.data.map(item => item.Key),
       };
     }
     return null;
@@ -162,13 +156,20 @@ class OrderLine extends PureComponent {
     }
   };
 
-  onSelectRow = selectedRows => {
-    this.setState({ selectedRows: [...selectedRows] });
+  onSelectRow = (selectedRowKeys, selectedRows) => {
+    this.setState({ selectedRows: [...selectedRows], selectedRowKeys: [...selectedRowKeys] });
   };
 
   render() {
     const { modalVisible, handleModalVisible } = this.props;
-    const { data, selectedRows } = this.state;
+    const { data, selectedRowKeys } = this.state;
+    let tableWidth = 0;
+    this.skuColumns.map(item => {
+      if (item.width) {
+        tableWidth += item.width;
+      }
+    });
+    console.log(tableWidth);
     return (
       <Modal
         width={1200}
@@ -179,17 +180,17 @@ class OrderLine extends PureComponent {
         onCancel={() => handleModalVisible()}
       >
         <div className="tableList">
-          <StandardTable
-            data={{ list: data }}
+          <Table
+            bordered
+            dataSource={data}
+            pagination={false}
             rowKey="Key"
-            columns={this.skuColumns}
-            scroll={{ x: 2000 }}
+            scroll={{ x: 2260, y: 500 }}
             rowSelection={{
-              onSelectRow: this.onSelectRow,
+              onChange: this.onSelectRow,
+              selectedRowKeys,
             }}
-            isAll
-            selectedRows={selectedRows}
-            onChange={this.handleStandardTableChange}
+            columns={this.skuColumns}
           />
         </div>
       </Modal>

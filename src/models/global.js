@@ -13,6 +13,7 @@ export default {
     WhsCode: [], // 仓库
     PayMent: [], // 付款条款
     Trnsp: [], // 物流公司
+    Curr: [], // 交易币种
   },
 
   effects: {

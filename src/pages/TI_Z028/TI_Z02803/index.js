@@ -4,14 +4,16 @@ import router from 'umi/router';
 import moment from 'moment';
 import { Row, Col, Card, Form, Input, Button, DatePicker } from 'antd';
 import StandardTable from '@/components/StandardTable';
-import Staffs from '@/components/Staffs';
+import MDMCommonality from '@/components/Select';
+import { getName } from '@/utils/utils';
 
 const { RangePicker } = DatePicker;
 const FormItem = Form.Item;
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ TI_Z02803, loading }) => ({
+@connect(({ TI_Z02803, loading, global }) => ({
   TI_Z02803,
+  global,
   loading: loading.models.TI_Z02803,
 }))
 @Form.create()
@@ -35,6 +37,12 @@ class TI_Z02803 extends PureComponent {
     {
       title: '所有人',
       dataIndex: 'Owner',
+      render: text => {
+        const {
+          global: { Saler },
+        } = this.props;
+        return <span>{getName(Saler, text)}</span>;
+      },
     },
     {
       title: '询价总计',
@@ -55,6 +63,14 @@ class TI_Z02803 extends PureComponent {
       type: 'TI_Z02803/fetch',
       payload: {
         ...queryData,
+      },
+    });
+    dispatch({
+      type: 'global/getMDMCommonality',
+      payload: {
+        Content: {
+          CodeList: ['Saler'],
+        },
       },
     });
   }
@@ -111,12 +127,13 @@ class TI_Z02803 extends PureComponent {
 
   handleOnRow = record => ({
     // 详情or修改
-    onClick: () => router.push(`/TI_Z028/edit?DocEntry=${record.DocEntry}`),
+    onClick: () => router.push(`/TI_Z028/TI_Z02802?DocEntry=${record.DocEntry}`),
   });
 
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
+      global: { Saler },
     } = this.props;
 
     const formLayout = {
@@ -162,8 +179,8 @@ class TI_Z02803 extends PureComponent {
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
-            <FormItem label="所有者" {...formLayout}>
-              {getFieldDecorator('Owner')(<Staffs />)}
+            <FormItem key="Owner" {...formLayout} label="所有者">
+              {getFieldDecorator('Owner', {})(<MDMCommonality data={Saler} />)}
             </FormItem>
           </Col>
 

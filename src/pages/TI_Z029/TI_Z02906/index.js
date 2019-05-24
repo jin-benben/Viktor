@@ -4,8 +4,9 @@ import router from 'umi/router';
 import moment from 'moment';
 import { Row, Col, Card, Form, Input, Button, Divider, Select, DatePicker, Icon } from 'antd';
 import StandardTable from '@/components/StandardTable';
-import Staffs from '@/components/Staffs';
+import MDMCommonality from '@/components/Select';
 import DocEntryFrom from '@/components/DocEntryFrom';
+import { getName } from '@/utils/utils';
 
 const { RangePicker } = DatePicker;
 
@@ -13,8 +14,9 @@ const FormItem = Form.Item;
 const { Option } = Select;
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ SalesQuotation, loading }) => ({
+@connect(({ SalesQuotation, loading, global }) => ({
   SalesQuotation,
+  global,
   loading: loading.models.SalesQuotation,
 }))
 @Form.create()
@@ -26,44 +28,45 @@ class SalesQuotation extends PureComponent {
   columns = [
     {
       title: '单号',
-      width: 50,
+      width: 80,
+      fixed: 'left',
       dataIndex: 'DocEntry',
-    },
-    {
-      title: '类型',
-      dataIndex: 'OrderType',
     },
     {
       title: '单据日期',
       dataIndex: 'DocDate',
+      width: 100,
       render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
     {
       title: '创建日期',
+      width: 100,
       dataIndex: 'CreateDate',
       render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
     {
       title: '单据状态',
+      width: 100,
       dataIndex: 'Status',
       render: (text, record) => (
         <Fragment>
-          <span>销售报价状态{record.SDocStatus}</span>
-          <span>关闭状态{record.Closed}</span>
-          <span>采购询价确认状态{record.PDocStatus}</span>
+          <span>{record.DocStatus}</span>
         </Fragment>
       ),
     },
     {
       title: '客户',
+      width: 150,
       dataIndex: 'CardName',
     },
     {
       title: '客户参考号',
+      width: 100,
       dataIndex: 'NumAtCard',
     },
     {
       title: '联系方式',
+      width: 120,
       dataIndex: 'contact',
       render: (text, record) => (
         <span>
@@ -84,24 +87,35 @@ class SalesQuotation extends PureComponent {
     },
     {
       title: '所有人',
+      width: 100,
       dataIndex: 'Owner',
+      render: text => {
+        const {
+          global: { Saler },
+        } = this.props;
+        return <span>{getName(Saler, text)}</span>;
+      },
     },
     {
-      title: '采购总计',
-      dataIndex: 'InquiryDocTotal',
-    },
-    {
-      title: '销售总计',
+      title: '单据总计',
+      width: 100,
       dataIndex: 'DocTotal',
     },
     {
       title: '成本总计',
+      width: 100,
       dataIndex: 'OtherTotal',
     },
     {
-      title: '要求交期',
-      dataIndex: 'DueDate',
-      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
+      title: '利润',
+      width: 100,
+      dataIndex: 'profit',
+      render: text => <span>{`${0}`}</span>,
+    },
+    {
+      title: '备注',
+      width: 100,
+      dataIndex: 'Comment',
     },
   ];
 
@@ -110,11 +124,18 @@ class SalesQuotation extends PureComponent {
       dispatch,
       SalesQuotation: { queryData },
     } = this.props;
-    console.log(queryData);
     dispatch({
       type: 'SalesQuotation/fetch',
       payload: {
         ...queryData,
+      },
+    });
+    dispatch({
+      type: 'global/getMDMCommonality',
+      payload: {
+        Content: {
+          CodeList: ['Saler', 'Purchaser'],
+        },
       },
     });
   }
@@ -186,6 +207,7 @@ class SalesQuotation extends PureComponent {
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
+      global: { Saler },
     } = this.props;
     const { expandForm } = this.state;
     const formLayout = {
@@ -243,7 +265,7 @@ class SalesQuotation extends PureComponent {
           </Col>
           <Col md={6} sm={24}>
             <FormItem label="所有者" {...formLayout}>
-              {getFieldDecorator('Owner')(<Staffs />)}
+              {getFieldDecorator('Owner')(<MDMCommonality data={Saler} />)}
             </FormItem>
           </Col>
 
@@ -329,6 +351,7 @@ class SalesQuotation extends PureComponent {
       SalesQuotation: { SalesQuotationList, pagination },
       loading,
     } = this.props;
+    const tableWidth = document.body.offsetWidth < 1200 ? 1500 : 0;
     return (
       <Fragment>
         <Card title="销售报价单查询" bordered={false}>
@@ -339,6 +362,7 @@ class SalesQuotation extends PureComponent {
               data={{ list: SalesQuotationList }}
               pagination={pagination}
               rowKey="DocEntry"
+              scroll={{ x: tableWidth }}
               columns={this.columns}
               onRow={this.handleOnRow}
               onChange={this.handleStandardTableChange}

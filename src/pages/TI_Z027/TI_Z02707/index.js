@@ -16,7 +16,9 @@ import {
   Icon,
 } from 'antd';
 import StandardTable from '@/components/StandardTable';
-import Staffs from '@/components/Staffs';
+import Ellipsis from 'ant-design-pro/lib/Ellipsis';
+import MDMCommonality from '@/components/Select';
+import { getName } from '@/utils/utils';
 import DocEntryFrom from '@/components/DocEntryFrom';
 
 const { RangePicker } = DatePicker;
@@ -25,8 +27,9 @@ const FormItem = Form.Item;
 const { Option } = Select;
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ supplierQuotationSku, loading }) => ({
+@connect(({ supplierQuotationSku, loading, global }) => ({
   supplierQuotationSku,
+  global,
   loading: loading.models.supplierQuotationSku,
 }))
 @Form.create()
@@ -38,7 +41,7 @@ class supplierQuotationSku extends PureComponent {
   columns = [
     {
       title: '单号',
-      width: 50,
+      width: 80,
       dataIndex: 'DocEntry',
     },
     {
@@ -49,11 +52,13 @@ class supplierQuotationSku extends PureComponent {
     {
       title: '单据日期',
       dataIndex: 'DocDate',
+      width: 100,
       render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
     {
       title: '创建日期',
       dataIndex: 'CreateDate',
+      width: 100,
       render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
     {
@@ -80,94 +85,115 @@ class supplierQuotationSku extends PureComponent {
     },
     {
       title: '供应商',
+      width: 150,
       dataIndex: 'CardName',
     },
     {
       title: '联系人',
+      width: 100,
       dataIndex: 'Contacts',
     },
     {
       title: '联系方式',
+      width: 120,
       dataIndex: 'contact',
       render: (text, record) => (
-        <span>
+        <Ellipsis tooltip lines={1}>
+          {' '}
           {record.CellphoneNO}
-          {record.CellphoneNO ? <Divider type="vertical" /> : null}
+          {record.PhoneNO ? <Divider type="vertical" /> : null}
           {record.PhoneNO}
-        </span>
+        </Ellipsis>
       ),
     },
     {
       title: 'SKU',
       dataIndex: 'SKU',
+      width: 100,
     },
     {
       title: '产品描述',
+      width: 150,
       dataIndex: 'SKUName',
     },
     {
       title: '品牌',
-
+      width: 100,
       dataIndex: 'BrandName',
     },
     {
       title: '名称',
+      width: 150,
       dataIndex: 'ProductName',
     },
     {
       title: '型号',
-
+      width: 100,
       dataIndex: 'ManufactureNO',
     },
     {
       title: '参数',
-
+      width: 100,
       dataIndex: 'Parameters',
     },
     {
       title: '包装',
-
+      width: 100,
       dataIndex: 'Package',
     },
     {
-      title: '采购员',
-
-      dataIndex: 'Purchaser',
-    },
-    {
       title: '数量',
-
+      width: 100,
       dataIndex: 'Quantity',
     },
     {
       title: '单位',
+      width: 100,
       dataIndex: 'Unit',
     },
     {
       title: '要求交期',
+      width: 100,
       dataIndex: 'DueDate',
       render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
     {
       title: '价格',
+      width: 100,
       dataIndex: 'Price',
     },
     {
       title: '询价交期',
+      width: 100,
       dataIndex: 'InquiryDueDate',
       render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
     {
       title: '行备注',
+      width: 100,
       dataIndex: 'LineComment',
     },
     {
-      title: '采购员',
-      dataIndex: 'Purchase',
+      title: '所有人',
+      width: 100,
+      dataIndex: 'Owner',
+      render: text => {
+        const {
+          global: { Purchaser },
+        } = this.props;
+        return <span>{getName(Purchaser, text)}</span>;
+      },
     },
     {
       title: '销售员',
       dataIndex: 'Saler',
+      width: 100,
+      render: text => {
+        const {
+          global: { Saler },
+        } = this.props;
+        return <span>{getName(Saler, text)}</span>;
+      },
     },
   ];
 
@@ -176,11 +202,19 @@ class supplierQuotationSku extends PureComponent {
       dispatch,
       supplierQuotationSku: { queryData },
     } = this.props;
-    console.log(queryData);
+
     dispatch({
       type: 'supplierQuotationSku/fetch',
       payload: {
         ...queryData,
+      },
+    });
+    dispatch({
+      type: 'global/getMDMCommonality',
+      payload: {
+        Content: {
+          CodeList: ['Saler', 'Company', 'Purchaser'],
+        },
       },
     });
   }
@@ -252,6 +286,7 @@ class supplierQuotationSku extends PureComponent {
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
+      global: { Purchaser, Saler },
     } = this.props;
     const { expandForm } = this.state;
     const formLayout = {
@@ -298,7 +333,7 @@ class supplierQuotationSku extends PureComponent {
           </Col>
           <Col md={6} sm={24}>
             <FormItem label="所有者" {...formLayout}>
-              {getFieldDecorator('Owner')(<Staffs />)}
+              {getFieldDecorator('Owner')(<MDMCommonality data={Purchaser} />)}
             </FormItem>
           </Col>
           <Col md={6} sm={24}>
@@ -323,7 +358,7 @@ class supplierQuotationSku extends PureComponent {
               </Col>
               <Col md={6} sm={24}>
                 <FormItem label="销售" {...formLayout}>
-                  {getFieldDecorator('Saler')(<Staffs />)}
+                  {getFieldDecorator('Saler')(<MDMCommonality data={Saler} />)}
                 </FormItem>
               </Col>
               <Col md={6} sm={24}>
@@ -386,7 +421,8 @@ class supplierQuotationSku extends PureComponent {
               loading={loading}
               data={{ list: supplierQuotationSkuList }}
               pagination={pagination}
-              rowKey="CreateDate"
+              rowKey="Key"
+              scroll={{ x: 2500, y: 500 }}
               columns={this.columns}
               onRow={this.handleOnRow}
               onChange={this.handleStandardTableChange}

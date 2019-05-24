@@ -10,7 +10,7 @@ export default {
       Content: {
         SearchText: '',
         SLineStatus: 'O',
-        IsInquiry: 'Y',
+        IsInquiry: 'N',
         SearchKey: '',
       },
       page: 1,

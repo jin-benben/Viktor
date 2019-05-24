@@ -1,30 +1,13 @@
 /* eslint-disable array-callback-return */
-import React, { PureComponent, Fragment } from 'react';
+import React, { PureComponent } from 'react';
 import StandardTable from '@/components/StandardTable';
 import { connect } from 'dva';
-import router from 'umi/router';
 import moment from 'moment';
-import {
-  Row,
-  Col,
-  Card,
-  Form,
-  Input,
-  Button,
-  Divider,
-  Steps,
-  Select,
-  Badge,
-  DatePicker,
-  Icon,
-  message,
-} from 'antd';
+import { Card, Form, Steps, message } from 'antd';
 
 import NeedTabl from './components/step1';
 import ConfirmTabl from './components/step2';
 
-const FormItem = Form.Item;
-const { Option } = Select;
 const { Step } = Steps;
 /* eslint react/no-multi-comp:0 */
 @connect(({ supplierAsk, loading }) => ({
@@ -68,6 +51,14 @@ class SupplierAsk extends PureComponent {
         ...queryData,
       },
     });
+    dispatch({
+      type: 'global/getMDMCommonality',
+      payload: {
+        Content: {
+          CodeList: ['Saler', 'Company', 'Purchaser'],
+        },
+      },
+    });
   }
 
   handleStandardTableChange = pagination => {
@@ -85,15 +76,21 @@ class SupplierAsk extends PureComponent {
     });
   };
 
-  handleSearch = queryData => {
-    const { dispatch } = this.props;
+  handleSearch = fieldsValue => {
+    const {
+      dispatch,
+      supplierAsk: {
+        queryData: { Content },
+      },
+    } = this.props;
     dispatch({
       type: 'supplierAsk/fetch',
       payload: {
         Content: {
           SearchText: '',
           SearchKey: 'Name',
-          ...queryData,
+          ...Content,
+          ...fieldsValue,
         },
         page: 1,
         rows: 10,
@@ -125,7 +122,7 @@ class SupplierAsk extends PureComponent {
         DocEntry,
         LineID,
       } = item;
-      const InquiryDueDate = moment()
+      const ToDate = moment()
         .add('30', 'day')
         .format('YYYY/MM/DD'); // 询价日期当前时间后30天
 
@@ -144,7 +141,7 @@ class SupplierAsk extends PureComponent {
           PhoneNO: '1',
           Email: '1',
           CompanyCode: '1',
-          ToDate: new Date(),
+          ToDate,
           NumAtCard: '',
           Currency: '1',
           Owner: '',
@@ -170,7 +167,7 @@ class SupplierAsk extends PureComponent {
               Unit,
               DueDate,
               Price,
-              InquiryDueDate,
+              InquiryDueDate: '',
               LineTotal,
             },
           ],
@@ -194,7 +191,7 @@ class SupplierAsk extends PureComponent {
           Unit,
           DueDate,
           Price,
-          InquiryDueDate,
+          InquiryDueDate: '',
           LineTotal,
         });
       }
