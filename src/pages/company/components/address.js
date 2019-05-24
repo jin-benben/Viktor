@@ -83,7 +83,7 @@ class AddressInfo extends PureComponent {
       <Modal
         width={640}
         destroyOnClose
-        title="联系人编辑"
+        title="收货地址编辑"
         visible={modalVisible}
         onOk={okHandle}
         onCancel={() => handleModalVisible()}

@@ -4,7 +4,7 @@ import { Select } from 'antd';
 
 const { Option } = Select;
 
-class OrderSource extends PureComponent {
+class CardSource extends PureComponent {
   data = [
     {
       Code: '1',
@@ -25,7 +25,7 @@ class OrderSource extends PureComponent {
   };
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    if (nextProps.data !== prevState.data) {
+    if (!prevState.value) {
       return {
         value: nextProps.initialValue,
       };
@@ -45,12 +45,11 @@ class OrderSource extends PureComponent {
 
   render() {
     const { value } = this.state;
+
     return (
       <Select
-        showArrow={false}
         value={value}
-        placeholder="请选择仓库"
-        filterOption={false}
+        placeholder="请选择客户来源"
         onChange={this.handleChange}
         style={{ width: '100%' }}
       >
@@ -64,4 +63,4 @@ class OrderSource extends PureComponent {
   }
 }
 
-export default OrderSource;
+export default CardSource;

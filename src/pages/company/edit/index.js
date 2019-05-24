@@ -6,6 +6,7 @@ import StandardTable from '@/components/StandardTable';
 import AddressInfo from '../components/address';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import LinkMan from '../components/linkman';
+import CardSource from '@/components/Select/CardSource';
 import MDMCommonality from '@/components/Select';
 import { checkPhone, chechEmail, getName } from '@/utils/utils';
 
@@ -182,12 +183,13 @@ class CompanyEdit extends PureComponent {
       type: 'global/getMDMCommonality',
       payload: {
         Content: {
-          CodeList: ['Company', '', 'PayMent', 'Trnsp', 'Saler'],
+          CodeList: ['Company', 'PayMent', 'Trnsp', 'Saler'],
         },
       },
     });
-
-    this.getSingle();
+    setTimeout(() => {
+      this.getSingle();
+    }, 3000);
   }
 
   componentWillUnmount() {
@@ -543,13 +545,7 @@ class CompanyEdit extends PureComponent {
                 {getFieldDecorator('CusSource', {
                   rules: [{ required: true, message: '请选择客户来源！' }],
                   initialValue: formVals.CusSource,
-                })(
-                  <Select placeholder="请选择来源">
-                    <Option value="1">线下</Option>
-                    <Option value="2">网站</Option>
-                    <Option value="3">其他渠道</Option>
-                  </Select>
-                )}
+                })(<CardSource initialValue={formVals.CusSource} />)}
               </FormItem>
             </Col>
             <Col lg={8} md={12} sm={24}>
