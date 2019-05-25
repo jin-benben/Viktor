@@ -18,9 +18,10 @@ import {
 } from 'antd';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import StandardTable from '@/components/StandardTable';
-import Staffs from '@/components/Staffs';
 import DocEntryFrom from '@/components/DocEntryFrom';
 import NeedAskPrice from '../components/needAskPrice';
+import MDMCommonality from '@/components/Select';
+import { getName } from '@/utils/utils';
 
 const { RangePicker } = DatePicker;
 
@@ -28,8 +29,9 @@ const FormItem = Form.Item;
 const { Option } = Select;
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ orderLine, loading }) => ({
+@connect(({ orderLine, loading, global }) => ({
   orderLine,
+  global,
   loading: loading.models.orderLine,
 }))
 @Form.create()
@@ -171,6 +173,12 @@ class orderLine extends PureComponent {
       title: '采购员',
       width: 80,
       dataIndex: 'Purchaser',
+      render: text => {
+        const {
+          global: { Purchaser },
+        } = this.props;
+        return <span>{getName(Purchaser, text)}</span>;
+      },
     },
     {
       title: '数量',
@@ -215,14 +223,15 @@ class orderLine extends PureComponent {
       dataIndex: 'InquiryLineTotalLocal',
     },
     {
-      title: '采购员',
-      width: 80,
-      dataIndex: 'PurchaseName',
-    },
-    {
       title: '所有人',
       width: 80,
       dataIndex: 'Owner',
+      render: text => {
+        const {
+          global: { Saler },
+        } = this.props;
+        return <span>{getName(Saler, text)}</span>;
+      },
     },
   ];
 
@@ -235,6 +244,14 @@ class orderLine extends PureComponent {
       type: 'orderLine/fetch',
       payload: {
         ...queryData,
+      },
+    });
+    dispatch({
+      type: 'global/getMDMCommonality',
+      payload: {
+        Content: {
+          CodeList: ['Saler', 'Purchaser'],
+        },
       },
     });
   }
@@ -358,6 +375,7 @@ class orderLine extends PureComponent {
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
+      global: { Saler },
     } = this.props;
     const { expandForm } = this.state;
     const formLayout = {
@@ -414,7 +432,7 @@ class orderLine extends PureComponent {
           </Col>
           <Col md={6} sm={24}>
             <FormItem label="所有者" {...formLayout}>
-              {getFieldDecorator('Owner')(<Staffs />)}
+              {getFieldDecorator('Owner')(<MDMCommonality data={Saler} />)}
             </FormItem>
           </Col>
           <Col md={6} sm={24}>

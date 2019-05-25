@@ -27,12 +27,12 @@ import StandardTable from '@/components/StandardTable';
 import EditableFormTable from '@/components/EditableFormTable';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import UpdateLoad from '../components/modal';
-import SKUModal from '@/components/Modal/SKU';
+import AskPriceFetch from '../components/askPriceFetch';
 import Address from '@/components/Address';
 import Brand from '@/components/Brand';
-import LinkMan from '../components/linkman';
 import MDMCommonality from '@/components/Select';
 import NeedAskPrice from '../components/needAskPrice';
+import SKUModal from '@/components/Modal/SKU';
 import CompanySelect from '@/components/Company/index';
 import { checkPhone, getName, chechEmail } from '@/utils/utils';
 
@@ -40,13 +40,13 @@ const { TextArea } = Input;
 const { TabPane } = Tabs;
 const FormItem = Form.Item;
 const { Option } = Select;
-@connect(({ SalesQuotationAdd, loading, global }) => ({
-  SalesQuotationAdd,
+@connect(({ TI_Z029, loading, global }) => ({
+  TI_Z029,
   global,
-  loading: loading.models.SalesQuotationAdd,
+  loading: loading.models.TI_Z029,
 }))
 @Form.create()
-class InquiryEdit extends React.Component {
+class TI_Z029Component extends React.Component {
   skuColumns = [
     {
       title: '行号',
@@ -174,7 +174,14 @@ class InquiryEdit extends React.Component {
         return null;
       },
     },
-
+    {
+      title: '备注',
+      dataIndex: 'LineComment',
+      width: 150,
+      inputType: 'text',
+      editable: true,
+      align: 'center',
+    },
     {
       title: '销售建议价',
       width: 120,
@@ -210,7 +217,7 @@ class InquiryEdit extends React.Component {
     },
     {
       title: '采购员',
-      width: 200,
+      width: 100,
       dataIndex: 'Purchaser',
       align: 'center',
       render: text => {
@@ -237,6 +244,18 @@ class InquiryEdit extends React.Component {
       width: 150,
       align: 'center',
       dataIndex: 'InquiryLineTotalLocal',
+    },
+    {
+      title: '其他成本',
+      width: 120,
+      align: 'center',
+      dataIndex: 'OtherTotal',
+    },
+    {
+      title: '行利润',
+      width: 150,
+      align: 'center',
+      dataIndex: 'ProfitLineTotal',
     },
     {
       title: '销售行总计',
@@ -362,7 +381,8 @@ class InquiryEdit extends React.Component {
       tabIndex: '1', // tab
       uploadmodalVisible: false, // 上传Modal
       attachmentVisible: false, // 附件Modal
-      skuModalVisible: false, // 物料选择 Modal
+      orderModalVisible: false, // 物料选择 Modal
+      skuModalVisible: false, //
       needmodalVisible: false,
       LineID: Number, // 当前选中行index
       linkmanList: [], // 联系人list
@@ -384,7 +404,7 @@ class InquiryEdit extends React.Component {
     } = this.props;
     if (query.DocEntry) {
       dispatch({
-        type: 'SalesQuotationAdd/fetch',
+        type: 'TI_Z029/fetch',
         payload: {
           Content: {
             DocEntry: query.DocEntry,
@@ -405,9 +425,9 @@ class InquiryEdit extends React.Component {
   componentWillUnmount() {
     const { dispatch } = this.props;
     dispatch({
-      type: 'SalesQuotationAdd/save',
+      type: 'TI_Z029/save',
       payload: {
-        salesQuotationDetail: {
+        orderDetail: {
           Comment: '',
           SDocStatus: '',
           PDocStatus: '',
@@ -449,9 +469,9 @@ class InquiryEdit extends React.Component {
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    if (nextProps.SalesQuotationAdd.salesQuotationDetail !== prevState.formVals) {
+    if (nextProps.TI_Z029.orderDetail !== prevState.formVals) {
       return {
-        formVals: nextProps.SalesQuotationAdd.salesQuotationDetail,
+        formVals: nextProps.TI_Z029.orderDetail,
       };
     }
     return null;
@@ -460,7 +480,7 @@ class InquiryEdit extends React.Component {
   //  行内容改变
   rowChange = record => {
     const { formVals } = this.state;
-    formVals.TI_Z02602.map(item => {
+    formVals.TI_Z02902.map(item => {
       if (item.key === record.key) {
         return record;
       }
@@ -477,8 +497,9 @@ class InquiryEdit extends React.Component {
     let DocTotal = 0;
     let InquiryDocTotalLocal = 0;
     let InquiryDocTotal = 0;
+    let OtherTotal = 0;
     // eslint-disable-next-line array-callback-return
-    formVals.TI_Z02602.map(record => {
+    formVals.TI_Z02902.map(record => {
       record.InquiryLineTotalLocal = isNaN(record.Quantity * record.InquiryPrice)
         ? 0
         : record.Quantity * record.InquiryPrice;
@@ -489,14 +510,17 @@ class InquiryEdit extends React.Component {
       record.InquiryLineTotal = round(record.InquiryLineTotal, 2);
       record.LineTotal = isNaN(record.Quantity * record.Price) ? 0 : record.Quantity * record.Price;
       record.LineTotal = round(record.LineTotal, 2);
+      record.ProfitLineTotal = round(record.LineTotal - record.InquiryLineTotalLocal, 2);
       DocTotal += record.LineTotal;
       InquiryDocTotalLocal += record.InquiryLineTotalLocal;
       InquiryDocTotal += record.InquiryLineTotal;
+      OtherTotal += record.OtherTotal;
     });
     formVals.DocTotal = DocTotal;
     formVals.InquiryDocTotalLocal = InquiryDocTotalLocal;
     formVals.InquiryDocTotal = InquiryDocTotal;
     formVals.DocTotal = DocTotal;
+    formVals.ProfitTotal = DocTotal - InquiryDocTotalLocal - OtherTotal;
     this.setState({ formVals });
   };
 
@@ -505,7 +529,7 @@ class InquiryEdit extends React.Component {
   rowSelectChange = (value, record, index, key) => {
     const { formVals } = this.state;
     record[key] = value;
-    formVals.TI_Z02602[index] = record;
+    formVals.TI_Z02902[index] = record;
     this.setState({ formVals: { ...formVals } });
   };
 
@@ -519,7 +543,7 @@ class InquiryEdit extends React.Component {
   changeLineSKU = selection => {
     const [select] = selection;
     const { thisLine, LineID, formVals } = this.state;
-    formVals.TI_Z02602[LineID] = { ...thisLine, ...select, SKU: select.Code, SKUName: select.Name };
+    formVals.TI_Z02902[LineID] = { ...thisLine, ...select, SKU: select.Code, SKUName: select.Name };
     this.setState({ formVals: { ...formVals } });
     this.handleModalVisible(false);
   };
@@ -528,7 +552,7 @@ class InquiryEdit extends React.Component {
   deleteLine = (record, index) => {
     const { formVals, LineID } = this.state;
     if (LineID >= 0) {
-      formVals.TI_Z02602[LineID].TI_Z02604.splice(index, 1);
+      formVals.TI_Z02902[LineID].TI_Z02604.splice(index, 1);
     } else {
       formVals.TI_Z02603.splice(index, 1);
     }
@@ -549,7 +573,7 @@ class InquiryEdit extends React.Component {
   // 删除行物料
   deleteSKULine = (record, index) => {
     const { formVals } = this.state;
-    formVals.TI_Z02602.splice(index, 1);
+    formVals.TI_Z02902.splice(index, 1);
     this.setState({ formVals }, () => {
       this.getTotal();
     });
@@ -562,10 +586,10 @@ class InquiryEdit extends React.Component {
     const lastsku = formVals.TI_Z02603[formVals.TI_Z02603.length - 1];
     if (fieldsValue.AttachmentPath) {
       if (LineID >= 0) {
-        const thisLine = formVals.TI_Z02602[LineID].TI_Z02604;
+        const thisLine = formVals.TI_Z02902[LineID].TI_Z02604;
         const last = thisLine[thisLine.length - 1];
         const ID = last ? last.LineID + 1 : 1;
-        formVals.TI_Z02602[LineID].TI_Z02604.push({
+        formVals.TI_Z02902[LineID].TI_Z02604.push({
           LineID: ID,
           BaseType: formVals.OrderType,
           BaseEntry: formVals.BaseEntry ? formVals.BaseEntry : 1,
@@ -595,8 +619,9 @@ class InquiryEdit extends React.Component {
     this.setState({
       uploadmodalVisible: !!flag,
       attachmentVisible: !!flag,
-      skuModalVisible: !!flag,
+      orderModalVisible: !!flag,
       needmodalVisible: !!flag,
+      skuModalVisible: !!flag,
       LineID: Number,
     });
   };
@@ -606,10 +631,19 @@ class InquiryEdit extends React.Component {
     this.setState({ tabIndex });
   };
 
+  copyFromOrder = () => {
+    const { formVals } = this.state;
+    if (!formVals.CardCode) {
+      message.warning('请先选择客户');
+      return false;
+    }
+    this.setState({ orderModalVisible: true });
+  };
+
   rightButton = tabIndex => {
     if (tabIndex === '1') {
       return (
-        <Button icon="plus" style={{ marginLeft: 8 }} type="primary" onClick={this.addLineSku}>
+        <Button icon="plus" style={{ marginLeft: 8 }} type="primary" onClick={this.copyFromOrder}>
           复制从询价单
         </Button>
       );
@@ -663,36 +697,102 @@ class InquiryEdit extends React.Component {
     this.setState({ formVals });
   };
 
-  addLineSku = () => {
-    // 添加物料
+  // 添加行
+  addLineSKU = selectedRows => {
+    console.log(selectedRows);
+    // selectedRows.map(item=>{
+    //   const {
+    //     LineComment,
+    //     SourceType,
+    //     BaseEntry,
+    //     "BaseLineID": 0,
+    //     "SKU": "",
+    //     "SKUName": "",
+    //     "BrandName": "",
+    //     "ProductName": "",
+    //     "ManufactureNO": "",
+    //     "Parameters": "",
+    //     "Package": "",
+    //     "Purchaser": "",
+    //     "Quantity": 0,
+    //     "Unit": "",
+    //     "DueDate": "",
+    //     "InquiryPrice": 0,
+    //     "Price": 0,
+    //     "InquiryDueDate": "",
+    //     "InquiryComment": "",
+    //     "InquiryLineTotal": 0,
+    //     "InquiryLineTotalLocal": 0,
+    //     "LineTotal": 0,
+    //     "OtherTotal": 0,
+    //     "Currency": "",
+    //     "DocRate": 0,
+    //     "SupplierCode": "",
+    //     "SupplierName": "",
+    //     "InquiryCfmDate": "",
+    //     "InquiryCfmUser": "",
+    //     "Contacts": "",
+    //     "WhsCode": "",
+    //      } =item
+    // })
+
+    const mockobj = {
+      DocEntry: 1,
+      LineID: 1,
+      CreateDate: '2019-05-25T08:49:52.929Z',
+      UpdateDate: '2019-05-25T08:49:52.929Z',
+
+      UpdateUser: 'string',
+      LineComment: 'string',
+      ApproveSts: 'string',
+      ApproveBy: 'string',
+      ApproveDate: '2019-05-25T08:49:52.929Z',
+      LineStatus: 'string',
+      Closed: 'string',
+      ClosedBy: 'string',
+      ClosedDate: '2019-05-25T08:49:52.929Z',
+      ClosedComment: 'string',
+      SourceType: 'string',
+      BaseEntry: 263,
+      BaseLineID: 2,
+      SKU: 'string',
+      SKUName: 'string',
+      BrandName: 'string',
+      ProductName: 'string',
+      ManufactureNO: 'string',
+      Parameters: 'string',
+      Package: 'string',
+      Purchaser: 'string',
+      Quantity: 5,
+      Unit: 'string',
+      DueDate: '2019-05-25T08:49:52.929Z',
+      InquiryPrice: 3,
+      Price: 6,
+      InquiryDueDate: '2019-05-25T08:49:52.929Z',
+      InquiryComment: 'string',
+      InquiryLineTotal: 0,
+      InquiryLineTotalLocal: 0,
+      LineTotal: 0,
+      OtherTotal: 1,
+      ProfitLineTotal: 0,
+      Currency: 'string',
+      DocRate: 1,
+      SupplierCode: 'string',
+      SupplierName: 'string',
+      InquiryCfmDate: '2019-05-25T08:49:52.929Z',
+      InquiryCfmUser: 'string',
+      Contacts: 'string',
+      LineFlag: 'string',
+      WhsCode: 'string',
+      ...selectedRows[0],
+      CreateUser: 'string',
+    };
     const { formVals } = this.state;
-    const last = formVals.TI_Z02602[formVals.TI_Z02602.length - 1];
-    const LineID = last ? last.LineID + 1 : 1;
-    formVals.TI_Z02602.push({
-      LineID,
-      SKU: '',
-      SKUName: '',
-      BrandName: '',
-      ProductName: '',
-      ManufactureNO: '',
-      Parameters: '',
-      Package: '',
-      Purchaser: '',
-      Quantity: '',
-      Unit: '',
-      DueDate: '',
-      InquiryPrice: '',
-      Price: '',
-      InquiryDueDate: '',
-      InquiryComment: '',
-      InquiryLineTotal: '',
-      InquiryLineTotalLocal: '',
-      LineTotal: '',
-      Currency: '',
-      DocRate: '',
-      TI_Z02604: [],
+    // ...formVals.TI_Z02902,...selectedRows,
+    formVals.TI_Z02902 = [mockobj];
+    this.setState({ formVals, orderModalVisible: false }, () => {
+      this.getTotal();
     });
-    this.setState({ formVals });
   };
 
   saveHandle = () => {
@@ -709,7 +809,7 @@ class InquiryEdit extends React.Component {
       delete fieldsValue.CardCode;
       delete fieldsValue.CardName;
       dispatch({
-        type: 'SalesQuotationAdd/add',
+        type: 'TI_Z029/add',
         payload: {
           Content: {
             ...formVals,
@@ -719,6 +819,8 @@ class InquiryEdit extends React.Component {
             DueDate: fieldsValue.DueDate ? fieldsValue.DueDate.format('YYYY-MM-DD') : '',
             ToDate: fieldsValue.ToDate ? fieldsValue.ToDate.format('YYYY-MM-DD') : '',
             DocDate: fieldsValue.DocDate ? fieldsValue.DocDate.format('YYYY-MM-DD') : '',
+            ClosedDate: '2019-05-25',
+            CreateUser: 'P0001',
           },
         },
         callback: response => {
@@ -745,7 +847,7 @@ class InquiryEdit extends React.Component {
       delete fieldsValue.CardCode;
       delete fieldsValue.CardName;
       dispatch({
-        type: 'SalesQuotationAdd/update',
+        type: 'TI_Z029/update',
         payload: {
           Content: {
             ...formVals,
@@ -755,6 +857,7 @@ class InquiryEdit extends React.Component {
             DueDate: fieldsValue.DueDate ? fieldsValue.DueDate.format('YYYY-MM-DD') : '',
             ToDate: fieldsValue.ToDate ? fieldsValue.ToDate.format('YYYY-MM-DD') : '',
             DocDate: fieldsValue.DocDate ? fieldsValue.DocDate.format('YYYY-MM-DD') : '',
+            CreateUser: 'P0001',
           },
         },
         callback: response => {
@@ -767,12 +870,11 @@ class InquiryEdit extends React.Component {
   };
 
   // 取消单据
-
   cancelSubmit = ClosedComment => {
     const { dispatch } = this.props;
     const { formVals } = this.state;
     dispatch({
-      type: 'SalesQuotationAdd/cancel',
+      type: 'TI_Z029/cancel',
       payload: {
         Content: {
           DocEntry: formVals.DocEntry,
@@ -790,15 +892,15 @@ class InquiryEdit extends React.Component {
   // 发送需询价
   submitNeedLine = select => {
     const { dispatch } = this.props;
-    const loItemList = select.map(item => ({
+    const TI_Z02908RequestItem = select.map(item => ({
       DocEntry: item.DocEntry,
       LineID: item.LineID,
     }));
     dispatch({
-      type: 'SalesQuotationAdd/confirm',
+      type: 'TI_Z029/confirm',
       payload: {
         Content: {
-          loItemList,
+          TI_Z02908RequestItem,
         },
       },
       callback: response => {
@@ -821,6 +923,30 @@ class InquiryEdit extends React.Component {
     }
   };
 
+  // 成本核算
+  costCheck = () => {
+    const { dispatch } = this.props;
+    const {
+      formVals: { DocEntry, UpdateTimestamp },
+    } = this.state;
+    dispatch({
+      type: 'TI_Z029/costCheck',
+      payload: {
+        Content: {
+          DocEntry,
+          UpdateTimestamp,
+        },
+      },
+      callback: response => {
+        if (response.Status === 200) {
+          message.success('提交成功');
+
+          this.setState({ needmodalVisible: false });
+        }
+      },
+    });
+  };
+
   render() {
     const {
       form: { getFieldDecorator },
@@ -832,6 +958,7 @@ class InquiryEdit extends React.Component {
       thisLine,
       linkmanList,
       uploadmodalVisible,
+      orderModalVisible,
       skuModalVisible,
       needmodalVisible,
       attachmentVisible,
@@ -858,6 +985,11 @@ class InquiryEdit extends React.Component {
       handleModalVisible: this.handleModalVisible,
     };
 
+    const orderParentMethods = {
+      handleSubmit: this.addLineSKU,
+      handleModalVisible: this.handleModalVisible,
+    };
+
     const needParentMethods = {
       handleSubmit: this.submitNeedLine,
       handleModalVisible: this.handleModalVisible,
@@ -870,6 +1002,7 @@ class InquiryEdit extends React.Component {
         InquiryLineTotal: formVals.InquiryDocTotal,
         InquiryLineTotalLocal: formVals.InquiryDocTotalLocal,
         LineTotal: formVals.DocTotal,
+        ProfitLineTotal: formVals.ProfitTotal,
       });
     }
 
@@ -930,11 +1063,19 @@ class InquiryEdit extends React.Component {
                   rules: [{ required: true, message: '请输入联系人！' }],
                   initialValue: formVals.Contacts,
                 })(
-                  <LinkMan
-                    initialValue={formVals.Contacts}
-                    onChange={this.linkmanChange}
-                    data={linkmanList}
-                  />
+                  <Select
+                    value={formVals.Contacts}
+                    placeholder="请选择联系人"
+                    filterOption={false}
+                    onSelect={this.handleChange}
+                    style={{ width: '100%' }}
+                  >
+                    {linkmanList.map(option => (
+                      <Option key={option.Code} value={option.Code}>
+                        {option.Name}
+                      </Option>
+                    ))}
+                  </Select>
                 )}
               </FormItem>
             </Col>
@@ -972,8 +1113,8 @@ class InquiryEdit extends React.Component {
           <TabPane tab="物料" key="1">
             <EditableFormTable
               rowChange={this.rowChange}
-              rowKey="LineID"
-              scroll={{ x: 3150, y: 600 }}
+              rowKey="Key"
+              scroll={{ x: 3300, y: 600 }}
               columns={this.skuColumns}
               data={newdata}
             />
@@ -1132,11 +1273,10 @@ class InquiryEdit extends React.Component {
           {formVals.DocEntry ? (
             <Fragment>
               <CancelOrder cancelSubmit={this.cancelSubmit} />
-              <Button
-                style={{ marginLeft: 10, marginRight: 10 }}
-                onClick={this.updateHandle}
-                type="primary"
-              >
+              <Button type="primary" onClick={this.costCheck}>
+                成本核算
+              </Button>
+              <Button style={{ marginLeft: 10 }} onClick={this.updateHandle} type="primary">
                 更新
               </Button>
               <Button onClick={() => this.setState({ needmodalVisible: true })} type="primary">
@@ -1150,6 +1290,11 @@ class InquiryEdit extends React.Component {
           )}
         </FooterToolbar>
         <UpdateLoad {...uploadmodalMethods} modalVisible={uploadmodalVisible} />
+        <AskPriceFetch
+          SearchText={formVals.CardName}
+          {...orderParentMethods}
+          modalVisible={orderModalVisible}
+        />
         <SKUModal {...parentMethods} modalVisible={skuModalVisible} />
         <Modal
           width={640}
@@ -1166,7 +1311,7 @@ class InquiryEdit extends React.Component {
           />
         </Modal>
         <NeedAskPrice
-          data={formVals.TI_Z02602}
+          data={formVals.TI_Z02902}
           {...needParentMethods}
           modalVisible={needmodalVisible}
         />
@@ -1175,4 +1320,4 @@ class InquiryEdit extends React.Component {
   }
 }
 
-export default InquiryEdit;
+export default TI_Z029Component;

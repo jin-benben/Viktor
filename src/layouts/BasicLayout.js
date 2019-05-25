@@ -140,6 +140,8 @@ class BasicLayout extends React.PureComponent {
     });
   };
 
+  // 获取公共字段
+
   render() {
     const {
       navTheme,

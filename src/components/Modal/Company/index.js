@@ -43,11 +43,6 @@ class CompanyModal extends PureComponent {
     },
   ];
 
-  componentDidMount() {
-    const { queryData } = this.state;
-    this.getCompany(queryData);
-  }
-
   okHandle = () => {
     const { selectedRows } = this.state;
     const { handleSubmit } = this.props;

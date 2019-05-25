@@ -27,9 +27,16 @@ export function requestUrl(url) {
 }
 
 export function getName(arr, code) {
+  let newCode = code;
+  if (!code) {
+    return '';
+  }
+  if (typeof code !== 'string') {
+    newCode = code.toString();
+  }
   let name;
   arr.some(item => {
-    if (item.Key === code) {
+    if (item.Key === newCode) {
       name = item.Value;
       return true;
     }

@@ -3,15 +3,17 @@ import { connect } from 'dva';
 import router from 'umi/router';
 import { Row, Col, Card, Form, Input, Button } from 'antd';
 import StandardTable from '@/components/StandardTable';
+import { getName } from '@/utils/utils';
 
 import styles from './style.less';
 
 const FormItem = Form.Item;
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ supplierSearch, loading }) => ({
+@connect(({ supplierSearch, loading, global }) => ({
   supplierSearch,
-  loading: loading.models.rule,
+  global,
+  loading: loading.models.supplierSearch,
 }))
 @Form.create()
 class supplierSearch extends PureComponent {
@@ -52,11 +54,14 @@ class supplierSearch extends PureComponent {
     },
     {
       title: '供应商类型',
+      width: 100,
       dataIndex: 'CardType',
-    },
-    {
-      title: '供应商来源',
-      dataIndex: 'CusSource',
+      render: val => {
+        const {
+          global: { Supplier },
+        } = this.props;
+        return <span>{getName(Supplier, val)}</span>;
+      },
     },
     {
       title: '状态',
@@ -74,6 +79,14 @@ class supplierSearch extends PureComponent {
       type: 'supplierSearch/fetch',
       payload: {
         ...queryData,
+      },
+    });
+    dispatch({
+      type: 'global/getMDMCommonality',
+      payload: {
+        Content: {
+          CodeList: ['Supplier'],
+        },
       },
     });
   }

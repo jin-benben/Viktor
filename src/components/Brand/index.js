@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import request from '@/utils/request';
-import { Select, Spin, message, Empty } from 'antd';
+import { Select, Spin, Empty } from 'antd';
 import debounce from 'lodash/debounce';
 
 const { Option } = Select;
@@ -12,13 +12,26 @@ class Brands extends PureComponent {
     this.fetchUser = debounce(this.fetchUser, 1000);
     this.state = {
       data: [],
-      value: props.value,
+      value: '',
       fetching: false,
     };
   }
 
+  static getDerivedStateFromProps(nextProps, prevState) {
+    if (!prevState.value && nextProps.initialValue !== prevState.value) {
+      return {
+        value: nextProps.initialValue,
+      };
+    }
+    return null;
+  }
+
+  componentDidMount() {
+    this.fetchUser();
+  }
+
   fetchUser = async value => {
-    if (!value) return;
+    if (!value && this.lastFetchId !== 0) return;
     this.lastFetchId += 1;
     const fetchId = this.lastFetchId;
     this.setState({ data: [], fetching: true });
@@ -39,9 +52,6 @@ class Brands extends PureComponent {
     if (response.Status !== 200 || fetchId !== this.lastFetchId) {
       return;
     }
-    if (!response.Content || !response.Content.rows.length) {
-      message.warn('暂无匹配');
-    }
     this.setState({ data: response.Content ? response.Content.rows : [], fetching: false });
   };
 
@@ -58,7 +68,7 @@ class Brands extends PureComponent {
 
   render() {
     const { fetching, data, value } = this.state;
-    const { initialValue, labelInValue, keyType } = this.props;
+    const { labelInValue, keyType } = this.props;
     const attribute = keyType || 'Code';
     return (
       <Select
@@ -66,7 +76,6 @@ class Brands extends PureComponent {
         showArrow={false}
         labelInValue={labelInValue}
         value={value}
-        defaultValue={initialValue}
         placeholder="输入名称"
         notFoundContent={fetching ? <Spin size="small" /> : <Empty style={{ width: '100%' }} />}
         filterOption={false}

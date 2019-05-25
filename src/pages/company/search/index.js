@@ -3,12 +3,28 @@ import { connect } from 'dva';
 import router from 'umi/router';
 import { Row, Col, Card, Form, Input, Button } from 'antd';
 import StandardTable from '@/components/StandardTable';
+import { getName } from '@/utils/utils';
 
 const FormItem = Form.Item;
+const CusSource = [
+  {
+    Key: '1',
+    Value: '线下',
+  },
+  {
+    Key: '2',
+    Value: '网站',
+  },
+  {
+    Key: '3',
+    Value: '其他来源',
+  },
+];
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ companySearch, loading }) => ({
+@connect(({ companySearch, loading, global }) => ({
   companySearch,
+  global,
   loading: loading.models.companySearch,
 }))
 @Form.create()
@@ -59,13 +75,17 @@ class companySearch extends PureComponent {
       title: '客户类型',
       width: 100,
       dataIndex: 'CardType',
-      render: val => <span>{val === '1' ? '分销客户' : '大客户'}</span>,
+      render: val => {
+        const { global } = this.props;
+        const CardList = global.Card;
+        return <span>{getName(CardList, val)}</span>;
+      },
     },
     {
       title: '客户来源',
       width: 100,
       dataIndex: 'CusSource',
-      render: val => <span>{val === '1' ? '线下' : val === '2' ? '网站' : '其他'}</span>,
+      render: val => <span>{getName(CusSource, val)}</span>,
     },
     {
       title: '状态',
@@ -84,6 +104,14 @@ class companySearch extends PureComponent {
       type: 'companySearch/fetch',
       payload: {
         ...queryData,
+      },
+    });
+    dispatch({
+      type: 'global/getMDMCommonality',
+      payload: {
+        Content: {
+          CodeList: ['Card'],
+        },
       },
     });
   }

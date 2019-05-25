@@ -1,11 +1,19 @@
-import { querySingleRule, addRule, updateRule, cancelRule, confirmRule } from '../service';
+import {
+  querySingleRule,
+  addRule,
+  updateRule,
+  cancelRule,
+  confirmRule,
+  costCheckRule,
+} from '../service';
 
 export default {
-  namespace: 'SalesQuotationAdd',
+  namespace: 'TI_Z029',
 
   state: {
-    salesQuotationDetail: {
+    orderDetail: {
       Comment: '',
+      CreateUser: 'P0001',
       SDocStatus: '',
       PDocStatus: '',
       Closed: '',
@@ -25,6 +33,7 @@ export default {
       DueDate: null,
       ToDate: null,
       InquiryDocTotal: '',
+      ProfitTotal: '',
       DocTotal: '',
       ProvinceID: '',
       Province: '',
@@ -36,6 +45,7 @@ export default {
       Street: '',
       Address: '',
       NumAtCard: '',
+      ClosedDate: '2019-05-25',
       Owner: '',
       IsInquiry: '',
       TI_Z02902: [],
@@ -50,7 +60,7 @@ export default {
         yield put({
           type: 'save',
           payload: {
-            salesQuotationDetail: response.Content,
+            orderDetail: response.Content,
           },
         });
       }
@@ -59,7 +69,10 @@ export default {
       const response = yield call(addRule, payload);
       if (callback) callback(response);
     },
-
+    *costCheck({ payload, callback }, { call }) {
+      const response = yield call(costCheckRule, payload);
+      if (callback) callback(response);
+    },
     *update({ payload, callback }, { call }) {
       const response = yield call(updateRule, payload);
       if (callback) callback(response);

@@ -60,3 +60,12 @@ export async function confirmRule(params) {
     },
   });
 }
+
+export async function costCheckRule(params) {
+  return request('/OMS/TI_Z030/TI_Z03005', {
+    method: 'POST',
+    data: {
+      ...params,
+    },
+  });
+}

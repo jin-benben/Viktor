@@ -1,7 +1,7 @@
 /* eslint-disable no-script-url */
 import React, { Fragment } from 'react';
 import { connect } from 'dva';
-import { Row, Col, Form, Input, Card, Switch, Tabs, Button, message, Select } from 'antd';
+import { Row, Col, Form, Input, Card, Switch, Tabs, Button, message } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import Brand from '@/components/Brand';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
@@ -12,7 +12,6 @@ import { checkPhone, chechEmail } from '@/utils/utils';
 const { TabPane } = Tabs;
 
 const FormItem = Form.Item;
-const { Option } = Select;
 
 @connect(({ supplierEdit, loading, global }) => ({
   supplierEdit,
@@ -67,12 +66,7 @@ class CompanyEdit extends React.Component {
     },
   ];
 
-  addressColumns = [
-    {
-      title: 'ID',
-      width: 80,
-      dataIndex: 'LineID',
-    },
+  brandColumns = [
     {
       title: '品牌ID',
       dataIndex: 'Brand',
@@ -83,6 +77,7 @@ class CompanyEdit extends React.Component {
       render: (text, record) => (
         <Brand
           initialValue={{ key: record.Brand, label: record.BrandName }}
+          labelInValue
           onChange={val => {
             this.brandLineChange(val, record);
           }}
@@ -149,7 +144,7 @@ class CompanyEdit extends React.Component {
       type: 'global/getMDMCommonality',
       payload: {
         Content: {
-          CodeList: ['Company', 'PayMent', 'Curr'],
+          CodeList: ['Company', 'PayMent', 'Curr', 'Supplier'],
         },
       },
     });
@@ -182,7 +177,7 @@ class CompanyEdit extends React.Component {
     let { formVals } = this.state;
     const brandList = formVals.TI_Z00703List;
     brandList.map(brand => {
-      if (record.OrderID === brand.OrderID) {
+      if (record.Brand === brand.Brand) {
         const newbrand = brand;
         newbrand.Brand = valuekey.key;
         newbrand.BrandName = valuekey.label;
@@ -357,7 +352,7 @@ class CompanyEdit extends React.Component {
   render() {
     const {
       form: { getFieldDecorator },
-      global: { Company, PayMent, Curr },
+      global: { Company, PayMent, Curr, Supplier },
     } = this.props;
     const { formVals, tabIndex, LinkManmodalVisible, linkManVal } = this.state;
     const formItemLayout = {
@@ -469,12 +464,7 @@ class CompanyEdit extends React.Component {
                 {getFieldDecorator('CardType', {
                   rules: [{ required: true, message: '请选择类型！' }],
                   initialValue: formVals.CardType,
-                })(
-                  <Select placeholder="请选择类型">
-                    <Option value="1">分销客户</Option>
-                    <Option value="2">大客户</Option>
-                  </Select>
-                )}
+                })(<MDMCommonality initialValue={formVals.CardType} data={Supplier} />)}
               </FormItem>
             </Col>
             <Col lg={8} md={12} sm={24}>
@@ -484,7 +474,7 @@ class CompanyEdit extends React.Component {
                   initialValue: formVals.Currency,
                 })(
                   <MDMCommonality
-                    initialValue={formVals.CompanyCode}
+                    initialValue={formVals.Currency}
                     data={Curr}
                     placeholder="请输入交易币种"
                   />
@@ -548,7 +538,7 @@ class CompanyEdit extends React.Component {
                 <StandardTable
                   data={{ list: formVals.TI_Z00703List }}
                   rowKey="Brand"
-                  columns={this.addressColumns}
+                  columns={this.brandColumns}
                 />
               </TabPane>
             </Tabs>

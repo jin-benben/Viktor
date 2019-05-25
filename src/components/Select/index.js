@@ -10,15 +10,12 @@ class MDMCommonality extends PureComponent {
     data: [],
   };
 
-  static getDerivedStateFromProps(nextProps, prevState) {
-    if (nextProps.data !== prevState.data) {
-      console.log(nextProps.initialValue);
-      return {
-        data: nextProps.data,
-        value: nextProps.initialValue,
-      };
-    }
-    return null;
+  static getDerivedStateFromProps(nextProps, preState) {
+    const initialValue = nextProps.initialValue ? nextProps.initialValue.toString() : '';
+    return {
+      data: nextProps.data,
+      value: preState.value || initialValue,
+    };
   }
 
   handleChange = value => {
@@ -33,7 +30,7 @@ class MDMCommonality extends PureComponent {
 
   render() {
     const { value, data } = this.state;
-    console.log(value, 'ok', data);
+    console.log(value);
     return (
       <Select
         value={value}

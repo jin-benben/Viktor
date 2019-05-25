@@ -50,7 +50,7 @@ class SalesQuotation extends PureComponent {
       dataIndex: 'Status',
       render: (text, record) => (
         <Fragment>
-          <span>{record.DocStatus}</span>
+          <span>{record.DocStatus === 'O' ? '未报价' : '已报价'}</span>
         </Fragment>
       ),
     },
@@ -201,7 +201,7 @@ class SalesQuotation extends PureComponent {
 
   handleOnRow = record => ({
     // 详情or修改
-    onClick: () => router.push(`/TI_Z029/edit?DocEntry=${record.DocEntry}`),
+    onClick: () => router.push(`/TI_Z029/detail?DocEntry=${record.DocEntry}`),
   });
 
   renderSimpleForm() {
@@ -351,7 +351,7 @@ class SalesQuotation extends PureComponent {
       SalesQuotation: { SalesQuotationList, pagination },
       loading,
     } = this.props;
-    const tableWidth = document.body.offsetWidth < 1200 ? 1500 : 0;
+    const tableWidth = document.body.offsetWidth < 1800 ? 1500 : 0;
     return (
       <Fragment>
         <Card title="销售报价单查询" bordered={false}>

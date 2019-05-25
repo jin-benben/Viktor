@@ -21,6 +21,7 @@ class CompanySelect extends PureComponent {
   };
 
   static getDerivedStateFromProps(nextProps, prevState) {
+    console.log(this);
     if (nextProps.initialValue !== prevState.initialValue) {
       return {
         initialValue: nextProps.initialValue,
@@ -29,8 +30,12 @@ class CompanySelect extends PureComponent {
     return null;
   }
 
+  componentDidMount() {
+    this.fetchCompany();
+  }
+
   fetchCompany = async value => {
-    if (!value) return;
+    if (!value && this.lastFetchId !== 0) return;
     const { keyType } = this.props;
     this.lastFetchId += 1;
     const fetchId = this.lastFetchId;
@@ -48,11 +53,13 @@ class CompanySelect extends PureComponent {
         sord: 'DESC',
       },
     });
+    console.log('被调用了');
     this.setState({ fetching: false });
     if (response.Status !== 200 || fetchId !== this.lastFetchId) {
       this.setState({ data: [], fetching: false });
       return;
     }
+
     this.setState({ data: response.Content ? response.Content.rows : [], fetching: false });
   };
 

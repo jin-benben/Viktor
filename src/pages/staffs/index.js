@@ -7,7 +7,7 @@ import Organization from '@/components/Organization';
 import MDMCommonality from '@/components/Select';
 
 import styles from './style.less';
-import { checkPhone, chechEmail } from '@/utils/utils';
+import { checkPhone, chechEmail, getName } from '@/utils/utils';
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -228,8 +228,9 @@ class CreateForm extends PureComponent {
   }
 }
 /* eslint react/no-multi-comp:0 */
-@connect(({ staffs, loading }) => ({
+@connect(({ staffs, loading, global }) => ({
   staffs,
+  global,
   loading: loading.models.staffs,
 }))
 @Form.create()
@@ -293,10 +294,24 @@ class Staffs extends PureComponent {
     {
       title: '交易公司',
       dataIndex: 'CompanyCode',
+      render: val => {
+        const {
+          global: { Company },
+        } = this.props;
+        console.log(val);
+        return <span>{getName(Company, val)}</span>;
+      },
     },
     {
       title: '默认仓库',
       dataIndex: 'DefaultWhsCode',
+      render: val => {
+        const {
+          global: { WhsCode },
+        } = this.props;
+        console.log(val);
+        return <span>{getName(WhsCode, val)}</span>;
+      },
     },
     {
       title: '入职时间',

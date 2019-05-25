@@ -1,4 +1,4 @@
-import { TI_Z02907 } from '../service';
+import { TI_Z03007 } from '../service';
 
 export default {
   namespace: 'SalesQuotationSku',
@@ -27,7 +27,7 @@ export default {
 
   effects: {
     *fetch({ payload }, { call, put }) {
-      const response = yield call(TI_Z02907, payload);
+      const response = yield call(TI_Z03007, payload);
       if (response.Status === 200) {
         if (!response.Content) {
           yield put({

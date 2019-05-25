@@ -1,7 +1,7 @@
 /* eslint-disable no-script-url */
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Row, Col, Form, Input, Card, Switch, Tabs, Button, message, Select } from 'antd';
+import { Row, Col, Form, Input, Card, Switch, Tabs, Button, message } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import AddressInfo from '../components/address';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
@@ -13,7 +13,6 @@ import { checkPhone, chechEmail, getName } from '@/utils/utils';
 const { TabPane } = Tabs;
 
 const FormItem = Form.Item;
-const { Option } = Select;
 
 @connect(({ companyEdit, loading, global }) => ({
   companyEdit,
@@ -183,13 +182,11 @@ class CompanyEdit extends PureComponent {
       type: 'global/getMDMCommonality',
       payload: {
         Content: {
-          CodeList: ['Company', 'PayMent', 'Trnsp', 'Saler'],
+          CodeList: ['Company', 'PayMent', 'Trnsp', 'Saler', 'Card'],
         },
       },
     });
-    setTimeout(() => {
-      this.getSingle();
-    }, 3000);
+    this.getSingle();
   }
 
   componentWillUnmount() {
@@ -446,8 +443,10 @@ class CompanyEdit extends PureComponent {
   render() {
     const {
       form: { getFieldDecorator },
+      global,
       global: { PayMent, Trnsp },
     } = this.props;
+    const CardList = global.Card ? global.Card : [];
     const {
       formVals,
       tabIndex,
@@ -561,12 +560,7 @@ class CompanyEdit extends PureComponent {
                 {getFieldDecorator('CardType', {
                   rules: [{ required: true, message: '请选择客户类型！' }],
                   initialValue: formVals.CardType,
-                })(
-                  <Select placeholder="请选择类型">
-                    <Option value="1">分销客户</Option>
-                    <Option value="2">大客户</Option>
-                  </Select>
-                )}
+                })(<MDMCommonality initialValue={formVals.CardType} data={CardList} />)}
               </FormItem>
             </Col>
             <Col lg={8} md={12} sm={24}>

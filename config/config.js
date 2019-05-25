@@ -304,6 +304,13 @@ export default {
               component: './TI_Z029/TI_Z02907',
             },
             {
+              name: '销售报价单详情',
+              hideInMenu: true,
+              icon: 'smile',
+              path: '/TI_Z029/detail',
+              component: './TI_Z029/TI_Z02901',
+            },
+            {
               name: '销售报价单添加',
               icon: 'smile',
               path: '/TI_Z029/edit',
@@ -327,6 +334,13 @@ export default {
               icon: 'smile',
               path: '/TI_Z030/searchLine',
               component: './TI_Z030/TI_Z03007',
+            },
+            {
+              name: '销售合同详情',
+              hideInMenu: true,
+              icon: 'smile',
+              path: '/TI_Z030/detail',
+              component: './TI_Z030/TI_Z03001',
             },
             {
               name: '销售合同添加',

@@ -40,13 +40,13 @@ const { TextArea } = Input;
 const { TabPane } = Tabs;
 const FormItem = Form.Item;
 const { Option } = Select;
-@connect(({ SalesQuotationAdd, loading, global }) => ({
-  SalesQuotationAdd,
+@connect(({ TI_Z030, loading, global }) => ({
+  TI_Z030,
   global,
-  loading: loading.models.SalesQuotationAdd,
+  loading: loading.models.TI_Z030,
 }))
 @Form.create()
-class InquiryEdit extends React.Component {
+class TI_Z030Company extends React.Component {
   skuColumns = [
     {
       title: '行号',
@@ -384,7 +384,7 @@ class InquiryEdit extends React.Component {
     } = this.props;
     if (query.DocEntry) {
       dispatch({
-        type: 'SalesQuotationAdd/fetch',
+        type: 'TI_Z030/fetch',
         payload: {
           Content: {
             DocEntry: query.DocEntry,
@@ -405,9 +405,9 @@ class InquiryEdit extends React.Component {
   componentWillUnmount() {
     const { dispatch } = this.props;
     dispatch({
-      type: 'SalesQuotationAdd/save',
+      type: 'TI_Z030/save',
       payload: {
-        salesQuotationDetail: {
+        orderDetail: {
           Comment: '',
           SDocStatus: '',
           PDocStatus: '',
@@ -449,9 +449,9 @@ class InquiryEdit extends React.Component {
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    if (nextProps.SalesQuotationAdd.salesQuotationDetail !== prevState.formVals) {
+    if (nextProps.TI_Z030.orderDetail !== prevState.formVals) {
       return {
-        formVals: nextProps.SalesQuotationAdd.salesQuotationDetail,
+        formVals: nextProps.TI_Z030.orderDetail,
       };
     }
     return null;
@@ -709,7 +709,7 @@ class InquiryEdit extends React.Component {
       delete fieldsValue.CardCode;
       delete fieldsValue.CardName;
       dispatch({
-        type: 'SalesQuotationAdd/add',
+        type: 'TI_Z030/add',
         payload: {
           Content: {
             ...formVals,
@@ -745,7 +745,7 @@ class InquiryEdit extends React.Component {
       delete fieldsValue.CardCode;
       delete fieldsValue.CardName;
       dispatch({
-        type: 'SalesQuotationAdd/update',
+        type: 'TI_Z030/update',
         payload: {
           Content: {
             ...formVals,
@@ -772,7 +772,7 @@ class InquiryEdit extends React.Component {
     const { dispatch } = this.props;
     const { formVals } = this.state;
     dispatch({
-      type: 'SalesQuotationAdd/cancel',
+      type: 'TI_Z030/cancel',
       payload: {
         Content: {
           DocEntry: formVals.DocEntry,
@@ -795,7 +795,7 @@ class InquiryEdit extends React.Component {
       LineID: item.LineID,
     }));
     dispatch({
-      type: 'SalesQuotationAdd/confirm',
+      type: 'TI_Z030/confirm',
       payload: {
         Content: {
           loItemList,
@@ -819,6 +819,30 @@ class InquiryEdit extends React.Component {
     } else {
       message.warning('请先选择');
     }
+  };
+
+  // 成本核算
+  costCheck = () => {
+    const { dispatch } = this.props;
+    const {
+      formVals: { DocEntry, UpdateTimestamp },
+    } = this.state;
+    dispatch({
+      type: 'TI_Z030/costCheck',
+      payload: {
+        Content: {
+          DocEntry,
+          UpdateTimestamp,
+        },
+      },
+      callback: response => {
+        if (response.Status === 200) {
+          message.success('提交成功');
+
+          this.setState({ needmodalVisible: false });
+        }
+      },
+    });
   };
 
   render() {
@@ -1132,6 +1156,9 @@ class InquiryEdit extends React.Component {
           {formVals.DocEntry ? (
             <Fragment>
               <CancelOrder cancelSubmit={this.cancelSubmit} />
+              <Button type="primary" onClick={this.costCheck}>
+                成本核算
+              </Button>
               <Button
                 style={{ marginLeft: 10, marginRight: 10 }}
                 onClick={this.updateHandle}
@@ -1175,4 +1202,4 @@ class InquiryEdit extends React.Component {
   }
 }
 
-export default InquiryEdit;
+export default TI_Z030Company;

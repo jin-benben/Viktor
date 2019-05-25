@@ -201,7 +201,7 @@ class SalesQuotation extends PureComponent {
 
   handleOnRow = record => ({
     // 详情or修改
-    onClick: () => router.push(`/TI_Z029/edit?DocEntry=${record.DocEntry}`),
+    onClick: () => router.push(`/TI_Z029/detail?DocEntry=${record.DocEntry}`),
   });
 
   renderSimpleForm() {
