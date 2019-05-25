@@ -365,9 +365,8 @@ class supplierQuotationSku extends PureComponent {
                 <FormItem key="Closed" {...formLayout} label="关闭状态">
                   {getFieldDecorator('Closed')(
                     <Select placeholder="请选择">
-                      <Option value="1">已关闭</Option>
-                      <Option value="2">未关闭</Option>
-                      <Option value="3">全部</Option>
+                      <Option value="Y">已关闭</Option>
+                      <Option value="N">未关闭</Option>
                     </Select>
                   )}
                 </FormItem>

@@ -45,8 +45,8 @@ export default {
       NumAtCard: '',
       Owner: '',
       IsInquiry: '',
-      TI_Z02902: [],
-      TI_Z02904: [],
+      TI_Z03002: [],
+      TI_Z03004: [],
     },
   },
 

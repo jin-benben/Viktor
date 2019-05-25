@@ -2,7 +2,19 @@ import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
 import moment from 'moment';
-import { Row, Col, Card, Form, Input, Button, Divider, Select, DatePicker, Icon } from 'antd';
+import {
+  Row,
+  Col,
+  Card,
+  Form,
+  Input,
+  Button,
+  Divider,
+  Select,
+  Badge,
+  DatePicker,
+  Icon,
+} from 'antd';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import StandardTable from '@/components/StandardTable';
 import MDMCommonality from '@/components/Select';
@@ -54,13 +66,33 @@ class SalesQuotationSku extends PureComponent {
       title: '确认状态',
       dataIndex: 'LineStatus',
       width: 100,
-      render: (text, record) => <span>确认状态{record.LineStatus}</span>,
+      render: text => (
+        <Fragment>
+          <span>
+            {text === 'O' ? (
+              <Badge color="green" text="未确认" />
+            ) : (
+              <Badge color="blue" text="已确认" />
+            )}
+          </span>
+        </Fragment>
+      ),
     },
     {
       title: '合同状态',
       dataIndex: 'LineStatus',
       width: 100,
-      render: (text, record) => <span>确认状态{record.LineStatus}</span>,
+      render: text => (
+        <Fragment>
+          <span>
+            {text === 'O' ? (
+              <Badge color="green" text="未确认" />
+            ) : (
+              <Badge color="blue" text="已确认" />
+            )}
+          </span>
+        </Fragment>
+      ),
     },
     {
       title: '客户',
@@ -333,9 +365,8 @@ class SalesQuotationSku extends PureComponent {
             <FormItem key="SDocStatus" {...formLayout} label="合同状态">
               {getFieldDecorator('SDocStatus')(
                 <Select placeholder="请选择">
-                  <Option value="1">已报价</Option>
-                  <Option value="2">未报价</Option>
-                  <Option value="3">不详</Option>
+                  <Option value="C">已报价</Option>
+                  <Option value="O">未报价</Option>
                 </Select>
               )}
             </FormItem>
@@ -344,9 +375,8 @@ class SalesQuotationSku extends PureComponent {
             <FormItem key="LineStatus" {...formLayout} label="确认状态">
               {getFieldDecorator('LineStatus')(
                 <Select placeholder="请选择">
-                  <Option value="1">已报价</Option>
-                  <Option value="2">未报价</Option>
-                  <Option value="3">不详</Option>
+                  <Option value="C">已报价</Option>
+                  <Option value="O">未报价</Option>
                 </Select>
               )}
             </FormItem>
@@ -375,9 +405,8 @@ class SalesQuotationSku extends PureComponent {
                 <FormItem key="Closed" {...formLayout} label="关闭状态">
                   {getFieldDecorator('Closed')(
                     <Select placeholder="请选择">
-                      <Option value="1">已关闭</Option>
-                      <Option value="2">未关闭</Option>
-                      <Option value="3">全部</Option>
+                      <Option value="Y">已关闭</Option>
+                      <Option value="N">未关闭</Option>
                     </Select>
                   )}
                 </FormItem>
@@ -387,9 +416,7 @@ class SalesQuotationSku extends PureComponent {
                 <FormItem key="OrderType" {...formLayout} label="订单类型">
                   {getFieldDecorator('OrderType')(
                     <Select placeholder="请选择">
-                      <Option value="1">是</Option>
-                      <Option value="2">否</Option>
-                      <Option value="3">全部</Option>
+                      <Option value="1">正常订单</Option>
                     </Select>
                   )}
                 </FormItem>
@@ -406,7 +433,7 @@ class SalesQuotationSku extends PureComponent {
                   icon="plus"
                   style={{ marginLeft: 8 }}
                   type="primary"
-                  onClick={() => router.push('/inquiry/edit')}
+                  onClick={() => router.push('/TI_Z030/edit')}
                 >
                   新建
                 </Button>
@@ -443,7 +470,7 @@ class SalesQuotationSku extends PureComponent {
               loading={loading}
               data={{ list: SalesQuotationSkuList }}
               pagination={pagination}
-              scroll={{ x: 2500 }}
+              scroll={{ x: 2500, y: 500 }}
               rowKey="Key"
               columns={this.columns}
               onRow={this.handleOnRow}

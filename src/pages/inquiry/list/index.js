@@ -277,7 +277,7 @@ class inquiryListPage extends PureComponent {
               {getFieldDecorator('SDocStatus')(
                 <Select placeholder="请选择">
                   <Option value="C">已报价</Option>
-                  <Option value="O">报价</Option>
+                  <Option value="O">未报价</Option>
                 </Select>
               )}
             </FormItem>

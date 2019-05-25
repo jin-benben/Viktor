@@ -441,8 +441,8 @@ class TI_Z030Company extends React.Component {
           NumAtCard: '',
           Owner: '',
           IsInquiry: '',
-          TI_Z02902: [],
-          TI_Z02904: [],
+          TI_Z03002: [],
+          TI_Z03004: [],
         },
       },
     });
@@ -886,7 +886,7 @@ class TI_Z030Company extends React.Component {
       handleSubmit: this.submitNeedLine,
       handleModalVisible: this.handleModalVisible,
     };
-    const newdata = [...formVals.TI_Z02902];
+    const newdata = [...formVals.TI_Z03002];
     if (newdata.length > 0) {
       newdata.push({
         LineID: newdata[newdata.length - 1].LineID + 1,
@@ -1138,7 +1138,7 @@ class TI_Z030Company extends React.Component {
           </TabPane>
           <TabPane tab="其余成本" key="3">
             <StandardTable
-              data={{ list: formVals.TI_Z02904 }}
+              data={{ list: formVals.TI_Z03004 }}
               rowKey="LineID"
               columns={this.otherCostCColumns}
             />
@@ -1167,7 +1167,7 @@ class TI_Z030Company extends React.Component {
                 更新
               </Button>
               <Button onClick={() => this.setState({ needmodalVisible: true })} type="primary">
-                确认销售报价
+                确认销售合同
               </Button>
             </Fragment>
           ) : (

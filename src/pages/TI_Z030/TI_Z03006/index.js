@@ -2,7 +2,19 @@ import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
 import moment from 'moment';
-import { Row, Col, Card, Form, Input, Button, Divider, Select, DatePicker, Icon } from 'antd';
+import {
+  Row,
+  Col,
+  Card,
+  Form,
+  Input,
+  Button,
+  Divider,
+  Badge,
+  Select,
+  DatePicker,
+  Icon,
+} from 'antd';
 import StandardTable from '@/components/StandardTable';
 import MDMCommonality from '@/components/Select';
 import DocEntryFrom from '@/components/DocEntryFrom';
@@ -51,6 +63,28 @@ class SalesQuotation extends PureComponent {
       render: (text, record) => (
         <Fragment>
           <span>{record.DocStatus}</span>
+        </Fragment>
+      ),
+    },
+    {
+      title: '单据状态',
+      dataIndex: 'Status',
+      width: 100,
+      render: (text, record) => (
+        <Fragment>
+          {record.Closed === 'Y' ? (
+            <Badge color="red" text="已关闭" />
+          ) : (
+            <Fragment>
+              <span>
+                {record.DocStatus === 'O' ? (
+                  <Badge color="green" text="未确认" />
+                ) : (
+                  <Badge color="blue" text="已确认" />
+                )}
+              </span>
+            </Fragment>
+          )}
         </Fragment>
       ),
     },
@@ -201,7 +235,7 @@ class SalesQuotation extends PureComponent {
 
   handleOnRow = record => ({
     // 详情or修改
-    onClick: () => router.push(`/TI_Z029/detail?DocEntry=${record.DocEntry}`),
+    onClick: () => router.push(`/TI_Z030/detail?DocEntry=${record.DocEntry}`),
   });
 
   renderSimpleForm() {
@@ -253,7 +287,7 @@ class SalesQuotation extends PureComponent {
             </FormItem>
           </Col>
           <Col md={6} sm={24}>
-            <FormItem key="SDocStatus" {...formLayout} label="销售报价状态">
+            <FormItem key="SDocStatus" {...formLayout} label="报价状态">
               {getFieldDecorator('SDocStatus')(
                 <Select placeholder="请选择">
                   <Option value="1">已报价</Option>
@@ -282,31 +316,28 @@ class SalesQuotation extends PureComponent {
                 <FormItem key="Closed" {...formLayout} label="关闭状态">
                   {getFieldDecorator('Closed')(
                     <Select placeholder="请选择">
-                      <Option value="1">已关闭</Option>
-                      <Option value="2">未关闭</Option>
-                      <Option value="3">全部</Option>
+                      <Option value="Y">已关闭</Option>
+                      <Option value="N">未关闭</Option>
                     </Select>
                   )}
                 </FormItem>
               </Col>
               <Col md={6} sm={24}>
-                <FormItem key="InquiryStatus" {...formLayout} label="采购询价状态">
+                <FormItem key="InquiryStatus" {...formLayout} label="询价状态">
                   {getFieldDecorator('InquiryStatus')(
                     <Select placeholder="请选择">
-                      <Option value="1">已报价</Option>
-                      <Option value="2">未报价</Option>
-                      <Option value="3">不详</Option>
+                      <Option value="C">已询价</Option>
+                      <Option value="O">未询价</Option>
                     </Select>
                   )}
                 </FormItem>
               </Col>
               <Col md={6} sm={24}>
-                <FormItem key="IsInquiry" {...formLayout} label="需要采购询价">
+                <FormItem key="IsInquiry" {...formLayout} label="需采购询价">
                   {getFieldDecorator('IsInquiry')(
                     <Select placeholder="请选择">
-                      <Option value="1">是</Option>
-                      <Option value="2">否</Option>
-                      <Option value="3">全部</Option>
+                      <Option value="Y">是</Option>
+                      <Option value="N">否</Option>
                     </Select>
                   )}
                 </FormItem>
@@ -323,7 +354,7 @@ class SalesQuotation extends PureComponent {
                   icon="plus"
                   style={{ marginLeft: 8 }}
                   type="primary"
-                  onClick={() => router.push('/inquiry/edit')}
+                  onClick={() => router.push('/TI_Z030/edit')}
                 >
                   新建
                 </Button>
@@ -351,7 +382,7 @@ class SalesQuotation extends PureComponent {
       SalesQuotation: { SalesQuotationList, pagination },
       loading,
     } = this.props;
-    const tableWidth = document.body.offsetWidth < 1200 ? 1500 : 0;
+    const tableWidth = document.body.offsetWidth < 1500 ? 1500 : 0;
     return (
       <Fragment>
         <Card title="销售合同查询" bordered={false}>
@@ -362,7 +393,7 @@ class SalesQuotation extends PureComponent {
               data={{ list: SalesQuotationList }}
               pagination={pagination}
               rowKey="DocEntry"
-              scroll={{ x: tableWidth }}
+              scroll={{ x: tableWidth, y: 500 }}
               columns={this.columns}
               onRow={this.handleOnRow}
               onChange={this.handleStandardTableChange}

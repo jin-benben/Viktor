@@ -253,12 +253,11 @@ class SalesQuotation extends PureComponent {
             </FormItem>
           </Col>
           <Col md={6} sm={24}>
-            <FormItem key="SDocStatus" {...formLayout} label="销售报价状态">
+            <FormItem key="SDocStatus" {...formLayout} label="报价状态">
               {getFieldDecorator('SDocStatus')(
                 <Select placeholder="请选择">
-                  <Option value="1">已报价</Option>
-                  <Option value="2">未报价</Option>
-                  <Option value="3">不详</Option>
+                  <Option value="C">已报价</Option>
+                  <Option value="O">未报价</Option>
                 </Select>
               )}
             </FormItem>
@@ -282,9 +281,8 @@ class SalesQuotation extends PureComponent {
                 <FormItem key="Closed" {...formLayout} label="关闭状态">
                   {getFieldDecorator('Closed')(
                     <Select placeholder="请选择">
-                      <Option value="1">已关闭</Option>
-                      <Option value="2">未关闭</Option>
-                      <Option value="3">全部</Option>
+                      <Option value="Y">已关闭</Option>
+                      <Option value="N">未关闭</Option>
                     </Select>
                   )}
                 </FormItem>
@@ -293,9 +291,8 @@ class SalesQuotation extends PureComponent {
                 <FormItem key="InquiryStatus" {...formLayout} label="采购询价状态">
                   {getFieldDecorator('InquiryStatus')(
                     <Select placeholder="请选择">
-                      <Option value="1">已报价</Option>
-                      <Option value="2">未报价</Option>
-                      <Option value="3">不详</Option>
+                      <Option value="C">已报价</Option>
+                      <Option value="O">未报价</Option>
                     </Select>
                   )}
                 </FormItem>
@@ -304,9 +301,8 @@ class SalesQuotation extends PureComponent {
                 <FormItem key="IsInquiry" {...formLayout} label="需要采购询价">
                   {getFieldDecorator('IsInquiry')(
                     <Select placeholder="请选择">
-                      <Option value="1">是</Option>
-                      <Option value="2">否</Option>
-                      <Option value="3">全部</Option>
+                      <Option value="Y">是</Option>
+                      <Option value="N">否</Option>
                     </Select>
                   )}
                 </FormItem>
@@ -323,7 +319,7 @@ class SalesQuotation extends PureComponent {
                   icon="plus"
                   style={{ marginLeft: 8 }}
                   type="primary"
-                  onClick={() => router.push('/inquiry/edit')}
+                  onClick={() => router.push('/TI_Z029/edit')}
                 >
                   新建
                 </Button>
