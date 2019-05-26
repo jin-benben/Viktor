@@ -1,33 +1,24 @@
-import React, { PureComponent, Fragment } from 'react';
+import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import router from 'umi/router';
-import {
-  Row,
-  Col,
-  Form,
-  Input,
-  Card,
-  Tabs,
-  Button,
-  Icon,
-  Switch,
-  Popconfirm,
-  message,
-  DatePicker,
-  Select,
-} from 'antd';
+import moment from 'moment';
+import { Row, Col, Form, Input, Card, Tabs, Button, message, DatePicker, Select } from 'antd';
 import StandardTable from '@/components/StandardTable';
-import EditableFormTable from '@/components/EditableFormTable';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
+import MDMCommonality from '@/components/Select';
 import Brand from '@/components/Brand';
+import HSCode from '@/components/HSCode';
+import FHSCode from '@/components/FHSCode';
+import SPUCode from '@/components/SPUCode';
+import Category from '@/components/Category';
 
 const FormItem = Form.Item;
 const { TabPane } = Tabs;
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ skuDetail, loading }) => ({
+@connect(({ skuDetail, loading, global }) => ({
   skuDetail,
-  loading: loading.models.rule,
+  global,
+  loading: loading.models.skuDetail,
 }))
 @Form.create()
 class SKUDetail extends PureComponent {
@@ -108,6 +99,14 @@ class SKUDetail extends PureComponent {
         },
       });
     }
+    dispatch({
+      type: 'global/getMDMCommonality',
+      payload: {
+        Content: {
+          CodeList: ['Purchaser'],
+        },
+      },
+    });
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
@@ -123,27 +122,68 @@ class SKUDetail extends PureComponent {
     this.setState({ tabIndex });
   };
 
+  addSkuDetail = () => {};
+
+  addCompanySKU = () => {};
+
   rightButton = tabIndex => {
     if (tabIndex === '1') {
       return (
-        <Button icon="plus" style={{ marginLeft: 8 }} type="primary" onClick={this.addLineSku}>
-          添加新物料
+        <Button icon="plus" style={{ marginLeft: 8 }} type="primary" onClick={this.addSkuDetail}>
+          添加物料详情
         </Button>
       );
     }
-    if (tabIndex === '3') {
+    if (tabIndex === '2') {
       return (
-        <Button icon="plus" style={{ marginLeft: 8 }} type="primary">
-          添加新附件
+        <Button icon="plus" style={{ marginLeft: 8 }} type="primary" onClick={this.addCompanySKU}>
+          添加客户物料代码
         </Button>
       );
     }
     return null;
   };
 
+  // 更新主数据
+  updateHandle = () => {
+    const { form, dispatch } = this.props;
+    const { formVals } = this.state;
+    form.validateFields((err, fieldsValue) => {
+      if (err) return;
+      let category;
+      if (fieldsValue.address) {
+        category = { ...fieldsValue.address };
+      }
+      delete fieldsValue.category;
+      dispatch({
+        type: 'skuDetail/update',
+        payload: {
+          Content: {
+            TI_Z00901: [
+              {
+                ...formVals,
+                ...fieldsValue,
+                ...category,
+                PutawayDateTime: fieldsValue.PutawayDateTime
+                  ? fieldsValue.PutawayDateTime.format('YYYY-MM-DD')
+                  : '',
+              },
+            ],
+          },
+        },
+        callback: response => {
+          if (response.Status === 200) {
+            message.success('更新成功');
+          }
+        },
+      });
+    });
+  };
+
   render() {
     const {
       form: { getFieldDecorator },
+      global: { Purchaser },
     } = this.props;
     const formItemLayout = {
       labelCol: {
@@ -164,7 +204,7 @@ class SKUDetail extends PureComponent {
           <Row gutter={8}>
             <Col lg={12} md={12} sm={24}>
               <FormItem key="SKU" {...this.formLayout} label="SKU">
-                {formVals.SKU}
+                {formVals.Code}
               </FormItem>
             </Col>
             <Col lg={12} md={12} sm={24}>
@@ -179,7 +219,7 @@ class SKUDetail extends PureComponent {
                 {getFieldDecorator('BrandName', {
                   rules: [{ required: true, message: '请输入品牌名称！' }],
                   initialValue: formVals.BrandName,
-                })(<Brand />)}
+                })(<Brand keyType="Name" initialValue={formVals.BrandName} />)}
               </FormItem>
             </Col>
             <Col lg={12} md={12} sm={24}>
@@ -224,17 +264,28 @@ class SKUDetail extends PureComponent {
           </Row>
           <Row gutter={8}>
             <Col lg={12} md={12} sm={24}>
-              <FormItem key="Unit" {...this.formLayout} label="采购员">
-                {getFieldDecorator('Unit', {
-                  initialValue: formVals.Unit,
-                })(<Input placeholder="请输入单位" />)}
+              <FormItem key="Purchaser" {...this.formLayout} label="采购员">
+                {getFieldDecorator('Purchaser', {
+                  initialValue: formVals.Purchaser,
+                })(
+                  <MDMCommonality
+                    initialValue={formVals.Purchaser}
+                    data={Purchaser}
+                    placeholder="请输入单位"
+                  />
+                )}
               </FormItem>
             </Col>
             <Col lg={12} md={12} sm={24}>
-              <FormItem key="ManLocation" {...this.formLayout} label="分类">
-                {getFieldDecorator('ManLocation', {
-                  initialValue: formVals.ManLocation,
-                })(<Input placeholder="请输入产地" />)}
+              <FormItem key="category" {...this.formLayout} label="分类">
+                {getFieldDecorator('category', {
+                  initialValue: [formVals.Category1, formVals.Category2, formVals.Category3],
+                })(
+                  <Category
+                    initialValue={[formVals.Category1, formVals.Category2, formVals.Category3]}
+                    placeholder="请选择分类"
+                  />
+                )}
               </FormItem>
             </Col>
           </Row>
@@ -266,7 +317,7 @@ class SKUDetail extends PureComponent {
               <FormItem key="HSCode" {...this.formLayout} label="国内海关编码">
                 {getFieldDecorator('HSCode', {
                   initialValue: formVals.HSCode,
-                })(<Input placeholder="请输入名称" />)}
+                })(<HSCode initialValue={formVals.HSCode} />)}
               </FormItem>
             </Col>
           </Row>
@@ -275,14 +326,37 @@ class SKUDetail extends PureComponent {
               <FormItem key="FHSCode" {...this.formLayout} label="国外海关编码">
                 {getFieldDecorator('FHSCode', {
                   initialValue: formVals.FHSCode,
-                })(<Input placeholder="请输入名称" />)}
+                })(<FHSCode initialValue={formVals.FHSCode} />)}
               </FormItem>
             </Col>
             <Col lg={12} md={12} sm={24}>
               <FormItem key="SPUCode" {...this.formLayout} label="SPU代码">
                 {getFieldDecorator('SPUCode', {
                   initialValue: formVals.SPUCode,
-                })(<Input placeholder="请输入名称" />)}
+                })(<SPUCode initialValue={formVals.SPUCode} />)}
+              </FormItem>
+            </Col>
+          </Row>
+          <Row gutter={8}>
+            <Col lg={12} md={12} sm={24}>
+              <FormItem key="Putaway" {...this.formLayout} label="上架状态">
+                {getFieldDecorator('Putaway', {
+                  initialValue: formVals.Putaway,
+                })(
+                  <Select style={{ width: '100%' }}>
+                    <Option value="1">是</Option>
+                    <Option value="2">否</Option>
+                  </Select>
+                )}
+              </FormItem>
+            </Col>
+            <Col lg={12} md={12} sm={24}>
+              <FormItem key="PutawayDateTime" {...this.formLayout} label="上架时间">
+                {getFieldDecorator('PutawayDateTime', {
+                  initialValue: formVals.PutawayDateTime
+                    ? moment(formVals.PutawayDateTime, 'YYYY-MM-DD')
+                    : null,
+                })(<DatePicker style={{ width: '100%' }} />)}
               </FormItem>
             </Col>
           </Row>
@@ -301,7 +375,9 @@ class SKUDetail extends PureComponent {
         </Tabs>
 
         <FooterToolbar>
-          <Button type="primary">保存</Button>
+          <Button type="primary" onClick={this.updateHandle}>
+            保存
+          </Button>
         </FooterToolbar>
       </Card>
     );

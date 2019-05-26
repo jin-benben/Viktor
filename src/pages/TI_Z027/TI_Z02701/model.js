@@ -1,4 +1,4 @@
-import { orderLineRule } from '../../inquiry/service';
+import { orderLineRule } from '../../TI_Z026/service';
 import { addRule } from '../service';
 
 export default {

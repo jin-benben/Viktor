@@ -75,6 +75,7 @@ class BasicLayout extends React.PureComponent {
     // if collapsed is true, you need to click twice to display
     const { collapsed, isMobile } = this.props;
     if (isMobile && !preProps.isMobile && !collapsed) {
+      console.log('ok');
       this.handleMenuCollapse(false);
     }
   }
@@ -126,13 +127,14 @@ class BasicLayout extends React.PureComponent {
     const { fixSiderbar, isMobile, collapsed, layout } = this.props;
     if (fixSiderbar && layout !== 'topmenu' && !isMobile) {
       return {
-        paddingLeft: collapsed ? '80px' : '150px',
+        paddingLeft: collapsed ? '80px' : '200px',
       };
     }
     return null;
   };
 
   handleMenuCollapse = collapsed => {
+    console.log('beidiaoyong', collapsed);
     const { dispatch } = this.props;
     dispatch({
       type: 'global/changeLayoutCollapsed',

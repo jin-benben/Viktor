@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import request from '@/utils/request';
-import { Select, Spin, message, Empty } from 'antd';
+import { Select, Spin, Empty } from 'antd';
 import debounce from 'lodash/debounce';
 
 const { Option } = Select;
@@ -14,9 +14,22 @@ class Brand extends PureComponent {
 
   state = {
     data: [],
-    value: [],
+    value: '',
     fetching: false,
   };
+
+  componentDidMount() {
+    this.fetchUser();
+  }
+
+  static getDerivedStateFromProps(nextProps, prevState) {
+    if (nextProps.initialValue !== prevState.value) {
+      return {
+        value: nextProps.initialValue,
+      };
+    }
+    return null;
+  }
 
   fetchUser = async value => {
     this.lastFetchId += 1;
@@ -39,9 +52,7 @@ class Brand extends PureComponent {
     if (response.Status !== 200 || fetchId !== this.lastFetchId) {
       return;
     }
-    if (!response.Content || !response.Content.rows.length) {
-      message.warn('暂无匹配');
-    }
+
     this.setState({ data: response.Content ? response.Content.rows : [], fetching: false });
   };
 
@@ -58,13 +69,11 @@ class Brand extends PureComponent {
 
   render() {
     const { fetching, data, value } = this.state;
-    const { defaultValue } = this.props;
     return (
       <Select
         showSearch
         showArrow={false}
         value={value}
-        defaultValue={defaultValue}
         placeholder="输入名称"
         notFoundContent={fetching ? <Spin size="small" /> : <Empty />}
         filterOption={false}

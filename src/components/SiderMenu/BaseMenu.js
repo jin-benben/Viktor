@@ -1,9 +1,10 @@
 import React, { PureComponent } from 'react';
 import classNames from 'classnames';
-import { Menu, Icon } from 'antd';
+import { Menu } from 'antd';
 import Link from 'umi/link';
 import { urlToList } from '../_utils/pathTools';
 import { getMenuMatches } from './SiderMenuUtils';
+import MyIcon from '../MyIcon';
 import { isUrl } from '@/utils/utils';
 import styles from './index.less';
 
@@ -18,7 +19,7 @@ const getIcon = icon => {
     return <img src={icon} alt="icon" className={styles.icon} />;
   }
   if (typeof icon === 'string') {
-    return <Icon type={icon} />;
+    return <MyIcon style={{ fontSize: 16, color: '#fff' }} type={icon} />;
   }
   return icon;
 };

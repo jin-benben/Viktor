@@ -1,4 +1,4 @@
-import { queryRule } from './service';
+import { queryRule } from '../service';
 
 export default {
   namespace: 'skuFetch',

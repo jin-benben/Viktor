@@ -54,21 +54,22 @@ export default class SiderMenu extends PureComponent {
       [styles.fixSiderbar]: fixSiderbar,
       [styles.light]: theme === 'light',
     });
+    console.log(collapsed);
     return (
       <Sider
         trigger={null}
         collapsible
         collapsed={collapsed}
         breakpoint="lg"
-        onCollapse={onCollapse}
-        width={256}
+        //  onCollapse={onCollapse}
+        width={200}
         theme={theme}
         className={siderClassName}
       >
         <div className={styles.logo} id="logo">
           <Link to="/">
             <img src={logo} alt="logo" />
-            <h1>Ant Design Pro</h1>
+            <h1>维克托</h1>
           </Link>
         </div>
         <Suspense fallback={<PageLoading />}>

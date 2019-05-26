@@ -510,7 +510,12 @@ class TI_Z029Component extends React.Component {
       record.InquiryLineTotal = round(record.InquiryLineTotal, 2);
       record.LineTotal = isNaN(record.Quantity * record.Price) ? 0 : record.Quantity * record.Price;
       record.LineTotal = round(record.LineTotal, 2);
-      record.ProfitLineTotal = round(record.LineTotal - record.InquiryLineTotalLocal, 2);
+      console.log(isNaN(record.OtherTotal) ? record.OtherTotal : 0);
+      record.ProfitLineTotal =
+        record.LineTotal -
+        record.InquiryLineTotalLocal -
+        (isNaN(record.OtherTotal) ? record.OtherTotal : 0);
+      record.ProfitLineTotal = round(record.ProfitLineTotal, 2);
       DocTotal += record.LineTotal;
       InquiryDocTotalLocal += record.InquiryLineTotalLocal;
       InquiryDocTotal += record.InquiryLineTotal;
@@ -633,11 +638,14 @@ class TI_Z029Component extends React.Component {
 
   copyFromOrder = () => {
     const { formVals } = this.state;
+    const { queryData } = this.getAskPriceOrder.state;
     if (!formVals.CardCode) {
       message.warning('请先选择客户');
       return false;
     }
+    console.log();
     this.setState({ orderModalVisible: true });
+    this.getAskPriceOrder.fetchOrder(queryData);
   };
 
   rightButton = tabIndex => {
@@ -1012,15 +1020,19 @@ class TI_Z029Component extends React.Component {
           <Row gutter={8}>
             <Col lg={10} md={12} sm={24}>
               <FormItem key="CardCode" {...this.formLayout} label="客户ID">
-                {getFieldDecorator('CardCode', {
-                  rules: [{ required: true, message: '请选择客户！' }],
-                  initialValue: { key: formVals.CardName, label: formVals.CardCode },
-                })(
-                  <CompanySelect
-                    initialValue={{ key: formVals.CardName, label: formVals.CardCode }}
-                    onChange={this.changeCompany}
-                    keyType="Code"
-                  />
+                {formVals.DocEntry ? (
+                  <Input disabled value={formVals.CardCode} placeholder="单号" />
+                ) : (
+                  getFieldDecorator('CardCode', {
+                    rules: [{ required: true, message: '请选择客户！' }],
+                    initialValue: { key: formVals.CardName, label: formVals.CardCode },
+                  })(
+                    <CompanySelect
+                      initialValue={{ key: formVals.CardName, label: formVals.CardCode }}
+                      onChange={this.changeCompany}
+                      keyType="Code"
+                    />
+                  )
                 )}
               </FormItem>
             </Col>
@@ -1035,15 +1047,19 @@ class TI_Z029Component extends React.Component {
           <Row gutter={8}>
             <Col lg={10} md={12} sm={24}>
               <FormItem key="CardName" {...this.formLayout} label="客户名称">
-                {getFieldDecorator('CardName', {
-                  rules: [{ required: true, message: '请输入客户名称！' }],
-                  initialValue: { key: formVals.CardCode, label: formVals.CardName },
-                })(
-                  <CompanySelect
-                    initialValue={{ key: formVals.CardCode, label: formVals.CardName }}
-                    onChange={this.changeCompany}
-                    keyType="Name"
-                  />
+                {formVals.DocEntry ? (
+                  <Input disabled value={formVals.CardName} placeholder="单号" />
+                ) : (
+                  getFieldDecorator('CardName', {
+                    rules: [{ required: true, message: '请输入客户名称！' }],
+                    initialValue: { key: formVals.CardCode, label: formVals.CardName },
+                  })(
+                    <CompanySelect
+                      initialValue={{ key: formVals.CardCode, label: formVals.CardName }}
+                      onChange={this.changeCompany}
+                      keyType="Name"
+                    />
+                  )
                 )}
               </FormItem>
             </Col>
@@ -1071,7 +1087,7 @@ class TI_Z029Component extends React.Component {
                     style={{ width: '100%' }}
                   >
                     {linkmanList.map(option => (
-                      <Option key={option.Code} value={option.Code}>
+                      <Option key={option.Code} value={option.Name}>
                         {option.Name}
                       </Option>
                     ))}
@@ -1114,7 +1130,7 @@ class TI_Z029Component extends React.Component {
             <EditableFormTable
               rowChange={this.rowChange}
               rowKey="Key"
-              scroll={{ x: 3300, y: 600 }}
+              scroll={{ x: 3500, y: 600 }}
               columns={this.skuColumns}
               data={newdata}
             />
@@ -1232,7 +1248,7 @@ class TI_Z029Component extends React.Component {
                   <span>{getName(Saler, formVals.CreateUser)}</span>
                 </FormItem>
               </Col>
-              {formVals.DocEntry ? (
+              {/* {formVals.DocEntry ? (
                 <Fragment>
                   <Col lg={8} md={12} sm={24}>
                     <FormItem key="Closed" {...this.formLayout} label="关闭状态">
@@ -1250,7 +1266,7 @@ class TI_Z029Component extends React.Component {
                     </FormItem>
                   </Col>
                 </Fragment>
-              ) : null}
+              ) : null} */}
             </Row>
           </TabPane>
           <TabPane tab="其余成本" key="3">
@@ -1291,6 +1307,9 @@ class TI_Z029Component extends React.Component {
         </FooterToolbar>
         <UpdateLoad {...uploadmodalMethods} modalVisible={uploadmodalVisible} />
         <AskPriceFetch
+          onRef={c => {
+            this.getAskPriceOrder = c;
+          }}
           SearchText={formVals.CardName}
           {...orderParentMethods}
           modalVisible={orderModalVisible}

@@ -24,7 +24,7 @@ class SkuFetchComponent extends PureComponent {
     },
     {
       title: '物料名称',
-      dataIndex: 'CardName',
+      dataIndex: 'ProductName',
     },
     {
       title: '品牌',
@@ -121,7 +121,7 @@ class SkuFetchComponent extends PureComponent {
 
   handleOnRow = record => ({
     // 详情or修改
-    onClick: () => router.push(`/sku/detail?Code=${record.Code}`),
+    onClick: () => router.push(`/TI_Z009/TI_Z00903?Code=${record.Code}`),
   });
 
   renderSimpleForm() {
@@ -148,7 +148,7 @@ class SkuFetchComponent extends PureComponent {
                 icon="plus"
                 style={{ marginLeft: 8 }}
                 type="primary"
-                onClick={() => router.push('/sku/add')}
+                onClick={() => router.push('/TI_Z009/TI_Z00901')}
               >
                 新建
               </Button>

@@ -27,8 +27,19 @@ class CategoryCascader extends React.Component {
 
   handleChange = (value, selectedOptions) => {
     const { onChange } = this.props;
+    let category;
+    if (selectedOptions.length === 3) {
+      category = {
+        Cate1Name: selectedOptions[0].Name,
+        Cate2Name: selectedOptions[1].Name,
+        Cate3Name: selectedOptions[2].Name,
+        Category1: selectedOptions[0].Code,
+        Category2: selectedOptions[1].Code,
+        Category3: selectedOptions[2].Code,
+      };
+    }
     if (onChange) {
-      onChange(selectedOptions);
+      onChange(category);
     }
   };
 

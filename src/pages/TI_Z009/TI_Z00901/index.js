@@ -2,16 +2,21 @@ import React, { Fragment } from 'react';
 import { Card, Icon, Button, message, Select } from 'antd';
 import EditableFormTable from '@/components/EditableFormTable';
 import request from '@/utils/request';
-import Staffs from '@/components/Staffs';
+import MDMCommonality from '@/components/Select';
 import Brand from '@/components/Brand';
 import HSCode from '@/components/HSCode';
 import FHSCode from '@/components/FHSCode';
 import SPUCode from '@/components/SPUCode';
 import Category from '@/components/Category';
+import { connect } from 'dva';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 
 const { Option } = Select;
 
+@connect(({ global, loading }) => ({
+  global,
+  loading: loading.models.global,
+}))
 class AddSKU extends React.Component {
   state = {
     TI_Z00901: [],
@@ -25,14 +30,18 @@ class AddSKU extends React.Component {
       width: 50,
     },
     {
+      title: '描述',
+      dataIndex: 'Name',
+    },
+    {
       title: '品牌',
       width: 150,
       dataIndex: 'BrandName',
       render: (text, record, index) => (
         <Brand
-          defaultValue={{ BrandName: record.BrandName }}
-          onChange={({ label }) => {
-            this.codeChange(label, record, index, 'BrandName');
+          keyType="Name"
+          onChange={value => {
+            this.codeChange(value, record, index, 'BrandName');
           }}
         />
       ),
@@ -68,14 +77,21 @@ class AddSKU extends React.Component {
     {
       title: '采购员',
       width: 150,
-      dataIndex: 'PurchaserName',
-      render: (text, record, index) => (
-        <Staffs
-          onChange={staffs => {
-            this.codeChange(staffs, record, index, 'PurchaserName');
-          }}
-        />
-      ),
+      dataIndex: 'Purchaser',
+      render: (text, record, index) => {
+        const {
+          global: { Purchaser },
+        } = this.props;
+        return (
+          <MDMCommonality
+            onChange={value => {
+              this.codeChange(value, record, index, 'Purchaser');
+            }}
+            initialValue={text}
+            data={Purchaser}
+          />
+        );
+      },
     },
     {
       title: '数量',
@@ -133,16 +149,6 @@ class AddSKU extends React.Component {
     {
       title: '上架状态',
       width: 100,
-      selectList: [
-        {
-          lable: '是',
-          value: '1',
-        },
-        {
-          lable: '否',
-          value: '2',
-        },
-      ],
       dataIndex: 'Putaway',
       render: (text, record, index) => (
         <Select
@@ -169,6 +175,7 @@ class AddSKU extends React.Component {
       dataIndex: 'HSCode',
       render: (text, record, index) => (
         <HSCode
+          initialValue={text}
           onChange={hsCode => {
             this.codeChange(hsCode, record, index, 'HSCode');
           }}
@@ -182,6 +189,7 @@ class AddSKU extends React.Component {
       dataIndex: 'FHSCode',
       render: (text, record, index) => (
         <FHSCode
+          initialValue={text}
           onChange={hsCode => {
             this.codeChange(hsCode, record, index, 'FHSCode');
           }}
@@ -194,6 +202,7 @@ class AddSKU extends React.Component {
       dataIndex: 'SPUCode',
       render: (text, record, index) => (
         <SPUCode
+          initialValue={text}
           onChange={hsCode => {
             this.codeChange(hsCode, record, index, 'SPUCode');
           }}
@@ -218,21 +227,25 @@ class AddSKU extends React.Component {
     },
   ];
 
+  componentDidMount() {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'global/getMDMCommonality',
+      payload: {
+        Content: {
+          CodeList: ['Purchaser', 'WhsCode'],
+        },
+      },
+    });
+  }
+
   deleteLine = (record, index) => {
     const { TI_Z00901 } = this.state;
     TI_Z00901.splice(index, 1);
     this.setState({ TI_Z00901 });
   };
 
-  categoryChange = (selectedOptions, record, index) => {
-    const category = {
-      Cate1Name: selectedOptions[0].Name,
-      Cate2Name: selectedOptions[1].Name,
-      Cate3Name: selectedOptions[2].Name,
-      Category1: selectedOptions[0].Code,
-      Category2: selectedOptions[1].Code,
-      Category3: selectedOptions[2].Code,
-    };
+  categoryChange = (category, record, index) => {
     const { TI_Z00901 } = this.state;
     TI_Z00901[index] = { ...record, ...category };
     this.setState({ TI_Z00901 });
@@ -241,6 +254,7 @@ class AddSKU extends React.Component {
   codeChange = (value, row, index, key) => {
     // eslint-disable-next-line no-param-reassign
     row[key] = value;
+    row.Name = row.BrandName + row.ProductName + row.Parameters + row.Package;
     const { TI_Z00901 } = this.state;
     TI_Z00901[index] = row;
     this.setState({ TI_Z00901 });
@@ -249,7 +263,9 @@ class AddSKU extends React.Component {
   rowChange = record => {
     const { TI_Z00901 } = this.state;
     TI_Z00901.map(item => {
+      item.Name = item.BrandName + item.ProductName + item.Parameters + item.Package;
       if (item.key === record.key) {
+        record.Name = record.BrandName + record.ProductName + record.Parameters + record.Package;
         return record;
       }
       return item;
@@ -320,7 +336,7 @@ class AddSKU extends React.Component {
         <EditableFormTable
           rowChange={this.rowChange}
           rowKey="LineID"
-          scroll={{ x: 2100 }}
+          scroll={{ x: 2600 }}
           columns={this.skuColumns}
           data={TI_Z00901}
         />

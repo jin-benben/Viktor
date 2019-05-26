@@ -5,7 +5,7 @@ export default {
   namespace: 'global',
 
   state: {
-    collapsed: false,
+    collapsed: true,
     notices: [],
     Saler: [], // 销售员
     Purchaser: [], // 采购员
@@ -90,6 +90,7 @@ export default {
 
   reducers: {
     changeLayoutCollapsed(state, { payload }) {
+      console.log(payload);
       return {
         ...state,
         collapsed: payload,

@@ -2,7 +2,19 @@ import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
 import moment from 'moment';
-import { Row, Col, Card, Form, Input, Button, Divider, Select, DatePicker, Icon } from 'antd';
+import {
+  Row,
+  Col,
+  Card,
+  Form,
+  Input,
+  Button,
+  Divider,
+  Select,
+  Badge,
+  DatePicker,
+  Icon,
+} from 'antd';
 import StandardTable from '@/components/StandardTable';
 import MDMCommonality from '@/components/Select';
 import DocEntryFrom from '@/components/DocEntryFrom';
@@ -47,10 +59,16 @@ class SalesQuotation extends PureComponent {
     {
       title: '单据状态',
       width: 100,
-      dataIndex: 'Status',
-      render: (text, record) => (
+      dataIndex: 'DocStatus',
+      render: text => (
         <Fragment>
-          <span>{record.DocStatus === 'O' ? '未报价' : '已报价'}</span>
+          <span>
+            {text === 'O' ? (
+              <Badge color="green" text="未报价" />
+            ) : (
+              <Badge color="blue" text="已报价" />
+            )}
+          </span>
         </Fragment>
       ),
     },
@@ -109,8 +127,7 @@ class SalesQuotation extends PureComponent {
     {
       title: '利润',
       width: 100,
-      dataIndex: 'profit',
-      render: text => <span>{`${0}`}</span>,
+      dataIndex: 'ProfitTotal',
     },
     {
       title: '备注',

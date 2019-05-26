@@ -193,6 +193,11 @@ class orderLine extends PureComponent {
     },
   ];
 
+  componentDidMount() {
+    const { onRef } = this.props;
+    onRef(this);
+  }
+
   static getDerivedStateFromProps(nextProps, prevState) {
     const { queryData } = prevState;
     if (nextProps.SearchText !== queryData.SearchText) {
@@ -284,6 +289,7 @@ class orderLine extends PureComponent {
       form: { getFieldDecorator },
       global: { Saler },
     } = this.props;
+    const { queryData } = this.state;
     const formLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 18 },
@@ -316,7 +322,9 @@ class orderLine extends PureComponent {
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={6} sm={24}>
             <FormItem key="SearchText" label="客户名称" {...formLayout}>
-              {getFieldDecorator('SearchText')(<Input placeholder="请输入客户名称" />)}
+              {getFieldDecorator('SearchText', { initialValue: queryData.Content.SearchText })(
+                <Input placeholder="请输入客户名称" />
+              )}
             </FormItem>
           </Col>
           <Col md={6} sm={24}>

@@ -167,7 +167,7 @@ class SKUModal extends PureComponent {
     const { modalVisible, handleModalVisible } = this.props;
     return (
       <Modal
-        width={800}
+        width={1000}
         title="物料选择"
         visible={modalVisible}
         onOk={this.okHandle}

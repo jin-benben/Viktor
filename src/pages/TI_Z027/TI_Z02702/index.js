@@ -28,12 +28,12 @@ import MDMCommonality from '@/components/Select';
 import StandardTable from '@/components/StandardTable';
 import EditableFormTable from '@/components/EditableFormTable';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
-import UpdateLoad from '../../inquiry/components/modal';
+import UpdateLoad from '../../TI_Z026/components/modal';
 import SKUModal from '@/components/Modal/SKU';
 import Address from '@/components/Address';
 import Staffs from '@/components/Staffs';
 import Brand from '@/components/Brand';
-import LinkMan from '../../inquiry/components/linkman';
+import LinkMan from '../../TI_Z026/components/linkman';
 import CompanySelect from '@/components/Company/index';
 import { checkPhone, chechEmail } from '@/utils/utils';
 
