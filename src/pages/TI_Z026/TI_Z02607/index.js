@@ -318,7 +318,7 @@ class orderLine extends PureComponent {
 
   handleOnRow = record => ({
     // 详情or修改
-    onClick: () => router.push(`/inquiry/detail?DocEntry=${record.DocEntry}`),
+    onClick: () => router.push(`/TI_Z026/TI_Z02602?DocEntry=${record.DocEntry}`),
   });
 
   onSelectRow = selectedRows => {

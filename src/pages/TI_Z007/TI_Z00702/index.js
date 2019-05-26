@@ -130,7 +130,7 @@ class supplierSearch extends PureComponent {
 
   handleOnRow = record => ({
     // 详情or修改
-    onClick: () => router.push(`/supplier/edit?Code=${record.Code}`),
+    onClick: () => router.push(`/TI_Z007/TI_Z00703?Code=${record.Code}`),
   });
 
   renderSimpleForm() {

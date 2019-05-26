@@ -174,8 +174,8 @@ export default {
         {
           name: '权限定义',
           icon: 'iconquanxian',
-          path: '/TI_Z0013',
-          component: './TI_Z0013',
+          path: '/TI_Z013',
+          component: './TI_Z013',
         },
         {
           name: '用户查询',
@@ -229,7 +229,7 @@ export default {
               component: './TI_Z026/TI_Z02607',
             },
             {
-              name: '客户询价单编辑',
+              name: '客户询价单添加',
               path: '/TI_Z026/TI_Z02601',
               component: './TI_Z026/TI_Z02601',
             },
@@ -238,7 +238,7 @@ export default {
               icon: 'smile',
               path: '/TI_Z026/TI_Z02602',
               hideInMenu: true,
-              component: './TI_Z026/TI_Z02602',
+              component: './TI_Z026/TI_Z02601',
             }
           ]
         },
