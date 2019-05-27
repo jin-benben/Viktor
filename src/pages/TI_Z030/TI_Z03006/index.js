@@ -58,16 +58,6 @@ class SalesQuotation extends PureComponent {
     },
     {
       title: '单据状态',
-      width: 100,
-      dataIndex: 'Status',
-      render: (text, record) => (
-        <Fragment>
-          <span>{record.DocStatus}</span>
-        </Fragment>
-      ),
-    },
-    {
-      title: '单据状态',
       dataIndex: 'Status',
       width: 100,
       render: (text, record) => (
@@ -382,7 +372,8 @@ class SalesQuotation extends PureComponent {
       SalesQuotation: { SalesQuotationList, pagination },
       loading,
     } = this.props;
-    const tableWidth = document.body.offsetWidth < 1500 ? 1500 : 0;
+    const tableWidth = document.body.offsetWidth < 1500 ? 1900 : 0;
+    console.log(tableWidth);
     return (
       <Fragment>
         <Card title="销售合同查询" bordered={false}>

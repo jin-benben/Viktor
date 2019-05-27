@@ -584,7 +584,7 @@ class CompanyEdit extends PureComponent {
 
         {formVals.Code ? (
           <Fragment>
-            <Tabs tabBarExtraContent={this.rightButton(tabIndex)} onChange={this.tabChange}>
+            <Tabs onChange={this.tabChange}>
               <TabPane tab="联系人" key="1">
                 <StandardTable
                   data={{ list: formVals.TI_Z00602List }}
@@ -614,9 +614,12 @@ class CompanyEdit extends PureComponent {
         ) : null}
         <FooterToolbar>
           {formVals.Code ? (
-            <Button onClick={this.updateHandle} type="primary">
-              更新
-            </Button>
+            <Fragment>
+              {this.rightButton(tabIndex)}
+              <Button onClick={this.updateHandle} type="primary">
+                更新
+              </Button>
+            </Fragment>
           ) : (
             <Button onClick={this.saveHandle} type="primary">
               保存

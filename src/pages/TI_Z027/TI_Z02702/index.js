@@ -31,7 +31,6 @@ import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import UpdateLoad from '../../TI_Z026/components/modal';
 import SKUModal from '@/components/Modal/SKU';
 import Address from '@/components/Address';
-import Staffs from '@/components/Staffs';
 import Brand from '@/components/Brand';
 import LinkMan from '../../TI_Z026/components/linkman';
 import CompanySelect from '@/components/Company/index';
@@ -708,12 +707,14 @@ class InquiryEdit extends React.Component {
 
   cancelSubmit = ClosedComment => {
     const { dispatch } = this.props;
-    const { formVals } = this.state;
+    const {
+      formVals: { DocEntry },
+    } = this.state;
     dispatch({
       type: 'supplierAskDetail/cancel',
       payload: {
         Content: {
-          DocEntry: formVals.DocEntry,
+          DocEntry,
           ClosedComment,
         },
       },
@@ -728,6 +729,7 @@ class InquiryEdit extends React.Component {
   render() {
     const {
       form: { getFieldDecorator },
+      global: { Saler },
     } = this.props;
     const {
       formVals,
@@ -865,7 +867,7 @@ class InquiryEdit extends React.Component {
                   {getFieldDecorator('Owner', {
                     initialValue: formVals.Owner,
                     rules: [{ required: true, message: '请选择所有人！' }],
-                  })(<Staffs initialValue={formVals.Owner} />)}
+                  })(<MDMCommonality initialValue={formVals.Owner} data={Saler} />)}
                 </FormItem>
               </Col>
               <Col lg={8} md={12} sm={24}>

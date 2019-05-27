@@ -40,9 +40,10 @@ const { TextArea } = Input;
 const { TabPane } = Tabs;
 const FormItem = Form.Item;
 const { Option } = Select;
-@connect(({ TI_Z029, loading, global }) => ({
+@connect(({ TI_Z029, loading, global, user }) => ({
   TI_Z029,
   global,
+  user,
   loading: loading.models.TI_Z029,
 }))
 @Form.create()
@@ -87,7 +88,7 @@ class TI_Z029Component extends React.Component {
       render: (text, record, index) =>
         record.lastIndex ? null : (
           <Brand
-            defaultValue={record.BrandName}
+            initialValue={record.BrandName}
             keyType="Name"
             onChange={value => {
               this.rowSelectChange(value, record, index, 'BrandName');
@@ -401,7 +402,9 @@ class TI_Z029Component extends React.Component {
     const {
       dispatch,
       location: { query },
+      user,
     } = this.props;
+    console.log(user);
     if (query.DocEntry) {
       dispatch({
         type: 'TI_Z029/fetch',
@@ -707,97 +710,90 @@ class TI_Z029Component extends React.Component {
 
   // 添加行
   addLineSKU = selectedRows => {
-    console.log(selectedRows);
-    // selectedRows.map(item=>{
-    //   const {
-    //     LineComment,
-    //     SourceType,
-    //     BaseEntry,
-    //     "BaseLineID": 0,
-    //     "SKU": "",
-    //     "SKUName": "",
-    //     "BrandName": "",
-    //     "ProductName": "",
-    //     "ManufactureNO": "",
-    //     "Parameters": "",
-    //     "Package": "",
-    //     "Purchaser": "",
-    //     "Quantity": 0,
-    //     "Unit": "",
-    //     "DueDate": "",
-    //     "InquiryPrice": 0,
-    //     "Price": 0,
-    //     "InquiryDueDate": "",
-    //     "InquiryComment": "",
-    //     "InquiryLineTotal": 0,
-    //     "InquiryLineTotalLocal": 0,
-    //     "LineTotal": 0,
-    //     "OtherTotal": 0,
-    //     "Currency": "",
-    //     "DocRate": 0,
-    //     "SupplierCode": "",
-    //     "SupplierName": "",
-    //     "InquiryCfmDate": "",
-    //     "InquiryCfmUser": "",
-    //     "Contacts": "",
-    //     "WhsCode": "",
-    //      } =item
-    // })
-
-    const mockobj = {
-      DocEntry: 1,
-      LineID: 1,
-      CreateDate: '2019-05-25T08:49:52.929Z',
-      UpdateDate: '2019-05-25T08:49:52.929Z',
-
-      UpdateUser: 'string',
-      LineComment: 'string',
-      ApproveSts: 'string',
-      ApproveBy: 'string',
-      ApproveDate: '2019-05-25T08:49:52.929Z',
-      LineStatus: 'string',
-      Closed: 'string',
-      ClosedBy: 'string',
-      ClosedDate: '2019-05-25T08:49:52.929Z',
-      ClosedComment: 'string',
-      SourceType: 'string',
-      BaseEntry: 263,
-      BaseLineID: 2,
-      SKU: 'string',
-      SKUName: 'string',
-      BrandName: 'string',
-      ProductName: 'string',
-      ManufactureNO: 'string',
-      Parameters: 'string',
-      Package: 'string',
-      Purchaser: 'string',
-      Quantity: 5,
-      Unit: 'string',
-      DueDate: '2019-05-25T08:49:52.929Z',
-      InquiryPrice: 3,
-      Price: 6,
-      InquiryDueDate: '2019-05-25T08:49:52.929Z',
-      InquiryComment: 'string',
-      InquiryLineTotal: 0,
-      InquiryLineTotalLocal: 0,
-      LineTotal: 0,
-      OtherTotal: 1,
-      ProfitLineTotal: 0,
-      Currency: 'string',
-      DocRate: 1,
-      SupplierCode: 'string',
-      SupplierName: 'string',
-      InquiryCfmDate: '2019-05-25T08:49:52.929Z',
-      InquiryCfmUser: 'string',
-      Contacts: 'string',
-      LineFlag: 'string',
-      WhsCode: 'string',
-      ...selectedRows[0],
-      CreateUser: 'string',
-    };
+    const {
+      user: { currentUser },
+    } = this.props;
     const { formVals } = this.state;
-    // ...formVals.TI_Z02902,...selectedRows,
-    formVals.TI_Z02902 = [mockobj];
+    let newLineID = 1;
+    if (formVals.TI_Z02902.length) {
+      newLineID = formVals.TI_Z02902[formVals.TI_Z02902.length - 1].LineID + 1;
+    }
+    console.log(currentUser.UserCode);
+    selectedRows.map(item => {
+      const {
+        LineComment,
+        SourceType,
+        SKU,
+        SKUName,
+        BrandName,
+        ProductName,
+        ManufactureNO,
+        Parameters,
+        Package,
+        Purchaser,
+        Quantity,
+        Unit,
+        DueDate,
+        InquiryPrice,
+        Price,
+        InquiryDueDate,
+        InquiryComment,
+        InquiryLineTotal,
+        InquiryLineTotalLocal,
+        LineTotal,
+        OtherTotal,
+        Currency,
+        DocRate,
+        SupplierCode,
+        SupplierName,
+        InquiryCfmDate,
+        InquiryCfmUser,
+        Contacts,
+        WhsCode,
+        LineID,
+        DocEntry,
+      } = item;
+      formVals.TI_Z02902.push({
+        BaseEntry: DocEntry,
+        BaseLineID: LineID,
+        LineComment,
+        SourceType,
+        SKU,
+        SKUName,
+        BrandName,
+        ProductName,
+        ManufactureNO,
+        Parameters,
+        Package,
+        Purchaser,
+        Quantity,
+        Unit,
+        DueDate,
+        InquiryPrice,
+        Price,
+        InquiryDueDate,
+        InquiryComment,
+        InquiryLineTotal,
+        InquiryLineTotalLocal,
+        LineTotal,
+        OtherTotal: OtherTotal || 0,
+        Currency,
+        DocRate,
+        SupplierCode,
+        SupplierName,
+        InquiryCfmDate,
+        InquiryCfmUser,
+        Contacts,
+        WhsCode,
+        CreateUser: currentUser.UserCode,
+        CreateDate: formVals.CreateDate || new Date(),
+        LineID: newLineID,
+        ApproveSts: 'O',
+        LineStatus: 'O',
+        Closed: 'N',
+        ClosedBy: 'P001',
+      });
+    });
     this.setState({ formVals, orderModalVisible: false }, () => {
       this.getTotal();
     });
@@ -805,7 +801,11 @@ class TI_Z029Component extends React.Component {
 
   saveHandle = () => {
     // 保存主数据
-    const { form, dispatch } = this.props;
+    const {
+      form,
+      dispatch,
+      user: { currentUser },
+    } = this.props;
     const { formVals } = this.state;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
@@ -827,14 +827,14 @@ class TI_Z029Component extends React.Component {
             DueDate: fieldsValue.DueDate ? fieldsValue.DueDate.format('YYYY-MM-DD') : '',
             ToDate: fieldsValue.ToDate ? fieldsValue.ToDate.format('YYYY-MM-DD') : '',
             DocDate: fieldsValue.DocDate ? fieldsValue.DocDate.format('YYYY-MM-DD') : '',
-            ClosedDate: '2019-05-25',
-            CreateUser: 'P0001',
+            CreateUser: currentUser.UserCode,
+            ClosedDate: new Date(),
           },
         },
         callback: response => {
           if (response.Status === 200) {
             message.success('添加成功');
-            router.push(`/inquiry/detail?DocEntry=${response.Content.DocEntry}`);
+            router.push(`/TI_Z029/detail?DocEntry=${response.Content.DocEntry}`);
           }
         },
       });
@@ -843,7 +843,11 @@ class TI_Z029Component extends React.Component {
 
   // 更新主数据
   updateHandle = () => {
-    const { form, dispatch } = this.props;
+    const {
+      form,
+      dispatch,
+      user: { currentUser },
+    } = this.props;
     const { formVals } = this.state;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
@@ -865,7 +869,7 @@ class TI_Z029Component extends React.Component {
             DueDate: fieldsValue.DueDate ? fieldsValue.DueDate.format('YYYY-MM-DD') : '',
             ToDate: fieldsValue.ToDate ? fieldsValue.ToDate.format('YYYY-MM-DD') : '',
             DocDate: fieldsValue.DocDate ? fieldsValue.DocDate.format('YYYY-MM-DD') : '',
-            CreateUser: 'P0001',
+            UpdateUser: currentUser.UserCode,
           },
         },
         callback: response => {
@@ -880,12 +884,15 @@ class TI_Z029Component extends React.Component {
   // 取消单据
   cancelSubmit = ClosedComment => {
     const { dispatch } = this.props;
-    const { formVals } = this.state;
+    const {
+      formVals: { UpdateTimestamp, DocEntry },
+    } = this.state;
     dispatch({
       type: 'TI_Z029/cancel',
       payload: {
         Content: {
-          DocEntry: formVals.DocEntry,
+          DocEntry,
+          UpdateTimestamp,
           ClosedComment,
         },
       },
@@ -900,9 +907,11 @@ class TI_Z029Component extends React.Component {
   // 发送需询价
   submitNeedLine = select => {
     const { dispatch } = this.props;
+    const { formVals } = this.state;
     const TI_Z02908RequestItem = select.map(item => ({
       DocEntry: item.DocEntry,
       LineID: item.LineID,
+      UpdateTimestamp: formVals.UpdateTimestamp,
     }));
     dispatch({
       type: 'TI_Z029/confirm',

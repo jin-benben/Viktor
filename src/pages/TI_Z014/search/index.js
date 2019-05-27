@@ -159,26 +159,26 @@ class inquiryList extends PureComponent {
     };
     return (
       <Form onSubmit={this.handleSearch} {...formItemLayout} layout="inline">
-        <Row gutter={{ md: 8, lg: 24, xl: 48 }} className="submitButtons">
-          <Col md={6} sm={24}>
-            <FormItem key="SearchText" label="角色名称" {...formLayout}>
-              {getFieldDecorator('SearchText')(<Input placeholder="请输入角色名称" />)}
+        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
+          <Col md={5} sm={24}>
+            <FormItem>
+              {getFieldDecorator('SearchText')(<Input placeholder="请输入关键字" />)}
             </FormItem>
-            <FormItem key="searchBtn" {...searchFormItemLayout}>
-              <span>
-                <Button type="primary" htmlType="submit">
-                  查询
-                </Button>
-                <Button
-                  icon="plus"
-                  style={{ marginLeft: 8 }}
-                  type="primary"
-                  onClick={() => router.push('/TI_Z014/edit')}
-                >
-                  新建
-                </Button>
-              </span>
-            </FormItem>
+          </Col>
+          <Col md={8} sm={24}>
+            <span className="submitButtons">
+              <Button type="primary" htmlType="submit">
+                查询
+              </Button>
+              <Button
+                icon="plus"
+                style={{ marginLeft: 8 }}
+                type="primary"
+                onClick={() => router.push('/TI_Z014/edit')}
+              >
+                新建
+              </Button>
+            </span>
           </Col>
         </Row>
       </Form>

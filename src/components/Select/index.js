@@ -30,7 +30,6 @@ class MDMCommonality extends PureComponent {
 
   render() {
     const { value, data } = this.state;
-    console.log(value);
     return (
       <Select
         value={value}

@@ -5,8 +5,6 @@ import { Row, Col, Card, Form, Input, Button } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import { getName } from '@/utils/utils';
 
-import styles from './style.less';
-
 const FormItem = Form.Item;
 
 /* eslint react/no-multi-comp:0 */
@@ -140,14 +138,14 @@ class supplierSearch extends PureComponent {
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={8} sm={24}>
-            <FormItem label="客户名称">
-              {getFieldDecorator('SearchText')(<Input placeholder="请输入客户名称" />)}
+          <Col md={5} sm={24}>
+            <FormItem>
+              {getFieldDecorator('SearchText')(<Input placeholder="请输入关键字" />)}
             </FormItem>
           </Col>
 
           <Col md={8} sm={24}>
-            <span className={styles.submitButtons}>
+            <span className="submitButtons">
               <Button type="primary" htmlType="submit">
                 查询
               </Button>
@@ -155,7 +153,7 @@ class supplierSearch extends PureComponent {
                 icon="plus"
                 style={{ marginLeft: 8 }}
                 type="primary"
-                onClick={() => router.push('/supplier/edit')}
+                onClick={() => router.push('/TI_Z007/TI_Z00701')}
               >
                 新建
               </Button>
@@ -175,8 +173,8 @@ class supplierSearch extends PureComponent {
     return (
       <Fragment>
         <Card bordered={false}>
-          <div className={styles.supplierSearch}>
-            <div className={styles.tableListForm}>{this.renderSimpleForm()}</div>
+          <div className="tableList">
+            <div className="tableListForm">{this.renderSimpleForm()}</div>
             <StandardTable
               loading={loading}
               data={{ list: supplierList }}

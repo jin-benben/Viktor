@@ -266,9 +266,7 @@ class Organization extends PureComponent {
 
           <Row>
             <Col lg={12} md={12} sm={24}>
-              <Tree className="trees" defaultExpandAll>
-                {this.renderTreeNodes(treeData)}
-              </Tree>
+              <Tree className="trees">{this.renderTreeNodes(treeData)}</Tree>
             </Col>
           </Row>
           {<CreateForm {...parentMethods} formVals={singleInfo} modalVisible={modalVisible} />}

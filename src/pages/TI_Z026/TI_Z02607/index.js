@@ -77,14 +77,14 @@ class orderLine extends PureComponent {
           ) : (
             <Fragment>
               <span>
-                {record.SDocStatus === 'O' ? (
+                {record.SLineStatus === 'O' ? (
                   <Badge color="green" text="未报价" />
                 ) : (
                   <Badge color="blue" text="已报价" />
                 )}
               </span>
               <span>
-                {record.PDocStatus === 'O' ? (
+                {record.PLineStatus === 'O' ? (
                   <Badge color="green" text="未询价" />
                 ) : (
                   <Badge color="blue" text="已询价" />
@@ -284,12 +284,13 @@ class orderLine extends PureComponent {
         DocDateFrom = moment(fieldsValue.dateArr[0]).format('YYYY-MM-DD');
         DocDateTo = moment(fieldsValue.dateArr[1]).format('YYYY-MM-DD');
       }
+      console.log(fieldsValue.IsInquiry);
       const queryData = {
         ...fieldsValue,
         DocDateFrom,
         DocDateTo,
         ...fieldsValue.orderNo,
-        IsInquiry: fieldsValue.fieldsValue && fieldsValue.fieldsValue ? 'Y' : 'N',
+        IsInquiry: fieldsValue.IsInquiry && fieldsValue.IsInquiry ? 'N' : 'Y',
       };
       dispatch({
         type: 'orderLine/fetch',

@@ -194,7 +194,7 @@ class TI_Z02803 extends PureComponent {
                   icon="plus"
                   style={{ marginLeft: 8 }}
                   type="primary"
-                  onClick={() => router.push('/inquiry/edit')}
+                  onClick={() => router.push('/TI_Z028/TI_Z02801')}
                 >
                   新建
                 </Button>

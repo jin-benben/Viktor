@@ -1,15 +1,18 @@
 import React, { PureComponent } from 'react';
 import { Table, Input, Select, DatePicker, Form } from 'antd';
+import moment from 'moment';
 
 const { Option } = Select;
 const { TextArea } = Input;
 class EditableCell extends PureComponent {
   getInput = (dataIndex, record) => {
     const { inputType } = this.props;
+    const defaultValue = record[dataIndex];
     switch (inputType) {
       case 'date':
         return (
           <DatePicker
+            defaultValue={defaultValue ? moment(defaultValue, 'YYYY-MM-DD') : null}
             onChange={(date, dateString) => this.dateChange(dateString, dataIndex, record)}
           />
         );
@@ -18,7 +21,7 @@ class EditableCell extends PureComponent {
       case 'select':
         return (
           <Select
-            value={record[dataIndex]}
+            value={defaultValue}
             style={{ width: 120 }}
             onChange={value => this.selectChange(value, dataIndex, record)}
           >
@@ -29,7 +32,7 @@ class EditableCell extends PureComponent {
         );
       default:
         return (
-          <Input onChange={e => this.InputChange(e, dataIndex, record)} value={record[dataIndex]} />
+          <Input onChange={e => this.InputChange(e, dataIndex, record)} value={defaultValue} />
         );
     }
   };

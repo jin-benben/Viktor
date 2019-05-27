@@ -105,6 +105,7 @@ export default {
             {
               path: '/TI_Z007/TI_Z00703',
               name: '供应商详情',
+              hideInMenu: true,
               component: './TI_Z007/TI_Z00701',
             },
             {
@@ -259,7 +260,7 @@ export default {
             },
             {
               name: '采购询价确认编辑',
-              path: '/TI_Z028/TI_Z028',
+              path: '/TI_Z028/TI_Z02801',
               component: './TI_Z028/TI_Z02801',
             },
             {
@@ -423,12 +424,12 @@ export default {
           path: '/code',
           routes:[
             {
-              name: 'hscode',
+              name: '国内海关编码',
               path: '/code/hscode',
               component: './code/hscode',
             },
             {
-              name: 'fhscode',
+              name: '国外海关编码',
               path: '/code/fhscode',
               component: './code/fhscode',
             }

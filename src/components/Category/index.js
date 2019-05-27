@@ -5,10 +5,20 @@ import { Cascader } from 'antd';
 class CategoryCascader extends React.Component {
   state = {
     options: [],
+    value: [],
   };
 
   componentDidMount() {
     this.getCategory();
+  }
+
+  static getDerivedStateFromProps(nextProps, prevState) {
+    if (nextProps.initialValue !== prevState.value) {
+      return {
+        value: nextProps.initialValue,
+      };
+    }
+    return null;
   }
 
   // eslint-disable-next-line consistent-return
@@ -27,6 +37,7 @@ class CategoryCascader extends React.Component {
 
   handleChange = (value, selectedOptions) => {
     const { onChange } = this.props;
+    this.setState({ value });
     let category;
     if (selectedOptions.length === 3) {
       category = {
@@ -44,13 +55,13 @@ class CategoryCascader extends React.Component {
   };
 
   render() {
-    const { options } = this.state;
-    const { initialValue } = this.props;
-    console.log(initialValue);
+    const { options, value } = this.state;
+
     return (
       <Cascader
         options={options}
-        defaultValue={initialValue}
+        value={value}
+        style={{ width: '100%' }}
         placeholder="请选择分类"
         fieldNames={{ label: 'Name', value: 'Code', children: 'children' }}
         onChange={this.handleChange}

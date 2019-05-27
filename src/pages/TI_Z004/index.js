@@ -6,7 +6,6 @@ import StandardTable from '@/components/StandardTable';
 import Organization from '@/components/Organization';
 import MDMCommonality from '@/components/Select';
 
-import styles from './style.less';
 import { checkPhone, chechEmail, getName } from '@/utils/utils';
 
 const FormItem = Form.Item;
@@ -460,14 +459,13 @@ class Staffs extends PureComponent {
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={8} sm={24}>
-            <FormItem label="员工姓名">
-              {getFieldDecorator('SearchText')(<Input placeholder="请输入" />)}
+          <Col md={5} sm={24}>
+            <FormItem>
+              {getFieldDecorator('SearchText')(<Input placeholder="请输入关键字" />)}
             </FormItem>
           </Col>
-
           <Col md={8} sm={24}>
-            <span className={styles.submitButtons}>
+            <span className="submitButtons">
               <Button type="primary" htmlType="submit">
                 查询
               </Button>
@@ -499,8 +497,8 @@ class Staffs extends PureComponent {
     return (
       <Fragment>
         <Card bordered={false}>
-          <div className={styles.tableList}>
-            <div className={styles.tableListForm}>{this.renderSimpleForm()}</div>
+          <div className="tableList">
+            <div className="tableListForm">{this.renderSimpleForm()}</div>
             <StandardTable
               loading={loading}
               data={{ list: staffsList }}

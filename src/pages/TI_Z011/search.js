@@ -112,7 +112,7 @@ class CreateForm extends PureComponent {
           <FormItem key="BrandName" {...this.formLayout} label="品牌">
             {getFieldDecorator('BrandName', {
               initialValue: formVals.BrandName,
-            })(<Brand keyType="Name" />)}
+            })(<Brand initialValue={formVals.BrandName} keyType="Name" />)}
           </FormItem>
         </Form>
       </Modal>
@@ -295,11 +295,13 @@ class SkuFetchComponent extends PureComponent {
     return (
       <Form onSubmit={this.handleSearch} {...formItemLayout} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col className="submitButtons">
-            <FormItem key="SearchText" label="SPU名称" {...formLayout}>
-              {getFieldDecorator('SearchText')(<Input placeholder="请输入SPU名称" />)}
-            </FormItem>
+          <Col md={5} sm={24}>
             <FormItem>
+              {getFieldDecorator('SearchText')(<Input placeholder="请输入关键字" />)}
+            </FormItem>
+          </Col>
+          <Col md={8} sm={24}>
+            <span className="submitButtons">
               <Button type="primary" htmlType="submit">
                 查询
               </Button>
@@ -307,11 +309,11 @@ class SkuFetchComponent extends PureComponent {
                 icon="plus"
                 style={{ marginLeft: 8 }}
                 type="primary"
-                onClick={() => router.push('/spu/add')}
+                onClick={() => router.push('/TI_Z011/TI_Z01101')}
               >
                 新建
               </Button>
-            </FormItem>
+            </span>
           </Col>
         </Row>
       </Form>

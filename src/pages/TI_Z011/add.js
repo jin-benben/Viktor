@@ -21,11 +21,11 @@ class AddSKU extends React.Component {
       title: '行号',
       dataIndex: 'LineID',
       fixed: 'left',
-      width: 50,
+      width: 100,
     },
     {
       title: '品牌',
-      width: 150,
+      width: 200,
       dataIndex: 'BrandName',
       render: (text, record, index) => (
         <Brand
@@ -40,26 +40,25 @@ class AddSKU extends React.Component {
       title: '名称',
       dataIndex: 'ProductName',
       inputType: 'text',
-      width: 150,
       editable: true,
     },
     {
       title: '单位',
-      width: 100,
       dataIndex: 'Unit',
       editable: true,
     },
     {
       title: '产地',
-      width: 100,
       dataIndex: 'ManLocation',
       editable: true,
     },
     {
       title: '分类',
+      width: 300,
       dataIndex: 'category',
       render: (text, record, index) => (
         <Category
+          initialValue={[record.Category1, record.Category2, record.Category3]}
           onChange={selectedOptions => {
             this.categoryChange(selectedOptions, record, index);
           }}
@@ -92,16 +91,8 @@ class AddSKU extends React.Component {
   };
 
   categoryChange = (selectedOptions, record, index) => {
-    const category = {
-      Cate1Name: selectedOptions[0].Name,
-      Cate2Name: selectedOptions[1].Name,
-      Cate3Name: selectedOptions[2].Name,
-      Category1: selectedOptions[1].Code,
-      Category2: selectedOptions[2].Code,
-      Category3: selectedOptions[3].Code,
-    };
     const { TI_Z01101 } = this.state;
-    TI_Z01101[index] = { ...record, ...category };
+    TI_Z01101[index] = { ...record, ...selectedOptions };
     this.setState({ TI_Z01101 });
   };
 
@@ -164,7 +155,7 @@ class AddSKU extends React.Component {
     const { TI_Z01101 } = this.state;
     const { loading } = this.props;
     return (
-      <Card title="物料添加">
+      <Card title="SPU添加">
         <Button icon="plus" onClick={this.addLine} style={{ marginBottom: 20 }} type="primary">
           添加行
         </Button>

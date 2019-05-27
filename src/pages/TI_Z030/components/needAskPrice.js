@@ -12,7 +12,6 @@ import { getName } from '@/utils/utils';
 class OrderLine extends PureComponent {
   state = {
     data: [],
-    selectedRows: [],
   };
 
   skuColumns = [
@@ -146,36 +145,21 @@ class OrderLine extends PureComponent {
     if (nextProps.data !== prevState.data) {
       return {
         data: nextProps.data,
-        selectedRows: nextProps.data,
       };
     }
     return null;
   }
 
-  okHandle = () => {
-    const { selectedRows } = this.state;
-    const { handleSubmit } = this.props;
-    if (selectedRows.length) {
-      handleSubmit(selectedRows);
-    } else {
-      message.warning('请先选择');
-    }
-  };
-
-  onSelectRow = selectedRows => {
-    this.setState({ selectedRows: [...selectedRows] });
-  };
-
   render() {
-    const { modalVisible, handleModalVisible } = this.props;
-    const { data, selectedRows } = this.state;
+    const { modalVisible, handleSubmit, handleModalVisible } = this.props;
+    const { data } = this.state;
     return (
       <Modal
         width={1200}
         destroyOnClose
         title="确认选择"
         visible={modalVisible}
-        onOk={this.okHandle}
+        onOk={() => handleSubmit()}
         onCancel={() => handleModalVisible()}
       >
         <div className="tableList">
@@ -184,11 +168,6 @@ class OrderLine extends PureComponent {
             rowKey="Key"
             columns={this.skuColumns}
             scroll={{ x: 2000 }}
-            rowSelection={{
-              onSelectRow: this.onSelectRow,
-            }}
-            isAll
-            selectedRows={selectedRows}
             onChange={this.handleStandardTableChange}
           />
         </div>

@@ -136,11 +136,13 @@ class SkuFetchComponent extends PureComponent {
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col className="submitButtons">
-            <FormItem key="SearchText" label="SKU名称" {...formLayout}>
-              {getFieldDecorator('SearchText')(<Input placeholder="请输入SKU名称" />)}
-            </FormItem>
+          <Col md={5} sm={24}>
             <FormItem>
+              {getFieldDecorator('SearchText')(<Input placeholder="请输入关键字" />)}
+            </FormItem>
+          </Col>
+          <Col md={8} sm={24}>
+            <span className="submitButtons">
               <Button type="primary" htmlType="submit">
                 查询
               </Button>
@@ -152,7 +154,7 @@ class SkuFetchComponent extends PureComponent {
               >
                 新建
               </Button>
-            </FormItem>
+            </span>
           </Col>
         </Row>
       </Form>

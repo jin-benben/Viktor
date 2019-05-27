@@ -27,12 +27,12 @@ import StandardTable from '@/components/StandardTable';
 import EditableFormTable from '@/components/EditableFormTable';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import UpdateLoad from '../components/modal';
-import SKUModal from '@/components/Modal/SKU';
+import AskPriceFetch from '../components/askPriceFetch';
 import Address from '@/components/Address';
 import Brand from '@/components/Brand';
-import LinkMan from '../components/linkman';
 import MDMCommonality from '@/components/Select';
 import NeedAskPrice from '../components/needAskPrice';
+import SKUModal from '@/components/Modal/SKU';
 import CompanySelect from '@/components/Company/index';
 import { checkPhone, getName, chechEmail } from '@/utils/utils';
 
@@ -40,13 +40,14 @@ const { TextArea } = Input;
 const { TabPane } = Tabs;
 const FormItem = Form.Item;
 const { Option } = Select;
-@connect(({ TI_Z030, loading, global }) => ({
+@connect(({ TI_Z030, loading, global, user }) => ({
   TI_Z030,
   global,
+  user,
   loading: loading.models.TI_Z030,
 }))
 @Form.create()
-class TI_Z030Company extends React.Component {
+class TI_Z030Component extends React.Component {
   skuColumns = [
     {
       title: '行号',
@@ -87,7 +88,7 @@ class TI_Z030Company extends React.Component {
       render: (text, record, index) =>
         record.lastIndex ? null : (
           <Brand
-            defaultValue={record.BrandName}
+            initialValue={record.BrandName}
             keyType="Name"
             onChange={value => {
               this.rowSelectChange(value, record, index, 'BrandName');
@@ -174,7 +175,14 @@ class TI_Z030Company extends React.Component {
         return null;
       },
     },
-
+    {
+      title: '备注',
+      dataIndex: 'LineComment',
+      width: 150,
+      inputType: 'text',
+      editable: true,
+      align: 'center',
+    },
     {
       title: '销售建议价',
       width: 120,
@@ -210,7 +218,7 @@ class TI_Z030Company extends React.Component {
     },
     {
       title: '采购员',
-      width: 200,
+      width: 100,
       dataIndex: 'Purchaser',
       align: 'center',
       render: text => {
@@ -237,6 +245,18 @@ class TI_Z030Company extends React.Component {
       width: 150,
       align: 'center',
       dataIndex: 'InquiryLineTotalLocal',
+    },
+    {
+      title: '其他成本',
+      width: 120,
+      align: 'center',
+      dataIndex: 'OtherTotal',
+    },
+    {
+      title: '行利润',
+      width: 150,
+      align: 'center',
+      dataIndex: 'ProfitLineTotal',
     },
     {
       title: '销售行总计',
@@ -362,7 +382,8 @@ class TI_Z030Company extends React.Component {
       tabIndex: '1', // tab
       uploadmodalVisible: false, // 上传Modal
       attachmentVisible: false, // 附件Modal
-      skuModalVisible: false, // 物料选择 Modal
+      orderModalVisible: false, // 物料选择 Modal
+      skuModalVisible: false, //
       needmodalVisible: false,
       LineID: Number, // 当前选中行index
       linkmanList: [], // 联系人list
@@ -381,7 +402,9 @@ class TI_Z030Company extends React.Component {
     const {
       dispatch,
       location: { query },
+      user,
     } = this.props;
+    console.log(user);
     if (query.DocEntry) {
       dispatch({
         type: 'TI_Z030/fetch',
@@ -460,7 +483,7 @@ class TI_Z030Company extends React.Component {
   //  行内容改变
   rowChange = record => {
     const { formVals } = this.state;
-    formVals.TI_Z02602.map(item => {
+    formVals.TI_Z03002.map(item => {
       if (item.key === record.key) {
         return record;
       }
@@ -477,8 +500,9 @@ class TI_Z030Company extends React.Component {
     let DocTotal = 0;
     let InquiryDocTotalLocal = 0;
     let InquiryDocTotal = 0;
+    let OtherTotal = 0;
     // eslint-disable-next-line array-callback-return
-    formVals.TI_Z02602.map(record => {
+    formVals.TI_Z03002.map(record => {
       record.InquiryLineTotalLocal = isNaN(record.Quantity * record.InquiryPrice)
         ? 0
         : record.Quantity * record.InquiryPrice;
@@ -489,14 +513,22 @@ class TI_Z030Company extends React.Component {
       record.InquiryLineTotal = round(record.InquiryLineTotal, 2);
       record.LineTotal = isNaN(record.Quantity * record.Price) ? 0 : record.Quantity * record.Price;
       record.LineTotal = round(record.LineTotal, 2);
+      console.log(isNaN(record.OtherTotal) ? record.OtherTotal : 0);
+      record.ProfitLineTotal =
+        record.LineTotal -
+        record.InquiryLineTotalLocal -
+        (isNaN(record.OtherTotal) ? record.OtherTotal : 0);
+      record.ProfitLineTotal = round(record.ProfitLineTotal, 2);
       DocTotal += record.LineTotal;
       InquiryDocTotalLocal += record.InquiryLineTotalLocal;
       InquiryDocTotal += record.InquiryLineTotal;
+      OtherTotal += record.OtherTotal;
     });
     formVals.DocTotal = DocTotal;
     formVals.InquiryDocTotalLocal = InquiryDocTotalLocal;
     formVals.InquiryDocTotal = InquiryDocTotal;
     formVals.DocTotal = DocTotal;
+    formVals.ProfitTotal = DocTotal - InquiryDocTotalLocal - OtherTotal;
     this.setState({ formVals });
   };
 
@@ -505,7 +537,7 @@ class TI_Z030Company extends React.Component {
   rowSelectChange = (value, record, index, key) => {
     const { formVals } = this.state;
     record[key] = value;
-    formVals.TI_Z02602[index] = record;
+    formVals.TI_Z03002[index] = record;
     this.setState({ formVals: { ...formVals } });
   };
 
@@ -519,7 +551,7 @@ class TI_Z030Company extends React.Component {
   changeLineSKU = selection => {
     const [select] = selection;
     const { thisLine, LineID, formVals } = this.state;
-    formVals.TI_Z02602[LineID] = { ...thisLine, ...select, SKU: select.Code, SKUName: select.Name };
+    formVals.TI_Z03002[LineID] = { ...thisLine, ...select, SKU: select.Code, SKUName: select.Name };
     this.setState({ formVals: { ...formVals } });
     this.handleModalVisible(false);
   };
@@ -528,7 +560,7 @@ class TI_Z030Company extends React.Component {
   deleteLine = (record, index) => {
     const { formVals, LineID } = this.state;
     if (LineID >= 0) {
-      formVals.TI_Z02602[LineID].TI_Z02604.splice(index, 1);
+      formVals.TI_Z03002[LineID].TI_Z02604.splice(index, 1);
     } else {
       formVals.TI_Z02603.splice(index, 1);
     }
@@ -549,7 +581,7 @@ class TI_Z030Company extends React.Component {
   // 删除行物料
   deleteSKULine = (record, index) => {
     const { formVals } = this.state;
-    formVals.TI_Z02602.splice(index, 1);
+    formVals.TI_Z03002.splice(index, 1);
     this.setState({ formVals }, () => {
       this.getTotal();
     });
@@ -562,10 +594,10 @@ class TI_Z030Company extends React.Component {
     const lastsku = formVals.TI_Z02603[formVals.TI_Z02603.length - 1];
     if (fieldsValue.AttachmentPath) {
       if (LineID >= 0) {
-        const thisLine = formVals.TI_Z02602[LineID].TI_Z02604;
+        const thisLine = formVals.TI_Z03002[LineID].TI_Z02604;
         const last = thisLine[thisLine.length - 1];
         const ID = last ? last.LineID + 1 : 1;
-        formVals.TI_Z02602[LineID].TI_Z02604.push({
+        formVals.TI_Z03002[LineID].TI_Z02604.push({
           LineID: ID,
           BaseType: formVals.OrderType,
           BaseEntry: formVals.BaseEntry ? formVals.BaseEntry : 1,
@@ -595,8 +627,9 @@ class TI_Z030Company extends React.Component {
     this.setState({
       uploadmodalVisible: !!flag,
       attachmentVisible: !!flag,
-      skuModalVisible: !!flag,
+      orderModalVisible: !!flag,
       needmodalVisible: !!flag,
+      skuModalVisible: !!flag,
       LineID: Number,
     });
   };
@@ -606,11 +639,23 @@ class TI_Z030Company extends React.Component {
     this.setState({ tabIndex });
   };
 
+  copyFromOrder = () => {
+    const { formVals } = this.state;
+    const { queryData } = this.getAskPriceOrder.state;
+    if (!formVals.CardCode) {
+      message.warning('请先选择客户');
+      return false;
+    }
+    console.log();
+    this.setState({ orderModalVisible: true });
+    this.getAskPriceOrder.fetchOrder(queryData);
+  };
+
   rightButton = tabIndex => {
     if (tabIndex === '1') {
       return (
-        <Button icon="plus" style={{ marginLeft: 8 }} type="primary" onClick={this.addLineSku}>
-          复制从询价单
+        <Button icon="plus" style={{ marginLeft: 8 }} type="primary" onClick={this.copyFromOrder}>
+          复制从销售报价单
         </Button>
       );
     }
@@ -663,41 +708,108 @@ class TI_Z030Company extends React.Component {
     this.setState({ formVals });
   };
 
-  addLineSku = () => {
-    // 添加物料
+  // 添加行
+  addLineSKU = selectedRows => {
+    const {
+      user: { currentUser },
+    } = this.props;
     const { formVals } = this.state;
-    const last = formVals.TI_Z02602[formVals.TI_Z02602.length - 1];
-    const LineID = last ? last.LineID + 1 : 1;
-    formVals.TI_Z02602.push({
-      LineID,
-      SKU: '',
-      SKUName: '',
-      BrandName: '',
-      ProductName: '',
-      ManufactureNO: '',
-      Parameters: '',
-      Package: '',
-      Purchaser: '',
-      Quantity: '',
-      Unit: '',
-      DueDate: '',
-      InquiryPrice: '',
-      Price: '',
-      InquiryDueDate: '',
-      InquiryComment: '',
-      InquiryLineTotal: '',
-      InquiryLineTotalLocal: '',
-      LineTotal: '',
-      Currency: '',
-      DocRate: '',
-      TI_Z02604: [],
+    let newLineID = 1;
+    if (formVals.TI_Z03002.length) {
+      newLineID = formVals.TI_Z03002[formVals.TI_Z03002.length - 1].LineID + 1;
+    }
+    console.log(currentUser.UserCode);
+    selectedRows.map(item => {
+      const {
+        LineComment,
+        SourceType,
+        SKU,
+        SKUName,
+        BrandName,
+        ProductName,
+        ManufactureNO,
+        Parameters,
+        Package,
+        Purchaser,
+        Quantity,
+        Unit,
+        DueDate,
+        InquiryPrice,
+        Price,
+        InquiryDueDate,
+        InquiryComment,
+        InquiryLineTotal,
+        InquiryLineTotalLocal,
+        LineTotal,
+        OtherTotal,
+        Currency,
+        DocRate,
+        SupplierCode,
+        SupplierName,
+        InquiryCfmDate,
+        InquiryCfmUser,
+        Contacts,
+        WhsCode,
+        LineID,
+        BaseEntry,
+        BaseLineID,
+        DocEntry,
+      } = item;
+      formVals.TI_Z03002.push({
+        QuotationEntry: DocEntry,
+        QuotationLineID: LineID,
+        BaseEntry,
+        BaseLineID,
+        LineComment,
+        SourceType,
+        SKU,
+        SKUName,
+        BrandName,
+        ProductName,
+        ManufactureNO,
+        Parameters,
+        Package,
+        Purchaser,
+        Quantity,
+        Unit,
+        DueDate,
+        InquiryPrice,
+        Price,
+        InquiryDueDate,
+        InquiryComment,
+        InquiryLineTotal,
+        InquiryLineTotalLocal,
+        LineTotal,
+        OtherTotal: OtherTotal || 0,
+        Currency,
+        DocRate,
+        SupplierCode,
+        SupplierName,
+        InquiryCfmDate,
+        InquiryCfmUser,
+        Contacts,
+        WhsCode,
+        CreateUser: currentUser.UserCode,
+        CreateDate: formVals.CreateDate || new Date(),
+        LineID: newLineID,
+        ApproveSts: 'O',
+        LineStatus: 'O',
+        Closed: 'N',
+        ClosedBy: 'P001',
+      });
     });
-    this.setState({ formVals });
+    this.setState({ formVals, orderModalVisible: false }, () => {
+      this.getTotal();
+    });
   };
 
   saveHandle = () => {
     // 保存主数据
-    const { form, dispatch } = this.props;
+    const {
+      form,
+      dispatch,
+      user: { currentUser },
+    } = this.props;
     const { formVals } = this.state;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
@@ -719,12 +831,14 @@ class TI_Z030Company extends React.Component {
             DueDate: fieldsValue.DueDate ? fieldsValue.DueDate.format('YYYY-MM-DD') : '',
             ToDate: fieldsValue.ToDate ? fieldsValue.ToDate.format('YYYY-MM-DD') : '',
             DocDate: fieldsValue.DocDate ? fieldsValue.DocDate.format('YYYY-MM-DD') : '',
+            CreateUser: currentUser.UserCode,
+            ClosedDate: new Date(),
           },
         },
         callback: response => {
           if (response.Status === 200) {
             message.success('添加成功');
-            router.push(`/inquiry/detail?DocEntry=${response.Content.DocEntry}`);
+            router.push(`/TI_Z030/detail?DocEntry=${response.Content.DocEntry}`);
           }
         },
       });
@@ -733,7 +847,11 @@ class TI_Z030Company extends React.Component {
 
   // 更新主数据
   updateHandle = () => {
-    const { form, dispatch } = this.props;
+    const {
+      form,
+      dispatch,
+      user: { currentUser },
+    } = this.props;
     const { formVals } = this.state;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
@@ -755,6 +873,7 @@ class TI_Z030Company extends React.Component {
             DueDate: fieldsValue.DueDate ? fieldsValue.DueDate.format('YYYY-MM-DD') : '',
             ToDate: fieldsValue.ToDate ? fieldsValue.ToDate.format('YYYY-MM-DD') : '',
             DocDate: fieldsValue.DocDate ? fieldsValue.DocDate.format('YYYY-MM-DD') : '',
+            UpdateUser: currentUser.UserCode,
           },
         },
         callback: response => {
@@ -767,15 +886,17 @@ class TI_Z030Company extends React.Component {
   };
 
   // 取消单据
-
   cancelSubmit = ClosedComment => {
     const { dispatch } = this.props;
-    const { formVals } = this.state;
+    const {
+      formVals: { UpdateTimestamp, DocEntry },
+    } = this.state;
     dispatch({
       type: 'TI_Z030/cancel',
       payload: {
         Content: {
-          DocEntry: formVals.DocEntry,
+          DocEntry,
+          UpdateTimestamp,
           ClosedComment,
         },
       },
@@ -789,16 +910,20 @@ class TI_Z030Company extends React.Component {
 
   // 发送需询价
   submitNeedLine = select => {
-    const { dispatch } = this.props;
-    const loItemList = select.map(item => ({
-      DocEntry: item.DocEntry,
-      LineID: item.LineID,
-    }));
+    const {
+      dispatch,
+      user: { currentUser },
+    } = this.props;
+    const {
+      formVals: { UpdateTimestamp, DocEntry },
+    } = this.state;
     dispatch({
       type: 'TI_Z030/confirm',
       payload: {
         Content: {
-          loItemList,
+          UpdateTimestamp,
+          DocEntry,
+          UpdateUser: currentUser.UserCode,
         },
       },
       callback: response => {
@@ -856,6 +981,7 @@ class TI_Z030Company extends React.Component {
       thisLine,
       linkmanList,
       uploadmodalVisible,
+      orderModalVisible,
       skuModalVisible,
       needmodalVisible,
       attachmentVisible,
@@ -882,6 +1008,11 @@ class TI_Z030Company extends React.Component {
       handleModalVisible: this.handleModalVisible,
     };
 
+    const orderParentMethods = {
+      handleSubmit: this.addLineSKU,
+      handleModalVisible: this.handleModalVisible,
+    };
+
     const needParentMethods = {
       handleSubmit: this.submitNeedLine,
       handleModalVisible: this.handleModalVisible,
@@ -894,6 +1025,7 @@ class TI_Z030Company extends React.Component {
         InquiryLineTotal: formVals.InquiryDocTotal,
         InquiryLineTotalLocal: formVals.InquiryDocTotalLocal,
         LineTotal: formVals.DocTotal,
+        ProfitLineTotal: formVals.ProfitTotal,
       });
     }
 
@@ -903,15 +1035,19 @@ class TI_Z030Company extends React.Component {
           <Row gutter={8}>
             <Col lg={10} md={12} sm={24}>
               <FormItem key="CardCode" {...this.formLayout} label="客户ID">
-                {getFieldDecorator('CardCode', {
-                  rules: [{ required: true, message: '请选择客户！' }],
-                  initialValue: { key: formVals.CardName, label: formVals.CardCode },
-                })(
-                  <CompanySelect
-                    initialValue={{ key: formVals.CardName, label: formVals.CardCode }}
-                    onChange={this.changeCompany}
-                    keyType="Code"
-                  />
+                {formVals.DocEntry ? (
+                  <Input disabled value={formVals.CardCode} placeholder="单号" />
+                ) : (
+                  getFieldDecorator('CardCode', {
+                    rules: [{ required: true, message: '请选择客户！' }],
+                    initialValue: { key: formVals.CardName, label: formVals.CardCode },
+                  })(
+                    <CompanySelect
+                      initialValue={{ key: formVals.CardName, label: formVals.CardCode }}
+                      onChange={this.changeCompany}
+                      keyType="Code"
+                    />
+                  )
                 )}
               </FormItem>
             </Col>
@@ -926,15 +1062,19 @@ class TI_Z030Company extends React.Component {
           <Row gutter={8}>
             <Col lg={10} md={12} sm={24}>
               <FormItem key="CardName" {...this.formLayout} label="客户名称">
-                {getFieldDecorator('CardName', {
-                  rules: [{ required: true, message: '请输入客户名称！' }],
-                  initialValue: { key: formVals.CardCode, label: formVals.CardName },
-                })(
-                  <CompanySelect
-                    initialValue={{ key: formVals.CardCode, label: formVals.CardName }}
-                    onChange={this.changeCompany}
-                    keyType="Name"
-                  />
+                {formVals.DocEntry ? (
+                  <Input disabled value={formVals.CardName} placeholder="单号" />
+                ) : (
+                  getFieldDecorator('CardName', {
+                    rules: [{ required: true, message: '请输入客户名称！' }],
+                    initialValue: { key: formVals.CardCode, label: formVals.CardName },
+                  })(
+                    <CompanySelect
+                      initialValue={{ key: formVals.CardCode, label: formVals.CardName }}
+                      onChange={this.changeCompany}
+                      keyType="Name"
+                    />
+                  )
                 )}
               </FormItem>
             </Col>
@@ -954,11 +1094,19 @@ class TI_Z030Company extends React.Component {
                   rules: [{ required: true, message: '请输入联系人！' }],
                   initialValue: formVals.Contacts,
                 })(
-                  <LinkMan
-                    initialValue={formVals.Contacts}
-                    onChange={this.linkmanChange}
-                    data={linkmanList}
-                  />
+                  <Select
+                    value={formVals.Contacts}
+                    placeholder="请选择联系人"
+                    filterOption={false}
+                    onSelect={this.handleChange}
+                    style={{ width: '100%' }}
+                  >
+                    {linkmanList.map(option => (
+                      <Option key={option.Code} value={option.Name}>
+                        {option.Name}
+                      </Option>
+                    ))}
+                  </Select>
                 )}
               </FormItem>
             </Col>
@@ -996,8 +1144,8 @@ class TI_Z030Company extends React.Component {
           <TabPane tab="物料" key="1">
             <EditableFormTable
               rowChange={this.rowChange}
-              rowKey="LineID"
-              scroll={{ x: 3150, y: 600 }}
+              rowKey="Key"
+              scroll={{ x: 3500, y: 600 }}
               columns={this.skuColumns}
               data={newdata}
             />
@@ -1115,7 +1263,7 @@ class TI_Z030Company extends React.Component {
                   <span>{getName(Saler, formVals.CreateUser)}</span>
                 </FormItem>
               </Col>
-              {formVals.DocEntry ? (
+              {/* {formVals.DocEntry ? (
                 <Fragment>
                   <Col lg={8} md={12} sm={24}>
                     <FormItem key="Closed" {...this.formLayout} label="关闭状态">
@@ -1133,7 +1281,7 @@ class TI_Z030Company extends React.Component {
                     </FormItem>
                   </Col>
                 </Fragment>
-              ) : null}
+              ) : null} */}
             </Row>
           </TabPane>
           <TabPane tab="其余成本" key="3">
@@ -1159,11 +1307,7 @@ class TI_Z030Company extends React.Component {
               <Button type="primary" onClick={this.costCheck}>
                 成本核算
               </Button>
-              <Button
-                style={{ marginLeft: 10, marginRight: 10 }}
-                onClick={this.updateHandle}
-                type="primary"
-              >
+              <Button style={{ marginLeft: 10 }} onClick={this.updateHandle} type="primary">
                 更新
               </Button>
               <Button onClick={() => this.setState({ needmodalVisible: true })} type="primary">
@@ -1177,6 +1321,14 @@ class TI_Z030Company extends React.Component {
           )}
         </FooterToolbar>
         <UpdateLoad {...uploadmodalMethods} modalVisible={uploadmodalVisible} />
+        <AskPriceFetch
+          onRef={c => {
+            this.getAskPriceOrder = c;
+          }}
+          SearchText={formVals.CardName}
+          {...orderParentMethods}
+          modalVisible={orderModalVisible}
+        />
         <SKUModal {...parentMethods} modalVisible={skuModalVisible} />
         <Modal
           width={640}
@@ -1193,7 +1345,7 @@ class TI_Z030Company extends React.Component {
           />
         </Modal>
         <NeedAskPrice
-          data={formVals.TI_Z02602}
+          data={formVals.TI_Z03002}
           {...needParentMethods}
           modalVisible={needmodalVisible}
         />
@@ -1202,4 +1354,4 @@ class TI_Z030Company extends React.Component {
   }
 }
 
-export default TI_Z030Company;
+export default TI_Z030Component;

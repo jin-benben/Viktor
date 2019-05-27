@@ -5,7 +5,9 @@ export default {
 
   state: {
     list: [],
-    currentUser: {},
+    currentUser: {
+      UserCode: 'P0001',
+    },
   },
 
   effects: {

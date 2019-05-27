@@ -277,11 +277,13 @@ class HSCode extends PureComponent {
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 12, xl: 48 }}>
-          <Col className="submitButtons">
-            <FormItem label="名称">
-              {getFieldDecorator('SearchText')(<Input placeholder="请输入" />)}
-            </FormItem>
+          <Col md={5} sm={24}>
             <FormItem>
+              {getFieldDecorator('SearchText')(<Input placeholder="请输入关键字" />)}
+            </FormItem>
+          </Col>
+          <Col md={8} sm={24}>
+            <span className="submitButtons">
               <Button type="primary" htmlType="submit">
                 查询
               </Button>
@@ -293,7 +295,7 @@ class HSCode extends PureComponent {
               >
                 新建
               </Button>
-            </FormItem>
+            </span>
           </Col>
         </Row>
       </Form>
@@ -310,7 +312,6 @@ class HSCode extends PureComponent {
       handleSubmit: this.handleSubmit,
       handleModalVisible: this.handleModalVisible,
     };
-    console.log(formValues);
     return (
       <Fragment>
         <Card bordered={false}>

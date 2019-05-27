@@ -1,7 +1,20 @@
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
-import { Row, Col, Form, Input, Card, Tabs, Button, message, DatePicker, Select } from 'antd';
+import {
+  Row,
+  Col,
+  Form,
+  Input,
+  Card,
+  Tabs,
+  Button,
+  message,
+  Upload,
+  Icon,
+  DatePicker,
+  Select,
+} from 'antd';
 import StandardTable from '@/components/StandardTable';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import MDMCommonality from '@/components/Select';
@@ -13,6 +26,7 @@ import Category from '@/components/Category';
 
 const FormItem = Form.Item;
 const { TabPane } = Tabs;
+const { Option } = Select;
 
 /* eslint react/no-multi-comp:0 */
 @connect(({ skuDetail, loading, global }) => ({
@@ -21,7 +35,7 @@ const { TabPane } = Tabs;
   loading: loading.models.skuDetail,
 }))
 @Form.create()
-class SKUDetail extends PureComponent {
+class SKUDetail extends Component {
   Columns = [
     {
       title: '客户代码',
@@ -127,14 +141,14 @@ class SKUDetail extends PureComponent {
   addCompanySKU = () => {};
 
   rightButton = tabIndex => {
-    if (tabIndex === '1') {
+    if (tabIndex === '2') {
       return (
         <Button icon="plus" style={{ marginLeft: 8 }} type="primary" onClick={this.addSkuDetail}>
           添加物料详情
         </Button>
       );
     }
-    if (tabIndex === '2') {
+    if (tabIndex === '3') {
       return (
         <Button icon="plus" style={{ marginLeft: 8 }} type="primary" onClick={this.addCompanySKU}>
           添加客户物料代码
@@ -180,6 +194,37 @@ class SKUDetail extends PureComponent {
     });
   };
 
+  handleChange = info => {
+    if (info.file.status === 'uploading') {
+      return;
+    }
+    if (info.file.response.Status === 200) {
+      message.success('上传成功');
+      const { FilePath, FileCode } = info.file.response;
+      const { formVals } = this.state;
+      formVals.PicturePath = FilePath;
+      formVals.PicCode = FileCode;
+      this.setState({
+        formVals,
+      });
+    }
+  };
+
+  handleListChange = info => {
+    if (info.file.status === 'uploading') {
+      return;
+    }
+    if (info.file.response.Status === 200) {
+      message.success('上传成功');
+      const { FilePath } = info.file.response;
+      const { formVals } = this.state;
+      formVals.ListPiclocation = FilePath;
+      this.setState({
+        formVals,
+      });
+    }
+  };
+
   render() {
     const {
       form: { getFieldDecorator },
@@ -197,7 +242,14 @@ class SKUDetail extends PureComponent {
         lg: { span: 6 },
       },
     };
+    const UploadButton = props => (
+      <div>
+        <Icon type="plus" />
+        <div className="ant-upload-text">{props.title}</div>
+      </div>
+    );
     const { tabIndex, formVals } = this.state;
+    console.log(formVals);
     return (
       <Card>
         <Form {...formItemLayout} onSubmit={this.handleSubmit}>
@@ -362,10 +414,52 @@ class SKUDetail extends PureComponent {
           </Row>
         </Form>
         <Tabs tabBarExtraContent={this.rightButton(tabIndex)} onChange={this.tabChange}>
-          <TabPane tab="详情页" key="1">
+          <TabPane tab="图片管理" key="1">
+            <Row>
+              <Col lg={4}>
+                <Upload
+                  action="http://117.149.160.231:9301/MDMPicUpload/PictureUpLoad"
+                  listType="picture-card"
+                  showUploadList={false}
+                  onChange={this.handleChange}
+                  data={{ UserCode: 'jinwentao', Folder: 'TI_Z026', Tonken: '22233' }}
+                >
+                  {formVals.PicturePath ? (
+                    <img
+                      style={{ width: 80, height: 80 }}
+                      src={formVals.PicturePath}
+                      alt="avatar"
+                    />
+                  ) : (
+                    <UploadButton title="主图" />
+                  )}
+                </Upload>
+              </Col>
+              <Col lg={4}>
+                <Upload
+                  action="http://117.149.160.231:9301/MDMPicUpload/PictureUpLoad"
+                  listType="picture-card"
+                  showUploadList={false}
+                  onChange={this.handleListChange}
+                  data={{ UserCode: 'jinwentao', Folder: 'TI_Z026', Tonken: '22233' }}
+                >
+                  {formVals.ListPiclocation ? (
+                    <img
+                      style={{ width: 80, height: 80 }}
+                      src={formVals.ListPiclocation}
+                      alt="avatar"
+                    />
+                  ) : (
+                    <UploadButton title="列表图" />
+                  )}
+                </Upload>
+              </Col>
+            </Row>
+          </TabPane>
+          <TabPane tab="详情页" key="2">
             sss
           </TabPane>
-          <TabPane tab="客户物料代码" key="2">
+          <TabPane tab="客户物料代码" key="3">
             <StandardTable
               data={{ list: formVals.TI_Z00903List }}
               rowKey="AttachmentCode"

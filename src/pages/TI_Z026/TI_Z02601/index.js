@@ -86,7 +86,7 @@ class InquiryEdit extends React.Component {
       render: (text, record, index) =>
         record.lastIndex ? null : (
           <Brand
-            defaultValue={record.BrandName}
+            initialValue={record.BrandName}
             keyType="Name"
             onChange={value => {
               this.rowSelectChange(value, record, index, 'BrandName');
@@ -699,7 +699,7 @@ class InquiryEdit extends React.Component {
         callback: response => {
           if (response.Status === 200) {
             message.success('添加成功');
-            router.push(`/inquiry/detail?DocEntry=${response.Content.DocEntry}`);
+            router.push(`/TI_Z02601/detail?DocEntry=${response.Content.DocEntry}`);
           }
         },
       });

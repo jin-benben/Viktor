@@ -1,9 +1,14 @@
 import React, { Component, Fragment } from 'react';
 import moment from 'moment';
-import { Button, message, DatePicker, Input } from 'antd';
+import { Button, DatePicker, Input } from 'antd';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import StandardTable from '@/components/StandardTable';
+import MDMCommonality from '@/components/Select/index';
+import { connect } from 'dva';
 
+@connect(({ global }) => ({
+  global,
+}))
 class SelectionLine extends Component {
   state = {
     selectedRows: [],
@@ -44,12 +49,20 @@ class SelectionLine extends Component {
     {
       title: '所有者',
       dataIndex: 'Owner',
-      render: (text, record, index) => (
-        <Input
-          onChange={e => this.RowChange(e.target.value, index, record, 'Owner')}
-          value={text}
-        />
-      ),
+      render: (text, record, index) => {
+        const {
+          global: { Purchaser },
+        } = this.props;
+        return (
+          <MDMCommonality
+            onChange={value => {
+              this.RowChange(value, index, record, 'Owner');
+            }}
+            initialValue={text}
+            data={Purchaser}
+          />
+        );
+      },
     },
     {
       title: '备注',
@@ -73,8 +86,11 @@ class SelectionLine extends Component {
     return null;
   }
 
-  RowChange = value => {
+  RowChange = (value, index, record, key) => {
     const { orderLineList } = this.state;
+    record[key] = value;
+    orderLineList[index] = record;
+    this.setState({ orderLineList });
   };
 
   onSelectRow = selectedRows => {
