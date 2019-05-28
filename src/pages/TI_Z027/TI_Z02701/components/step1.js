@@ -2,27 +2,47 @@
 import React, { Fragment } from 'react';
 
 import moment from 'moment';
-import { Row, Col, Form, Input, Button, DatePicker, Checkbox, message } from 'antd';
+import { Row, Col, Form, Input, Table, Button, DatePicker, Checkbox } from 'antd';
 import { connect } from 'dva';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
-import StandardTable from '@/components/StandardTable';
 import SupplierSelect from '@/components/Select/Supplier';
 import MDMCommonality from '@/components/Select';
 import { getName } from '@/utils/utils';
-import OrderModal from './orderModal';
+import styles from '../style.less';
+import request from '@/utils/request';
 
 const { RangePicker } = DatePicker;
 
 const FormItem = Form.Item;
-@connect(({ global }) => ({
+@connect(({ global, loading }) => ({
   global,
+  loading: loading.global,
 }))
 @Form.create()
 class NeedTabl extends React.Component {
   state = {
-    modalVisible: false,
-    selectedRows: [],
+    selectedRowKeys: [],
     orderLineList: [],
+    queryData: {
+      Content: {
+        SearchText: '',
+        PLineStatus: 'O',
+        IsInquiry: 'Y',
+        SearchKey: '',
+      },
+      page: 1,
+      rows: 30,
+      sidx: 'DocEntry',
+      sord: 'Desc',
+    },
+    pagination: {
+      showSizeChanger: true,
+      showTotal: total => `共 ${total} 条`,
+      pageSizeOptions: ['30', '60', '90'],
+      total: 0,
+      pageSize: 30,
+      current: 1,
+    },
   };
 
   columns = [
@@ -33,7 +53,7 @@ class NeedTabl extends React.Component {
       dataIndex: 'supplier',
       render: (text, record, index) => (
         <SupplierSelect
-          initialValue={{ key: record.SupplierCode, label: record.SupplierName }}
+          //  initialValue={{ key: record.SupplierCode, label: record.SupplierName }}
           onChange={value => this.changeSupplier(value, record, index)}
           keyType="Name"
         />
@@ -43,21 +63,26 @@ class NeedTabl extends React.Component {
       title: '单号',
       width: 100,
       dataIndex: 'DocEntry',
+      render: (val, record) => (
+        <a href={`/sellabout/TI_Z026/TI_Z02602?DocEntry=${record.DocEntry}`} alt="单号">
+          {val}
+        </a>
+      ),
     },
     {
       title: '行号',
-      width: 50,
+      width: 80,
       dataIndex: 'LineID',
     },
     {
       title: '单据日期',
       dataIndex: 'DocDate',
-      width: 100,
+      width: 120,
       render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
     {
       title: '创建日期',
-      width: 100,
+      width: 120,
       dataIndex: 'CreateDate',
       render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
@@ -68,7 +93,7 @@ class NeedTabl extends React.Component {
       render: text => (
         <Ellipsis tooltip lines={1}>
           {' '}
-          {text}{' '}
+          {text}
         </Ellipsis>
       ),
     },
@@ -87,6 +112,11 @@ class NeedTabl extends React.Component {
       title: '客户参考号',
       width: 150,
       dataIndex: 'NumAtCard',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: 'SKU',
@@ -98,8 +128,7 @@ class NeedTabl extends React.Component {
       dataIndex: 'SKUName',
       render: text => (
         <Ellipsis tooltip lines={1}>
-          {' '}
-          {text}{' '}
+          {text}
         </Ellipsis>
       ),
     },
@@ -112,21 +141,41 @@ class NeedTabl extends React.Component {
       title: '名称',
       width: 100,
       dataIndex: 'ProductName',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '型号',
       width: 100,
       dataIndex: 'ManufactureNO',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '参数',
       width: 100,
       dataIndex: 'Parameters',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '包装',
       width: 100,
       dataIndex: 'Package',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '采购员',
@@ -150,9 +199,20 @@ class NeedTabl extends React.Component {
       dataIndex: 'Unit',
     },
     {
+      title: '仓库',
+      width: 120,
+      dataIndex: 'WhsCode',
+      render: text => {
+        const {
+          global: { WhsCode },
+        } = this.props;
+        return <span>{getName(WhsCode, text)}</span>;
+      },
+    },
+    {
       title: '要求交期',
       dataIndex: 'DueDate',
-      width: 100,
+      width: 120,
       render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
     {
@@ -172,14 +232,71 @@ class NeedTabl extends React.Component {
     },
   ];
 
-  static getDerivedStateFromProps(nextProps, prevState) {
-    if (nextProps.orderLineList !== prevState.orderLineList) {
-      return {
-        orderLineList: nextProps.orderLineList,
-      };
-    }
-    return null;
+  // static getDerivedStateFromProps(nextProps, prevState) {
+  //   if (nextProps.orderLineList !== prevState.orderLineList) {
+  //     return {
+  //       orderLineList: nextProps.orderLineList,
+  //     };
+  //   }
+  //   return null;
+  // }
+
+  componentDidMount() {
+    const { queryData } = this.state;
+    this.fetchOrder(queryData);
   }
+
+  fetchOrder = async params => {
+    const response = await request('/OMS/TI_Z026/TI_Z02607', {
+      method: 'POST',
+      data: {
+        ...params,
+      },
+    });
+    if (response.Status !== 200) {
+      return;
+    }
+    this.setState({ orderLineList: response.Content ? response.Content.rows : [] });
+  };
+
+  handleStandardTableChange = pagination => {
+    const { queryData } = this.state;
+    this.fetchOrder({ ...queryData, page: pagination.current, rows: pagination.pageSize });
+  };
+
+  handleSearch = e => {
+    // 搜索
+    e.preventDefault();
+    const { form } = this.props;
+    form.validateFields((err, fieldsValue) => {
+      if (err) return;
+      let DocDateFrom;
+      let DocDateTo;
+      if (fieldsValue.dateArr) {
+        DocDateFrom = moment(fieldsValue.dateArr[0]).format('YYYY-MM-DD');
+        DocDateTo = moment(fieldsValue.dateArr[1]).format('YYYY-MM-DD');
+      }
+      const queryData = {
+        ...fieldsValue,
+        DocDateFrom,
+        DocDateTo,
+        ...fieldsValue.orderNo,
+      };
+      this.fetchOrder({
+        Content: {
+          SearchText: '',
+          PLineStatus: 'O',
+          IsInquiry: 'Y',
+          SearchKey: '',
+          ...queryData,
+        },
+        page: 1,
+        rows: 30,
+        sidx: 'DocEntry',
+        sord: 'Desc',
+      });
+    });
+  };
 
   changeSupplier = (value, record, index) => {
     record.SupplierCode = value.Code || value.key;
@@ -206,7 +323,7 @@ class NeedTabl extends React.Component {
   handleSearch = e => {
     // 搜索
     e.preventDefault();
-    const { form, seachHandle } = this.props;
+    const { form } = this.props;
 
     form.validateFields((err, fieldsValue) => {
       if (err) return;
@@ -221,29 +338,30 @@ class NeedTabl extends React.Component {
         DocDateFrom,
         DocDateTo,
         ...fieldsValue.orderNo,
-        SLineStatus: fieldsValue.SLineStatus && fieldsValue.SLineStatus ? 'C' : 'O',
+        PLineStatus: fieldsValue.SLineStatus && fieldsValue.PLineStatus ? 'C' : 'O',
       };
-      seachHandle(queryData);
+      this.fetchOrder({
+        Content: {
+          SearchText: '',
+          PLineStatus: 'O',
+          IsInquiry: 'Y',
+          SearchKey: '',
+          ...queryData,
+        },
+        page: 1,
+        rows: 30,
+        sidx: 'DocEntry',
+        sord: 'Desc',
+      });
     });
   };
 
-  onSelectRow = selectedRows => {
-    this.setState({ selectedRows: [...selectedRows] });
-  };
-
-  // 确认需要采购询价
-  selectNeed = () => {
-    const { selectedRows } = this.state;
-    if (selectedRows.length) {
-      this.handleModalVisible(true);
-    } else {
-      message.warning('请先选择');
+  onSelectRow = (selectedRowKeys, selectedRows) => {
+    const { onSelectRow } = this.props;
+    if (onSelectRow) {
+      onSelectRow(selectedRows);
     }
-  };
-
-  // 需询价弹窗
-  handleModalVisible = flag => {
-    this.setState({ modalVisible: !!flag });
+    this.setState({ selectedRowKeys: [...selectedRowKeys] });
   };
 
   renderSimpleForm() {
@@ -255,38 +373,15 @@ class NeedTabl extends React.Component {
       labelCol: { span: 6 },
       wrapperCol: { span: 18 },
     };
-    const formItemLayout = {
-      labelCol: {
-        xs: { span: 24 },
-        sm: { span: 10 },
-      },
-      wrapperCol: {
-        xs: { span: 24 },
-        sm: { span: 14 },
-        md: { span: 10 },
-      },
-    };
-    const searchFormItemLayout = {
-      wrapperCol: {
-        xs: {
-          span: 24,
-          offset: 0,
-        },
-        sm: {
-          span: 16,
-          offset: 6,
-        },
-      },
-    };
     return (
-      <Form onSubmit={this.handleSearch} {...formItemLayout}>
+      <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={6} sm={24}>
-            <FormItem key="SearchText" label="客户名称" {...formLayout}>
-              {getFieldDecorator('SearchText')(<Input placeholder="请输入客户名称" />)}
+          <Col md={4} sm={24}>
+            <FormItem key="SearchText">
+              {getFieldDecorator('SearchText')(<Input placeholder="请输入关键字" />)}
             </FormItem>
           </Col>
-          <Col md={6} sm={24}>
+          <Col md={5} sm={24}>
             <FormItem label="日期" {...formLayout}>
               {getFieldDecorator('dateArr', { rules: [{ type: 'array' }] })(
                 <RangePicker style={{ width: '100%' }} />
@@ -294,20 +389,20 @@ class NeedTabl extends React.Component {
             </FormItem>
           </Col>
 
-          <Col md={6} sm={24}>
+          <Col md={5} sm={24}>
             <FormItem label="销售员" {...formLayout}>
               {getFieldDecorator('Owner')(<MDMCommonality data={Saler} />)}
             </FormItem>
           </Col>
-          <Col md={6} sm={24}>
-            <FormItem {...searchFormItemLayout}>
-              {getFieldDecorator('SLineStatus', { valuePropName: 'checked', initialValue: false })(
+          <Col md={2} sm={24}>
+            <FormItem>
+              {getFieldDecorator('PLineStatus', { valuePropName: 'checked', initialValue: false })(
                 <Checkbox>已询价</Checkbox>
               )}
             </FormItem>
           </Col>
-          <Col md={6} sm={24}>
-            <FormItem key="searchBtn" {...searchFormItemLayout}>
+          <Col md={3} sm={24}>
+            <FormItem key="searchBtn">
               <span className="submitButtons">
                 <Button type="primary" htmlType="submit">
                   查询
@@ -321,39 +416,31 @@ class NeedTabl extends React.Component {
   }
 
   render() {
-    const { pagination, loading } = this.props;
-    const { selectedRows, modalVisible, orderLineList } = this.state;
-
+    const { pagination, orderLineList, selectedRowKeys } = this.state;
+    const { loading } = this.props;
     const columns = this.columns.map(item => {
       // eslint-disable-next-line no-param-reassign
       item.align = 'Center';
       return item;
     });
-
-    const parentMethods = {
-      handleSubmit: this.submitNeedLine,
-      handleModalVisible: this.handleModalVisible,
-    };
     return (
       <Fragment>
-        <div className="tableList">
+        <div className={styles.tableList}>
           <div className="tableListForm">{this.renderSimpleForm()}</div>
-          <StandardTable
+          <Table
+            bordered
             loading={loading}
-            data={{ list: orderLineList }}
-            pagination={pagination}
+            dataSource={orderLineList}
             rowKey="Key"
-            scroll={{ x: 2400, y: 500 }}
-            columns={columns}
+            pagination={pagination}
+            scroll={{ x: 2600, y: 600 }}
             rowSelection={{
-              onSelectRow: this.onSelectRow,
+              onChange: this.onSelectRow,
+              selectedRowKeys,
             }}
             onChange={this.handleStandardTableChange}
+            columns={columns}
           />
-          <Button onClick={this.selectNeed} type="primary">
-            下一步
-          </Button>
-          <OrderModal data={selectedRows} {...parentMethods} modalVisible={modalVisible} />
         </div>
       </Fragment>
     );

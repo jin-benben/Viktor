@@ -15,7 +15,7 @@ class SupplierSelect extends PureComponent {
 
   state = {
     data: [],
-    initialValue: { key: '', label: '' },
+    value: { key: '', label: '' },
     companyModal: false,
     fetching: false,
   };
@@ -23,7 +23,7 @@ class SupplierSelect extends PureComponent {
   static getDerivedStateFromProps(nextProps, prevState) {
     if (nextProps.initialValue !== prevState.initialValue) {
       return {
-        initialValue: nextProps.initialValue,
+        value: nextProps.initialValue,
       };
     }
     return null;
@@ -70,6 +70,12 @@ class SupplierSelect extends PureComponent {
     const { onChange } = this.props;
     if (onChange) {
       onChange(select);
+      this.setState({
+        value: {
+          label: select.Name,
+          key: select.Code,
+        },
+      });
       this.handleModalVisible(false);
     }
   };
@@ -79,7 +85,7 @@ class SupplierSelect extends PureComponent {
   };
 
   render() {
-    const { fetching, data, companyModal, initialValue } = this.state;
+    const { fetching, data, companyModal, value } = this.state;
     const companyParentMethods = {
       handleSubmit: this.changeSupplier,
       handleModalVisible: this.handleModalVisible,
@@ -88,8 +94,7 @@ class SupplierSelect extends PureComponent {
       <Fragment>
         <Select
           showSearch
-          value={initialValue}
-          defaultValue={initialValue}
+          value={value}
           labelInValue
           suffixIcon={
             <Icon

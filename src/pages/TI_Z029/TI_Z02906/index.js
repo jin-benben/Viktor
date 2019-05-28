@@ -18,6 +18,7 @@ import {
 import StandardTable from '@/components/StandardTable';
 import MDMCommonality from '@/components/Select';
 import DocEntryFrom from '@/components/DocEntryFrom';
+import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import { getName } from '@/utils/utils';
 
 const { RangePicker } = DatePicker;
@@ -76,6 +77,11 @@ class SalesQuotation extends PureComponent {
       title: '客户',
       width: 150,
       dataIndex: 'CardName',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '客户参考号',
@@ -87,11 +93,11 @@ class SalesQuotation extends PureComponent {
       width: 120,
       dataIndex: 'contact',
       render: (text, record) => (
-        <span>
+        <Ellipsis tooltip lines={1}>
           {record.CellphoneNO}
           {record.CellphoneNO ? <Divider type="vertical" /> : null}
           {record.PhoneNO}
-        </span>
+        </Ellipsis>
       ),
     },
     {
@@ -105,7 +111,7 @@ class SalesQuotation extends PureComponent {
     },
     {
       title: '所有人',
-      width: 100,
+      width: 80,
       dataIndex: 'Owner',
       render: text => {
         const {
@@ -116,12 +122,12 @@ class SalesQuotation extends PureComponent {
     },
     {
       title: '单据总计',
-      width: 100,
+      width: 80,
       dataIndex: 'DocTotal',
     },
     {
       title: '成本总计',
-      width: 100,
+      width: 80,
       dataIndex: 'OtherTotal',
     },
     {
@@ -255,21 +261,21 @@ class SalesQuotation extends PureComponent {
       },
     };
     return (
-      <Form onSubmit={this.handleSearch} {...formItemLayout}>
+      <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={6} sm={24}>
-            <FormItem key="SearchText" label="客户名称" {...formLayout}>
-              {getFieldDecorator('SearchText')(<Input placeholder="请输入客户名称" />)}
+          <Col md={4} sm={24}>
+            <FormItem key="SearchText" {...formLayout}>
+              {getFieldDecorator('SearchText')(<Input placeholder="请输入关键字" />)}
             </FormItem>
           </Col>
-          <Col md={6} sm={24}>
+          <Col md={5} sm={24}>
             <FormItem label="日期" {...formLayout}>
               {getFieldDecorator('dateArr', { rules: [{ type: 'array' }] })(
                 <RangePicker style={{ width: '100%' }} />
               )}
             </FormItem>
           </Col>
-          <Col md={6} sm={24}>
+          <Col md={5} sm={24}>
             <FormItem key="SDocStatus" {...formLayout} label="报价状态">
               {getFieldDecorator('SDocStatus')(
                 <Select placeholder="请选择">
@@ -279,7 +285,7 @@ class SalesQuotation extends PureComponent {
               )}
             </FormItem>
           </Col>
-          <Col md={6} sm={24}>
+          <Col md={5} sm={24}>
             <FormItem label="所有者" {...formLayout}>
               {getFieldDecorator('Owner')(<MDMCommonality data={Saler} />)}
             </FormItem>
@@ -287,24 +293,24 @@ class SalesQuotation extends PureComponent {
 
           {expandForm ? (
             <Fragment>
-              <Col md={6} sm={24}>
+              <Col md={5} sm={24}>
                 <FormItem key="orderNo" {...formLayout} label="单号">
                   {getFieldDecorator('orderNo', {
                     initialValue: { DocEntryFrom: '', DocEntryTo: '' },
                   })(<DocEntryFrom />)}
                 </FormItem>
               </Col>
-              <Col md={6} sm={24}>
-                <FormItem key="Closed" {...formLayout} label="关闭状态">
+              <Col md={4} sm={24}>
+                <FormItem key="Closed" {...formLayout}>
                   {getFieldDecorator('Closed')(
-                    <Select placeholder="请选择">
+                    <Select placeholder="请选择关闭状态">
                       <Option value="Y">已关闭</Option>
                       <Option value="N">未关闭</Option>
                     </Select>
                   )}
                 </FormItem>
               </Col>
-              <Col md={6} sm={24}>
+              <Col md={5} sm={24}>
                 <FormItem key="InquiryStatus" {...formLayout} label="采购询价状态">
                   {getFieldDecorator('InquiryStatus')(
                     <Select placeholder="请选择">
@@ -314,7 +320,7 @@ class SalesQuotation extends PureComponent {
                   )}
                 </FormItem>
               </Col>
-              <Col md={6} sm={24}>
+              <Col md={5} sm={24}>
                 <FormItem key="IsInquiry" {...formLayout} label="需要采购询价">
                   {getFieldDecorator('IsInquiry')(
                     <Select placeholder="请选择">
@@ -326,7 +332,7 @@ class SalesQuotation extends PureComponent {
               </Col>
             </Fragment>
           ) : null}
-          <Col md={6} sm={24}>
+          <Col md={4} sm={24}>
             <FormItem key="searchBtn" {...searchFormItemLayout}>
               <span className="submitButtons">
                 <Button type="primary" htmlType="submit">

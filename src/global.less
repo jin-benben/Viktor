@@ -23,6 +23,10 @@ body,
 canvas {
   display: block;
 }
+.rowFlex{
+  display: flex;
+  flex-wrap: wrap
+}
 
 body {
   text-rendering: optimizeLegibility;
@@ -145,6 +149,10 @@ ol {
 .tableListForm {
   :global {
     .ant-form-inline {
+      .ant-row{
+        display: flex;
+        flex-wrap: wrap;
+      } 
       .ant-form-item {
         margin-bottom: 24px;
         margin-right: 0;
@@ -202,11 +210,16 @@ ol {
   background: rgba(240,240,240,0.5)!important;;
   cursor: pointer!important;
 }
+
+
 .ant-table-middle > .ant-table-content > .ant-table-header > table > .ant-table-thead > tr > th, .ant-table-middle >  .ant-table-middle > .ant-table-middle > .ant-table-content > .ant-table-scroll > .ant-table-body > table > .ant-table-thead > tr > th, .ant-table-middle > .ant-table-content > .ant-table-fixed-left > .ant-table-header > table > .ant-table-thead > tr > th, .ant-table-middle > .ant-table-content > .ant-table-fixed-right > .ant-table-header > table > .ant-table-thead > tr > th, .ant-table-middle > .ant-table-content > .ant-table-fixed-left > .ant-table-body-outer > .ant-table-body-inner > table > .ant-table-thead > tr > th, .ant-table-middle > .ant-table-content > .ant-table-fixed-right > .ant-table-body-outer > .ant-table-body-inner > table > .ant-table-thead > tr > th, .ant-table-middle > .ant-table-content > .ant-table-header > table > .ant-table-tbody > tr > td, .ant-table-middle > .ant-table-content > .ant-table-body > table > .ant-table-tbody > tr > td, .ant-table-middle > .ant-table-content > .ant-table-scroll > .ant-table-header > table > .ant-table-tbody > tr > td, .ant-table-middle > .ant-table-content > .ant-table-scroll > .ant-table-body > table > .ant-table-tbody > tr > td, .ant-table-middle > .ant-table-content > .ant-table-fixed-left > .ant-table-header > table > .ant-table-tbody > tr > td, .ant-table-middle > .ant-table-content > .ant-table-fixed-right > .ant-table-header > table > .ant-table-tbody > tr > td, .ant-table-middle > .ant-table-content > .ant-table-fixed-left > .ant-table-body-outer > .ant-table-body-inner > table > .ant-table-tbody > tr > td, .ant-table-middle > .ant-table-content > .ant-table-fixed-right > .ant-table-body-outer > .ant-table-body-inner > table > .ant-table-tbody > tr > td{
   padding:3px!important;
 }
-.ant-table-middle > .ant-table-content > .ant-table-scroll > .ant-table-body > table > .ant-table-thead > tr > th,
+.ant-table.ant-table-middle > .ant-table-content > .ant-table-scroll > .ant-table-body > table > .ant-table-thead > tr > th{padding:8px!important;}
 .ant-table-content > .ant-table-body > table > .ant-table-thead > tr > th,
 .ant-table-small > .ant-table-content > .ant-table-scroll > .ant-table-header > table > .ant-table-thead > tr > th{
   padding:8px!important;
+}
+.ant-menu-sub.ant-menu-inline > .ant-menu-submenu > .ant-menu-submenu-title{
+  padding-left: 38px!important
 }

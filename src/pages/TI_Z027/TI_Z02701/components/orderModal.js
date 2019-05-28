@@ -163,13 +163,7 @@ class OrderLine extends PureComponent {
   render() {
     const { modalVisible, handleModalVisible } = this.props;
     const { data, selectedRowKeys } = this.state;
-    let tableWidth = 0;
-    this.skuColumns.map(item => {
-      if (item.width) {
-        tableWidth += item.width;
-      }
-    });
-    console.log(tableWidth);
+
     return (
       <Modal
         width={1200}

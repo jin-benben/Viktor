@@ -121,7 +121,7 @@ class SkuFetchComponent extends PureComponent {
 
   handleOnRow = record => ({
     // 详情or修改
-    onClick: () => router.push(`/TI_Z009/TI_Z00903?Code=${record.Code}`),
+    onClick: () => router.push(`/main/product/TI_Z009/TI_Z00903?Code=${record.Code}`),
   });
 
   renderSimpleForm() {
@@ -150,7 +150,7 @@ class SkuFetchComponent extends PureComponent {
                 icon="plus"
                 style={{ marginLeft: 8 }}
                 type="primary"
-                onClick={() => router.push('/TI_Z009/TI_Z00901')}
+                onClick={() => router.push('/main/product/TI_Z009/TI_Z00901')}
               >
                 新建
               </Button>

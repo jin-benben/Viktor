@@ -7,6 +7,7 @@ import { Row, Col, Card, Form, Input, Button, DatePicker, message } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import MDMCommonality from '@/components/Select';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
+import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import OrderPreview from './components';
 import { getName } from '@/utils/utils';
 
@@ -26,6 +27,11 @@ class TI_Z02801 extends PureComponent {
       title: '客询价单',
       width: 80,
       dataIndex: 'BaseEntry',
+      render: (val, record) => (
+        <a href={`/sellabout/TI_Z026/TI_Z02602?DocEntry=${record.DocEntry}`} alt="单号">
+          {val}
+        </a>
+      ),
     },
     {
       title: '客询价行',
@@ -71,8 +77,7 @@ class TI_Z02801 extends PureComponent {
       dataIndex: 'SKUName',
       render: text => (
         <Ellipsis tooltip lines={1}>
-          {' '}
-          {text}{' '}
+          {text}
         </Ellipsis>
       ),
     },
@@ -80,26 +85,51 @@ class TI_Z02801 extends PureComponent {
       title: '品牌',
       width: 80,
       dataIndex: 'BrandName',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '名称',
       width: 100,
       dataIndex: 'ProductName',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '型号',
       width: 100,
       dataIndex: 'ManufactureNO',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '参数',
       width: 100,
       dataIndex: 'Parameters',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '包装',
       width: 100,
       dataIndex: 'Package',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '采购员',
@@ -186,7 +216,7 @@ class TI_Z02801 extends PureComponent {
     {
       title: '价格',
       width: 100,
-      dataIndex: 'ProductName',
+      dataIndex: 'Price',
     },
     {
       title: '型号',
@@ -305,7 +335,6 @@ class TI_Z02801 extends PureComponent {
   // });
 
   onSelectRow = selectedRows => {
-    console.log(selectedRows);
     this.setState({ selectedRows: [...selectedRows] });
   };
 
@@ -383,29 +412,28 @@ class TI_Z02801 extends PureComponent {
       },
     };
     return (
-      <Form onSubmit={this.handleSearch} {...formItemLayout}>
+      <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={8} sm={24}>
-            <FormItem key="SearchText" label="客户名称" {...formLayout}>
-              {getFieldDecorator('SearchText')(<Input placeholder="请输入客户名称" />)}
+          <Col md={4} sm={24}>
+            <FormItem key="SearchText" {...formLayout}>
+              {getFieldDecorator('SearchText')(<Input placeholder="请输入关键字" />)}
             </FormItem>
           </Col>
-          <Col md={8} sm={24}>
+          <Col md={6} sm={24}>
             <FormItem label="日期" {...formLayout}>
               {getFieldDecorator('dateArr', { rules: [{ type: 'array' }] })(
                 <RangePicker style={{ width: '100%' }} />
               )}
             </FormItem>
           </Col>
-          <Col md={8} sm={24}>
+          <Col md={6} sm={24}>
             <FormItem key="Owner" {...formLayout} label="所有者">
               {getFieldDecorator('Owner', { rules: [{ required: true, message: '请选择所有者' }] })(
                 <MDMCommonality data={Saler} />
               )}
             </FormItem>
           </Col>
-
-          <Col md={8} sm={24}>
+          <Col md={1} sm={24}>
             <FormItem key="searchBtn" {...searchFormItemLayout}>
               <span className="submitButtons">
                 <Button type="primary" htmlType="submit">
@@ -425,6 +453,7 @@ class TI_Z02801 extends PureComponent {
       global: { Purchaser, Company, Saler },
       loading,
     } = this.props;
+
     const { modalVisible, selectedRows } = this.state;
 
     const columns = this.columns.map(item => {
@@ -437,7 +466,7 @@ class TI_Z02801 extends PureComponent {
     };
     return (
       <Fragment>
-        <Card title="采购询价确认单查询" bordered={false}>
+        <Card title="采购询价确认单添加" bordered={false}>
           <div className="tableList">
             <div className="tableListForm">{this.renderSimpleForm()}</div>
             <StandardTable
@@ -453,9 +482,7 @@ class TI_Z02801 extends PureComponent {
               columns={columns}
               onChange={this.handleStandardTableChange}
             />
-            <Button type="primary" onClick={this.confrimModel}>
-              确认
-            </Button>
+
             <OrderPreview
               orderLineList={selectedRows}
               Purchaser={Purchaser}
@@ -467,6 +494,11 @@ class TI_Z02801 extends PureComponent {
             />
           </div>
         </Card>
+        <FooterToolbar>
+          <Button type="primary" onClick={this.confrimModel}>
+            确认
+          </Button>
+        </FooterToolbar>
       </Fragment>
     );
   }

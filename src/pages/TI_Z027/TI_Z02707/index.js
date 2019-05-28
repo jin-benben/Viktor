@@ -20,6 +20,7 @@ import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import MDMCommonality from '@/components/Select';
 import { getName } from '@/utils/utils';
 import DocEntryFrom from '@/components/DocEntryFrom';
+import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 
 const { RangePicker } = DatePicker;
 
@@ -42,6 +43,7 @@ class supplierQuotationSku extends PureComponent {
     {
       title: '单号',
       width: 80,
+      fixed: 'left',
       dataIndex: 'DocEntry',
     },
     {
@@ -87,6 +89,11 @@ class supplierQuotationSku extends PureComponent {
       title: '供应商',
       width: 150,
       dataIndex: 'CardName',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '联系人',
@@ -115,6 +122,11 @@ class supplierQuotationSku extends PureComponent {
       title: '产品描述',
       width: 150,
       dataIndex: 'SKUName',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '品牌',
@@ -125,21 +137,41 @@ class supplierQuotationSku extends PureComponent {
       title: '名称',
       width: 150,
       dataIndex: 'ProductName',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '型号',
       width: 100,
       dataIndex: 'ManufactureNO',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '参数',
       width: 100,
       dataIndex: 'Parameters',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '包装',
       width: 100,
       dataIndex: 'Package',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '数量',
@@ -280,7 +312,7 @@ class supplierQuotationSku extends PureComponent {
 
   handleOnRow = record => ({
     // 详情or修改
-    onClick: () => router.push(`/TI_Z027/edit?DocEntry=${record.DocEntry}`),
+    onClick: () => router.push(`/purchase/TI_Z027/edit?DocEntry=${record.DocEntry}`),
   });
 
   renderSimpleForm() {
@@ -293,50 +325,27 @@ class supplierQuotationSku extends PureComponent {
       labelCol: { span: 8 },
       wrapperCol: { span: 16 },
     };
-    const formItemLayout = {
-      labelCol: {
-        xs: { span: 24 },
-        sm: { span: 10 },
-      },
-      wrapperCol: {
-        xs: { span: 24 },
-        sm: { span: 14 },
-        md: { span: 10 },
-      },
-    };
-    const searchFormItemLayout = {
-      wrapperCol: {
-        xs: {
-          span: 24,
-          offset: 0,
-        },
-        sm: {
-          span: 16,
-          offset: 8,
-        },
-      },
-    };
     return (
-      <Form onSubmit={this.handleSearch} {...formItemLayout}>
+      <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={6} sm={24}>
-            <FormItem key="SearchText" label="供应商名称" {...formLayout}>
-              {getFieldDecorator('SearchText')(<Input placeholder="请输入供应商名称" />)}
+          <Col md={4} sm={24}>
+            <FormItem key="SearchText" {...formLayout}>
+              {getFieldDecorator('SearchText')(<Input placeholder="请输入关键字" />)}
             </FormItem>
           </Col>
-          <Col md={6} sm={24}>
+          <Col md={5} sm={24}>
             <FormItem label="日期" {...formLayout}>
               {getFieldDecorator('dateArr', { rules: [{ type: 'array' }] })(
                 <RangePicker style={{ width: '100%' }} />
               )}
             </FormItem>
           </Col>
-          <Col md={6} sm={24}>
+          <Col md={5} sm={24}>
             <FormItem label="所有者" {...formLayout}>
               {getFieldDecorator('Owner')(<MDMCommonality data={Purchaser} />)}
             </FormItem>
           </Col>
-          <Col md={6} sm={24}>
+          <Col md={5} sm={24}>
             <FormItem key="LineStatus" {...formLayout} label="确认状态">
               {getFieldDecorator('LineStatus')(
                 <Select placeholder="请选择">
@@ -349,43 +358,35 @@ class supplierQuotationSku extends PureComponent {
           </Col>
           {expandForm ? (
             <Fragment>
-              <Col md={6} sm={24}>
-                <FormItem key="orderNo" {...formLayout} label="单号">
-                  {getFieldDecorator('orderNo', {
-                    initialValue: { DocEntryFrom: '', DocEntryTo: '' },
-                  })(<DocEntryFrom />)}
-                </FormItem>
-              </Col>
-              <Col md={6} sm={24}>
-                <FormItem label="销售" {...formLayout}>
-                  {getFieldDecorator('Saler')(<MDMCommonality data={Saler} />)}
-                </FormItem>
-              </Col>
-              <Col md={6} sm={24}>
-                <FormItem key="Closed" {...formLayout} label="关闭状态">
+              <Col md={5} sm={24}>
+                <FormItem key="Closed" {...formLayout}>
                   {getFieldDecorator('Closed')(
-                    <Select placeholder="请选择">
+                    <Select placeholder="请选择关闭状态">
                       <Option value="Y">已关闭</Option>
                       <Option value="N">未关闭</Option>
                     </Select>
                   )}
                 </FormItem>
               </Col>
+              <Col md={5} sm={24}>
+                <FormItem key="orderNo" {...formLayout} label="单号">
+                  {getFieldDecorator('orderNo', {
+                    initialValue: { DocEntryFrom: '', DocEntryTo: '' },
+                  })(<DocEntryFrom />)}
+                </FormItem>
+              </Col>
+              <Col md={5} sm={24}>
+                <FormItem label="销售" {...formLayout}>
+                  {getFieldDecorator('Saler')(<MDMCommonality data={Saler} />)}
+                </FormItem>
+              </Col>
             </Fragment>
           ) : null}
-          <Col md={6} sm={24}>
-            <FormItem key="searchBtn" {...searchFormItemLayout}>
+          <Col md={5} sm={24}>
+            <FormItem key="searchBtn">
               <span className="submitButtons">
                 <Button type="primary" htmlType="submit">
                   查询
-                </Button>
-                <Button
-                  icon="plus"
-                  style={{ marginLeft: 8 }}
-                  type="primary"
-                  onClick={() => router.push('/inquiry/edit')}
-                >
-                  新建
                 </Button>
                 <a style={{ marginLeft: 8 }} onClick={this.toggleForm}>
                   {expandForm ? (
@@ -428,6 +429,16 @@ class supplierQuotationSku extends PureComponent {
             />
           </div>
         </Card>
+        <FooterToolbar>
+          <Button
+            icon="plus"
+            style={{ marginLeft: 8 }}
+            type="primary"
+            onClick={() => router.push('/purchase/TI_Z027/edit')}
+          >
+            新建客户询价单
+          </Button>
+        </FooterToolbar>
       </Fragment>
     );
   }

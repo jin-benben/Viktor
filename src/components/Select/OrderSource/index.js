@@ -29,7 +29,7 @@ class OrderSource extends PureComponent {
   };
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    if (nextProps.data !== prevState.data) {
+    if (nextProps.initialValue !== prevState.value) {
       return {
         value: nextProps.initialValue,
       };

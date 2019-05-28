@@ -23,6 +23,9 @@ export function requestUrl(url) {
   if (url.indexOf('/OMS') !== -1) {
     return url.replace(/\/OMS/i, 'http://47.104.65.49:8001');
   }
+  if (url.indexOf('/Login') !== -1) {
+    return url.replace(/\/Login/i, 'http://47.104.65.49:8083');
+  }
   return url;
 }
 

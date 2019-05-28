@@ -19,6 +19,7 @@ import {
   DatePicker,
   Select,
 } from 'antd';
+import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import moment from 'moment';
 import round from 'lodash/round';
 import router from 'umi/router';
@@ -79,6 +80,11 @@ class TI_Z029Component extends React.Component {
       dataIndex: 'SKUName',
       width: 200,
       align: 'center',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '品牌',

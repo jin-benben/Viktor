@@ -39,10 +39,11 @@ export default {
       hideInMenu: true,
       component: '../layouts/UserLayout',
       routes: [
+        { path: '/user', redirect: '/user/login' },
         {
-          path: '/user',
+          path: '/user/login',
           hideInMenu: true,
-          component: './Welcome',
+          component: './users/login',
         },
       ],
     },
@@ -51,70 +52,341 @@ export default {
       component: '../layouts/BasicLayout',
       routes: [
         {
-          path: '/',
-          hideInMenu: true,
-          redirect: '/welcome',
+          name: '基础设置',
+          icon: 'iconjichu',
+          path: '/base',
+          routes:[
+            {
+              name: '员工管理',
+              icon: 'iconyuangong',
+              path: '/base/TI_Z004',
+              component: './TI_Z004',
+            },
+            {
+              name: '组织架构',
+              icon: 'iconapartment',
+              path: '/base/TI_Z003',
+              component: './TI_Z003',
+            },
+            {
+              name: '权限定义',
+              icon: 'iconquanxian',
+              path: '/base/TI_Z013',
+              component: './TI_Z013',
+            },
+            {
+              name: '角色管理',
+              icon: 'iconjiaose',
+              path: '/base/TI_Z014',
+              routes:[
+                {
+                  name: '查询',
+                  path: '/base/TI_Z014/search',
+                  component: './TI_Z014/search',
+                },
+                {
+                  name: '权限设置',
+                  hideInMenu: true,
+                  path: '/base/TI_Z014/set',
+                  component: './TI_Z014/set',
+                },
+                {
+                  name: '添加',
+                  path: '/base/TI_Z014/edit',
+                  component: './TI_Z014/add',
+                }
+              ]
+            },
+          ]
         },
-        // dashboard
         {
-          path: '/welcome',
-          name: 'welcome',
-          hideInMenu: true,
-          icon: 'smile',
-          component: './Welcome',
-        },
+          name: '业务主数据',
+          icon: 'iconyezhushuju',
+          path: '/main',
+          routes:[
+              {
+                name: '产品相关',
+                icon: 'iconchanpin',
+                path:'/main/product',
+                routes:[
+                  {
+                    name: '品牌管理',
+                    icon: 'iconpinpai',
+                    path: '/main/product/TI_Z005',
+                    component: './TI_Z005',
+                  },
+                  {
+                    name: '产品分类',
+                    icon: 'iconwsdzb_zbgzt_xxzx_newpxb_type',
+                    path: '/main/product/TI_Z010',
+                    component: './TI_Z010',
+                  },
+                  {
+                    name: '物料管理',
+                    icon: 'iconSKU',
+                    path: '/main/product/TI_Z009',
+                    routes:[
+                      {
+                        name: '物料查询',
+                        path: '/main/product/TI_Z009/TI_Z00902',
+                        component: './TI_Z009/TI_Z00902',
+                      },
+                      {
+                        name: '物料详情',
+                        hideInMenu: true,
+                        path: '/main/product/TI_Z009/TI_Z00903',
+                        component: './TI_Z009/TI_Z00903',
+                      },
+                      {
+                        name: '物料添加',
+                        path: '/main/product/TI_Z009/TI_Z00901',
+                        component: './TI_Z009/TI_Z00901',
+                      }
+                    ]
+                  },
+                  {
+                    name: 'SPU管理',
+                    icon: 'iconSPUguanli',
+                    path: '/main/product/TI_Z011',
+                    routes:[
+                      {
+                        name: 'SPU查询',
+                        path: '/main/product/TI_Z011/TI_Z01102',
+                        component: './TI_Z011/search.js',
+                      },
+                      {
+                        name: 'SPU添加',
+                        path: '/main/product/TI_Z011/TI_Z01101',
+                        component: './TI_Z011/add.js',
+                      }
+                    ]
+                  },
+                  {
+                    name: '编码管理',
+                    icon: 'iconcodec',
+                    path: '/main/product/code',
+                    routes:[
+                      {
+                        name: '国内海关编码',
+                        path: '/main/product/code/hscode',
+                        component: './code/hscode',
+                      },
+                      {
+                        name: '国外海关编码',
+                        path: '/main/product/code/fhscode',
+                        component: './code/fhscode',
+                      }
+                    ]
+                  },
+                  {
+                    name: '供应商管理',
+                    icon: 'icongongyingshang',
+                    path: '/main/product/TI_Z007',
+                    routes: [
+                      {
+                        path: '/main/product/TI_Z007/TI_Z00702',
+                        name: '供应商查询',
+                        component: './TI_Z007/TI_Z00702',
+                      },
+                      {
+                        path: '/main/product/TI_Z007/TI_Z00703',
+                        name: '供应商详情',
+                        hideInMenu: true,
+                        component: './TI_Z007/TI_Z00701',
+                      },
+                      {
+                        path: '/main/product/TI_Z007/TI_Z00701',
+                        name: '供应商添加',
+                        component: './TI_Z007/TI_Z00701',
+                      },
+                    ],
+                  },
+                ]
+              },
+              {
+                name: '客户管理',
+                icon: 'iconkehu',
+                path: '/main/TI_Z006',
+                routes: [
+                  {
+                    path: '/main/TI_Z006/TI_Z00602',
+                    name: '客户查询',
+                    component: './TI_Z006/TI_Z00602',
+                  },
+                  {
+                    path: '/main/TI_Z006/TI_Z00601',
+                    name: '客户添加',
+                    component: './TI_Z006/TI_Z00601',
+                  },
+                  {
+                    path: `/main/TI_Z006/TI_Z00603`,
+                    name: '客户详情',
+                    hideInMenu: true,
+                    component: './TI_Z006/TI_Z00601',
+                  },
+                ],
+              },
+          ]
+        }, 
         {
-          path: 'https://github.com/umijs/umi-blocks/tree/master/ant-design-pro',
-          name: 'more-blocks',
-          hideInMenu: true,
-          icon: 'block',
-        },
+          name: '销售业务',
+          icon: 'iconxiaoshou',
+          path: '/sellabout',
+          routes:[
+            {
+              name: '客户询价单',
+              icon: 'iconxunjia',
+              path: '/sellabout/TI_Z026',
+              routes:[
+                {
+                  name: '单据查询',
+                  path: '/sellabout/TI_Z026/TI_Z02606',
+                  component: './TI_Z026/TI_Z02606',
+                },
+                {
+                  name: '明细查询',
+                  path: '/sellabout/TI_Z026/TI_Z02607',
+                  component: './TI_Z026/TI_Z02607',
+                },
+                {
+                  name: '单据添加',
+                  path: '/sellabout/TI_Z026/TI_Z02601',
+                  component: './TI_Z026/TI_Z02601',
+                },
+                {
+                  name: '客户询价单详情',
+                  icon: 'smile',
+                  path: '/sellabout/TI_Z026/TI_Z02602',
+                  hideInMenu: true,
+                  component: './TI_Z026/TI_Z02601',
+                }
+              ]
+            },
+            
+            {
+              name: '销售报价单',
+              icon: 'iconquo',
+              path: '/sellabout/TI_Z029',
+              routes:[
+                {
+                  name: '单据查询',
+                  path: '/sellabout/TI_Z029/search',
+                  component: './TI_Z029/TI_Z02906',
+                },
+                {
+                  name: '明细查询',
+                  path: '/sellabout/TI_Z029/searchLine',
+                  component: './TI_Z029/TI_Z02907',
+                },
+                {
+                  name: '销售报价单详情',
+                  hideInMenu: true,
+                  path: '/sellabout/TI_Z029/detail',
+                  component: './TI_Z029/TI_Z02901',
+                },
+                {
+                  name: '单据添加',
+                  path: '/sellabout/TI_Z029/edit',
+                  component: './TI_Z029/TI_Z02901',
+                }
+              ]
+            },
+            {
+              name: '销售合同',
+              icon: 'iconhetong',
+              path: '/sellabout/TI_Z030',
+              routes:[
+                {
+                  name: '单据查询',
+                  path: '/sellabout/TI_Z030/search',
+                  component: './TI_Z030/TI_Z03006',
+                },
+                {
+                  name: '明细查询',
+                  path: '/sellabout/TI_Z030/searchLine',
+                  component: './TI_Z030/TI_Z03007',
+                },
+                {
+                  name: '销售合同详情',
+                  hideInMenu: true,
+                  path: '/sellabout/TI_Z030/detail',
+                  component: './TI_Z030/TI_Z03001',
+                },
+                {
+                  name: '单据添加',
+                  path: '/sellabout/TI_Z030/edit',
+                  component: './TI_Z030/TI_Z03001',
+                }
+              ]
+            },
+           
+          ]
+        }, 
         {
-          name: '客户管理',
-          icon: 'iconkehu',
-          path: '/TI_Z006',
-          routes: [
+          name: '采购业务',
+          icon: 'iconcaigou',
+          path: '/purchase',
+          routes:[
             {
-              path: '/TI_Z006/TI_Z00602',
-              name: '客户查询',
-              component: './TI_Z006/TI_Z00602',
+              name: '供应商询价单',
+              icon: 'iconxunjia',
+              path: '/purchase/TI_Z027',
+              routes:[
+                {
+                  name: '单据查询',
+                  path: '/purchase/TI_Z027/search',
+                  component: './TI_Z027/TI_Z02706',
+                },
+                {
+                  name: '明细查询',
+                  path: '/purchase/TI_Z027/searchLine',
+                  component: './TI_Z027/TI_Z02707',
+                },
+                {
+                  name: '供应商询价单更新',
+                  hideInMenu: true,
+                  path: '/purchase/TI_Z027/TI_Z02702',
+                  component: './TI_Z027/TI_Z02702',
+                },
+                {
+                  name: '单据添加',
+                  path: '/purchase/TI_Z027/edit',
+                  component: './TI_Z027/TI_Z02701',
+                }
+              ]
             },
             {
-              path: '/TI_Z006/TI_Z00601',
-              name: '客户添加',
-              component: './TI_Z006/TI_Z00601',
+              name: '采购询价确认单',
+              icon: 'iconqueren',
+              path: '/purchase/TI_Z028',
+              routes:[
+                {
+                  name: '单据查询',
+                  path: '/purchase/TI_Z028/TI_Z02803',
+                  component: './TI_Z028/TI_Z02803',
+                },
+                {
+                  name: '明细查询',
+                  path: '/purchase/TI_Z028/TI_Z02804',
+                  component: './TI_Z028/TI_Z02804',
+                },
+                {
+                  name: '单据添加',
+                  path: '/purchase/TI_Z028/TI_Z02801',
+                  component: './TI_Z028/TI_Z02801',
+                },
+                {
+                  name: '采购询价确认详情',
+                  path: '/purchase/TI_Z028/TI_Z02802',
+                  hideInMenu: true,
+                  component: './TI_Z028/TI_Z02802',
+                }
+              ]
             },
-            {
-              path: `/TI_Z006/TI_Z00603`,
-              name: '客户详情',
-              hideInMenu: true,
-              component: './TI_Z006/TI_Z00601',
-            },
-          ],
-        },
-        {
-          name: '供应商管理',
-          icon: 'icongongyingshang',
-          path: '/TI_Z007',
-          routes: [
-            {
-              path: '/TI_Z007/TI_Z00702',
-              name: '供应商查询',
-              component: './TI_Z007/TI_Z00702',
-            },
-            {
-              path: '/TI_Z007/TI_Z00703',
-              name: '供应商详情',
-              hideInMenu: true,
-              component: './TI_Z007/TI_Z00701',
-            },
-            {
-              path: '/TI_Z007/TI_Z00701',
-              name: '供应商添加',
-              component: './TI_Z007/TI_Z00701',
-            },
-          ],
-        },
+          ]
+        }, 
+       
+        
         {
           name: '消息管理',
           icon: 'smile',
@@ -154,30 +426,9 @@ export default {
             },
           ],
         },
-        {
-          name: '员工管理',
-          icon: 'iconyuangong',
-          path: '/TI_Z004',
-          component: './TI_Z004',
-        },
-        {
-          name: '产品分类',
-          icon: 'iconwsdzb_zbgzt_xxzx_newpxb_type',
-          path: '/TI_Z010',
-          component: './TI_Z010',
-        },
-        {
-          name: '组织架构',
-          icon: 'iconapartment',
-          path: '/TI_Z003',
-          component: './TI_Z003',
-        },
-        {
-          name: '权限定义',
-          icon: 'iconquanxian',
-          path: '/TI_Z013',
-          component: './TI_Z013',
-        },
+       
+       
+       
         {
           name: '用户查询',
           icon: 'smile',
@@ -185,12 +436,7 @@ export default {
           hideInMenu: true,
           component: './users',
         },
-        {
-          name: '品牌管理',
-          icon: 'iconpinpai',
-          path: '/TI_Z005',
-          component: './TI_Z005',
-        },
+       
         {
           name: 'exception',
           icon: 'smile',
@@ -214,227 +460,10 @@ export default {
             }
           ]
         },
-        {
-          name: '客户询价单',
-          icon: 'iconxunjia',
-          path: '/TI_Z026',
-          routes:[
-            {
-              name: '客户询价单查询',
-              path: '/TI_Z026/TI_Z02606',
-              component: './TI_Z026/TI_Z02606',
-            },
-            {
-              name: '物料明细查询',
-              path: '/TI_Z026/TI_Z02607',
-              component: './TI_Z026/TI_Z02607',
-            },
-            {
-              name: '客户询价单添加',
-              path: '/TI_Z026/TI_Z02601',
-              component: './TI_Z026/TI_Z02601',
-            },
-            {
-              name: '客户询价单详情',
-              icon: 'smile',
-              path: '/TI_Z026/TI_Z02602',
-              hideInMenu: true,
-              component: './TI_Z026/TI_Z02601',
-            }
-          ]
-        },
-        {
-          name: '采购询价确认单',
-          icon: 'iconqueren',
-          path: '/TI_Z028',
-          routes:[
-            {
-              name: '采购询价确认单查询',
-              path: '/TI_Z028/TI_Z02803',
-              component: './TI_Z028/TI_Z02803',
-            },
-            {
-              name: '采购询价确认物料明细查询',
-              path: '/TI_Z028/TI_Z02804',
-              component: './TI_Z028/TI_Z02804',
-            },
-            {
-              name: '采购询价确认编辑',
-              path: '/TI_Z028/TI_Z02801',
-              component: './TI_Z028/TI_Z02801',
-            },
-            {
-              name: '采购询价确认详情',
-              path: '/TI_Z028/TI_Z02802',
-              hideInMenu: true,
-              component: './TI_Z028/TI_Z02802',
-            }
-          ]
-        },
-        {
-          name: '销售报价单',
-          icon: 'iconquo',
-          path: '/TI_Z029',
-          routes:[
-            {
-              name: '销售报价单据查询',
-              path: '/TI_Z029/search',
-              component: './TI_Z029/TI_Z02906',
-            },
-            {
-              name: '销售报价单明细查询',
-              path: '/TI_Z029/searchLine',
-              component: './TI_Z029/TI_Z02907',
-            },
-            {
-              name: '销售报价单详情',
-              hideInMenu: true,
-              path: '/TI_Z029/detail',
-              component: './TI_Z029/TI_Z02901',
-            },
-            {
-              name: '销售报价单添加',
-              path: '/TI_Z029/edit',
-              component: './TI_Z029/TI_Z02901',
-            }
-          ]
-        },
-        {
-          name: '销售合同',
-          icon: 'iconhetong',
-          path: '/TI_Z030',
-          routes:[
-            {
-              name: '销售合同单据查询',
-              path: '/TI_Z030/search',
-              component: './TI_Z030/TI_Z03006',
-            },
-            {
-              name: '销售合同明细查询',
-              path: '/TI_Z030/searchLine',
-              component: './TI_Z030/TI_Z03007',
-            },
-            {
-              name: '销售合同详情',
-              hideInMenu: true,
-              path: '/TI_Z030/detail',
-              component: './TI_Z030/TI_Z03001',
-            },
-            {
-              name: '销售合同添加',
-              path: '/TI_Z030/edit',
-              component: './TI_Z030/TI_Z03001',
-            }
-          ]
-        },
-        {
-          name: '供应商询价单',
-          icon: 'iconxunjia',
-          path: '/TI_Z027',
-          routes:[
-            {
-              name: '单据查询',
-              path: '/TI_Z027/search',
-              component: './TI_Z027/TI_Z02706',
-            },
-            {
-              name: '明细查询',
-              path: '/TI_Z027/searchLine',
-              component: './TI_Z027/TI_Z02707',
-            },
-            {
-              name: '供应商询价单更新',
-              hideInMenu: true,
-              path: '/TI_Z027/TI_Z02702',
-              component: './TI_Z027/TI_Z02702',
-            },
-            {
-              name: '添加',
-              path: '/TI_Z027/edit',
-              component: './TI_Z027/TI_Z02701',
-            }
-          ]
-        },
-        {
-          name: '物料管理',
-          icon: 'iconSKU',
-          path: '/TI_Z009',
-          routes:[
-            {
-              name: '物料查询',
-              path: '/TI_Z009/TI_Z00902',
-              component: './TI_Z009/TI_Z00902',
-            },
-            {
-              name: '物料详情',
-              hideInMenu: true,
-              path: '/TI_Z009/TI_Z00903',
-              component: './TI_Z009/TI_Z00903',
-            },
-            {
-              name: '物料添加',
-              path: '/TI_Z009/TI_Z00901',
-              component: './TI_Z009/TI_Z00901',
-            }
-          ]
-        },
-        {
-          name: '角色管理',
-          icon: 'iconjiaose',
-          path: '/TI_Z014',
-          routes:[
-            {
-              name: '查询',
-              path: '/TI_Z014/search',
-              component: './TI_Z014/search',
-            },
-            {
-              name: '权限设置',
-              hideInMenu: true,
-              path: '/TI_Z014/set',
-              component: './TI_Z014/set',
-            },
-            {
-              name: '添加',
-              path: '/TI_Z014/edit',
-              component: './TI_Z014/add',
-            }
-          ]
-        },
-        {
-          name: 'SPU管理',
-          icon: 'iconSPUguanli',
-          path: '/TI_Z011',
-          routes:[
-            {
-              name: 'SPU查询',
-              path: '/TI_Z011/TI_Z01102',
-              component: './TI_Z011/search.js',
-            },
-            {
-              name: 'SPU添加',
-              path: '/TI_Z011/TI_Z01101',
-              component: './TI_Z011/add.js',
-            }
-          ]
-        },
-        {
-          name: '编码管理',
-          icon: 'iconcodec',
-          path: '/code',
-          routes:[
-            {
-              name: '国内海关编码',
-              path: '/code/hscode',
-              component: './code/hscode',
-            },
-            {
-              name: '国外海关编码',
-              path: '/code/fhscode',
-              component: './code/fhscode',
-            }
-          ]
-        }
+       
+       
+        
+       
       ],
     },
   ],

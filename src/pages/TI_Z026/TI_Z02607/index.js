@@ -1,6 +1,5 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import router from 'umi/router';
 import moment from 'moment';
 import {
   Row,
@@ -14,6 +13,7 @@ import {
   Select,
   DatePicker,
   Checkbox,
+  Icon,
   message,
 } from 'antd';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
@@ -21,6 +21,7 @@ import StandardTable from '@/components/StandardTable';
 import DocEntryFrom from '@/components/DocEntryFrom';
 import NeedAskPrice from '../components/needAskPrice';
 import MDMCommonality from '@/components/Select';
+import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import { getName } from '@/utils/utils';
 
 const { RangePicker } = DatePicker;
@@ -48,6 +49,11 @@ class orderLine extends PureComponent {
       width: 50,
       fixed: 'left',
       dataIndex: 'DocEntry',
+      render: (val, record) => (
+        <a href={`/sellabout/TI_Z026/TI_Z02602?DocEntry=${record.DocEntry}`} alt="单号">
+          {val}
+        </a>
+      ),
     },
     {
       title: '行号',
@@ -139,8 +145,7 @@ class orderLine extends PureComponent {
       dataIndex: 'SKUName',
       render: text => (
         <Ellipsis tooltip lines={1}>
-          {' '}
-          {text}{' '}
+          {text}
         </Ellipsis>
       ),
     },
@@ -153,16 +158,34 @@ class orderLine extends PureComponent {
       title: '名称',
       width: 100,
       dataIndex: 'ProductName',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {' '}
+          {text}{' '}
+        </Ellipsis>
+      ),
     },
     {
       title: '型号',
       width: 100,
       dataIndex: 'ManufactureNO',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {' '}
+          {text}{' '}
+        </Ellipsis>
+      ),
     },
     {
       title: '参数',
       width: 100,
       dataIndex: 'Parameters',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {' '}
+          {text}{' '}
+        </Ellipsis>
+      ),
     },
     {
       title: '包装',
@@ -317,11 +340,6 @@ class orderLine extends PureComponent {
     });
   };
 
-  handleOnRow = record => ({
-    // 详情or修改
-    onClick: () => router.push(`/TI_Z026/TI_Z02602?DocEntry=${record.DocEntry}`),
-  });
-
   onSelectRow = selectedRows => {
     this.setState({ selectedRows: [...selectedRows] });
   };
@@ -383,45 +401,23 @@ class orderLine extends PureComponent {
       labelCol: { span: 6 },
       wrapperCol: { span: 18 },
     };
-    const formItemLayout = {
-      labelCol: {
-        xs: { span: 24 },
-        sm: { span: 10 },
-      },
-      wrapperCol: {
-        xs: { span: 24 },
-        sm: { span: 14 },
-        md: { span: 10 },
-      },
-    };
-    const searchFormItemLayout = {
-      wrapperCol: {
-        xs: {
-          span: 24,
-          offset: 0,
-        },
-        sm: {
-          span: 16,
-          offset: 6,
-        },
-      },
-    };
+
     return (
-      <Form onSubmit={this.handleSearch} {...formItemLayout}>
+      <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={6} sm={24}>
-            <FormItem key="SearchText" label="客户名称" {...formLayout}>
-              {getFieldDecorator('SearchText')(<Input placeholder="请输入客户名称" />)}
+          <Col md={3} sm={24}>
+            <FormItem key="SearchText" {...formLayout}>
+              {getFieldDecorator('SearchText')(<Input placeholder="请输入关键字" />)}
             </FormItem>
           </Col>
-          <Col md={6} sm={24}>
+          <Col md={5} sm={24}>
             <FormItem label="日期" {...formLayout}>
               {getFieldDecorator('dateArr', { rules: [{ type: 'array' }] })(
                 <RangePicker style={{ width: '100%' }} />
               )}
             </FormItem>
           </Col>
-          <Col md={6} sm={24}>
+          <Col md={5} sm={24}>
             <FormItem key="SLineStatus" {...formLayout} label="报价状态">
               {getFieldDecorator('SLineStatus')(
                 <Select placeholder="请选择">
@@ -431,28 +427,28 @@ class orderLine extends PureComponent {
               )}
             </FormItem>
           </Col>
-          <Col md={6} sm={24}>
+          <Col md={5} sm={24}>
             <FormItem label="所有者" {...formLayout}>
               {getFieldDecorator('Owner')(<MDMCommonality data={Saler} />)}
             </FormItem>
           </Col>
-          <Col md={6} sm={24}>
-            <FormItem {...searchFormItemLayout}>
+          <Col md={3} sm={24}>
+            <FormItem>
               {getFieldDecorator('IsInquiry', { valuePropName: 'checked', initialValue: true })(
-                <Checkbox>显示无需报价</Checkbox>
+                <Checkbox>无需报价</Checkbox>
               )}
             </FormItem>
           </Col>
           {expandForm ? (
             <Fragment>
-              <Col md={6} sm={24}>
+              <Col md={5} sm={24}>
                 <FormItem key="orderNo" {...formLayout} label="单号">
                   {getFieldDecorator('orderNo', {
                     initialValue: { DocEntryFrom: '', DocEntryTo: '' },
                   })(<DocEntryFrom />)}
                 </FormItem>
               </Col>
-              <Col md={6} sm={24}>
+              <Col md={5} sm={24}>
                 <FormItem key="PLineStatus" {...formLayout} label="询价状态">
                   {getFieldDecorator('PLineStatus')(
                     <Select placeholder="请选择">
@@ -462,7 +458,7 @@ class orderLine extends PureComponent {
                   )}
                 </FormItem>
               </Col>
-              <Col md={6} sm={24}>
+              <Col md={5} sm={24}>
                 <FormItem key="Closed" {...formLayout} label="关闭状态">
                   {getFieldDecorator('Closed')(
                     <Select placeholder="请选择">
@@ -474,19 +470,11 @@ class orderLine extends PureComponent {
               </Col>
             </Fragment>
           ) : null}
-          <Col md={6} sm={24}>
-            <FormItem key="searchBtn" {...searchFormItemLayout}>
+          <Col md={3} sm={24}>
+            <FormItem key="searchBtn">
               <span className="submitButtons">
                 <Button type="primary" htmlType="submit">
                   查询
-                </Button>
-                {/* <Button
-                  icon="plus"
-                  style={{ marginLeft: 8 }}
-                  type="primary"
-                  onClick={() => router.push('/inquiry/edit')}
-                >
-                  新建
                 </Button>
                 <a style={{ marginLeft: 8 }} onClick={this.toggleForm}>
                   {expandForm ? (
@@ -498,7 +486,7 @@ class orderLine extends PureComponent {
                       展开 <Icon type="down" />
                     </span>
                   )}
-                </a> */}
+                </a>
               </span>
             </FormItem>
           </Col>
@@ -538,18 +526,20 @@ class orderLine extends PureComponent {
               scroll={{ x: 2600, y: 500 }}
               columns={columns}
               rowSelection={{
-                onSelectRow: this.onSelectRow,
+                onChange: this.onSelectRow,
               }}
               selectedRows={selectedRows}
               onRow={this.handleOnRow}
               onChange={this.handleStandardTableChange}
             />
-            <Button style={{ marginTop: 20 }} onClick={this.selectNeed} type="primary">
-              确认需采购询价
-            </Button>
             <NeedAskPrice data={selectedRows} {...parentMethods} modalVisible={modalVisible} />
           </div>
         </Card>
+        <FooterToolbar>
+          <Button style={{ marginTop: 20 }} onClick={this.selectNeed} type="primary">
+            确认需采购询价
+          </Button>
+        </FooterToolbar>
       </Fragment>
     );
   }

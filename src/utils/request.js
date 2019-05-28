@@ -31,9 +31,6 @@ const errorHandler = error => {
   const { response = {} } = error;
   const errortext = codeMessage[response.status] || response.statusText;
   const { status, url } = response;
-
-  console.log(error);
-
   notification.error({
     message: `请求错误 ${status}: ${url}`,
     description: errortext,
@@ -60,7 +57,6 @@ request.interceptors.request.use((url, options) => {
 request.interceptors.response.use(async response => {
   // const {url} =response
   const data = await response.clone().json();
-  console.log(data);
   if (data.Status !== 200) {
     notification.error({
       message: `请求错误 ${data.Status}`,

@@ -286,15 +286,6 @@ class TI_Z02802 extends PureComponent {
               })(<MDMCommonality initialValue={purchaseDetail.Owner} data={Saler} />)}
             </FormItem>
           </Col>
-          <Col lg={8} md={12} sm={24}>
-            <FormItem key="CreateDate" {...formLayout} label="创建日期">
-              {getFieldDecorator('CreateDate', {
-                initialValue: purchaseDetail.CreateDate
-                  ? moment(purchaseDetail.CreateDate, 'YYYY-MM-DD')
-                  : null,
-              })(<DatePicker style={{ width: '100%' }} />)}
-            </FormItem>
-          </Col>
         </Row>
       </Card>
     );

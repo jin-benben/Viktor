@@ -155,7 +155,7 @@ class companySearch extends PureComponent {
 
   handleOnRow = record => ({
     // 详情or修改
-    onClick: () => router.push(`/TI_Z006/TI_Z00603?Code=${record.Code}`),
+    onClick: () => router.push(`/main/TI_Z006/TI_Z00603?Code=${record.Code}`),
   });
 
   renderSimpleForm() {
@@ -180,7 +180,7 @@ class companySearch extends PureComponent {
                 icon="plus"
                 style={{ marginLeft: 8 }}
                 type="primary"
-                onClick={() => router.push('/TI_Z006/TI_Z00601')}
+                onClick={() => router.push('/main/TI_Z006/TI_Z00601')}
               >
                 新建
               </Button>

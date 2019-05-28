@@ -661,7 +661,7 @@ class InquiryEdit extends React.Component {
         callback: response => {
           if (response.Status === 200) {
             message.success('添加成功');
-            router.push(`/inquiry/detail?DocEntry=${response.Content.DocEntry}`);
+            router.push(`/purchase/detail?DocEntry=${response.Content.DocEntry}`);
           }
         },
       });

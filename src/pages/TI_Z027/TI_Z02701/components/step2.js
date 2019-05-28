@@ -24,6 +24,7 @@ class SelectionLine extends Component {
     {
       title: '总物料数',
       dataIndex: 'LineSum',
+      width: 150,
       render: (text, record) => <span>{record.TI_Z02702.length}</span>,
     },
     {
@@ -38,6 +39,7 @@ class SelectionLine extends Component {
     },
     {
       title: '供应商参考号',
+      width: 150,
       dataIndex: 'NumAtCard',
       render: (text, record, index) => (
         <Input
@@ -48,6 +50,7 @@ class SelectionLine extends Component {
     },
     {
       title: '所有者',
+      width: 150,
       dataIndex: 'Owner',
       render: (text, record, index) => {
         const {
@@ -94,7 +97,9 @@ class SelectionLine extends Component {
   };
 
   onSelectRow = selectedRows => {
+    const { submitStepParent } = this.props;
     this.setState({ selectedRows: [...selectedRows] });
+    submitStepParent(selectedRows);
   };
 
   expandedRowRender = record => {
@@ -127,21 +132,41 @@ class SelectionLine extends Component {
         title: '名称',
         width: 100,
         dataIndex: 'ProductName',
+        render: text => (
+          <Ellipsis tooltip lines={1}>
+            {text}
+          </Ellipsis>
+        ),
       },
       {
         title: '型号',
         width: 100,
         dataIndex: 'ManufactureNO',
+        render: text => (
+          <Ellipsis tooltip lines={1}>
+            {text}
+          </Ellipsis>
+        ),
       },
       {
         title: '参数',
         width: 100,
         dataIndex: 'Parameters',
+        render: text => (
+          <Ellipsis tooltip lines={1}>
+            {text}
+          </Ellipsis>
+        ),
       },
       {
         title: '包装',
         width: 100,
         dataIndex: 'Package',
+        render: text => (
+          <Ellipsis tooltip lines={1}>
+            {text}
+          </Ellipsis>
+        ),
       },
       {
         title: '数量',
@@ -179,14 +204,8 @@ class SelectionLine extends Component {
     return <StandardTable data={{ list: record.TI_Z02702 }} columns={columns} />;
   };
 
-  submitStep = () => {
-    const { submitStepParent } = this.props;
-    const { selectedRows } = this.state;
-    submitStepParent(selectedRows);
-  };
-
   render() {
-    const { orderLineList, changeStep } = this.props;
+    const { orderLineList } = this.props;
     const { selectedRows } = this.state;
     return (
       <div>
@@ -203,18 +222,6 @@ class SelectionLine extends Component {
           expandedRowRender={this.expandedRowRender}
           onChange={this.handleStandardTableChange}
         />
-        <Fragment>
-          <Button
-            style={{ marginRight: 20, marginTop: 20 }}
-            onClick={() => changeStep(0)}
-            type="primary"
-          >
-            上一步
-          </Button>
-          <Button onClick={this.submitStep} type="primary">
-            确认生成
-          </Button>
-        </Fragment>
       </div>
     );
   }

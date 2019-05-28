@@ -254,7 +254,7 @@ class AddSKU extends React.Component {
   codeChange = (value, row, index, key) => {
     // eslint-disable-next-line no-param-reassign
     row[key] = value;
-    row.Name = row.BrandName + row.ProductName + row.Parameters + row.Package;
+    row.Name = row.BrandName + row.ProductName + row.ManufactureNO + row.Parameters + row.Package;
     const { TI_Z00901 } = this.state;
     TI_Z00901[index] = row;
     this.setState({ TI_Z00901 });
@@ -263,9 +263,15 @@ class AddSKU extends React.Component {
   rowChange = record => {
     const { TI_Z00901 } = this.state;
     TI_Z00901.map(item => {
-      item.Name = item.BrandName + item.ProductName + item.Parameters + item.Package;
+      item.Name =
+        item.BrandName + item.ProductName + item.ManufactureNO + item.Parameters + item.Package;
       if (item.key === record.key) {
-        record.Name = record.BrandName + record.ProductName + record.Parameters + record.Package;
+        record.Name =
+          record.BrandName +
+          record.ProductName +
+          record.ManufactureNO +
+          record.Parameters +
+          record.Package;
         return record;
       }
       return item;

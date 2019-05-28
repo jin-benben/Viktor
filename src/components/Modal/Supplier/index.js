@@ -116,21 +116,16 @@ class SupplierModal extends PureComponent {
     const {
       form: { getFieldDecorator },
     } = this.props;
-    const { queryData } = this.state;
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8 }}>
-          <Col className="submitButtons">
-            {queryData.SearchKey === 'Name' ? (
-              <FormItem label="供应商名称">
-                {getFieldDecorator('SearchText')(<Input placeholder="请输入" />)}
-              </FormItem>
-            ) : (
-              <FormItem label="供应商ID">
-                {getFieldDecorator('SearchText')(<Input placeholder="请输入" />)}
-              </FormItem>
-            )}
+          <Col>
             <FormItem>
+              {getFieldDecorator('SearchText')(<Input placeholder="请输入关键字" />)}
+            </FormItem>
+          </Col>
+          <Col>
+            <FormItem className="submitButtons">
               <Button type="primary" htmlType="submit">
                 查询
               </Button>

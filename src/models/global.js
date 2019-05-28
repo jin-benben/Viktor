@@ -1,11 +1,15 @@
 import { queryNotices } from '@/services/user';
-import { getMDMCommonalityRule } from '@/services';
+import { getMDMCommonalityRule, tokenOutRule } from '@/services';
+import { routerRedux } from 'dva/router';
+import { notification } from 'antd';
+import { parse } from 'qs';
 
 export default {
   namespace: 'global',
 
   state: {
     collapsed: true,
+    currentUser: {}, // 当前用户信息
     notices: [],
     Saler: [], // 销售员
     Purchaser: [], // 采购员
@@ -86,6 +90,18 @@ export default {
         });
       }
     },
+    *checkToken({ payload }, { put, call }) {
+      const response = yield call(tokenOutRule, payload);
+      if (response && response.Status !== 200) {
+        notification.error({
+          message: '验证失败',
+          description: '登录已过期，请重新登录',
+        });
+        routerRedux.replace({
+          pathname: '/user/login',
+        });
+      }
+    },
   },
 
   reducers: {
@@ -118,11 +134,19 @@ export default {
   },
 
   subscriptions: {
-    setup({ history }) {
-      // Subscribe history(url) change, trigger `load` action if pathname is `/`
-      return history.listen(({ pathname, search }) => {
+    setup({ history, dispatch }) {
+      const currentUser = localStorage.getItem('currentUser')
+        ? parse(localStorage.getItem('currentUser'))
+        : {};
+      console.log(currentUser);
+      return history.listen(() => {
         if (typeof window.ga !== 'undefined') {
-          window.ga('send', 'pageview', pathname + search);
+          dispatch({
+            type: 'save',
+            payload: {
+              currentUser,
+            },
+          });
         }
       });
     },

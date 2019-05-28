@@ -310,7 +310,7 @@ class SalesQuotationSku extends PureComponent {
 
   handleOnRow = record => ({
     // 详情or修改
-    onClick: () => router.push(`/TI_Z029/edit?DocEntry=${record.DocEntry}`),
+    onClick: () => router.push(`/sellabout/TI_Z030/edit?DocEntry=${record.DocEntry}`),
   });
 
   renderSimpleForm() {
@@ -347,21 +347,21 @@ class SalesQuotationSku extends PureComponent {
       },
     };
     return (
-      <Form onSubmit={this.handleSearch} {...formItemLayout}>
+      <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={6} sm={24}>
-            <FormItem key="SearchText" label="客户名称" {...formLayout}>
-              {getFieldDecorator('SearchText')(<Input placeholder="请输入客户名称" />)}
+          <Col md={4} sm={24}>
+            <FormItem key="SearchText" {...formLayout}>
+              {getFieldDecorator('SearchText')(<Input placeholder="请输入关键字" />)}
             </FormItem>
           </Col>
-          <Col md={6} sm={24}>
+          <Col md={5} sm={24}>
             <FormItem label="日期" {...formLayout}>
               {getFieldDecorator('dateArr', { rules: [{ type: 'array' }] })(
                 <RangePicker style={{ width: '100%' }} />
               )}
             </FormItem>
           </Col>
-          <Col md={6} sm={24}>
+          <Col md={5} sm={24}>
             <FormItem key="SDocStatus" {...formLayout} label="合同状态">
               {getFieldDecorator('SDocStatus')(
                 <Select placeholder="请选择">
@@ -371,7 +371,7 @@ class SalesQuotationSku extends PureComponent {
               )}
             </FormItem>
           </Col>
-          <Col md={6} sm={24}>
+          <Col md={5} sm={24}>
             <FormItem key="LineStatus" {...formLayout} label="确认状态">
               {getFieldDecorator('LineStatus')(
                 <Select placeholder="请选择">
@@ -384,35 +384,35 @@ class SalesQuotationSku extends PureComponent {
 
           {expandForm ? (
             <Fragment>
-              <Col md={6} sm={24}>
+              <Col md={5} sm={24}>
                 <FormItem key="orderNo" {...formLayout} label="单号">
                   {getFieldDecorator('orderNo', {
                     initialValue: { DocEntryFrom: '', DocEntryTo: '' },
                   })(<DocEntryFrom />)}
                 </FormItem>
               </Col>
-              <Col md={6} sm={24}>
-                <FormItem label="所有者" {...formLayout}>
-                  {getFieldDecorator('Owner')(<MDMCommonality data={Saler} />)}
-                </FormItem>
-              </Col>
-              <Col md={6} sm={24}>
-                <FormItem label="采购" {...formLayout}>
-                  {getFieldDecorator('Purchaser')(<MDMCommonality data={Purchaser} />)}
-                </FormItem>
-              </Col>
-              <Col md={6} sm={24}>
-                <FormItem key="Closed" {...formLayout} label="关闭状态">
+              <Col md={4} sm={24}>
+                <FormItem key="Closed" {...formLayout}>
                   {getFieldDecorator('Closed')(
-                    <Select placeholder="请选择">
+                    <Select placeholder="请选择关闭状态">
                       <Option value="Y">已关闭</Option>
                       <Option value="N">未关闭</Option>
                     </Select>
                   )}
                 </FormItem>
               </Col>
+              <Col md={5} sm={24}>
+                <FormItem label="所有者" {...formLayout}>
+                  {getFieldDecorator('Owner')(<MDMCommonality data={Saler} />)}
+                </FormItem>
+              </Col>
+              <Col md={5} sm={24}>
+                <FormItem label="采购" {...formLayout}>
+                  {getFieldDecorator('Purchaser')(<MDMCommonality data={Purchaser} />)}
+                </FormItem>
+              </Col>
 
-              <Col md={6} sm={24}>
+              <Col md={5} sm={24}>
                 <FormItem key="OrderType" {...formLayout} label="订单类型">
                   {getFieldDecorator('OrderType')(
                     <Select placeholder="请选择">
@@ -423,7 +423,7 @@ class SalesQuotationSku extends PureComponent {
               </Col>
             </Fragment>
           ) : null}
-          <Col md={6} sm={24}>
+          <Col md={4} sm={24}>
             <FormItem key="searchBtn" {...searchFormItemLayout}>
               <span className="submitButtons">
                 <Button type="primary" htmlType="submit">

@@ -21,7 +21,7 @@ class TI_Z02803 extends PureComponent {
   columns = [
     {
       title: '单号',
-      width: 50,
+      width: 100,
       dataIndex: 'DocEntry',
     },
     {
@@ -127,7 +127,7 @@ class TI_Z02803 extends PureComponent {
 
   handleOnRow = record => ({
     // 详情or修改
-    onClick: () => router.push(`/TI_Z028/TI_Z02802?DocEntry=${record.DocEntry}`),
+    onClick: () => router.push(`/purchase/TI_Z028/TI_Z02802?DocEntry=${record.DocEntry}`),
   });
 
   renderSimpleForm() {
@@ -140,17 +140,7 @@ class TI_Z02803 extends PureComponent {
       labelCol: { span: 8 },
       wrapperCol: { span: 16 },
     };
-    const formItemLayout = {
-      labelCol: {
-        xs: { span: 24 },
-        sm: { span: 10 },
-      },
-      wrapperCol: {
-        xs: { span: 24 },
-        sm: { span: 14 },
-        md: { span: 10 },
-      },
-    };
+
     const searchFormItemLayout = {
       wrapperCol: {
         xs: {
@@ -164,27 +154,27 @@ class TI_Z02803 extends PureComponent {
       },
     };
     return (
-      <Form onSubmit={this.handleSearch} {...formItemLayout}>
+      <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={8} sm={24}>
-            <FormItem key="SearchText" label="客户名称" {...formLayout}>
-              {getFieldDecorator('SearchText')(<Input placeholder="请输入客户名称" />)}
+          <Col md={4} sm={24}>
+            <FormItem key="SearchText">
+              {getFieldDecorator('SearchText')(<Input placeholder="请输入关键字" />)}
             </FormItem>
           </Col>
-          <Col md={8} sm={24}>
+          <Col md={6} sm={24}>
             <FormItem label="日期" {...formLayout}>
               {getFieldDecorator('dateArr', { rules: [{ type: 'array' }] })(
                 <RangePicker style={{ width: '100%' }} />
               )}
             </FormItem>
           </Col>
-          <Col md={8} sm={24}>
+          <Col md={4} sm={24}>
             <FormItem key="Owner" {...formLayout} label="所有者">
               {getFieldDecorator('Owner', {})(<MDMCommonality data={Saler} />)}
             </FormItem>
           </Col>
 
-          <Col md={8} sm={24}>
+          <Col md={2} sm={24}>
             <FormItem key="searchBtn" {...searchFormItemLayout}>
               <span className="submitButtons">
                 <Button type="primary" htmlType="submit">
@@ -211,6 +201,7 @@ class TI_Z02803 extends PureComponent {
       TI_Z02803: { orderList, pagination },
       loading,
     } = this.props;
+    console.log(this.props);
     return (
       <Fragment>
         <Card title="采购询价确认单查询" bordered={false}>

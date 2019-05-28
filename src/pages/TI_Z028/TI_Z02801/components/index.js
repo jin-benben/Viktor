@@ -66,8 +66,7 @@ class OrderPreview extends Component {
       dataIndex: 'SKUName',
       render: text => (
         <Ellipsis tooltip lines={1}>
-          {' '}
-          {text}{' '}
+          {text}
         </Ellipsis>
       ),
     },
@@ -80,21 +79,41 @@ class OrderPreview extends Component {
       title: '名称',
       width: 100,
       dataIndex: 'ProductName',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '型号',
       width: 100,
       dataIndex: 'ManufactureNO',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '参数',
       width: 100,
       dataIndex: 'Parameters',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '包装',
       width: 100,
       dataIndex: 'Package',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '采购员',
@@ -164,7 +183,15 @@ class OrderPreview extends Component {
 
   expandedRowRender = record => {
     const { childColumns } = this.props;
-    return <Table dataSource={record.TI_Z02803} bordered rowKey="Key" columns={childColumns} />;
+    return (
+      <Table
+        dataSource={record.TI_Z02803}
+        pagination={false}
+        bordered
+        rowKey="Key"
+        columns={childColumns}
+      />
+    );
   };
 
   okHandle = () => {
@@ -208,7 +235,7 @@ class OrderPreview extends Component {
         md: { span: 10 },
       },
     };
-
+    const ToDate = moment().add('30', 'day'); // 询价日期当前时间后30天
     return (
       <Form onSubmit={this.handleSearch} {...formItemLayout}>
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
@@ -216,6 +243,7 @@ class OrderPreview extends Component {
             <FormItem key="DocDate" label="单据日期" {...formLayout}>
               {getFieldDecorator('DocDate', {
                 rules: [{ required: true, message: '请选择单据日期' }],
+                initialValue: moment(),
               })(<DatePicker style={{ width: '100%' }} />)}
             </FormItem>
           </Col>
@@ -223,6 +251,7 @@ class OrderPreview extends Component {
             <FormItem key="ToDate" label="有效日期" {...formLayout}>
               {getFieldDecorator('ToDate', {
                 rules: [{ required: true, message: '请选择有效日期' }],
+                initialValue: ToDate,
               })(<DatePicker style={{ width: '100%' }} />)}
             </FormItem>
           </Col>
@@ -269,9 +298,10 @@ class OrderPreview extends Component {
             {this.renderSimpleForm()}
             <Table
               bordered
+              pagination={false}
               dataSource={orderLineList}
               rowKey="LineID"
-              scroll={{ x: 2500, y: 500 }}
+              scroll={{ x: 2500 }}
               rowSelection={{
                 onChange: this.onSelectRow,
                 selectedRowKeys,

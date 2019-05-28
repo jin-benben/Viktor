@@ -309,7 +309,7 @@ class SkuFetchComponent extends PureComponent {
                 icon="plus"
                 style={{ marginLeft: 8 }}
                 type="primary"
-                onClick={() => router.push('/TI_Z011/TI_Z01101')}
+                onClick={() => router.push('/main/product/TI_Z011/TI_Z01101')}
               >
                 新建
               </Button>

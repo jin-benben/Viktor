@@ -34,7 +34,7 @@ class inquiryList extends PureComponent {
         <a
           onClick={e => {
             e.preventDefault();
-            router.push(`/TI_Z014/set?Code=${record.Code}`);
+            router.push(`/base/TI_Z014/set?Code=${record.Code}`);
           }}
           href="javascript:;"
         >
@@ -51,7 +51,7 @@ class inquiryList extends PureComponent {
         <a
           onClick={e => {
             e.preventDefault();
-            router.push(`/TI_Z014/edit?Code=${record.Code}`);
+            router.push(`/base/TI_Z014/edit?Code=${record.Code}`);
           }}
           href="javascript:;"
         >
@@ -145,18 +145,6 @@ class inquiryList extends PureComponent {
         md: { span: 10 },
       },
     };
-    const searchFormItemLayout = {
-      wrapperCol: {
-        xs: {
-          span: 24,
-          offset: 0,
-        },
-        sm: {
-          span: 16,
-          offset: 8,
-        },
-      },
-    };
     return (
       <Form onSubmit={this.handleSearch} {...formItemLayout} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
@@ -174,7 +162,7 @@ class inquiryList extends PureComponent {
                 icon="plus"
                 style={{ marginLeft: 8 }}
                 type="primary"
-                onClick={() => router.push('/TI_Z014/edit')}
+                onClick={() => router.push('/base/TI_Z014/edit')}
               >
                 新建
               </Button>
