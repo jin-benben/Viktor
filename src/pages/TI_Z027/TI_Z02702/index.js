@@ -33,6 +33,7 @@ import SKUModal from '@/components/Modal/SKU';
 import Address from '@/components/Address';
 import Brand from '@/components/Brand';
 import LinkMan from '../../TI_Z026/components/linkman';
+import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import CompanySelect from '@/components/Company/index';
 import { checkPhone, chechEmail } from '@/utils/utils';
 
@@ -49,7 +50,7 @@ class InquiryEdit extends React.Component {
     {
       title: '行号',
       dataIndex: 'LineID',
-      left: 'left',
+      fixed: 'left',
       width: 50,
       align: 'center',
       render: (text, record) => (record.lastIndex ? '合计' : text),
@@ -58,7 +59,7 @@ class InquiryEdit extends React.Component {
       title: 'SKU',
       dataIndex: 'SKU',
       align: 'center',
-      width: 150,
+      width: 80,
       render: (text, record, index) =>
         record.lastIndex ? null : (
           <Input
@@ -73,14 +74,17 @@ class InquiryEdit extends React.Component {
     {
       title: '产品描述',
       dataIndex: 'SKUName',
-      inputType: 'textArea',
       width: 200,
-      editable: true,
       align: 'center',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '品牌',
-      width: 200,
+      width: 100,
       align: 'center',
       dataIndex: 'BrandName',
       render: (text, record, index) =>
@@ -97,45 +101,38 @@ class InquiryEdit extends React.Component {
     {
       title: '名称',
       dataIndex: 'ProductName',
-      inputType: 'text',
-      width: 150,
+      inputType: 'textArea',
+      width: 100,
       editable: true,
       align: 'center',
     },
     {
       title: '型号',
-      width: 150,
+      width: 100,
       dataIndex: 'ManufactureNO',
-      inputType: 'text',
+      inputType: 'textArea',
       editable: true,
       align: 'center',
     },
     {
       title: '参数',
-      width: 150,
+      width: 100,
       dataIndex: 'Parameters',
-      inputType: 'text',
+      inputType: 'textArea',
       editable: true,
       align: 'center',
     },
     {
       title: '包装',
-      width: 150,
+      width: 100,
       dataIndex: 'Package',
-      inputType: 'text',
-      editable: true,
-      align: 'center',
-    },
-    {
-      title: '采购员',
-      width: 200,
-      dataIndex: 'Purchaser',
+      inputType: 'textArea',
       editable: true,
       align: 'center',
     },
     {
       title: '数量',
-      width: 120,
+      width: 80,
       inputType: 'text',
       dataIndex: 'Quantity',
       editable: true,
@@ -151,99 +148,59 @@ class InquiryEdit extends React.Component {
     },
     {
       title: '要求交期',
-      width: 150,
+      width: 120,
       inputType: 'date',
       dataIndex: 'DueDate',
       editable: true,
       align: 'center',
     },
     {
-      title: '仓库',
-      width: 150,
-      dataIndex: 'WhsCode',
-      align: 'center',
-      render: (text, record, index) => {
-        const {
-          global: { WhsCode },
-        } = this.props;
-        if (!record.lastIndex) {
-          return (
-            <MDMCommonality
-              initialValue={text}
-              data={WhsCode}
-              onChange={value => {
-                this.rowSelectChange(value, record, index, 'WhsCode');
-              }}
-            />
-          );
-        }
-        return null;
-      },
-    },
-    {
-      title: '询价最终价',
-      width: 120,
-      inputType: 'text',
-      dataIndex: 'InquiryPrice',
-      editable: true,
-      align: 'center',
-    },
-    {
-      title: '销售建议价',
-      width: 120,
+      title: '价格',
+      width: 100,
       inputType: 'text',
       dataIndex: 'Price',
       editable: true,
       align: 'center',
     },
     {
-      title: '询价币种',
-      width: 150,
-      inputType: 'text',
-      dataIndex: 'Currency',
-      editable: true,
-      align: 'center',
-    },
-    {
-      title: '单据汇率',
-      width: 100,
-      inputType: 'text',
-      dataIndex: 'DocRate',
-      align: 'center',
-    },
-    {
-      title: '最终交期',
-      width: 150,
+      title: '询价交期',
+      width: 120,
       inputType: 'date',
       dataIndex: 'InquiryDueDate',
       editable: true,
       align: 'center',
     },
     {
-      title: '询价备注',
-      dataIndex: 'InquiryComment',
+      title: '行备注',
+      dataIndex: 'LineComment',
       inputType: 'textArea',
-      width: 150,
+      width: 100,
       editable: true,
       align: 'center',
     },
     {
-      title: '询价行总计',
+      title: '采总计',
       width: 120,
       align: 'center',
-      dataIndex: 'InquiryLineTotal',
+      dataIndex: 'LineTotal',
     },
     {
-      title: '询价行总计(本币)',
-      width: 150,
+      title: '本币总计',
+      width: 100,
       align: 'center',
       dataIndex: 'InquiryLineTotalLocal',
     },
     {
-      title: '销售行总计',
-      width: 150,
+      title: '客询价单',
+      width: 100,
       align: 'center',
-      dataIndex: 'LineTotal',
+      dataIndex: 'BaseEntry',
+    },
+    {
+      title: '客询价行',
+      width: 100,
+      align: 'center',
+      dataIndex: 'BaseLineID',
     },
     {
       title: '操作',
@@ -373,7 +330,7 @@ class InquiryEdit extends React.Component {
       type: 'global/getMDMCommonality',
       payload: {
         Content: {
-          CodeList: ['Saler', 'Company', 'Purchaser', 'WhsCode'],
+          CodeList: ['Saler', 'Company', 'Purchaser', 'Curr', 'WhsCode'],
         },
       },
     });
@@ -488,7 +445,6 @@ class InquiryEdit extends React.Component {
 
   // sku输入框获取焦点
   focusLine = (record, LineID) => {
-    console.log('sss');
     this.setState({ thisLine: { ...record }, LineID, skuModalVisible: true });
   };
 
@@ -726,10 +682,32 @@ class InquiryEdit extends React.Component {
     });
   };
 
+  // 币种修改
+  currencyChange = Currency => {
+    const { formVals } = this.state;
+    const { dispatch } = this.props;
+    formVals.Currency = Currency;
+    dispatch({
+      type: 'global/getMDMCommonality',
+      payload: {
+        Content: {
+          CodeList: ['Rate'],
+          key: Currency,
+        },
+      },
+      callback: response => {
+        formVals.DocRate = response.DropdownData.Rate[0] ? response.DropdownData.Rate[0].Value : '';
+        this.setState({ formVals });
+      },
+    });
+    // formVals.DocRate=DocRate
+    this.setState({ formVals });
+  };
+
   render() {
     const {
       form: { getFieldDecorator },
-      global: { Saler },
+      global: { Purchaser, Curr },
     } = this.props;
     const {
       formVals,
@@ -772,7 +750,7 @@ class InquiryEdit extends React.Component {
       });
     }
     return (
-      <Card>
+      <Card bordered={false}>
         <Form {...formItemLayout}>
           <Row gutter={8}>
             <Col lg={10} md={12} sm={24}>
@@ -837,8 +815,17 @@ class InquiryEdit extends React.Component {
               </FormItem>
             </Col>
             <Col lg={10} md={12} sm={24}>
-              <FormItem key="DocStatus" {...this.formLayout} label="询价状态">
-                <span>{formVals.DocStatus === 'O' ? '未询价' : '已询价'}</span>
+              <FormItem key="Currency" {...this.formLayout} label="币种">
+                {getFieldDecorator('Currency', {
+                  initialValue: formVals.Currency,
+                  rules: [{ required: true, message: '请选择币种！' }],
+                })(
+                  <MDMCommonality
+                    onChange={this.currencyChange}
+                    initialValue={formVals.Curr}
+                    data={Curr}
+                  />
+                )}
               </FormItem>
             </Col>
           </Row>
@@ -850,6 +837,11 @@ class InquiryEdit extends React.Component {
                 })(<Input placeholder="请输入供应商参考号" />)}
               </FormItem>
             </Col>
+            <Col lg={10} md={12} sm={24}>
+              <FormItem key="DocRate" {...this.formLayout} label="汇率">
+                <span>{formVals.DocRate}</span>
+              </FormItem>
+            </Col>
           </Row>
         </Form>
         <Tabs tabBarExtraContent={this.rightButton(tabIndex)} onChange={this.tabChange}>
@@ -857,17 +849,17 @@ class InquiryEdit extends React.Component {
             <EditableFormTable
               rowChange={this.rowChange}
               rowKey="LineID"
-              scroll={{ x: 2800 }}
+              scroll={{ x: 2000 }}
               columns={this.skuColumns}
               data={newdata}
             />
             <Row style={{ marginTop: 20 }} gutter={8}>
               <Col lg={8} md={12} sm={24}>
-                <FormItem key="Owner" {...this.formLayout} label="所有人">
+                <FormItem key="Owner" {...this.formLayout} label="采购员">
                   {getFieldDecorator('Owner', {
                     initialValue: formVals.Owner,
-                    rules: [{ required: true, message: '请选择所有人！' }],
-                  })(<MDMCommonality initialValue={formVals.Owner} data={Saler} />)}
+                    rules: [{ required: true, message: '请选择采购员！' }],
+                  })(<MDMCommonality initialValue={formVals.Owner} data={Purchaser} />)}
                 </FormItem>
               </Col>
               <Col lg={8} md={12} sm={24}>
@@ -882,7 +874,7 @@ class InquiryEdit extends React.Component {
             </Row>
           </TabPane>
           <TabPane tab="常规" key="2">
-            <Row gutter={8}>
+            <Row className="rowFlex" gutter={8}>
               <Col lg={8} md={12} sm={24}>
                 <FormItem key="CellphoneNO" {...this.formLayout} label="手机号码">
                   {getFieldDecorator('CellphoneNO', {

@@ -155,7 +155,7 @@ class AddSKU extends React.Component {
     const { TI_Z01101 } = this.state;
     const { loading } = this.props;
     return (
-      <Card title="SPU添加">
+      <Card bordered={false}>
         <Button icon="plus" onClick={this.addLine} style={{ marginBottom: 20 }} type="primary">
           添加行
         </Button>

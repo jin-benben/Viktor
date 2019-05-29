@@ -219,7 +219,7 @@ class TI_Z02802 extends PureComponent {
     };
 
     return (
-      <Card title="采购确认单详情">
+      <Card bordered={false}>
         <Form {...formItemLayout}>
           <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
             <Col md={8} sm={24}>

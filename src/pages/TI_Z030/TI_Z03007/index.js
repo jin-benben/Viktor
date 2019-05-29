@@ -27,13 +27,13 @@ const FormItem = Form.Item;
 const { Option } = Select;
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ SalesQuotationSku, loading, global }) => ({
-  SalesQuotationSku,
+@connect(({ agreementLine, loading, global }) => ({
+  agreementLine,
   global,
-  loading: loading.models.SalesQuotationSku,
+  loading: loading.models.agreementLine,
 }))
 @Form.create()
-class SalesQuotationSku extends PureComponent {
+class AgreementLine extends PureComponent {
   state = {
     expandForm: false,
   };
@@ -231,10 +231,10 @@ class SalesQuotationSku extends PureComponent {
   componentDidMount() {
     const {
       dispatch,
-      SalesQuotationSku: { queryData },
+      agreementLine: { queryData },
     } = this.props;
     dispatch({
-      type: 'SalesQuotationSku/fetch',
+      type: 'agreementLine/fetch',
       payload: {
         ...queryData,
       },
@@ -252,10 +252,10 @@ class SalesQuotationSku extends PureComponent {
   handleStandardTableChange = pagination => {
     const {
       dispatch,
-      SalesQuotationSku: { queryData },
+      agreementLine: { queryData },
     } = this.props;
     dispatch({
-      type: 'SalesQuotationSku/fetch',
+      type: 'agreementLine/fetch',
       payload: {
         ...queryData,
         page: pagination.current,
@@ -284,7 +284,7 @@ class SalesQuotationSku extends PureComponent {
         ...fieldsValue.orderNo,
       };
       dispatch({
-        type: 'SalesQuotationSku/fetch',
+        type: 'agreementLine/fetch',
         payload: {
           Content: {
             SearchText: '',
@@ -310,7 +310,7 @@ class SalesQuotationSku extends PureComponent {
 
   handleOnRow = record => ({
     // 详情or修改
-    onClick: () => router.push(`/sellabout/TI_Z030/edit?DocEntry=${record.DocEntry}`),
+    onClick: () => router.push(`/sellabout/TI_Z030/detail?DocEntry=${record.DocEntry}`),
   });
 
   renderSimpleForm() {
@@ -322,17 +322,6 @@ class SalesQuotationSku extends PureComponent {
     const formLayout = {
       labelCol: { span: 8 },
       wrapperCol: { span: 16 },
-    };
-    const formItemLayout = {
-      labelCol: {
-        xs: { span: 24 },
-        sm: { span: 10 },
-      },
-      wrapperCol: {
-        xs: { span: 24 },
-        sm: { span: 14 },
-        md: { span: 10 },
-      },
     };
     const searchFormItemLayout = {
       wrapperCol: {
@@ -458,17 +447,17 @@ class SalesQuotationSku extends PureComponent {
 
   render() {
     const {
-      SalesQuotationSku: { SalesQuotationSkuList, pagination },
+      agreementLine: { agreementLineList, pagination },
       loading,
     } = this.props;
     return (
       <Fragment>
-        <Card title="销售合同物料查询" bordered={false}>
+        <Card bordered={false}>
           <div className="tableList">
             <div className="tableListForm">{this.renderSimpleForm()}</div>
             <StandardTable
               loading={loading}
-              data={{ list: SalesQuotationSkuList }}
+              data={{ list: agreementLineList }}
               pagination={pagination}
               scroll={{ x: 2500, y: 500 }}
               rowKey="Key"
@@ -483,4 +472,4 @@ class SalesQuotationSku extends PureComponent {
   }
 }
 
-export default SalesQuotationSku;
+export default AgreementLine;

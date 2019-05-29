@@ -395,7 +395,7 @@ class TI_Z029Component extends React.Component {
       linkmanList: [], // 联系人list
       thisLine: {
         // 当前行
-        TI_Z02604: [],
+        TI_Z02904: [],
       },
     };
     this.formLayout = {
@@ -407,20 +407,22 @@ class TI_Z029Component extends React.Component {
   componentDidMount() {
     const {
       dispatch,
-      location: { query },
-      user,
+      global: { currentUser },
+      TI_Z029: { orderDetail },
     } = this.props;
-    console.log(user);
-    if (query.DocEntry) {
-      dispatch({
-        type: 'TI_Z029/fetch',
-        payload: {
-          Content: {
-            DocEntry: query.DocEntry,
-          },
+    const { CompanyCode, Owner, UserID, UserCode } = currentUser;
+    dispatch({
+      type: 'TI_Z029/save',
+      payload: {
+        orderDetail: {
+          ...orderDetail,
+          CompanyCode,
+          Owner,
+          UserID,
+          CreateCode: UserCode,
         },
-      });
-    }
+      },
+    });
     dispatch({
       type: 'global/getMDMCommonality',
       payload: {
@@ -429,6 +431,7 @@ class TI_Z029Component extends React.Component {
         },
       },
     });
+    this.getDetail();
   }
 
   componentWillUnmount() {
@@ -444,8 +447,8 @@ class TI_Z029Component extends React.Component {
           ClosedBy: '',
           SourceType: '',
           OrderType: '',
-          DocDate: null,
-          CreateDate: null,
+          DocDate: new Date(),
+          CreateDate: new Date(),
           CardCode: '',
           CardName: '',
           UserID: '1',
@@ -485,6 +488,23 @@ class TI_Z029Component extends React.Component {
     }
     return null;
   }
+
+  getDetail = () => {
+    const {
+      dispatch,
+      location: { query },
+    } = this.props;
+    if (query.DocEntry) {
+      dispatch({
+        type: 'TI_Z029/fetch',
+        payload: {
+          Content: {
+            DocEntry: query.DocEntry,
+          },
+        },
+      });
+    }
+  };
 
   //  行内容改变
   rowChange = record => {
@@ -566,9 +586,9 @@ class TI_Z029Component extends React.Component {
   deleteLine = (record, index) => {
     const { formVals, LineID } = this.state;
     if (LineID >= 0) {
-      formVals.TI_Z02902[LineID].TI_Z02604.splice(index, 1);
+      formVals.TI_Z02902[LineID].TI_Z02904.splice(index, 1);
     } else {
-      formVals.TI_Z02603.splice(index, 1);
+      formVals.TI_Z02903.splice(index, 1);
     }
     this.setState({ formVals: { ...formVals } });
   };
@@ -597,13 +617,13 @@ class TI_Z029Component extends React.Component {
   handleSubmit = fieldsValue => {
     const { AttachmentPath, AttachmentCode, AttachmentName } = fieldsValue;
     const { formVals, LineID } = this.state;
-    const lastsku = formVals.TI_Z02603[formVals.TI_Z02603.length - 1];
+    const lastsku = formVals.TI_Z02903[formVals.TI_Z02903.length - 1];
     if (fieldsValue.AttachmentPath) {
       if (LineID >= 0) {
-        const thisLine = formVals.TI_Z02902[LineID].TI_Z02604;
+        const thisLine = formVals.TI_Z02902[LineID].TI_Z02904;
         const last = thisLine[thisLine.length - 1];
         const ID = last ? last.LineID + 1 : 1;
-        formVals.TI_Z02902[LineID].TI_Z02604.push({
+        formVals.TI_Z02902[LineID].TI_Z02904.push({
           LineID: ID,
           BaseType: formVals.OrderType,
           BaseEntry: formVals.BaseEntry ? formVals.BaseEntry : 1,
@@ -613,7 +633,7 @@ class TI_Z029Component extends React.Component {
           AttachmentName,
         });
       } else {
-        formVals.TI_Z02603.push({
+        formVals.TI_Z02903.push({
           LineID: lastsku ? lastsku.LineID + 1 : 1,
           BaseType: formVals.OrderType,
           BaseEntry: formVals.BaseEntry ? formVals.BaseEntry : 1,
@@ -652,7 +672,6 @@ class TI_Z029Component extends React.Component {
       message.warning('请先选择客户');
       return false;
     }
-    console.log();
     this.setState({ orderModalVisible: true });
     this.getAskPriceOrder.fetchOrder(queryData);
   };
@@ -814,7 +833,10 @@ class TI_Z029Component extends React.Component {
     } = this.props;
     const { formVals } = this.state;
     form.validateFields((err, fieldsValue) => {
-      if (err) return;
+      if (err) {
+        message.error(Object.values(err)[0].errors[0].message);
+        return;
+      }
       let address;
       if (fieldsValue.address) {
         address = { ...fieldsValue.address };
@@ -856,7 +878,10 @@ class TI_Z029Component extends React.Component {
     } = this.props;
     const { formVals } = this.state;
     form.validateFields((err, fieldsValue) => {
-      if (err) return;
+      if (err) {
+        message.error(Object.values(err)[0].errors[0].message);
+        return;
+      }
       let address;
       if (fieldsValue.address) {
         address = { ...fieldsValue.address };
@@ -1160,11 +1185,7 @@ class TI_Z029Component extends React.Component {
               </Col>
               <Col lg={8} md={12} sm={24}>
                 <FormItem key="CreateDate" {...this.formLayout} label="创建日期">
-                  {getFieldDecorator('CreateDate', {
-                    initialValue: formVals.CreateDate
-                      ? moment(formVals.CreateDate, 'YYYY-MM-DD')
-                      : null,
-                  })(<DatePicker style={{ width: '100%' }} />)}
+                  <span>{moment(formVals.CreateDate).format('YYYY-MM-DD')}</span>
                 </FormItem>
               </Col>
               <Col lg={8} md={12} sm={24}>
@@ -1293,7 +1314,7 @@ class TI_Z029Component extends React.Component {
           </TabPane>
           <TabPane tab="附件" key="4">
             <StandardTable
-              data={{ list: formVals.TI_Z02603 }}
+              data={{ list: formVals.TI_Z02903 }}
               rowKey="LineID"
               columns={this.attachmentColumns}
             />
@@ -1339,7 +1360,7 @@ class TI_Z029Component extends React.Component {
           onCancel={() => this.handleModalVisible(false)}
         >
           <StandardTable
-            data={{ list: thisLine.TI_Z02604 }}
+            data={{ list: thisLine.TI_Z02904 }}
             rowKey="LineID"
             columns={this.attachmentColumns}
           />

@@ -197,7 +197,7 @@ class supplierQuotation extends PureComponent {
 
   handleOnRow = record => ({
     // 详情or修改
-    onClick: () => router.push(`/purchase/TI_Z027/TI_Z02702?DocEntry=${record.DocEntry}`),
+    onClick: () => router.push(`/purchase/TI_Z027/detail?DocEntry=${record.DocEntry}`),
   });
 
   renderSimpleForm() {
@@ -338,7 +338,7 @@ class supplierQuotation extends PureComponent {
     } = this.props;
     return (
       <Fragment>
-        <Card title="供应商询价单查询" bordered={false}>
+        <Card bordered={false}>
           <div className="tableList">
             <div className="tableListForm">{this.renderSimpleForm()}</div>
             <StandardTable

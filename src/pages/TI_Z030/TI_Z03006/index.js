@@ -27,13 +27,13 @@ const FormItem = Form.Item;
 const { Option } = Select;
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ SalesQuotation, loading, global }) => ({
-  SalesQuotation,
+@connect(({ agreementOrder, loading, global }) => ({
+  agreementOrder,
   global,
-  loading: loading.models.SalesQuotation,
+  loading: loading.models.agreementOrder,
 }))
 @Form.create()
-class SalesQuotation extends PureComponent {
+class agreementOrder extends PureComponent {
   state = {
     expandForm: false,
   };
@@ -152,10 +152,10 @@ class SalesQuotation extends PureComponent {
   componentDidMount() {
     const {
       dispatch,
-      SalesQuotation: { queryData },
+      agreementOrder: { queryData },
     } = this.props;
     dispatch({
-      type: 'SalesQuotation/fetch',
+      type: 'agreementOrder/fetch',
       payload: {
         ...queryData,
       },
@@ -173,10 +173,10 @@ class SalesQuotation extends PureComponent {
   handleStandardTableChange = pagination => {
     const {
       dispatch,
-      SalesQuotation: { queryData },
+      agreementOrder: { queryData },
     } = this.props;
     dispatch({
-      type: 'SalesQuotation/fetch',
+      type: 'agreementOrder/fetch',
       payload: {
         ...queryData,
         page: pagination.current,
@@ -205,7 +205,7 @@ class SalesQuotation extends PureComponent {
         ...fieldsValue.orderNo,
       };
       dispatch({
-        type: 'SalesQuotation/fetch',
+        type: 'agreementOrder/fetch',
         payload: {
           Content: {
             SearchText: '',
@@ -327,7 +327,7 @@ class SalesQuotation extends PureComponent {
                   icon="plus"
                   style={{ marginLeft: 8 }}
                   type="primary"
-                  onClick={() => router.push('/sellabout/TI_Z030/edit')}
+                  onClick={() => router.push('/sellabout/TI_Z030/add')}
                 >
                   新建
                 </Button>
@@ -352,19 +352,19 @@ class SalesQuotation extends PureComponent {
 
   render() {
     const {
-      SalesQuotation: { SalesQuotationList, pagination },
+      agreementOrder: { agreementOrderList, pagination },
       loading,
     } = this.props;
     const tableWidth = document.body.offsetWidth < 1500 ? 1900 : 0;
     console.log(tableWidth);
     return (
       <Fragment>
-        <Card title="销售合同查询" bordered={false}>
+        <Card bordered={false}>
           <div className="tableList">
             <div className="tableListForm">{this.renderSimpleForm()}</div>
             <StandardTable
               loading={loading}
-              data={{ list: SalesQuotationList }}
+              data={{ list: agreementOrderList }}
               pagination={pagination}
               rowKey="DocEntry"
               scroll={{ x: tableWidth, y: 500 }}
@@ -379,4 +379,4 @@ class SalesQuotation extends PureComponent {
   }
 }
 
-export default SalesQuotation;
+export default agreementOrder;

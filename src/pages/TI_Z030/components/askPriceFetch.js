@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { getName } from '@/utils/utils';
 import moment from 'moment';
-import { Row, Col, Form, Input, Button, DatePicker, Modal, message } from 'antd';
+import { Row, Col, Form, Input, Button, DatePicker, Select, Modal, message } from 'antd';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import request from '@/utils/request';
 import StandardTable from '@/components/StandardTable';
@@ -10,6 +10,7 @@ import DocEntryFrom from '@/components/DocEntryFrom';
 import MDMCommonality from '@/components/Select';
 
 const { RangePicker } = DatePicker;
+const { Option } = Select;
 
 const FormItem = Form.Item;
 
@@ -247,9 +248,7 @@ class orderLine extends PureComponent {
       };
       this.fetchOrder({
         Content: {
-          SLineStatus: 'O',
-          PLineStatus: 'C',
-          Closed: 'N',
+          QueryType: '4',
           SearchText: '',
           SearchKey: 'Name',
           ...queryData,
@@ -346,6 +345,7 @@ class orderLine extends PureComponent {
               })(<DocEntryFrom />)}
             </FormItem>
           </Col>
+
           <Col md={6} sm={24}>
             <FormItem key="searchBtn" {...searchFormItemLayout}>
               <span className="submitButtons">

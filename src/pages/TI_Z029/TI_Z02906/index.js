@@ -224,7 +224,7 @@ class SalesQuotation extends PureComponent {
 
   handleOnRow = record => ({
     // 详情or修改
-    onClick: () => router.push(`/TI_Z029/detail?DocEntry=${record.DocEntry}`),
+    onClick: () => router.push(`/sellabout/TI_Z029/detail?DocEntry=${record.DocEntry}`),
   });
 
   renderSimpleForm() {
@@ -236,17 +236,6 @@ class SalesQuotation extends PureComponent {
     const formLayout = {
       labelCol: { span: 8 },
       wrapperCol: { span: 16 },
-    };
-    const formItemLayout = {
-      labelCol: {
-        xs: { span: 24 },
-        sm: { span: 10 },
-      },
-      wrapperCol: {
-        xs: { span: 24 },
-        sm: { span: 14 },
-        md: { span: 10 },
-      },
     };
     const searchFormItemLayout = {
       wrapperCol: {
@@ -342,7 +331,7 @@ class SalesQuotation extends PureComponent {
                   icon="plus"
                   style={{ marginLeft: 8 }}
                   type="primary"
-                  onClick={() => router.push('/TI_Z029/edit')}
+                  onClick={() => router.push('/sellabout/TI_Z029/add')}
                 >
                   新建
                 </Button>
@@ -373,7 +362,7 @@ class SalesQuotation extends PureComponent {
     const tableWidth = document.body.offsetWidth < 1800 ? 1500 : 0;
     return (
       <Fragment>
-        <Card title="销售报价单查询" bordered={false}>
+        <Card bordered={false}>
           <div className="tableList">
             <div className="tableListForm">{this.renderSimpleForm()}</div>
             <StandardTable

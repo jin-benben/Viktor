@@ -189,7 +189,7 @@ class authorityGroup extends PureComponent {
       handleModalVisible: this.handleModalVisible,
     };
     return (
-      <Card title="角色编辑">
+      <Card bordered={false}>
         <Form {...formItemLayout}>
           <Row gutter={8}>
             <Col lg={6} md={12} sm={24}>

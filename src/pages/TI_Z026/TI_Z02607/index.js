@@ -50,7 +50,7 @@ class orderLine extends PureComponent {
       fixed: 'left',
       dataIndex: 'DocEntry',
       render: (val, record) => (
-        <a href={`/sellabout/TI_Z026/TI_Z02602?DocEntry=${record.DocEntry}`} alt="单号">
+        <a href={`/sellabout/TI_Z026/TI_Z02603?DocEntry=${record.DocEntry}`} alt="单号">
           {val}
         </a>
       ),
@@ -319,6 +319,7 @@ class orderLine extends PureComponent {
         type: 'orderLine/fetch',
         payload: {
           Content: {
+            QueryType: '1',
             SearchText: '',
             SearchKey: 'Name',
             ...queryData,
@@ -405,7 +406,7 @@ class orderLine extends PureComponent {
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={3} sm={24}>
+          <Col md={4} sm={24}>
             <FormItem key="SearchText" {...formLayout}>
               {getFieldDecorator('SearchText')(<Input placeholder="请输入关键字" />)}
             </FormItem>
@@ -432,7 +433,7 @@ class orderLine extends PureComponent {
               {getFieldDecorator('Owner')(<MDMCommonality data={Saler} />)}
             </FormItem>
           </Col>
-          <Col md={3} sm={24}>
+          <Col md={2} sm={24}>
             <FormItem>
               {getFieldDecorator('IsInquiry', { valuePropName: 'checked', initialValue: true })(
                 <Checkbox>无需报价</Checkbox>
@@ -441,6 +442,16 @@ class orderLine extends PureComponent {
           </Col>
           {expandForm ? (
             <Fragment>
+              <Col md={4} sm={24}>
+                <FormItem key="Closed" {...formLayout}>
+                  {getFieldDecorator('Closed')(
+                    <Select placeholder="请选择关闭状态">
+                      <Option value="Y">已关闭</Option>
+                      <Option value="N">未关闭</Option>
+                    </Select>
+                  )}
+                </FormItem>
+              </Col>
               <Col md={5} sm={24}>
                 <FormItem key="orderNo" {...formLayout} label="单号">
                   {getFieldDecorator('orderNo', {
@@ -458,12 +469,15 @@ class orderLine extends PureComponent {
                   )}
                 </FormItem>
               </Col>
+
               <Col md={5} sm={24}>
-                <FormItem key="Closed" {...formLayout} label="关闭状态">
-                  {getFieldDecorator('Closed')(
+                <FormItem key="QueryType" {...formLayout} label="查询类型">
+                  {getFieldDecorator('QueryType')(
                     <Select placeholder="请选择">
-                      <Option value="Y">已关闭</Option>
-                      <Option value="N">未关闭</Option>
+                      <Option value="1">常规查询</Option>
+                      <Option value="2">采购物料确认查询</Option>
+                      <Option value="3">采购询价单生成查询</Option>
+                      <Option value="4">复制到销售报价单</Option>
                     </Select>
                   )}
                 </FormItem>
@@ -515,7 +529,7 @@ class orderLine extends PureComponent {
 
     return (
       <Fragment>
-        <Card title="客户询价单物料查询" bordered={false}>
+        <Card bordered={false}>
           <div className="tableList">
             <div className="tableListForm">{this.renderSimpleForm()}</div>
             <StandardTable

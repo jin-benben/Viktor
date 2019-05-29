@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layout } from 'antd';
+import { Layout, PageHeader } from 'antd';
 import DocumentTitle from 'react-document-title';
 import isEqual from 'lodash/isEqual';
 import memoizeOne from 'memoize-one';
@@ -8,11 +8,11 @@ import { ContainerQuery } from 'react-container-query';
 import { Scrollbars } from 'react-custom-scrollbars';
 import classNames from 'classnames';
 import pathToRegexp from 'path-to-regexp';
+import { conversionBreadcrumbList } from '@/components/PageHeader/breadcrumb';
 import Media from 'react-media';
-import { formatMessage } from 'umi/locale';
 import Authorized from '@/utils/Authorized';
-import logo from '../assets/logo.svg';
-import Footer from './Footer';
+import logo from '../assets/log.jpg';
+
 import Header from './Header';
 import Context from './MenuContext';
 import SiderMenu from '@/components/SiderMenu';
@@ -75,7 +75,6 @@ class BasicLayout extends React.PureComponent {
     // if collapsed is true, you need to click twice to display
     const { collapsed, isMobile } = this.props;
     if (isMobile && !preProps.isMobile && !collapsed) {
-      console.log('ok');
       this.handleMenuCollapse(false);
     }
   }
@@ -111,16 +110,10 @@ class BasicLayout extends React.PureComponent {
 
   getPageTitle = (pathname, breadcrumbNameMap) => {
     const currRouterData = this.matchParamsPath(pathname, breadcrumbNameMap);
-
     if (!currRouterData) {
-      return 'Ant Design Pro';
+      return '维克托';
     }
-    const pageName = formatMessage({
-      id: currRouterData.locale || currRouterData.name,
-      defaultMessage: currRouterData.name,
-    });
-
-    return `${pageName} - Ant Design Pro`;
+    return `${currRouterData.name} - 维克托`;
   };
 
   getLayoutStyle = () => {
@@ -134,7 +127,6 @@ class BasicLayout extends React.PureComponent {
   };
 
   handleMenuCollapse = collapsed => {
-    console.log('beidiaoyong', collapsed);
     const { dispatch } = this.props;
     dispatch({
       type: 'global/changeLayoutCollapsed',
@@ -187,10 +179,14 @@ class BasicLayout extends React.PureComponent {
             />
             <Content className={styles.content} style={contentStyle}>
               <Authorized authority={routerConfig} noMatch={<p>Exception403</p>}>
+                <PageHeader
+                  breadcrumb={conversionBreadcrumbList({
+                    ...this.props,
+                  })}
+                />
                 {children}
               </Authorized>
             </Content>
-            <Footer />
           </Layout>
         </Layout>
       </Scrollbars>

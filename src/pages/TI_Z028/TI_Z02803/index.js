@@ -204,7 +204,7 @@ class TI_Z02803 extends PureComponent {
     console.log(this.props);
     return (
       <Fragment>
-        <Card title="采购询价确认单查询" bordered={false}>
+        <Card bordered={false}>
           <div className="tableList">
             <div className="tableListForm">{this.renderSimpleForm()}</div>
             <StandardTable

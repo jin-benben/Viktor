@@ -222,7 +222,7 @@ class inquiryListPage extends PureComponent {
 
   handleOnRow = record => ({
     // 详情or修改
-    onClick: () => router.push(`/sellabout/TI_Z026/TI_Z02602?DocEntry=${record.DocEntry}`),
+    onClick: () => router.push(`/sellabout/TI_Z026/TI_Z02603?DocEntry=${record.DocEntry}`),
   });
 
   renderSimpleForm() {
@@ -276,8 +276,8 @@ class inquiryListPage extends PureComponent {
                   })(<DocEntryFrom />)}
                 </FormItem>
               </Col>
-              <Col md={5} sm={24}>
-                <FormItem key="Closed" {...formLayout} label="关闭状态">
+              <Col md={4} sm={24}>
+                <FormItem key="Closed" {...formLayout}>
                   {getFieldDecorator('Closed')(
                     <Select placeholder="请选择关闭状态">
                       <Option value="Y">已关闭</Option>
@@ -341,7 +341,7 @@ class inquiryListPage extends PureComponent {
     } = this.props;
     return (
       <Fragment>
-        <Card title="客户询价单查询" bordered={false}>
+        <Card bordered={false}>
           <div className="tableList">
             <div className="tableListForm">{this.renderSimpleForm()}</div>
             <StandardTable

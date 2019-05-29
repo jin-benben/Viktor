@@ -332,7 +332,7 @@ class SkuFetchComponent extends PureComponent {
     };
     return (
       <Fragment>
-        <Card title="SPU查询" bordered={false}>
+        <Card bordered={false}>
           <div className="tableLis">
             <div className="tableListForm">{this.renderSimpleForm()}</div>
             <StandardTable

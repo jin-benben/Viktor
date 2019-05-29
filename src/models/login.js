@@ -30,13 +30,20 @@ export default {
       }
     },
 
-    *logout(_, { call, put }) {
-      const response = yield call(loginOutRule);
+    *logout(_, { call, put, select }) {
+      const ToKen = yield select(state => state.global.currentUser.Token);
+      const payload = {
+        Content: {},
+        Tonken: ToKen,
+      };
+      const response = yield call(loginOutRule, payload);
       if (response && response.Status === 200) {
         localStorage.clear();
-        routerRedux.replace({
-          pathname: '/user/login',
-        });
+        yield put(
+          routerRedux.replace({
+            pathname: '/user/login',
+          })
+        );
       }
     },
   },

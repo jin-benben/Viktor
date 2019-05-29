@@ -1,10 +1,10 @@
 import { TI_Z03006 } from '../service';
 
 export default {
-  namespace: 'SalesQuotation',
+  namespace: 'agreementOrder',
 
   state: {
-    SalesQuotationList: [],
+    agreementOrderList: [],
     queryData: {
       Content: {
         SearchText: '',
@@ -33,7 +33,7 @@ export default {
           yield put({
             type: 'save',
             payload: {
-              SalesQuotationList: [],
+              agreementOrderList: [],
             },
           });
         } else {
@@ -41,7 +41,7 @@ export default {
           yield put({
             type: 'save',
             payload: {
-              SalesQuotationList: rows,
+              agreementOrderList: rows,
               pagination: {
                 total: records,
                 pageSize: payload.rows,

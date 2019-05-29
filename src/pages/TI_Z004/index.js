@@ -297,7 +297,6 @@ class Staffs extends PureComponent {
         const {
           global: { Company },
         } = this.props;
-        console.log(val);
         return <span>{getName(Company, val)}</span>;
       },
     },
@@ -308,7 +307,6 @@ class Staffs extends PureComponent {
         const {
           global: { WhsCode },
         } = this.props;
-        console.log(val);
         return <span>{getName(WhsCode, val)}</span>;
       },
     },

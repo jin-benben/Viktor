@@ -26,8 +26,7 @@ class NeedTabl extends React.Component {
     queryData: {
       Content: {
         SearchText: '',
-        PLineStatus: 'O',
-        IsInquiry: 'Y',
+        QueryType: '4',
         SearchKey: '',
       },
       page: 1,
@@ -285,8 +284,7 @@ class NeedTabl extends React.Component {
       this.fetchOrder({
         Content: {
           SearchText: '',
-          PLineStatus: 'O',
-          IsInquiry: 'Y',
+          QueryType: '4',
           SearchKey: '',
           ...queryData,
         },
@@ -343,8 +341,7 @@ class NeedTabl extends React.Component {
       this.fetchOrder({
         Content: {
           SearchText: '',
-          PLineStatus: 'O',
-          IsInquiry: 'Y',
+          QueryType: '4',
           SearchKey: '',
           ...queryData,
         },
@@ -381,7 +378,7 @@ class NeedTabl extends React.Component {
               {getFieldDecorator('SearchText')(<Input placeholder="请输入关键字" />)}
             </FormItem>
           </Col>
-          <Col md={5} sm={24}>
+          <Col md={7} sm={24}>
             <FormItem label="日期" {...formLayout}>
               {getFieldDecorator('dateArr', { rules: [{ type: 'array' }] })(
                 <RangePicker style={{ width: '100%' }} />
@@ -394,7 +391,7 @@ class NeedTabl extends React.Component {
               {getFieldDecorator('Owner')(<MDMCommonality data={Saler} />)}
             </FormItem>
           </Col>
-          <Col md={2} sm={24}>
+          <Col md={3} sm={24}>
             <FormItem>
               {getFieldDecorator('PLineStatus', { valuePropName: 'checked', initialValue: false })(
                 <Checkbox>已询价</Checkbox>

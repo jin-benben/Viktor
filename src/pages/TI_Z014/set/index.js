@@ -149,7 +149,7 @@ class authorityGroup extends PureComponent {
     const { authorityList, method } = this.state;
 
     return (
-      <Card title="角色权限设置">
+      <Card bordered={false}>
         <StandardTable
           data={{ list: authorityList }}
           rowKey="PermissionCode"

@@ -271,7 +271,7 @@ class SupplierAsk extends Component {
       handleModalVisible: this.handleModalVisible,
     };
     return (
-      <Card title="供应商询价单添加">
+      <Card bordered={false}>
         <Steps style={{ marginBottom: 30 }} current={current}>
           <Step onClick={() => this.changeCurrent(0)} title="需询价查询" />
           <Step onClick={() => this.changeCurrent(1)} title="按供应商确认" />

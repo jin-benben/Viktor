@@ -31,6 +31,7 @@ class AddSKU extends React.Component {
     },
     {
       title: '描述',
+      width: 300,
       dataIndex: 'Name',
     },
     {
@@ -119,6 +120,7 @@ class AddSKU extends React.Component {
       dataIndex: 'category',
       render: (text, record, index) => (
         <Category
+          initialValue={[record.Category1, record.Category2, record.Category3]}
           onChange={selectedOptions => {
             this.categoryChange(selectedOptions, record, index);
           }}
@@ -254,7 +256,9 @@ class AddSKU extends React.Component {
   codeChange = (value, row, index, key) => {
     // eslint-disable-next-line no-param-reassign
     row[key] = value;
-    row.Name = row.BrandName + row.ProductName + row.ManufactureNO + row.Parameters + row.Package;
+    row.Name = `${row.BrandName}  ${row.ProductName}  ${row.ManufactureNO}  ${row.Parameters}  ${
+      row.Package
+    }`;
     const { TI_Z00901 } = this.state;
     TI_Z00901[index] = row;
     this.setState({ TI_Z00901 });
@@ -263,15 +267,10 @@ class AddSKU extends React.Component {
   rowChange = record => {
     const { TI_Z00901 } = this.state;
     TI_Z00901.map(item => {
-      item.Name =
-        item.BrandName + item.ProductName + item.ManufactureNO + item.Parameters + item.Package;
-      if (item.key === record.key) {
-        record.Name =
-          record.BrandName +
-          record.ProductName +
-          record.ManufactureNO +
-          record.Parameters +
-          record.Package;
+      if (item.LineID === record.LineID) {
+        record.Name = `${record.BrandName}  ${record.ProductName}  ${record.ManufactureNO}  ${
+          record.Parameters
+        }  ${record.Package}`;
         return record;
       }
       return item;
@@ -318,8 +317,8 @@ class AddSKU extends React.Component {
       Cate1Name: '',
       Cate2Name: '',
       Cate3Name: '',
-      Putaway: '',
-      PutawayDateTime: '',
+      Putaway: '1',
+      PutawayDateTime: new Date(),
       InvoiceName: '',
       InvoicePro: '',
       InvoiceMenu: '',
@@ -335,14 +334,14 @@ class AddSKU extends React.Component {
   render() {
     const { TI_Z00901 } = this.state;
     return (
-      <Card title="物料添加">
+      <Card bordered={false}>
         <Button icon="plus" onClick={this.addLine} style={{ marginBottom: 20 }} type="primary">
           添加行
         </Button>
         <EditableFormTable
           rowChange={this.rowChange}
           rowKey="LineID"
-          scroll={{ x: 2600 }}
+          scroll={{ x: 2800 }}
           columns={this.skuColumns}
           data={TI_Z00901}
         />

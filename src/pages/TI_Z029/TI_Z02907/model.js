@@ -9,6 +9,7 @@ export default {
       Content: {
         SearchText: '',
         SearchKey: '',
+        QueryType: '1',
       },
       page: 1,
       rows: 30,

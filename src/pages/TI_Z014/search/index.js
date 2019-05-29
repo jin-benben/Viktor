@@ -180,7 +180,7 @@ class inquiryList extends PureComponent {
     } = this.props;
     return (
       <Fragment>
-        <Card title="角色查询" bordered={false}>
+        <Card bordered={false}>
           <div className="tableList">
             <div className="tableListForm">{this.renderSimpleForm()}</div>
             <StandardTable

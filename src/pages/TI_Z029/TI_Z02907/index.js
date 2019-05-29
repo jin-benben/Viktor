@@ -286,6 +286,7 @@ class SalesQuotationSku extends PureComponent {
         payload: {
           Content: {
             SearchText: '',
+            QueryType: '1',
             SearchKey: 'Name',
             ...queryData,
           },
@@ -308,7 +309,7 @@ class SalesQuotationSku extends PureComponent {
 
   handleOnRow = record => ({
     // 详情or修改
-    onClick: () => router.push(`/TI_Z029/edit?DocEntry=${record.DocEntry}`),
+    onClick: () => router.push(`/sellabout/TI_Z029/detail?DocEntry=${record.DocEntry}`),
   });
 
   renderSimpleForm() {
@@ -366,12 +367,23 @@ class SalesQuotationSku extends PureComponent {
                   })(<DocEntryFrom />)}
                 </FormItem>
               </Col>
-              <Col md={5} sm={24}>
+              <Col md={4} sm={24}>
                 <FormItem key="Closed" {...formLayout}>
                   {getFieldDecorator('Closed')(
                     <Select placeholder="请选择关闭状态">
                       <Option value="Y">已关闭</Option>
                       <Option value="N">未关闭</Option>
+                    </Select>
+                  )}
+                </FormItem>
+              </Col>
+              <Col md={5} sm={24}>
+                <FormItem key="QueryType" {...formLayout} label="查询类型">
+                  {getFieldDecorator('QueryType', { initialValue: '1' })(
+                    <Select placeholder="请选择">
+                      <Option value="1">常规查询</Option>
+                      <Option value="2">复制到销售合同</Option>
+                      <Option value="3">SKU生成查询</Option>
                     </Select>
                   )}
                 </FormItem>
@@ -438,7 +450,7 @@ class SalesQuotationSku extends PureComponent {
     } = this.props;
     return (
       <Fragment>
-        <Card title="销售报价单物料查询" bordered={false}>
+        <Card bordered={false}>
           <div className="tableList">
             <div className="tableListForm">{this.renderSimpleForm()}</div>
             <StandardTable

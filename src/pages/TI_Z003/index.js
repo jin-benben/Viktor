@@ -254,7 +254,7 @@ class Organization extends PureComponent {
 
     return (
       <div>
-        <Card title="组织架构">
+        <Card bordered={false}>
           {/* <Button
             icon="plus"
             style={{ marginLeft: 8, marginBottom: 28, marginTop: 28 }}

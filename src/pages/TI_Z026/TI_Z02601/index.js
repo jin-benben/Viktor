@@ -356,6 +356,7 @@ class InquiryEdit extends React.Component {
         // 当前行
         TI_Z02604: [],
       },
+      DefaultWhsCode: '', // 当前仓库
     };
     this.formLayout = {
       labelCol: { span: 8 },
@@ -364,7 +365,25 @@ class InquiryEdit extends React.Component {
   }
 
   componentDidMount() {
-    const { dispatch } = this.props;
+    const {
+      dispatch,
+      global: { currentUser },
+      inquiryEdit: { inquiryDetail },
+    } = this.props;
+    const { CompanyCode, Owner, UserID, DefaultWhsCode, UserCode } = currentUser;
+    this.setState({ DefaultWhsCode });
+    dispatch({
+      type: 'inquiryEdit/save',
+      payload: {
+        inquiryDetail: {
+          ...inquiryDetail,
+          CompanyCode,
+          Owner,
+          UserID,
+          CreateUser: UserCode,
+        },
+      },
+    });
     dispatch({
       type: 'global/getMDMCommonality',
       payload: {
@@ -431,6 +450,7 @@ class InquiryEdit extends React.Component {
     return null;
   }
 
+  // 获取单据详情
   getDetail = () => {
     const {
       dispatch,
@@ -450,7 +470,6 @@ class InquiryEdit extends React.Component {
 
   //  行内容改变
   rowChange = record => {
-    console.log(record);
     const { formVals } = this.state;
     let thisIndex = 0;
     formVals.TI_Z02602.map((item, index) => {
@@ -690,7 +709,7 @@ class InquiryEdit extends React.Component {
 
   addLineSku = () => {
     // 添加物料
-    const { formVals } = this.state;
+    const { formVals, DefaultWhsCode } = this.state;
     const last = formVals.TI_Z02602[formVals.TI_Z02602.length - 1];
     const LineID = last ? last.LineID + 1 : 1;
     formVals.TI_Z02602.push({
@@ -706,6 +725,7 @@ class InquiryEdit extends React.Component {
       Quantity: '',
       Unit: '',
       DueDate: '',
+      WhsCode: DefaultWhsCode,
       InquiryPrice: '',
       Price: '',
       InquiryDueDate: '',
@@ -725,7 +745,10 @@ class InquiryEdit extends React.Component {
     const { form, dispatch } = this.props;
     const { formVals } = this.state;
     form.validateFields((err, fieldsValue) => {
-      if (err) return;
+      if (err) {
+        message.error(Object.values(err)[0].errors[0].message);
+        return;
+      }
       let address;
       if (fieldsValue.address) {
         address = { ...fieldsValue.address };
@@ -760,7 +783,10 @@ class InquiryEdit extends React.Component {
     const { form, dispatch } = this.props;
     const { formVals } = this.state;
     form.validateFields((err, fieldsValue) => {
-      if (err) return;
+      if (err) {
+        message.error(Object.values(err)[0].errors[0].message);
+        return;
+      }
       let address;
       if (fieldsValue.address) {
         address = { ...fieldsValue.address };
@@ -896,6 +922,8 @@ class InquiryEdit extends React.Component {
         LineTotal: formVals.DocTotal,
       });
     }
+
+    console.log(formVals);
 
     return (
       <Card>

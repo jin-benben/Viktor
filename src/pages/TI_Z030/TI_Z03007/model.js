@@ -1,10 +1,10 @@
 import { TI_Z03007 } from '../service';
 
 export default {
-  namespace: 'SalesQuotationSku',
+  namespace: 'agreementLine',
 
   state: {
-    SalesQuotationSkuList: [],
+    agreementLineList: [],
     queryData: {
       Content: {
         SearchText: '',
@@ -33,7 +33,7 @@ export default {
           yield put({
             type: 'save',
             payload: {
-              SalesQuotationSkuList: [],
+              agreementLineList: [],
             },
           });
         } else {
@@ -41,7 +41,7 @@ export default {
           yield put({
             type: 'save',
             payload: {
-              SalesQuotationSkuList: rows,
+              agreementLineList: rows,
               pagination: {
                 total: records,
                 pageSize: payload.rows,

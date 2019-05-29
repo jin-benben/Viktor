@@ -1,4 +1,3 @@
-import { queryNotices } from '@/services/user';
 import { getMDMCommonalityRule, tokenOutRule } from '@/services';
 import { routerRedux } from 'dva/router';
 import { notification } from 'antd';
@@ -23,23 +22,6 @@ export default {
   },
 
   effects: {
-    *fetchNotices(_, { call, put, select }) {
-      const data = yield call(queryNotices);
-      yield put({
-        type: 'saveNotices',
-        payload: data,
-      });
-      const unreadCount = yield select(
-        state => state.global.notices.filter(item => !item.read).length
-      );
-      yield put({
-        type: 'user/changeNotifyCount',
-        payload: {
-          totalCount: data.length,
-          unreadCount,
-        },
-      });
-    },
     *clearNotices({ payload }, { put, select }) {
       yield put({
         type: 'saveClearedNotices',
@@ -79,7 +61,7 @@ export default {
         },
       });
     },
-    *getMDMCommonality({ payload }, { put, call }) {
+    *getMDMCommonality({ payload, callback }, { put, call }) {
       const response = yield call(getMDMCommonalityRule, payload);
       if (response && response.Status === 200) {
         yield put({
@@ -88,18 +70,45 @@ export default {
             ...response.Content.DropdownData,
           },
         });
+        if (callback) callback(response);
       }
     },
-    *checkToken({ payload }, { put, call }) {
-      const response = yield call(tokenOutRule, payload);
-      if (response && response.Status !== 200) {
-        notification.error({
-          message: '验证失败',
-          description: '登录已过期，请重新登录',
-        });
-        routerRedux.replace({
-          pathname: '/user/login',
-        });
+    *checkToken(_, { put, call }) {
+      const currentUser = localStorage.getItem('currentUser')
+        ? parse(localStorage.getItem('currentUser'))
+        : {};
+      if (!currentUser.Token) {
+        yield put(
+          routerRedux.replace({
+            pathname: '/user/login',
+          })
+        );
+      } else {
+        const payload = {
+          Content: {
+            Token: currentUser.Token,
+          },
+        };
+        const response = yield call(tokenOutRule, payload);
+        if (response && response.Status === 200) {
+          yield put({
+            type: 'save',
+            payload: {
+              currentUser,
+            },
+          });
+        }
+        if (response && response.Status !== 200) {
+          notification.error({
+            message: '验证失败',
+            description: '登录已过期，请重新登录',
+          });
+          yield put(
+            routerRedux.replace({
+              pathname: '/user/login',
+            })
+          );
+        }
       }
     },
   },
@@ -113,6 +122,7 @@ export default {
       };
     },
     save(state, { payload }) {
+      console.log(payload);
       return {
         ...state,
         ...payload,
@@ -134,20 +144,12 @@ export default {
   },
 
   subscriptions: {
-    setup({ history, dispatch }) {
-      const currentUser = localStorage.getItem('currentUser')
-        ? parse(localStorage.getItem('currentUser'))
-        : {};
-      console.log(currentUser);
-      return history.listen(() => {
-        if (typeof window.ga !== 'undefined') {
+    setUpLocalStorage({ dispatch, history }) {
+      history.listen(location => {
+        if (location.pathname !== '/user/login')
           dispatch({
-            type: 'save',
-            payload: {
-              currentUser,
-            },
+            type: 'checkToken',
           });
-        }
       });
     },
   },

@@ -718,7 +718,6 @@ class TI_Z030Component extends React.Component {
     if (formVals.TI_Z03002.length) {
       newLineID = formVals.TI_Z03002[formVals.TI_Z03002.length - 1].LineID + 1;
     }
-    console.log(currentUser.UserCode);
     selectedRows.map(item => {
       const {
         LineComment,
@@ -812,7 +811,10 @@ class TI_Z030Component extends React.Component {
     } = this.props;
     const { formVals } = this.state;
     form.validateFields((err, fieldsValue) => {
-      if (err) return;
+      if (err) {
+        message.error(Object.values(err)[0].errors[0].message);
+        return;
+      }
       let address;
       if (fieldsValue.address) {
         address = { ...fieldsValue.address };

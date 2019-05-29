@@ -2,11 +2,12 @@
 /* eslint-disable consistent-return */
 /* eslint-disable arrow-body-style */
 import React, { PureComponent } from 'react';
-import ProvinceList from '@/assets/js/provinces';
-import CityList from '@/assets/js/cities';
-import AreaList from '@/assets/js/areas';
-import StreetList from '@/assets/js/streets';
+
 import { Cascader } from 'antd';
+import CityList from '../../../public/js/cities';
+import AreaList from '../../../public/js/areas';
+import StreetList from '../../../public/js/streets';
+import ProvinceList from '../../../public/js/provinces';
 
 class AddressCascader extends PureComponent {
   state = {
