@@ -150,7 +150,6 @@ class CreateForm extends PureComponent {
                   <Select placeholder="请选择性别">
                     <Option value="1">男</Option>
                     <Option value="2">女</Option>
-                    <Option value="3">不详</Option>
                   </Select>
                 )}
               </FormItem>
@@ -406,7 +405,7 @@ class Staffs extends PureComponent {
           },
         },
         callback: response => {
-          if (response.Status === 200) {
+          if (response && response.Status === 200) {
             this.handleModalVisible(false);
             message.success('添加成功');
             dispatch({
@@ -427,7 +426,7 @@ class Staffs extends PureComponent {
           },
         },
         callback: response => {
-          if (response.Status === 200) {
+          if (response && response.Status === 200) {
             this.handleModalVisible(false);
             message.success('更新成功');
             dispatch({

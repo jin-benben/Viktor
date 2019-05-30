@@ -81,10 +81,10 @@ class CreateForm extends PureComponent {
         onCancel={() => handleModalVisible()}
       >
         <Form {...formItemLayout}>
-          <FormItem key="Name" {...this.formLayout} label="名称">
-            {getFieldDecorator('Name', {
+          <FormItem key="ProductName" {...this.formLayout} label="名称">
+            {getFieldDecorator('ProductName', {
               rules: [{ required: true, message: '请输入名称！' }],
-              initialValue: formVals.Name,
+              initialValue: formVals.ProductName,
             })(<Input placeholder="请输入名称！" />)}
           </FormItem>
           <FormItem key="ManLocation" {...this.formLayout} label="产地">
@@ -132,8 +132,12 @@ class SkuFetchComponent extends PureComponent {
       dataIndex: 'Code',
     },
     {
-      title: '名称',
+      title: '描述',
       dataIndex: 'Name',
+    },
+    {
+      title: '名称',
+      dataIndex: 'ProductName',
     },
     {
       title: '品牌',
@@ -202,11 +206,13 @@ class SkuFetchComponent extends PureComponent {
       type: 'spu/update',
       payload: {
         Content: {
-          TI_Z01101: [{ ...fieldsValue, ...category }],
+          TI_Z01101: [
+            { ...fieldsValue, ...category, Name: fieldsValue.BrandName + fieldsValue.ProductName },
+          ],
         },
       },
       callback: response => {
-        if (response.Status === 200) {
+        if (response && response.Status === 200) {
           this.handleModalVisible(false);
           message.success('更新成功');
           dispatch({

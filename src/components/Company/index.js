@@ -3,9 +3,14 @@ import request from '@/utils/request';
 import CompanyModal from '@/components/Modal/Company';
 import { Select, Spin, Icon, Empty } from 'antd';
 import debounce from 'lodash/debounce';
+import { connect } from 'dva';
 
 const { Option } = Select;
 
+@connect(({ loading, global }) => ({
+  global,
+  loading: loading.models.global,
+}))
 class CompanySelect extends PureComponent {
   constructor(props) {
     super(props);
@@ -21,17 +26,17 @@ class CompanySelect extends PureComponent {
   };
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    console.log(this);
+    if (!prevState.data.length && prevState.data !== nextProps.global.CustomerList) {
+      return {
+        data: nextProps.global.CustomerList,
+      };
+    }
     if (nextProps.initialValue !== prevState.initialValue) {
       return {
         initialValue: nextProps.initialValue,
       };
     }
     return null;
-  }
-
-  componentDidMount() {
-    this.fetchCompany();
   }
 
   fetchCompany = async value => {
@@ -53,9 +58,8 @@ class CompanySelect extends PureComponent {
         sord: 'DESC',
       },
     });
-    console.log('被调用了');
     this.setState({ fetching: false });
-    if (response.Status !== 200 || fetchId !== this.lastFetchId) {
+    if (!response || response.Status !== 200 || fetchId !== this.lastFetchId) {
       this.setState({ data: [], fetching: false });
       return;
     }
@@ -67,9 +71,13 @@ class CompanySelect extends PureComponent {
     this.setState({
       fetching: false,
     });
+    const { data } = this.state;
     const { onChange } = this.props;
     if (onChange) {
-      onChange(value);
+      const select = data.find(item => {
+        return item.Code === value.key;
+      });
+      onChange(select);
     }
   };
 

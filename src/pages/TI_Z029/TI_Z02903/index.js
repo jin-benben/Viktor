@@ -443,7 +443,7 @@ class InquiryEdit extends React.Component {
       });
     }
     return (
-      <Card>
+      <Card bordered={false}>
         <DescriptionList style={{ marginBottom: 24 }}>
           <Description term="单号">{formVals.DocEntry}</Description>
           <Description term="客户ID">{formVals.CardCode}</Description>

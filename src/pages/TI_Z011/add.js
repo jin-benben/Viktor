@@ -37,6 +37,10 @@ class AddSKU extends React.Component {
       ),
     },
     {
+      title: '描述',
+      dataIndex: 'Name',
+    },
+    {
       title: '名称',
       dataIndex: 'ProductName',
       inputType: 'text',
@@ -100,6 +104,7 @@ class AddSKU extends React.Component {
     const { TI_Z01101 } = this.state;
     TI_Z01101.map(item => {
       if (item.key === record.key) {
+        record.Name = record.BrandName + record.ProductName;
         return record;
       }
       return item;
@@ -119,7 +124,7 @@ class AddSKU extends React.Component {
           },
         },
         callback: response => {
-          if (response.Status === 200) {
+          if (response && response.Status === 200) {
             message.success('添加成功');
             this.setState({ TI_Z01101: [] });
           }

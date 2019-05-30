@@ -8,7 +8,7 @@ export default {
   effects: {
     *fetch({ payload }, { call, put }) {
       const response = yield call(querySingleRule, payload);
-      if (response.Status === 200) {
+      if (response && response.Status === 200) {
         yield put({
           type: 'save',
           payload: {

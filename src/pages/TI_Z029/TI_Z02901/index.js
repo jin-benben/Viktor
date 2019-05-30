@@ -29,22 +29,20 @@ import EditableFormTable from '@/components/EditableFormTable';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import UpdateLoad from '../components/modal';
 import AskPriceFetch from '../components/askPriceFetch';
-import Address from '@/components/Address';
 import Brand from '@/components/Brand';
 import MDMCommonality from '@/components/Select';
 import NeedAskPrice from '../components/needAskPrice';
 import SKUModal from '@/components/Modal/SKU';
 import CompanySelect from '@/components/Company/index';
-import { checkPhone, getName, chechEmail } from '@/utils/utils';
+import { getName } from '@/utils/utils';
 
 const { TextArea } = Input;
 const { TabPane } = Tabs;
 const FormItem = Form.Item;
 const { Option } = Select;
-@connect(({ TI_Z029, loading, global, user }) => ({
+@connect(({ TI_Z029, loading, global }) => ({
   TI_Z029,
   global,
-  user,
   loading: loading.models.TI_Z029,
 }))
 @Form.create()
@@ -392,7 +390,8 @@ class TI_Z029Component extends React.Component {
       skuModalVisible: false, //
       needmodalVisible: false,
       LineID: Number, // 当前选中行index
-      linkmanList: [], // 联系人list
+      linkmanList: [], // 联系人list,
+      addList: [],
       thisLine: {
         // 当前行
         TI_Z02904: [],
@@ -407,10 +406,15 @@ class TI_Z029Component extends React.Component {
   componentDidMount() {
     const {
       dispatch,
-      global: { currentUser },
+      global: { currentUser, CustomerList },
       TI_Z029: { orderDetail },
     } = this.props;
-    const { CompanyCode, Owner, UserID, UserCode } = currentUser;
+    const { CompanyCode, Owner, UserCode } = currentUser;
+    if (!CustomerList.length) {
+      dispatch({
+        type: 'global/getCustomer',
+      });
+    }
     dispatch({
       type: 'TI_Z029/save',
       payload: {
@@ -418,7 +422,6 @@ class TI_Z029Component extends React.Component {
           ...orderDetail,
           CompanyCode,
           Owner,
-          UserID,
           CreateCode: UserCode,
         },
       },
@@ -451,7 +454,6 @@ class TI_Z029Component extends React.Component {
           CreateDate: new Date(),
           CardCode: '',
           CardName: '',
-          UserID: '1',
           Contacts: '',
           CellphoneNO: '',
           PhoneNO: '',
@@ -481,9 +483,17 @@ class TI_Z029Component extends React.Component {
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    if (nextProps.TI_Z029.orderDetail !== prevState.formVals) {
+    if (
+      nextProps.TI_Z029.orderDetail !== prevState.formVals ||
+      nextProps.TI_Z029.addList !== prevState.addList ||
+      nextProps.TI_Z029.linkmanList !== prevState.linkmanList
+    ) {
       return {
-        formVals: nextProps.TI_Z029.orderDetail,
+        formVals: nextProps.TI_Z029.inquiryDetail,
+        addList: nextProps.TI_Z029.addList.length ? nextProps.TI_Z029.addList : prevState.addList,
+        linkmanList: nextProps.TI_Z029.linkmanList.length
+          ? nextProps.TI_Z029.linkmanList
+          : prevState.linkmanList,
       };
     }
     return null;
@@ -703,40 +713,68 @@ class TI_Z029Component extends React.Component {
 
   // change 客户
   changeCompany = company => {
-    const { TI_Z00602List } = company;
+    const { TI_Z00602List, TI_Z00603List } = company;
     const { formVals } = this.state;
-    formVals.CardCode = company.Code || company.key;
-    formVals.CardName = company.Name || company.label;
-    this.setState({ formVals, linkmanList: TI_Z00602List || [] });
-  };
-
-  validatorPhone = (rule, value, callback) => {
-    if (value && !checkPhone(value)) {
-      callback(new Error('手机号格式不正确'));
-    } else {
-      callback();
-    }
-  };
-
-  validatorEmail = (rule, value, callback) => {
-    if (value && !chechEmail(value)) {
-      callback(new Error('邮箱格式不正确'));
-    } else {
-      callback();
-    }
+    formVals.CardCode = company.Code;
+    formVals.CardName = company.Name;
+    this.setState({ formVals, linkmanList: TI_Z00602List || [], addList: TI_Z00603List }, () => {
+      if (TI_Z00603List[0]) {
+        this.handleAdreessChange(TI_Z00603List[0].AddressID);
+      }
+      if (TI_Z00602List[0]) {
+        this.linkmanChange(TI_Z00602List[0].UserID);
+      }
+    });
   };
 
   // 联系人change
-  linkmanChange = Contacts => {
-    const { formVals } = this.state;
-    formVals.Contacts = Contacts;
+  linkmanChange = value => {
+    const { formVals, linkmanList } = this.state;
+    const select = linkmanList.find(item => {
+      return item.UserID === value;
+    });
+    const { CellphoneNO, Email, PhoneNO, UserID, Name } = select;
+    Object.assign(formVals, { CellphoneNO, Email, PhoneNO, UserID, Contacts: Name });
+    this.setState({ formVals });
+  };
+
+  // 地址改变
+  handleAdreessChange = value => {
+    const { addList, formVals } = this.state;
+    const select = addList.find(item => {
+      return item.AddressID === value;
+    });
+    const {
+      Province,
+      ProvinceID,
+      City,
+      CityID,
+      Area,
+      AreaID,
+      Street,
+      StreetID,
+      AddressID,
+      Address,
+    } = select;
+    Object.assign(formVals, {
+      Province,
+      ProvinceID,
+      City,
+      CityID,
+      Area,
+      AreaID,
+      Street,
+      StreetID,
+      AddressID,
+      Address,
+    });
     this.setState({ formVals });
   };
 
   // 添加行
   addLineSKU = selectedRows => {
     const {
-      user: { currentUser },
+      global: { currentUser },
     } = this.props;
     const { formVals } = this.state;
     let newLineID = 1;
@@ -829,7 +867,7 @@ class TI_Z029Component extends React.Component {
     const {
       form,
       dispatch,
-      user: { currentUser },
+      global: { currentUser },
     } = this.props;
     const { formVals } = this.state;
     form.validateFields((err, fieldsValue) => {
@@ -837,11 +875,6 @@ class TI_Z029Component extends React.Component {
         message.error(Object.values(err)[0].errors[0].message);
         return;
       }
-      let address;
-      if (fieldsValue.address) {
-        address = { ...fieldsValue.address };
-      }
-      delete fieldsValue.address;
       delete fieldsValue.CardCode;
       delete fieldsValue.CardName;
       dispatch({
@@ -850,8 +883,6 @@ class TI_Z029Component extends React.Component {
           Content: {
             ...formVals,
             ...fieldsValue,
-            ...address,
-            CreateDate: fieldsValue.CreateDate ? fieldsValue.CreateDate.format('YYYY-MM-DD') : '',
             DueDate: fieldsValue.DueDate ? fieldsValue.DueDate.format('YYYY-MM-DD') : '',
             ToDate: fieldsValue.ToDate ? fieldsValue.ToDate.format('YYYY-MM-DD') : '',
             DocDate: fieldsValue.DocDate ? fieldsValue.DocDate.format('YYYY-MM-DD') : '',
@@ -860,7 +891,7 @@ class TI_Z029Component extends React.Component {
           },
         },
         callback: response => {
-          if (response.Status === 200) {
+          if (response && response.Status === 200) {
             message.success('添加成功');
             router.push(`/TI_Z029/detail?DocEntry=${response.Content.DocEntry}`);
           }
@@ -874,7 +905,7 @@ class TI_Z029Component extends React.Component {
     const {
       form,
       dispatch,
-      user: { currentUser },
+      global: { currentUser },
     } = this.props;
     const { formVals } = this.state;
     form.validateFields((err, fieldsValue) => {
@@ -882,11 +913,6 @@ class TI_Z029Component extends React.Component {
         message.error(Object.values(err)[0].errors[0].message);
         return;
       }
-      let address;
-      if (fieldsValue.address) {
-        address = { ...fieldsValue.address };
-      }
-      delete fieldsValue.address;
       delete fieldsValue.CardCode;
       delete fieldsValue.CardName;
       dispatch({
@@ -895,8 +921,6 @@ class TI_Z029Component extends React.Component {
           Content: {
             ...formVals,
             ...fieldsValue,
-            ...address,
-            CreateDate: fieldsValue.CreateDate ? fieldsValue.CreateDate.format('YYYY-MM-DD') : '',
             DueDate: fieldsValue.DueDate ? fieldsValue.DueDate.format('YYYY-MM-DD') : '',
             ToDate: fieldsValue.ToDate ? fieldsValue.ToDate.format('YYYY-MM-DD') : '',
             DocDate: fieldsValue.DocDate ? fieldsValue.DocDate.format('YYYY-MM-DD') : '',
@@ -904,7 +928,7 @@ class TI_Z029Component extends React.Component {
           },
         },
         callback: response => {
-          if (response.Status === 200) {
+          if (response && response.Status === 200) {
             message.success('更新成功');
           }
         },
@@ -928,7 +952,7 @@ class TI_Z029Component extends React.Component {
         },
       },
       callback: response => {
-        if (response.Status === 200) {
+        if (response && response.Status === 200) {
           message.success('取消成功');
         }
       },
@@ -952,7 +976,7 @@ class TI_Z029Component extends React.Component {
         },
       },
       callback: response => {
-        if (response.Status === 200) {
+        if (response && response.Status === 200) {
           message.success('提交成功');
 
           this.setState({ needmodalVisible: false });
@@ -986,7 +1010,7 @@ class TI_Z029Component extends React.Component {
         },
       },
       callback: response => {
-        if (response.Status === 200) {
+        if (response && response.Status === 200) {
           message.success('提交成功');
 
           this.setState({ needmodalVisible: false });
@@ -1010,6 +1034,7 @@ class TI_Z029Component extends React.Component {
       skuModalVisible,
       needmodalVisible,
       attachmentVisible,
+      addList,
     } = this.state;
     const formItemLayout = {
       labelCol: {
@@ -1055,7 +1080,7 @@ class TI_Z029Component extends React.Component {
     }
 
     return (
-      <Card>
+      <Card bordered={false}>
         <Form {...formItemLayout}>
           <Row gutter={8}>
             <Col lg={10} md={12} sm={24}>
@@ -1114,20 +1139,18 @@ class TI_Z029Component extends React.Component {
           </Row>
           <Row gutter={8}>
             <Col lg={10} md={12} sm={24}>
-              <FormItem key="Contacts" {...this.formLayout} label="联系人">
-                {getFieldDecorator('Contacts', {
+              <FormItem key="UserID" {...this.formLayout} label="联系人">
+                {getFieldDecorator('UserID', {
                   rules: [{ required: true, message: '请输入联系人！' }],
-                  initialValue: formVals.Contacts,
+                  initialValue: formVals.UserID,
                 })(
                   <Select
-                    value={formVals.Contacts}
                     placeholder="请选择联系人"
-                    filterOption={false}
-                    onSelect={this.handleChange}
+                    onSelect={this.linkmanChange}
                     style={{ width: '100%' }}
                   >
                     {linkmanList.map(option => (
-                      <Option key={option.Code} value={option.Name}>
+                      <Option key={option.UserID} value={option.UserID}>
                         {option.Name}
                       </Option>
                     ))}
@@ -1226,22 +1249,20 @@ class TI_Z029Component extends React.Component {
                 <FormItem key="address" {...this.formLayout} label="地址">
                   {getFieldDecorator('address', {
                     rules: [{ required: true, message: '请选择地址！' }],
-                    initialValue: [
-                      formVals.ProvinceID,
-                      formVals.CityID,
-                      formVals.AreaID,
-                      formVals.StreetID,
-                    ],
+                    initialValue: formVals.AddressID,
                   })(
-                    <Address
-                      initialValue={[
-                        formVals.ProvinceID,
-                        formVals.CityID,
-                        formVals.AreaID,
-                        formVals.StreetID,
-                      ]}
+                    <Select
+                      value={formVals}
+                      placeholder="请选择地址"
+                      onSelect={this.handleAdreessChange}
                       style={{ width: '100%' }}
-                    />
+                    >
+                      {addList.map(option => (
+                        <Option key={option.AddressID} value={option.AddressID}>
+                          {`${option.Province}/${option.City}/${option.Area}/${option.Street}`}
+                        </Option>
+                      ))}
+                    </Select>
                   )}
                 </FormItem>
               </Col>

@@ -1,6 +1,7 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
+import Link from 'umi/link';
 import moment from 'moment';
 import {
   Row,
@@ -42,6 +43,7 @@ class supplierQuotation extends PureComponent {
       title: '单号',
       width: 50,
       dataIndex: 'DocEntry',
+      render: text => <Link to={`/purchase/TI_Z027/detail?DocEntry=${text}`}>{text}</Link>,
     },
     {
       title: '单据日期',
@@ -106,11 +108,11 @@ class supplierQuotation extends PureComponent {
       dataIndex: 'Owner',
     },
     {
-      title: '询价总计(外币)',
+      title: '询价总计',
       dataIndex: 'InquiryDocTotal',
     },
     {
-      title: '询价总计(本币)',
+      title: '本币总计',
       dataIndex: 'InquiryDocTotalLocal',
     },
   ];
@@ -195,11 +197,6 @@ class supplierQuotation extends PureComponent {
     });
   };
 
-  handleOnRow = record => ({
-    // 详情or修改
-    onClick: () => router.push(`/purchase/TI_Z027/detail?DocEntry=${record.DocEntry}`),
-  });
-
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
@@ -209,29 +206,6 @@ class supplierQuotation extends PureComponent {
     const formLayout = {
       labelCol: { span: 8 },
       wrapperCol: { span: 16 },
-    };
-    const formItemLayout = {
-      labelCol: {
-        xs: { span: 24 },
-        sm: { span: 10 },
-      },
-      wrapperCol: {
-        xs: { span: 24 },
-        sm: { span: 14 },
-        md: { span: 10 },
-      },
-    };
-    const searchFormItemLayout = {
-      wrapperCol: {
-        xs: {
-          span: 24,
-          offset: 0,
-        },
-        sm: {
-          span: 16,
-          offset: 8,
-        },
-      },
     };
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
@@ -347,7 +321,6 @@ class supplierQuotation extends PureComponent {
               pagination={pagination}
               rowKey="DocEntry"
               columns={this.columns}
-              onRow={this.handleOnRow}
               onChange={this.handleStandardTableChange}
             />
           </div>

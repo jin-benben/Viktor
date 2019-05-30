@@ -3,6 +3,7 @@ import { connect } from 'dva';
 import router from 'umi/router';
 import { Row, Col, Card, Form, Input, Button } from 'antd';
 import StandardTable from '@/components/StandardTable';
+import Link from 'umi/link';
 import { getName } from '@/utils/utils';
 
 const FormItem = Form.Item;
@@ -21,6 +22,7 @@ class supplierSearch extends PureComponent {
     {
       title: '供应商ID',
       dataIndex: 'Code',
+      render: text => <Link to={`/main/TI_Z006/detail?Code=${text}`}>{text}</Link>,
     },
     {
       title: '供应商名称',
@@ -126,11 +128,6 @@ class supplierSearch extends PureComponent {
     });
   };
 
-  handleOnRow = record => ({
-    // 详情or修改
-    onClick: () => router.push(`/main/product/TI_Z007/TI_Z00703?Code=${record.Code}`),
-  });
-
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
@@ -153,7 +150,7 @@ class supplierSearch extends PureComponent {
                 icon="plus"
                 style={{ marginLeft: 8 }}
                 type="primary"
-                onClick={() => router.push('/main/product/TI_Z007/TI_Z00701')}
+                onClick={() => router.push('/main/product/TI_Z007/add')}
               >
                 新建
               </Button>
@@ -180,7 +177,6 @@ class supplierSearch extends PureComponent {
               data={{ list: supplierList }}
               rowKey="Code"
               pagination={pagination}
-              onRow={this.handleOnRow}
               columns={this.columns}
               onChange={this.handleStandardTableChange}
             />

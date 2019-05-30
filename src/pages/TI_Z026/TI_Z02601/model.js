@@ -1,4 +1,11 @@
-import { querySingleRule, addRule, updateRule, cancelRule, confirmRule } from '../service';
+import {
+  querySingleRule,
+  addRule,
+  updateRule,
+  cancelRule,
+  confirmRule,
+  companyRule,
+} from '../service';
 
 export default {
   namespace: 'inquiryEdit',
@@ -38,16 +45,24 @@ export default {
       TI_Z02602: [],
       TI_Z02603: [],
     },
+    addList: [],
+    linkmanList: [],
   },
 
   effects: {
     *fetch({ payload }, { call, put }) {
       const response = yield call(querySingleRule, payload);
-      if (response.Status === 200) {
+      if (response && response.Status === 200) {
         yield put({
           type: 'save',
           payload: {
             inquiryDetail: response.Content,
+          },
+        });
+        yield put({
+          type: 'company',
+          payload: {
+            Content: { Code: response.Content.CardCode },
           },
         });
       }
@@ -56,7 +71,18 @@ export default {
       const response = yield call(addRule, payload);
       if (callback) callback(response);
     },
-
+    *company({ payload }, { put, call }) {
+      const response = yield call(companyRule, payload);
+      if (response && response.Status === 200) {
+        yield put({
+          type: 'save',
+          payload: {
+            addList: response.Content.TI_Z00603List,
+            linkmanList: response.Content.TI_Z00602List,
+          },
+        });
+      }
+    },
     *update({ payload, callback }, { call }) {
       const response = yield call(updateRule, payload);
       if (callback) callback(response);

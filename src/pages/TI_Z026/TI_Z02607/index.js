@@ -22,6 +22,7 @@ import DocEntryFrom from '@/components/DocEntryFrom';
 import NeedAskPrice from '../components/needAskPrice';
 import MDMCommonality from '@/components/Select';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
+import Link from 'umi/link';
 import { getName } from '@/utils/utils';
 
 const { RangePicker } = DatePicker;
@@ -46,19 +47,12 @@ class orderLine extends PureComponent {
   columns = [
     {
       title: '单号',
-      width: 50,
+      width: 100,
       fixed: 'left',
       dataIndex: 'DocEntry',
-      render: (val, record) => (
-        <a href={`/sellabout/TI_Z026/TI_Z02603?DocEntry=${record.DocEntry}`} alt="单号">
-          {val}
-        </a>
+      render: (text, recond) => (
+        <Link to={`/sellabout/TI_Z026/detail?DocEntry=${text}`}>{`${text}-${recond.LineID}`}</Link>
       ),
-    },
-    {
-      title: '行号',
-      width: 50,
-      dataIndex: 'LineID',
     },
     {
       title: '单据日期',
@@ -160,8 +154,7 @@ class orderLine extends PureComponent {
       dataIndex: 'ProductName',
       render: text => (
         <Ellipsis tooltip lines={1}>
-          {' '}
-          {text}{' '}
+          {text}
         </Ellipsis>
       ),
     },
@@ -171,8 +164,7 @@ class orderLine extends PureComponent {
       dataIndex: 'ManufactureNO',
       render: text => (
         <Ellipsis tooltip lines={1}>
-          {' '}
-          {text}{' '}
+          {text}
         </Ellipsis>
       ),
     },
@@ -363,7 +355,7 @@ class orderLine extends PureComponent {
         },
       },
       callback: response => {
-        if (response.Status === 200) {
+        if (response && response.Status === 200) {
           message.success('提交成功');
           dispatch({
             type: 'orderLine/fetch',
@@ -419,21 +411,11 @@ class orderLine extends PureComponent {
             </FormItem>
           </Col>
           <Col md={5} sm={24}>
-            <FormItem key="SLineStatus" {...formLayout} label="报价状态">
-              {getFieldDecorator('SLineStatus')(
-                <Select placeholder="请选择">
-                  <Option value="C">已报价</Option>
-                  <Option value="O">未报价</Option>
-                </Select>
-              )}
-            </FormItem>
-          </Col>
-          <Col md={5} sm={24}>
             <FormItem label="所有者" {...formLayout}>
               {getFieldDecorator('Owner')(<MDMCommonality data={Saler} />)}
             </FormItem>
           </Col>
-          <Col md={2} sm={24}>
+          <Col md={3} sm={24}>
             <FormItem>
               {getFieldDecorator('IsInquiry', { valuePropName: 'checked', initialValue: true })(
                 <Checkbox>无需报价</Checkbox>
@@ -484,7 +466,7 @@ class orderLine extends PureComponent {
               </Col>
             </Fragment>
           ) : null}
-          <Col md={3} sm={24}>
+          <Col md={2} sm={24}>
             <FormItem key="searchBtn">
               <span className="submitButtons">
                 <Button type="primary" htmlType="submit">

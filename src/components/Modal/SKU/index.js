@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 
 import { Row, Col, Form, Input, Modal, Button, message } from 'antd';
 import StandardTable from '@/components/StandardTable';
-
+import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import request from '@/utils/request';
 
 const FormItem = Form.Item;
@@ -36,37 +36,72 @@ class SKUModal extends PureComponent {
     {
       title: '物料代码',
       dataIndex: 'Code',
+      width: 100,
     },
     {
       title: '物料名称',
-      dataIndex: 'CardName',
+      dataIndex: 'Name',
+      width: 100,
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {' '}
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '品牌',
+      width: 100,
       dataIndex: 'BrandName',
     },
 
     {
       title: '型号',
+      width: 100,
       dataIndex: 'ManufactureNO',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {' '}
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '参数',
       dataIndex: 'Parameters',
+      width: 100,
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {' '}
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '包装',
       dataIndex: 'package',
+      width: 100,
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {' '}
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '单位',
+      width: 80,
       dataIndex: 'Unit',
     },
     {
       title: '分类',
       dataIndex: 'category',
+      width: 150,
       render: (text, record) => (
-        <span>{`${record.Cate1Name}/${record.Cate2Name}/${record.Cate3Name}`}</span>
+        <Ellipsis tooltip lines={1}>
+          {' '}
+          {`${record.Cate1Name}/${record.Cate2Name}/${record.Cate3Name}`}
+        </Ellipsis>
       ),
     },
   ];
@@ -128,7 +163,7 @@ class SKUModal extends PureComponent {
         ...params,
       },
     });
-    if (response.Status === 200) {
+    if (response && response.Status === 200) {
       if (response.Content) {
         const { rows, records, page } = response.Content;
         const { pagination } = this.state;
@@ -147,10 +182,12 @@ class SKUModal extends PureComponent {
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8 }}>
-          <Col className="submitButtons">
-            <FormItem label="物料名称">
-              {getFieldDecorator('SearchText')(<Input placeholder="请输入" />)}
+          <Col>
+            <FormItem>
+              {getFieldDecorator('SearchText')(<Input placeholder="请输入关键字" />)}
             </FormItem>
+          </Col>
+          <Col>
             <FormItem>
               <Button type="primary" htmlType="submit">
                 查询
@@ -180,6 +217,7 @@ class SKUModal extends PureComponent {
             data={{ list: staffsList }}
             rowKey="Code"
             pagination={pagination}
+            scroll={{ y: 300 }}
             columns={this.columns}
             rowSelection={{
               type: 'radio',

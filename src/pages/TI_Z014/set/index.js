@@ -114,7 +114,7 @@ class authorityGroup extends PureComponent {
           },
         },
         callback: response => {
-          if (response.Status === 200) {
+          if (response && response.Status === 200) {
             message.success('添加成功');
           }
         },
@@ -138,7 +138,7 @@ class authorityGroup extends PureComponent {
         },
       },
       callback: response => {
-        if (response.Status === 200) {
+        if (response && response.Status === 200) {
           message.success('更新成功');
         }
       },

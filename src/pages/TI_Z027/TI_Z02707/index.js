@@ -1,6 +1,7 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
+import Link from 'umi/link';
 import moment from 'moment';
 import {
   Row,
@@ -42,14 +43,22 @@ class supplierQuotationSku extends PureComponent {
   columns = [
     {
       title: '单号',
-      width: 80,
+      width: 100,
       fixed: 'left',
       dataIndex: 'DocEntry',
+      render: (text, recond) => (
+        <Link to={`/purchase/TI_Z027/detail?DocEntry=${text}`}>{`${text}-${recond.LineID}`}</Link>
+      ),
     },
     {
-      title: '行号',
-      width: 50,
-      dataIndex: 'LineID',
+      title: '客询价单',
+      width: 100,
+      dataIndex: 'BaseEntry',
+      render: (text, recond) => (
+        <Link to={`/sellabout/TI_Z026/detail?DocEntry=${text}`}>{`${text}-${
+          recond.BaseLineID
+        }`}</Link>
+      ),
     },
     {
       title: '单据日期',
@@ -87,7 +96,7 @@ class supplierQuotationSku extends PureComponent {
     },
     {
       title: '供应商',
-      width: 150,
+      width: 100,
       dataIndex: 'CardName',
       render: text => (
         <Ellipsis tooltip lines={1}>
@@ -175,12 +184,12 @@ class supplierQuotationSku extends PureComponent {
     },
     {
       title: '数量',
-      width: 100,
+      width: 80,
       dataIndex: 'Quantity',
     },
     {
       title: '单位',
-      width: 100,
+      width: 80,
       dataIndex: 'Unit',
     },
     {
@@ -191,7 +200,7 @@ class supplierQuotationSku extends PureComponent {
     },
     {
       title: '价格',
-      width: 100,
+      width: 80,
       dataIndex: 'Price',
     },
     {
@@ -206,8 +215,8 @@ class supplierQuotationSku extends PureComponent {
       dataIndex: 'LineComment',
     },
     {
-      title: '所有人',
-      width: 100,
+      title: '采购员',
+      width: 80,
       dataIndex: 'Owner',
       render: text => {
         const {
@@ -219,7 +228,7 @@ class supplierQuotationSku extends PureComponent {
     {
       title: '销售员',
       dataIndex: 'Saler',
-      width: 100,
+      width: 80,
       render: text => {
         const {
           global: { Saler },
@@ -309,11 +318,6 @@ class supplierQuotationSku extends PureComponent {
       expandForm: !expandForm,
     });
   };
-
-  handleOnRow = record => ({
-    // 详情or修改
-    onClick: () => router.push(`/purchase/TI_Z027/detail?DocEntry=${record.DocEntry}`),
-  });
 
   renderSimpleForm() {
     const {
@@ -422,9 +426,8 @@ class supplierQuotationSku extends PureComponent {
               data={{ list: supplierQuotationSkuList }}
               pagination={pagination}
               rowKey="Key"
-              scroll={{ x: 2500, y: 500 }}
+              scroll={{ x: 2350, y: 500 }}
               columns={this.columns}
-              onRow={this.handleOnRow}
               onChange={this.handleStandardTableChange}
             />
           </div>

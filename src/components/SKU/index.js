@@ -74,7 +74,7 @@ class SKUSelect extends PureComponent {
         ...params,
       },
     });
-    if (response.Status === 200) {
+    if (response && response.Status === 200) {
       this.setState({
         skuList: response.Content.rows,
       });

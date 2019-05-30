@@ -222,7 +222,7 @@ class inquiryListPage extends PureComponent {
 
   handleOnRow = record => ({
     // 详情or修改
-    onClick: () => router.push(`/sellabout/TI_Z026/TI_Z02603?DocEntry=${record.DocEntry}`),
+    onClick: () => router.push(`/sellabout/TI_Z026/detail?DocEntry=${record.DocEntry}`),
   });
 
   renderSimpleForm() {

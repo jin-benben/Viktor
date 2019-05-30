@@ -28,15 +28,13 @@ import EditableFormTable from '@/components/EditableFormTable';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import UpdateLoad from '../components/modal';
 import SKUModal from '@/components/Modal/SKU';
-import Address from '@/components/Address';
 import Brand from '@/components/Brand';
-import LinkMan from '../components/linkman';
 import MDMCommonality from '@/components/Select';
 import NeedAskPrice from '../components/needAskPrice';
 import CompanySelect from '@/components/Company/index';
 import OrderSource from '@/components/Select/OrderSource';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
-import { checkPhone, getName, chechEmail } from '@/utils/utils';
+import { getName } from '@/utils/utils';
 
 const { TabPane } = Tabs;
 const FormItem = Form.Item;
@@ -82,7 +80,7 @@ class InquiryEdit extends React.Component {
       render: text => (
         <Ellipsis tooltip lines={1}>
           {' '}
-          {text}{' '}
+          {text}
         </Ellipsis>
       ),
     },
@@ -352,6 +350,7 @@ class InquiryEdit extends React.Component {
       needmodalVisible: false,
       LineID: Number, // 当前选中行index
       linkmanList: [], // 联系人list
+      addList: [], // 地址list
       thisLine: {
         // 当前行
         TI_Z02604: [],
@@ -367,10 +366,15 @@ class InquiryEdit extends React.Component {
   componentDidMount() {
     const {
       dispatch,
-      global: { currentUser },
+      global: { currentUser, CustomerList },
       inquiryEdit: { inquiryDetail },
     } = this.props;
-    const { CompanyCode, Owner, UserID, DefaultWhsCode, UserCode } = currentUser;
+    const { CompanyCode, Owner, DefaultWhsCode, UserCode } = currentUser;
+    if (!CustomerList.length) {
+      dispatch({
+        type: 'global/getCustomer',
+      });
+    }
     this.setState({ DefaultWhsCode });
     dispatch({
       type: 'inquiryEdit/save',
@@ -379,7 +383,6 @@ class InquiryEdit extends React.Component {
           ...inquiryDetail,
           CompanyCode,
           Owner,
-          UserID,
           CreateUser: UserCode,
         },
       },
@@ -412,7 +415,6 @@ class InquiryEdit extends React.Component {
           CreateDate: new Date(),
           CardCode: '',
           CardName: '',
-          UserID: '1',
           Contacts: '',
           CellphoneNO: '',
           PhoneNO: '',
@@ -442,9 +444,19 @@ class InquiryEdit extends React.Component {
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    if (nextProps.inquiryEdit.inquiryDetail !== prevState.formVals) {
+    if (
+      nextProps.inquiryEdit.inquiryDetail !== prevState.formVals ||
+      nextProps.inquiryEdit.addList !== prevState.addList ||
+      nextProps.inquiryEdit.linkmanList !== prevState.linkmanList
+    ) {
       return {
         formVals: nextProps.inquiryEdit.inquiryDetail,
+        addList: nextProps.inquiryEdit.addList.length
+          ? nextProps.inquiryEdit.addList
+          : prevState.addList,
+        linkmanList: nextProps.inquiryEdit.linkmanList.length
+          ? nextProps.inquiryEdit.linkmanList
+          : prevState.linkmanList,
       };
     }
     return null;
@@ -661,27 +673,62 @@ class InquiryEdit extends React.Component {
 
   // change 客户
   changeCompany = company => {
-    const { TI_Z00602List } = company;
+    const { TI_Z00602List, TI_Z00603List } = company;
     const { formVals } = this.state;
-    formVals.CardCode = company.Code || company.key;
-    formVals.CardName = company.Name || company.label;
-    this.setState({ formVals, linkmanList: TI_Z00602List || [] });
+    formVals.CardCode = company.Code;
+    formVals.CardName = company.Name;
+    this.setState({ formVals, linkmanList: TI_Z00602List || [], addList: TI_Z00603List }, () => {
+      if (TI_Z00603List[0]) {
+        this.handleAdreessChange(TI_Z00603List[0].AddressID);
+      }
+      if (TI_Z00602List[0]) {
+        this.linkmanChange(TI_Z00602List[0].UserID);
+      }
+    });
   };
 
-  validatorPhone = (rule, value, callback) => {
-    if (value && !checkPhone(value)) {
-      callback(new Error('手机号格式不正确'));
-    } else {
-      callback();
-    }
+  // 联系人change
+  linkmanChange = value => {
+    const { formVals, linkmanList } = this.state;
+    const select = linkmanList.find(item => {
+      return item.UserID === value;
+    });
+    const { CellphoneNO, Email, PhoneNO, UserID, Name } = select;
+    Object.assign(formVals, { CellphoneNO, Email, PhoneNO, UserID, Contacts: Name });
+    this.setState({ formVals });
   };
 
-  validatorEmail = (rule, value, callback) => {
-    if (value && !chechEmail(value)) {
-      callback(new Error('邮箱格式不正确'));
-    } else {
-      callback();
-    }
+  // 地址改变
+  handleAdreessChange = value => {
+    const { addList, formVals } = this.state;
+    const select = addList.find(item => {
+      return item.AddressID === value;
+    });
+    const {
+      Province,
+      ProvinceID,
+      City,
+      CityID,
+      Area,
+      AreaID,
+      Street,
+      StreetID,
+      AddressID,
+      Address,
+    } = select;
+    Object.assign(formVals, {
+      Province,
+      ProvinceID,
+      City,
+      CityID,
+      Area,
+      AreaID,
+      Street,
+      StreetID,
+      AddressID,
+      Address,
+    });
+    this.setState({ formVals });
   };
 
   autoAddLine = (record, index) => {
@@ -698,13 +745,6 @@ class InquiryEdit extends React.Component {
     ) {
       this.addLineSku();
     }
-  };
-
-  // 联系人change
-  linkmanChange = Contacts => {
-    const { formVals } = this.state;
-    formVals.Contacts = Contacts;
-    this.setState({ formVals });
   };
 
   addLineSku = () => {
@@ -749,11 +789,6 @@ class InquiryEdit extends React.Component {
         message.error(Object.values(err)[0].errors[0].message);
         return;
       }
-      let address;
-      if (fieldsValue.address) {
-        address = { ...fieldsValue.address };
-      }
-      delete fieldsValue.address;
       delete fieldsValue.CardCode;
       delete fieldsValue.CardName;
       dispatch({
@@ -762,16 +797,15 @@ class InquiryEdit extends React.Component {
           Content: {
             ...formVals,
             ...fieldsValue,
-            ...address,
             DueDate: fieldsValue.DueDate ? fieldsValue.DueDate.format('YYYY-MM-DD') : '',
             ToDate: fieldsValue.ToDate ? fieldsValue.ToDate.format('YYYY-MM-DD') : '',
             DocDate: fieldsValue.DocDate ? fieldsValue.DocDate.format('YYYY-MM-DD') : '',
           },
         },
         callback: response => {
-          if (response.Status === 200) {
+          if (response && response.Status === 200) {
             message.success('添加成功');
-            router.push(`/TI_Z02601/detail?DocEntry=${response.Content.DocEntry}`);
+            router.push(`/sellabout/TI_Z02601/detail?DocEntry=${response.Content.DocEntry}`);
           }
         },
       });
@@ -787,11 +821,7 @@ class InquiryEdit extends React.Component {
         message.error(Object.values(err)[0].errors[0].message);
         return;
       }
-      let address;
-      if (fieldsValue.address) {
-        address = { ...fieldsValue.address };
-      }
-      delete fieldsValue.address;
+
       delete fieldsValue.CardCode;
       delete fieldsValue.CardName;
       dispatch({
@@ -800,14 +830,13 @@ class InquiryEdit extends React.Component {
           Content: {
             ...formVals,
             ...fieldsValue,
-            ...address,
             DueDate: fieldsValue.DueDate ? fieldsValue.DueDate.format('YYYY-MM-DD') : '',
             ToDate: fieldsValue.ToDate ? fieldsValue.ToDate.format('YYYY-MM-DD') : '',
             DocDate: fieldsValue.DocDate ? fieldsValue.DocDate.format('YYYY-MM-DD') : '',
           },
         },
         callback: response => {
-          if (response.Status === 200) {
+          if (response && response.Status === 200) {
             message.success('更新成功');
             this.getDetail();
           }
@@ -830,7 +859,7 @@ class InquiryEdit extends React.Component {
         },
       },
       callback: response => {
-        if (response.Status === 200) {
+        if (response && response.Status === 200) {
           message.success('取消成功');
         }
       },
@@ -852,7 +881,7 @@ class InquiryEdit extends React.Component {
         },
       },
       callback: response => {
-        if (response.Status === 200) {
+        if (response && response.Status === 200) {
           message.success('提交成功');
 
           this.setState({ needmodalVisible: false });
@@ -881,6 +910,7 @@ class InquiryEdit extends React.Component {
       tabIndex,
       thisLine,
       linkmanList,
+      addList,
       uploadmodalVisible,
       skuModalVisible,
       needmodalVisible,
@@ -926,7 +956,7 @@ class InquiryEdit extends React.Component {
     console.log(formVals);
 
     return (
-      <Card>
+      <Card bordered={false}>
         <Form {...formItemLayout}>
           <Row gutter={8}>
             <Col lg={10} md={12} sm={24}>
@@ -977,16 +1007,22 @@ class InquiryEdit extends React.Component {
           </Row>
           <Row gutter={8}>
             <Col lg={10} md={12} sm={24}>
-              <FormItem key="Contacts" {...this.formLayout} label="联系人">
-                {getFieldDecorator('Contacts', {
+              <FormItem key="UserID" {...this.formLayout} label="联系人">
+                {getFieldDecorator('UserID', {
                   rules: [{ required: true, message: '请输入联系人！' }],
-                  initialValue: formVals.Contacts,
+                  initialValue: formVals.UserID,
                 })(
-                  <LinkMan
-                    initialValue={formVals.Contacts}
-                    onChange={this.linkmanChange}
-                    data={linkmanList}
-                  />
+                  <Select
+                    placeholder="请选择联系人"
+                    onSelect={this.linkmanChange}
+                    style={{ width: '100%' }}
+                  >
+                    {linkmanList.map(option => (
+                      <Option key={option.UserID} value={option.UserID}>
+                        {option.Name}
+                      </Option>
+                    ))}
+                  </Select>
                 )}
               </FormItem>
             </Col>
@@ -1049,47 +1085,37 @@ class InquiryEdit extends React.Component {
             <Row className="rowFlex" gutter={8}>
               <Col lg={8} md={12} sm={24}>
                 <FormItem key="CellphoneNO" {...this.formLayout} label="手机号码">
-                  {getFieldDecorator('CellphoneNO', {
-                    initialValue: formVals.CellphoneNO,
-                    rules: [{ required: true, message: '请输入手机号码！' }],
-                  })(<Input placeholder="手机号码" />)}
+                  <span>{formVals.CellphoneNO}</span>
                 </FormItem>
               </Col>
               <Col lg={8} md={12} sm={24}>
                 <FormItem key="PhoneNO" {...this.formLayout} label="联系人电话">
-                  {getFieldDecorator('PhoneNO', {
-                    initialValue: formVals.PhoneNO,
-                  })(<Input placeholder="电话号码" />)}
+                  <span>{formVals.PhoneNO}</span>
                 </FormItem>
               </Col>
               <Col lg={8} md={12} sm={24}>
                 <FormItem key="Email " {...this.formLayout} label="联系人邮箱">
-                  {getFieldDecorator('Email', {
-                    rules: [{ validator: this.validatorEmail }],
-                    initialValue: formVals.Email,
-                  })(<Input placeholder="请输入邮箱" />)}
+                  <span>{formVals.Email}</span>
                 </FormItem>
               </Col>
               <Col lg={8} md={12} sm={24}>
                 <FormItem key="address" {...this.formLayout} label="地址">
                   {getFieldDecorator('address', {
                     rules: [{ required: true, message: '请选择地址！' }],
-                    initialValue: [
-                      formVals.ProvinceID,
-                      formVals.CityID,
-                      formVals.AreaID,
-                      formVals.StreetID,
-                    ],
+                    initialValue: formVals.AddressID,
                   })(
-                    <Address
-                      initialValue={[
-                        formVals.ProvinceID,
-                        formVals.CityID,
-                        formVals.AreaID,
-                        formVals.StreetID,
-                      ]}
+                    <Select
+                      value={formVals}
+                      placeholder="请选择地址"
+                      onSelect={this.handleAdreessChange}
                       style={{ width: '100%' }}
-                    />
+                    >
+                      {addList.map(option => (
+                        <Option key={option.AddressID} value={option.AddressID}>
+                          {`${option.Province}/${option.City}/${option.Area}/${option.Street}`}
+                        </Option>
+                      ))}
+                    </Select>
                   )}
                 </FormItem>
               </Col>

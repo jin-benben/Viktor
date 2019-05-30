@@ -29,7 +29,7 @@ export default {
   effects: {
     *fetch({ payload }, { call, put }) {
       const response = yield call(orderLineRule, payload);
-      if (response.Status === 200) {
+      if (response && response.Status === 200) {
         if (!response.Content) {
           yield put({
             type: 'save',

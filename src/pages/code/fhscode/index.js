@@ -226,7 +226,7 @@ class HSCode extends PureComponent {
           },
         },
         callback: response => {
-          if (response.Status === 200) {
+          if (response && response.Status === 200) {
             this.handleModalVisible(false);
             message.success('添加成功');
             dispatch({
@@ -247,7 +247,7 @@ class HSCode extends PureComponent {
           },
         },
         callback: response => {
-          if (response.Status === 200) {
+          if (response && response.Status === 200) {
             this.handleModalVisible(false);
             message.success('更新成功');
             dispatch({

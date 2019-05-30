@@ -95,13 +95,6 @@ class AddSKU extends React.Component {
       },
     },
     {
-      title: '数量',
-      width: 100,
-      inputType: 'text',
-      dataIndex: 'Quantity',
-      editable: true,
-    },
-    {
       title: '单位',
       width: 80,
       inputType: 'text',
@@ -288,7 +281,7 @@ class AddSKU extends React.Component {
         },
       },
     });
-    if (response.Status === 200) {
+    if (response && response.Status === 200) {
       message.success('添加成功');
       this.setState({ TI_Z00901: [] });
     }

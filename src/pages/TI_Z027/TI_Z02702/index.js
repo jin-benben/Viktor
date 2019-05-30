@@ -22,7 +22,6 @@ import {
 import moment from 'moment';
 import round from 'lodash/round';
 import router from 'umi/router';
-import CompanyCode from '@/components/Select/CompanyCode';
 import CancelOrder from '@/components/Modal/CancelOrder';
 import MDMCommonality from '@/components/Select';
 import StandardTable from '@/components/StandardTable';
@@ -30,12 +29,10 @@ import EditableFormTable from '@/components/EditableFormTable';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import UpdateLoad from '../../TI_Z026/components/modal';
 import SKUModal from '@/components/Modal/SKU';
-import Address from '@/components/Address';
 import Brand from '@/components/Brand';
 import LinkMan from '../../TI_Z026/components/linkman';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
-import CompanySelect from '@/components/Company/index';
-import { checkPhone, chechEmail } from '@/utils/utils';
+import SupplierSelect from '@/components/Select/Supplier';
 
 const { TabPane } = Tabs;
 const FormItem = Form.Item;
@@ -359,19 +356,9 @@ class InquiryEdit extends React.Component {
           PhoneNO: '',
           Email: '',
           CompanyCode: '',
-          DueDate: null,
           ToDate: null,
           InquiryDocTotal: '',
           DocTotal: '',
-          ProvinceID: '',
-          Province: '',
-          CityID: '',
-          City: '',
-          AreaID: '',
-          Area: '',
-          StreetID: '',
-          Street: '',
-          Address: '',
           NumAtCard: '',
           Owner: '',
           IsInquiry: '',
@@ -565,22 +552,6 @@ class InquiryEdit extends React.Component {
     this.setState({ formVals, linkmanList: TI_Z00602List || [] });
   };
 
-  validatorPhone = (rule, value, callback) => {
-    if (value && !checkPhone(value)) {
-      callback(new Error('手机号格式不正确'));
-    } else {
-      callback();
-    }
-  };
-
-  validatorEmail = (rule, value, callback) => {
-    if (value && !chechEmail(value)) {
-      callback(new Error('邮箱格式不正确'));
-    } else {
-      callback();
-    }
-  };
-
   // 联系人change
   linkmanChange = Contacts => {
     const { formVals } = this.state;
@@ -594,11 +565,7 @@ class InquiryEdit extends React.Component {
     const { formVals } = this.state;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
-      let address;
-      if (fieldsValue.address) {
-        address = { ...fieldsValue.address };
-      }
-      delete fieldsValue.address;
+
       delete fieldsValue.CardCode;
       delete fieldsValue.CardName;
       dispatch({
@@ -607,15 +574,12 @@ class InquiryEdit extends React.Component {
           Content: {
             ...formVals,
             ...fieldsValue,
-            ...address,
-            CreateDate: fieldsValue.CreateDate ? fieldsValue.CreateDate.format('YYYY-MM-DD') : '',
-            DueDate: fieldsValue.DueDate ? fieldsValue.DueDate.format('YYYY-MM-DD') : '',
             ToDate: fieldsValue.ToDate ? fieldsValue.ToDate.format('YYYY-MM-DD') : '',
             DocDate: fieldsValue.DocDate ? fieldsValue.DocDate.format('YYYY-MM-DD') : '',
           },
         },
         callback: response => {
-          if (response.Status === 200) {
+          if (response && response.Status === 200) {
             message.success('添加成功');
             router.push(`/purchase/detail?DocEntry=${response.Content.DocEntry}`);
           }
@@ -630,11 +594,6 @@ class InquiryEdit extends React.Component {
     const { formVals } = this.state;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
-      let address;
-      if (fieldsValue.address) {
-        address = { ...fieldsValue.address };
-      }
-      delete fieldsValue.address;
       delete fieldsValue.CardCode;
       delete fieldsValue.CardName;
       dispatch({
@@ -643,16 +602,21 @@ class InquiryEdit extends React.Component {
           Content: {
             ...formVals,
             ...fieldsValue,
-            ...address,
-            CreateDate: fieldsValue.CreateDate ? fieldsValue.CreateDate.format('YYYY-MM-DD') : '',
-            DueDate: fieldsValue.DueDate ? fieldsValue.DueDate.format('YYYY-MM-DD') : '',
             ToDate: fieldsValue.ToDate ? fieldsValue.ToDate.format('YYYY-MM-DD') : '',
             DocDate: fieldsValue.DocDate ? fieldsValue.DocDate.format('YYYY-MM-DD') : '',
           },
         },
         callback: response => {
-          if (response.Status === 200) {
+          if (response && response.Status === 200) {
             message.success('更新成功');
+            dispatch({
+              type: 'supplierAskDetail/fetch',
+              payload: {
+                Content: {
+                  DocEntry: formVals.DocEntry,
+                },
+              },
+            });
           }
         },
       });
@@ -675,7 +639,7 @@ class InquiryEdit extends React.Component {
         },
       },
       callback: response => {
-        if (response.Status === 200) {
+        if (response && response.Status === 200) {
           message.success('取消成功');
         }
       },
@@ -696,18 +660,21 @@ class InquiryEdit extends React.Component {
         },
       },
       callback: response => {
-        formVals.DocRate = response.DropdownData.Rate[0] ? response.DropdownData.Rate[0].Value : '';
-        this.setState({ formVals });
+        if (response && response.Status === 200) {
+          formVals.DocRate = response.Content.DropdownData.Rate[0]
+            ? response.Content.DropdownData.Rate[0].Value
+            : '';
+          this.setState({ formVals: { ...formVals } });
+        }
       },
     });
-    // formVals.DocRate=DocRate
     this.setState({ formVals });
   };
 
   render() {
     const {
       form: { getFieldDecorator },
-      global: { Purchaser, Curr },
+      global: { Purchaser, Curr, Company },
     } = this.props;
     const {
       formVals,
@@ -759,7 +726,7 @@ class InquiryEdit extends React.Component {
                   rules: [{ required: true, message: '请选择供应商！' }],
                   initialValue: { key: formVals.CardName, label: formVals.CardCode },
                 })(
-                  <CompanySelect
+                  <SupplierSelect
                     initialValue={{ key: formVals.CardName, label: formVals.CardCode }}
                     onChange={this.changeCompany}
                     keyType="Code"
@@ -780,9 +747,9 @@ class InquiryEdit extends React.Component {
               <FormItem key="CardName" {...this.formLayout} label="供应商名称">
                 {getFieldDecorator('CardName', {
                   rules: [{ required: true, message: '请输入供应商名称！' }],
-                  initialValue: { key: formVals.CardCode, label: formVals.CardName },
+                  initialValue: formVals.CardCode,
                 })(
-                  <CompanySelect
+                  <SupplierSelect
                     initialValue={{ key: formVals.CardCode, label: formVals.CardName }}
                     onChange={this.changeCompany}
                     keyType="Name"
@@ -822,7 +789,7 @@ class InquiryEdit extends React.Component {
                 })(
                   <MDMCommonality
                     onChange={this.currencyChange}
-                    initialValue={formVals.Curr}
+                    initialValue={formVals.Currency}
                     data={Curr}
                   />
                 )}
@@ -864,11 +831,7 @@ class InquiryEdit extends React.Component {
               </Col>
               <Col lg={8} md={12} sm={24}>
                 <FormItem key="CreateDate" {...this.formLayout} label="创建日期">
-                  {getFieldDecorator('CreateDate', {
-                    initialValue: formVals.CreateDate
-                      ? moment(formVals.CreateDate, 'YYYY-MM-DD')
-                      : null,
-                  })(<DatePicker style={{ width: '100%' }} />)}
+                  <span>{moment(formVals.CreateDate).format('YYYY-MM-DD')}</span>
                 </FormItem>
               </Col>
             </Row>
@@ -899,43 +862,11 @@ class InquiryEdit extends React.Component {
                 </FormItem>
               </Col>
               <Col lg={8} md={12} sm={24}>
-                <FormItem key="address" {...this.formLayout} label="地址">
-                  {getFieldDecorator('address', {
-                    rules: [{ required: true, message: '请选择地址！' }],
-                    initialValue: [
-                      formVals.ProvinceID,
-                      formVals.CityID,
-                      formVals.AreaID,
-                      formVals.StreetID,
-                    ],
-                  })(
-                    <Address
-                      initialValue={[
-                        formVals.ProvinceID,
-                        formVals.CityID,
-                        formVals.AreaID,
-                        formVals.StreetID,
-                      ]}
-                      style={{ width: '100%' }}
-                    />
-                  )}
-                </FormItem>
-              </Col>
-              <Col lg={8} md={12} sm={24}>
-                <FormItem key="Address" {...this.formLayout} label="地址">
-                  {getFieldDecorator('Address', {
-                    rules: [{ required: true, message: '请输入详细地址！' }],
-                    initialValue: formVals.Address,
-                  })(<Input placeholder="请输入详细地址！" />)}
-                </FormItem>
-              </Col>
-
-              <Col lg={8} md={12} sm={24}>
                 <FormItem key="CompanyCode" {...this.formLayout} label="交易公司">
                   {getFieldDecorator('CompanyCode', {
                     initialValue: formVals.CompanyCode,
                     rules: [{ required: true, message: '请选择交易公司！' }],
-                  })(<CompanyCode />)}
+                  })(<MDMCommonality initialValue={formVals.CompanyCode} data={Company} />)}
                 </FormItem>
               </Col>
               <Col lg={8} md={12} sm={24}>
@@ -949,14 +880,6 @@ class InquiryEdit extends React.Component {
                 <FormItem key="ToDate" {...this.formLayout} label="有效期至">
                   {getFieldDecorator('ToDate', {
                     initialValue: formVals.ToDate ? moment(formVals.ToDate, 'YYYY-MM-DD') : null,
-                  })(<DatePicker style={{ width: '100%' }} />)}
-                </FormItem>
-              </Col>
-              <Col lg={8} md={12} sm={24}>
-                <FormItem key="DueDate" {...this.formLayout} label="要求交期">
-                  {getFieldDecorator('DueDate', {
-                    initialValue: formVals.DueDate ? moment(formVals.DueDate, 'YYYY-MM-DD') : null,
-                    rules: [{ required: true, message: '请选择要求交期！' }],
                   })(<DatePicker style={{ width: '100%' }} />)}
                 </FormItem>
               </Col>
@@ -997,22 +920,14 @@ class InquiryEdit extends React.Component {
         </Tabs>
 
         <FooterToolbar>
-          {formVals.DocEntry ? (
-            <Fragment>
-              <CancelOrder cancelSubmit={this.cancelSubmit} />
-              <Button
-                style={{ marginLeft: 10, marginRight: 10 }}
-                onClick={this.updateHandle}
-                type="primary"
-              >
-                更新
-              </Button>
-            </Fragment>
-          ) : (
-            <Button onClick={this.saveHandle} type="primary">
-              保存
-            </Button>
-          )}
+          <CancelOrder cancelSubmit={this.cancelSubmit} />
+          <Button
+            style={{ marginLeft: 10, marginRight: 10 }}
+            onClick={this.updateHandle}
+            type="primary"
+          >
+            更新
+          </Button>
         </FooterToolbar>
         <UpdateLoad {...uploadmodalMethods} modalVisible={uploadmodalVisible} />
         <SKUModal {...parentMethods} modalVisible={skuModalVisible} />

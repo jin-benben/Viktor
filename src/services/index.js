@@ -35,3 +35,33 @@ export async function tokenOutRule(params) {
     },
   });
 }
+export async function supplierRule() {
+  return request('/MDM/TI_Z007/TI_Z00702', {
+    method: 'POST',
+    data: {
+      Content: {
+        SearchText: '',
+        SearchKey: 'Name',
+      },
+      page: 1,
+      rows: 30,
+      sidx: 'Code',
+      sord: 'Desc',
+    },
+  });
+}
+export async function customerRule() {
+  return request('/MDM/TI_Z006/TI_Z00602', {
+    method: 'POST',
+    data: {
+      Content: {
+        SearchText: '',
+        SearchKey: 'Name',
+      },
+      page: 1,
+      rows: 30,
+      sidx: 'Code',
+      sord: 'Desc',
+    },
+  });
+}

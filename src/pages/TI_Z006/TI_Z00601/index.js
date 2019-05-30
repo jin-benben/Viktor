@@ -8,6 +8,7 @@ import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import LinkMan from '../components/linkman';
 import CardSource from '@/components/Select/CardSource';
 import MDMCommonality from '@/components/Select';
+import router from 'umi/router';
 import { checkPhone, chechEmail, getName } from '@/utils/utils';
 
 const { TabPane } = Tabs;
@@ -233,7 +234,6 @@ class CompanyEdit extends PureComponent {
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    console.log(nextProps);
     if (nextProps.companyEdit.companyDetail !== prevState.formVals) {
       return {
         formVals: nextProps.companyEdit.companyDetail,
@@ -254,7 +254,7 @@ class CompanyEdit extends PureComponent {
         },
       },
       callback: response => {
-        if (response.Status === 200) {
+        if (response && response.Status === 200) {
           message.success('保存成功');
           this.handleModalVisible();
           this.getSingle();
@@ -277,7 +277,7 @@ class CompanyEdit extends PureComponent {
         },
       },
       callback: response => {
-        if (response.Status === 200) {
+        if (response && response.Status === 200) {
           message.success('保存成功');
           this.handleModalVisible();
           this.getSingle();
@@ -333,8 +333,9 @@ class CompanyEdit extends PureComponent {
           },
         },
         callback: response => {
-          if (response.Status === 200) {
+          if (response && response.Status === 200) {
             message.success('添加成功');
+            router.push(`/main/TI_Z006/detail?Code=${response.Content.Code}`);
           }
         },
       });
@@ -358,8 +359,9 @@ class CompanyEdit extends PureComponent {
           },
         },
         callback: response => {
-          if (response.Status === 200) {
+          if (response && response.Status === 200) {
             message.success('更新成功');
+            this.getSingle();
           }
         },
       });
@@ -475,7 +477,7 @@ class CompanyEdit extends PureComponent {
       handleModalVisible: this.handleModalVisible,
     };
     return (
-      <Card>
+      <Card bordered={false}>
         <Form {...formItemLayout} onSubmit={this.handleSubmit}>
           <Row gutter={8}>
             <Col lg={8} md={12} sm={24}>

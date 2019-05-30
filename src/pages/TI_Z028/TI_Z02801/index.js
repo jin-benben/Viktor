@@ -365,7 +365,7 @@ class TI_Z02801 extends PureComponent {
         },
       },
       callback: response => {
-        if (response.Status === 200) {
+        if (response && response.Status === 200) {
           message.success('添加成功');
           router.push(`/TI_Z028/TI_Z02802?DocEntry=${response.Content.DocEntry}`);
         }

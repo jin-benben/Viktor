@@ -1,11 +1,12 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import moment from 'moment';
-import { Button, DatePicker, Input } from 'antd';
+import { DatePicker, Select, Input } from 'antd';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import StandardTable from '@/components/StandardTable';
 import MDMCommonality from '@/components/Select/index';
 import { connect } from 'dva';
 
+const { Option } = Select;
 @connect(({ global }) => ({
   global,
 }))
@@ -68,6 +69,47 @@ class SelectionLine extends Component {
       },
     },
     {
+      title: '币种',
+      width: 150,
+      dataIndex: 'Currency',
+      render: (text, record, index) => {
+        const {
+          global: { Curr },
+        } = this.props;
+        return (
+          <MDMCommonality
+            onChange={value => this.currencyChange(value, record, index)}
+            initialValue={text}
+            data={Curr}
+          />
+        );
+      },
+    },
+    {
+      title: '单据汇率',
+      width: 100,
+      dataIndex: 'DocRate',
+    },
+    {
+      title: '联系人',
+      width: 150,
+      dataIndex: 'ContactsID',
+      render: (text, record, index) => (
+        <Select
+          placeholder="请选择联系人"
+          value={text}
+          onSelect={LineID => this.linkmanChange(LineID, record, index)}
+          style={{ width: '100%' }}
+        >
+          {record.linkmanList.map(option => (
+            <Option key={option.LineID} value={option.LineID}>
+              {option.Name}
+            </Option>
+          ))}
+        </Select>
+      ),
+    },
+    {
       title: '备注',
       dataIndex: 'Comment',
       render: (text, record, index) => (
@@ -81,6 +123,7 @@ class SelectionLine extends Component {
 
   static getDerivedStateFromProps(nextProps, prevState) {
     if (nextProps.orderLineList !== prevState.orderLineList) {
+      console.log(nextProps.orderLineList);
       return {
         orderLineList: nextProps.orderLineList,
         selectedRows: nextProps.orderLineList,
@@ -88,6 +131,40 @@ class SelectionLine extends Component {
     }
     return null;
   }
+
+  linkmanChange = (id, record, index) => {
+    const { orderLineList } = this.state;
+    const select = record.linkmanList.find(item => {
+      return item.LineID === id;
+    });
+    const { CellphoneNO, Email, PhoneNO, LineID, Name } = select;
+    Object.assign(record, { CellphoneNO, Email, PhoneNO, ContactsID: LineID, Contacts: Name });
+    orderLineList[index] = record;
+    this.setState({ orderLineList });
+  };
+
+  // 币种修改
+  currencyChange = (Currency, index, record) => {
+    const { orderLineList } = this.state;
+    const { dispatch } = this.props;
+    record.Currency = Currency;
+    dispatch({
+      type: 'global/getMDMCommonality',
+      payload: {
+        Content: {
+          CodeList: ['Rate'],
+          key: Currency,
+        },
+      },
+      callback: response => {
+        record.DocRate = response.Content.DropdownData.Rate[0]
+          ? response.Content.DropdownData.Rate[0].Value
+          : '';
+        orderLineList[index] = record;
+        this.setState({ orderLineList: [...orderLineList] });
+      },
+    });
+  };
 
   RowChange = (value, index, record, key) => {
     const { orderLineList } = this.state;
@@ -205,8 +282,8 @@ class SelectionLine extends Component {
   };
 
   render() {
-    const { orderLineList } = this.props;
-    const { selectedRows } = this.state;
+    const { selectedRows, orderLineList } = this.state;
+    console.log(orderLineList);
     return (
       <div>
         <StandardTable

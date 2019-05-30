@@ -186,7 +186,7 @@ class SKUDetail extends Component {
           },
         },
         callback: response => {
-          if (response.Status === 200) {
+          if (response && response.Status === 200) {
             message.success('更新成功');
           }
         },

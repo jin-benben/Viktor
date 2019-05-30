@@ -5,6 +5,7 @@ import {
   cancelRule,
   confirmRule,
   costCheckRule,
+  companyRule,
 } from '../service';
 
 export default {
@@ -47,16 +48,24 @@ export default {
       TI_Z02902: [],
       TI_Z02904: [],
     },
+    linkmanList: [],
+    addList: [],
   },
 
   effects: {
     *fetch({ payload }, { call, put }) {
       const response = yield call(querySingleRule, payload);
-      if (response.Status === 200) {
+      if (response && response.Status === 200) {
         yield put({
           type: 'save',
           payload: {
             orderDetail: response.Content,
+          },
+        });
+        yield put({
+          type: 'company',
+          payload: {
+            Content: { Code: response.Content.CardCode },
           },
         });
       }
@@ -64,6 +73,18 @@ export default {
     *add({ payload, callback }, { call }) {
       const response = yield call(addRule, payload);
       if (callback) callback(response);
+    },
+    *company({ payload }, { put, call }) {
+      const response = yield call(companyRule, payload);
+      if (response && response.Status === 200) {
+        yield put({
+          type: 'save',
+          payload: {
+            addList: response.Content.TI_Z00603List,
+            linkmanList: response.Content.TI_Z00602List,
+          },
+        });
+      }
     },
     *costCheck({ payload, callback }, { call }) {
       const response = yield call(costCheckRule, payload);

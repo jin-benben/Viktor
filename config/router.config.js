@@ -156,19 +156,19 @@ export default [
                   path: '/main/product/TI_Z007',
                   routes: [
                     {
-                      path: '/main/product/TI_Z007/TI_Z00702',
+                      path: '/main/product/TI_Z007/add',
+                      name: '供应商添加',
+                      component: './TI_Z007/TI_Z00701',
+                    },
+                    {
+                      path: '/main/product/TI_Z007/search',
                       name: '供应商查询',
                       component: './TI_Z007/TI_Z00702',
                     },
                     {
-                      path: '/main/product/TI_Z007/TI_Z00703',
+                      path: '/main/product/TI_Z007/detail',
                       name: '供应商详情',
                       hideInMenu: true,
-                      component: './TI_Z007/TI_Z00701',
-                    },
-                    {
-                      path: '/main/product/TI_Z007/TI_Z00701',
-                      name: '供应商添加',
                       component: './TI_Z007/TI_Z00701',
                     },
                   ],
@@ -181,17 +181,17 @@ export default [
               path: '/main/TI_Z006',
               routes: [
                 {
-                  path: '/main/TI_Z006/TI_Z00602',
-                  name: '客户查询',
-                  component: './TI_Z006/TI_Z00602',
-                },
-                {
-                  path: '/main/TI_Z006/TI_Z00601',
+                  path: '/main/TI_Z006/add',
                   name: '客户添加',
                   component: './TI_Z006/TI_Z00601',
                 },
                 {
-                  path: `/main/TI_Z006/TI_Z00603`,
+                  path: '/main/TI_Z006/search',
+                  name: '客户查询',
+                  component: './TI_Z006/TI_Z00602',
+                },
+                {
+                  path: `/main/TI_Z006/detail`,
                   name: '客户详情',
                   hideInMenu: true,
                   component: './TI_Z006/TI_Z00601',
@@ -227,7 +227,7 @@ export default [
               },
               {
                 name: '客户询价详情',
-                path: '/sellabout/TI_Z026/TI_Z02603',
+                path: '/sellabout/TI_Z026/detail',
                 hideInMenu: true,
                 component: './TI_Z026/TI_Z02603',
               },

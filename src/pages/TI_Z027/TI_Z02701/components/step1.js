@@ -4,6 +4,7 @@ import React, { Fragment } from 'react';
 import moment from 'moment';
 import { Row, Col, Form, Input, Table, Button, DatePicker, Checkbox } from 'antd';
 import { connect } from 'dva';
+import Link from 'umi/link';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import SupplierSelect from '@/components/Select/Supplier';
 import MDMCommonality from '@/components/Select';
@@ -26,7 +27,8 @@ class NeedTabl extends React.Component {
     queryData: {
       Content: {
         SearchText: '',
-        QueryType: '4',
+        InquiryStatus: 'O',
+        QueryType: '3',
         SearchKey: '',
       },
       page: 1,
@@ -52,7 +54,7 @@ class NeedTabl extends React.Component {
       dataIndex: 'supplier',
       render: (text, record, index) => (
         <SupplierSelect
-          //  initialValue={{ key: record.SupplierCode, label: record.SupplierName }}
+          initialValue={{ key: record.SupplierCode, label: record.SupplierName }}
           onChange={value => this.changeSupplier(value, record, index)}
           keyType="Name"
         />
@@ -63,15 +65,8 @@ class NeedTabl extends React.Component {
       width: 100,
       dataIndex: 'DocEntry',
       render: (val, record) => (
-        <a href={`/sellabout/TI_Z026/TI_Z02602?DocEntry=${record.DocEntry}`} alt="单号">
-          {val}
-        </a>
+        <Link to={`/sellabout/TI_Z026/detail?DocEntry=${val}`}>{`${val}-${record.LineID}`}</Link>
       ),
-    },
-    {
-      title: '行号',
-      width: 80,
-      dataIndex: 'LineID',
     },
     {
       title: '单据日期',
@@ -284,8 +279,9 @@ class NeedTabl extends React.Component {
       this.fetchOrder({
         Content: {
           SearchText: '',
-          QueryType: '4',
           SearchKey: '',
+          InquiryStatus: 'O',
+          QueryType: '3',
           ...queryData,
         },
         page: 1,
@@ -296,10 +292,24 @@ class NeedTabl extends React.Component {
     });
   };
 
-  changeSupplier = (value, record, index) => {
-    record.SupplierCode = value.Code || value.key;
-    record.SupplierName = value.Name || value.label;
+  // change 客户
+  changeSupplier = (supplier, record, index) => {
+    const { Code, Currency, CompanyCode } = supplier;
     const { orderLineList } = this.state;
+    const { CellphoneNO, Email, PhoneNO, Name, LineID } = supplier.TI_Z00702List[0];
+
+    record.SupplierCode = Code;
+    record.SupplierName = supplier.Name;
+    Object.assign(record, {
+      CellphoneNO,
+      CompanyCode,
+      Email,
+      PhoneNO,
+      ContactsID: LineID,
+      Contacts: Name,
+      Currency,
+      linkmanList: supplier.TI_Z00702List,
+    });
     orderLineList[index] = record;
     this.setState({ orderLineList: [...orderLineList] });
   };
@@ -336,13 +346,14 @@ class NeedTabl extends React.Component {
         DocDateFrom,
         DocDateTo,
         ...fieldsValue.orderNo,
-        PLineStatus: fieldsValue.SLineStatus && fieldsValue.PLineStatus ? 'C' : 'O',
+        InquiryStatus: fieldsValue.InquiryStatus && fieldsValue.InquiryStatus ? 'C' : 'O',
       };
       this.fetchOrder({
         Content: {
           SearchText: '',
-          QueryType: '4',
           SearchKey: '',
+          InquiryStatus: 'O',
+          QueryType: '3',
           ...queryData,
         },
         page: 1,
@@ -393,9 +404,10 @@ class NeedTabl extends React.Component {
           </Col>
           <Col md={3} sm={24}>
             <FormItem>
-              {getFieldDecorator('PLineStatus', { valuePropName: 'checked', initialValue: false })(
-                <Checkbox>已询价</Checkbox>
-              )}
+              {getFieldDecorator('InquiryStatus', {
+                valuePropName: 'checked',
+                initialValue: false,
+              })(<Checkbox>已询价</Checkbox>)}
             </FormItem>
           </Col>
           <Col md={3} sm={24}>

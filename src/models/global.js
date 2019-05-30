@@ -1,4 +1,4 @@
-import { getMDMCommonalityRule, tokenOutRule } from '@/services';
+import { getMDMCommonalityRule, tokenOutRule, customerRule, supplierRule } from '@/services';
 import { routerRedux } from 'dva/router';
 import { notification } from 'antd';
 import { parse } from 'qs';
@@ -19,6 +19,8 @@ export default {
     Card: [], // 客户类型
     Supplier: [], // 供应商类型
     Curr: [], // 交易币种
+    SupplierList: [], // 供应商
+    CustomerList: [], // 客户
   },
 
   effects: {
@@ -71,6 +73,52 @@ export default {
           },
         });
         if (callback) callback(response);
+      }
+    },
+    // 获取客户下拉框初始值
+    *getCustomer(_, { put, call }) {
+      const response = yield call(customerRule);
+      if (response && response.Status === 200) {
+        if (!response.Content) {
+          yield put({
+            type: 'save',
+            payload: {
+              CustomerList: [],
+            },
+          });
+        } else {
+          const { rows } = response.Content;
+          yield put({
+            type: 'save',
+            payload: {
+              CustomerList: rows,
+            },
+          });
+        }
+      }
+    },
+    // 获取供应商下拉框及弹窗初始值
+    *getSupplier(_, { put, call }) {
+      const response = yield call(supplierRule);
+      if (response && response.Status === 200) {
+        if (response && response.Status === 200) {
+          if (!response.Content) {
+            yield put({
+              type: 'save',
+              payload: {
+                companyList: [],
+              },
+            });
+          } else {
+            const { rows } = response.Content;
+            yield put({
+              type: 'save',
+              payload: {
+                SupplierList: rows,
+              },
+            });
+          }
+        }
       }
     },
     *checkToken(_, { put, call }) {

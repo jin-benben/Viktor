@@ -7,6 +7,7 @@ import Brand from '@/components/Brand';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import LinkMan from '../components/linkman';
 import MDMCommonality from '@/components/Select';
+import router from 'umi/router';
 import { checkPhone, chechEmail } from '@/utils/utils';
 
 const { TabPane } = Tabs;
@@ -126,20 +127,7 @@ class CompanyEdit extends React.Component {
   }
 
   componentDidMount() {
-    const {
-      dispatch,
-      location: { query },
-    } = this.props;
-    if (query.Code) {
-      dispatch({
-        type: 'supplierEdit/fetch',
-        payload: {
-          Content: {
-            Code: query.Code,
-          },
-        },
-      });
-    }
+    const { dispatch } = this.props;
     dispatch({
       type: 'global/getMDMCommonality',
       payload: {
@@ -148,6 +136,7 @@ class CompanyEdit extends React.Component {
         },
       },
     });
+    this.getDetail();
   }
 
   componentWillUnmount() {
@@ -171,6 +160,23 @@ class CompanyEdit extends React.Component {
     }
     return null;
   }
+
+  getDetail = () => {
+    const {
+      dispatch,
+      location: { query },
+    } = this.props;
+    if (query.Code) {
+      dispatch({
+        type: 'supplierEdit/fetch',
+        payload: {
+          Content: {
+            Code: query.Code,
+          },
+        },
+      });
+    }
+  };
 
   brandLineChange = (valuekey, record) => {
     // 品牌修改添加
@@ -241,7 +247,6 @@ class CompanyEdit extends React.Component {
     const { formVals } = this.state;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
-      console.log({ ...formVals, ...fieldsValue }, formVals);
       dispatch({
         type: 'supplierEdit/add',
         payload: {
@@ -252,8 +257,9 @@ class CompanyEdit extends React.Component {
           },
         },
         callback: response => {
-          if (response.Status === 200) {
+          if (response && response.Status === 200) {
             message.success('添加成功');
+            router.push(`/main/TI_Z006/detail?Code=${response.Content.Code}`);
           }
         },
       });
@@ -276,8 +282,9 @@ class CompanyEdit extends React.Component {
           },
         },
         callback: response => {
-          if (response.Status === 200) {
+          if (response && response.Status === 200) {
             message.success('更新成功');
+            this.getDetail();
           }
         },
       });
@@ -370,8 +377,6 @@ class CompanyEdit extends React.Component {
       handleSubmit: this.handleLinkmanSubmit,
       handleModalVisible: this.handleModalVisible,
     };
-    console.log(formVals);
-
     return (
       <Card>
         <Form {...formItemLayout}>
@@ -437,20 +442,6 @@ class CompanyEdit extends React.Component {
                 })(<Input placeholder="请输入营业执照信用代码" />)}
               </FormItem>
             </Col>
-            {/* <Col lg={8} md={12} sm={24}>
-              <FormItem key="CusSource" {...this.formLayout} label="来源">
-                {getFieldDecorator('CusSource', {
-                  rules: [{ required: true, message: '请选择来源！' }],
-                  initialValue: formVals.CusSource,
-                })(
-                  <Select placeholder="请选择来源">
-                    <Option value="1">线下</Option>
-                    <Option value="2">网站</Option>
-                    <Option value="3">其他渠道</Option>
-                  </Select>
-                )}
-              </FormItem>
-            </Col> */}
             <Col lg={8} md={12} sm={24}>
               <FormItem key="PayMent" {...this.formLayout} label="付款条款">
                 {getFieldDecorator('PayMent', {

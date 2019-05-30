@@ -6,38 +6,45 @@ const { Option } = Select;
 
 class LinkMan extends PureComponent {
   state = {
-    initialValue: '',
+    value: '',
+    data: [],
     fetching: false,
   };
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    if (nextProps.initialValue !== prevState.initialValue) {
+    console.log(nextProps.data, nextProps.initialValue, prevState.value);
+    if (nextProps.data !== prevState.data) {
+      console.log(nextProps.data);
       return {
         initialValue: nextProps.initialValue,
+        data: nextProps.data,
       };
     }
     return null;
   }
 
-  handleChange = initialValue => {
+  handleChange = value => {
     this.setState({
-      initialValue,
+      value,
       fetching: false,
     });
     const { onChange } = this.props;
+    const { data } = this.state;
+    console.log(value);
     if (onChange) {
-      onChange(initialValue);
+      const select = data.find(item => {
+        return item.Name === value;
+      });
+      console.log(select);
+      onChange(select);
     }
   };
 
   render() {
-    const { fetching, initialValue } = this.state;
-    const { data } = this.props;
+    const { fetching, value, data } = this.state;
     return (
       <Select
-        showArrow={false}
-        value={initialValue}
-        defaultValue={initialValue}
+        value={value}
         placeholder="请选择联系人"
         notFoundContent={fetching ? <Spin size="small" /> : <Empty />}
         filterOption={false}
@@ -45,7 +52,7 @@ class LinkMan extends PureComponent {
         style={{ width: '100%' }}
       >
         {data.map(option => (
-          <Option key={option.Code} value={option.Code}>
+          <Option key={option.UserID} value={option.Name}>
             {option.Name}
           </Option>
         ))}

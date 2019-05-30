@@ -2,6 +2,7 @@ import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
 import { Row, Col, Card, Form, Input, Button } from 'antd';
+import Link from 'umi/link';
 import StandardTable from '@/components/StandardTable';
 import { getName } from '@/utils/utils';
 
@@ -34,8 +35,9 @@ class companySearch extends PureComponent {
   columns = [
     {
       title: '客户ID',
-      width: 120,
+      width: 80,
       dataIndex: 'Code',
+      render: text => <Link to={`/main/TI_Z006/detail?Code=${text}`}>{text}</Link>,
     },
     {
       title: '客户名称',
@@ -59,6 +61,7 @@ class companySearch extends PureComponent {
     },
     {
       title: '地址',
+      width: 400,
       dataIndex: 'Laddress',
     },
     {
@@ -153,11 +156,6 @@ class companySearch extends PureComponent {
     });
   };
 
-  handleOnRow = record => ({
-    // 详情or修改
-    onClick: () => router.push(`/main/TI_Z006/TI_Z00603?Code=${record.Code}`),
-  });
-
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
@@ -180,7 +178,7 @@ class companySearch extends PureComponent {
                 icon="plus"
                 style={{ marginLeft: 8 }}
                 type="primary"
-                onClick={() => router.push('/main/TI_Z006/TI_Z00601')}
+                onClick={() => router.push('/main/TI_Z006/add')}
               >
                 新建
               </Button>
@@ -208,7 +206,6 @@ class companySearch extends PureComponent {
               scroll={{ x: 1800 }}
               rowKey="Code"
               pagination={pagination}
-              onRow={this.handleOnRow}
               columns={this.columns}
               onChange={this.handleStandardTableChange}
             />

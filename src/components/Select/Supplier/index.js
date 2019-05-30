@@ -15,7 +15,7 @@ class SupplierSelect extends PureComponent {
 
   state = {
     data: [],
-    value: { key: '', label: '' },
+    value: '',
     companyModal: false,
     fetching: false,
   };
@@ -29,8 +29,12 @@ class SupplierSelect extends PureComponent {
     return null;
   }
 
+  componentDidMount() {
+    this.fetchSupplier();
+  }
+
   fetchSupplier = async value => {
-    if (!value) return;
+    if (!value && this.lastFetchId !== 0) return;
     const { keyType } = this.props;
     this.lastFetchId += 1;
     const fetchId = this.lastFetchId;
@@ -59,10 +63,15 @@ class SupplierSelect extends PureComponent {
   handleChange = value => {
     this.setState({
       fetching: false,
+      value,
     });
+    const { data } = this.state;
     const { onChange } = this.props;
     if (onChange) {
-      onChange(value);
+      const select = data.find(item => {
+        return item.Code === value.key;
+      });
+      onChange(select);
     }
   };
 
@@ -71,10 +80,7 @@ class SupplierSelect extends PureComponent {
     if (onChange) {
       onChange(select);
       this.setState({
-        value: {
-          label: select.Name,
-          key: select.Code,
-        },
+        value: select.Code,
       });
       this.handleModalVisible(false);
     }
@@ -95,6 +101,7 @@ class SupplierSelect extends PureComponent {
         <Select
           showSearch
           value={value}
+          defaultValue={value}
           labelInValue
           suffixIcon={
             <Icon

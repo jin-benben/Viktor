@@ -12,8 +12,9 @@ import styles from './style.less';
 
 const { Step } = Steps;
 /* eslint react/no-multi-comp:0 */
-@connect(({ supplierAsk, loading }) => ({
+@connect(({ supplierAsk, loading, global }) => ({
   supplierAsk,
+  global,
   loading: loading.models.supplierAsk,
 }))
 @Form.create()
@@ -33,7 +34,7 @@ class SupplierAsk extends Component {
       dataIndex: 'DocEntry',
       render: (text, record) => {
         if (record.Status === '1') {
-          return <a href={`/purchase/TI_Z027/TI_Z02702?DocEntry=${text}`}>{text}</a>;
+          return <a href={`/purchase/TI_Z027/update?DocEntry=${text}`}>{text}</a>;
         }
         return <span>{text}</span>;
       },
@@ -57,13 +58,43 @@ class SupplierAsk extends Component {
       type: 'global/getMDMCommonality',
       payload: {
         Content: {
-          CodeList: ['Saler', 'WhsCode', 'Company', 'Purchaser'],
+          CodeList: ['Saler', 'WhsCode', 'Curr', 'Company', 'Purchaser'],
         },
       },
     });
   }
 
+  getDocRate = lineList => {
+    const { dispatch } = this.props;
+    lineList.map(async item => {
+      await dispatch({
+        type: 'global/getMDMCommonality',
+        payload: {
+          Content: {
+            CodeList: ['Rate'],
+            key: item.Currency,
+          },
+        },
+        callback: response => {
+          item.DocRate = response.Content.DropdownData.Rate[0]
+            ? response.Content.DropdownData.Rate[0].Value
+            : '';
+        },
+      });
+    });
+    console.log(lineList);
+    this.setState({
+      confimSelectedRows: [...lineList],
+      lastConfrimList: [...lineList],
+      current: 1,
+      modalVisible: false,
+    });
+  };
+
   submitSelect = select => {
+    const {
+      global: { currentUser },
+    } = this.props;
     const lineList = [];
     select.map((item, lineIndex) => {
       const {
@@ -75,7 +106,6 @@ class SupplierAsk extends Component {
         ManufactureNO,
         Parameters,
         Package,
-        Purchaser,
         Quantity,
         Unit,
         Key,
@@ -85,6 +115,14 @@ class SupplierAsk extends Component {
         Comment,
         DocEntry,
         LineID,
+        Currency,
+        Contacts,
+        CellphoneNO,
+        PhoneNO,
+        Email,
+        ContactsID,
+        CompanyCode,
+        linkmanList,
       } = item;
       const ToDate = moment()
         .add('30', 'day')
@@ -100,19 +138,21 @@ class SupplierAsk extends Component {
       if (hasSupplier === undefined) {
         lineList.push({
           Comment: '',
-          Contacts: '1',
-          CellphoneNO: '1',
-          PhoneNO: '1',
-          Email: '1',
-          CompanyCode: '1',
+          CompanyCode,
+          DocDate: new Date(),
           ToDate,
           NumAtCard: '',
-          Currency: '1',
-          Owner: '',
+          Currency,
+          ContactsID,
+          Contacts,
+          CellphoneNO,
+          PhoneNO,
+          Email,
+          Owner: currentUser.Owner,
           Key,
-          DocRate: '1',
           CardName: item.SupplierName,
           CardCode: item.SupplierCode,
+          linkmanList,
           TI_Z02702: [
             {
               LineID: lineIndex + 1,
@@ -127,7 +167,6 @@ class SupplierAsk extends Component {
               ManufactureNO,
               Parameters,
               Package,
-              Purchaser,
               Quantity,
               Unit,
               DueDate,
@@ -151,7 +190,6 @@ class SupplierAsk extends Component {
           ManufactureNO,
           Parameters,
           Package,
-          Purchaser,
           Quantity,
           Unit,
           DueDate,
@@ -161,12 +199,7 @@ class SupplierAsk extends Component {
         });
       }
     });
-    this.setState({
-      confimSelectedRows: [...lineList],
-      lastConfrimList: [...lineList],
-      current: 1,
-      modalVisible: false,
-    });
+    this.getDocRate(lineList);
   };
 
   changeCurrent = current => {
@@ -193,7 +226,7 @@ class SupplierAsk extends Component {
         },
       },
       callback: response => {
-        if (response.Status === 200) {
+        if (response && response.Status === 200) {
           message.success('添加成功');
           this.setState({ current: 2, responsTable: response.Content.loTI_Z02701ResponseR });
         }

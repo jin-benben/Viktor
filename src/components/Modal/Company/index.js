@@ -95,7 +95,7 @@ class CompanyModal extends PureComponent {
         ...params,
       },
     });
-    if (response.Status === 200) {
+    if (response && response.Status === 200) {
       if (response.Content) {
         const { rows, records, page } = response.Content;
         const { pagination } = this.state;
@@ -111,7 +111,6 @@ class CompanyModal extends PureComponent {
     const {
       form: { getFieldDecorator },
     } = this.props;
-    const { queryData } = this.state;
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8 }}>

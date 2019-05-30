@@ -3,6 +3,7 @@ import { connect } from 'dva';
 import router from 'umi/router';
 import { Row, Col, Card, Form, Input, Button } from 'antd';
 import StandardTable from '@/components/StandardTable';
+import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 
 const FormItem = Form.Item;
 
@@ -20,11 +21,27 @@ class SkuFetchComponent extends PureComponent {
   columns = [
     {
       title: '物料代码',
+      width: 80,
       dataIndex: 'Code',
+    },
+    {
+      title: '物料描述',
+      dataIndex: 'Name',
+      width: 200,
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '物料名称',
       dataIndex: 'ProductName',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '品牌',
@@ -34,14 +51,29 @@ class SkuFetchComponent extends PureComponent {
     {
       title: '型号',
       dataIndex: 'ManufactureNO',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '参数',
       dataIndex: 'Parameters',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '包装',
       dataIndex: 'Package',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '分类',
@@ -57,6 +89,7 @@ class SkuFetchComponent extends PureComponent {
     {
       title: '上架状态',
       dataIndex: 'Putaway',
+      render: text => <span>{text === '1' ? '已上架' : '未上架'}</span>,
     },
   ];
 
@@ -128,11 +161,6 @@ class SkuFetchComponent extends PureComponent {
     const {
       form: { getFieldDecorator },
     } = this.props;
-    const formLayout = {
-      labelCol: { span: 8 },
-      wrapperCol: { span: 16 },
-    };
-
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
@@ -175,7 +203,7 @@ class SkuFetchComponent extends PureComponent {
               loading={loading}
               data={{ list: skuList }}
               pagination={pagination}
-              rowKey="DocEntry"
+              rowKey="Code"
               columns={this.columns}
               onRow={this.handleOnRow}
               onChange={this.handleStandardTableChange}

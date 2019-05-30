@@ -100,7 +100,7 @@ class SupplierModal extends PureComponent {
         ...params,
       },
     });
-    if (response.Status === 200) {
+    if (response && response.Status === 200) {
       if (response.Content) {
         const { rows, records, page } = response.Content;
         const { pagination } = this.state;
