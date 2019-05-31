@@ -1,4 +1,4 @@
-import { addRule } from '../service';
+import { addRule, getSupplierRule } from '../service';
 
 export default {
   namespace: 'supplierAsk',
@@ -10,6 +10,10 @@ export default {
   effects: {
     *add({ payload, callback }, { call }) {
       const response = yield call(addRule, payload);
+      if (callback) callback(response);
+    },
+    *fetch({ payload, callback }, { call }) {
+      const response = yield call(getSupplierRule, payload);
       if (callback) callback(response);
     },
   },

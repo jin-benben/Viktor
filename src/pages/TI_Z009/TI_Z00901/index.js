@@ -339,97 +339,23 @@ class AddSKU extends React.Component {
 
   // 添加行
   addLineSKU = selectedRows => {
-    const {
-      global: { currentUser },
-    } = this.props;
-    const { formVals } = this.state;
-    let newLineID = 1;
-    if (formVals.TI_Z03002.length) {
-      newLineID = formVals.TI_Z03002[formVals.TI_Z03002.length - 1].LineID + 1;
-    }
+    const { TI_Z00901 } = this.state;
+    const lastLine = TI_Z00901[TI_Z00901.length - 1]
+      ? TI_Z00901[TI_Z00901.length - 1].LineID + 1
+      : 1;
     selectedRows.map((item, index) => {
-      newLineID += index;
-      const {
-        LineComment,
-        SourceType,
-        SKU,
-        SKUName,
+      const { BrandName, ProductName, ManufactureNO, Parameters, Package, Unit } = item;
+      TI_Z00901.push({
+        LineID: lastLine + index,
         BrandName,
         ProductName,
         ManufactureNO,
         Parameters,
         Package,
-        Purchaser,
-        Quantity,
         Unit,
-        DueDate,
-        InquiryPrice,
-        Price,
-        InquiryDueDate,
-        InquiryComment,
-        InquiryLineTotal,
-        InquiryLineTotalLocal,
-        LineTotal,
-        OtherTotal,
-        Currency,
-        DocRate,
-        SupplierCode,
-        SupplierName,
-        InquiryCfmDate,
-        InquiryCfmUser,
-        Contacts,
-        WhsCode,
-        LineID,
-        BaseEntry,
-        BaseLineID,
-        DocEntry,
-      } = item;
-      formVals.TI_Z03002.push({
-        QuotationEntry: DocEntry,
-        QuotationLineID: LineID,
-        BaseEntry,
-        BaseLineID,
-        LineComment,
-        SourceType,
-        SKU,
-        SKUName,
-        BrandName,
-        ProductName,
-        ManufactureNO,
-        Parameters,
-        Package,
-        Purchaser,
-        Quantity,
-        Unit,
-        DueDate,
-        InquiryPrice,
-        Price,
-        InquiryDueDate,
-        InquiryComment,
-        InquiryLineTotal,
-        InquiryLineTotalLocal,
-        LineTotal,
-        OtherTotal: OtherTotal || 0,
-        Currency,
-        DocRate,
-        SupplierCode,
-        SupplierName,
-        InquiryCfmDate,
-        InquiryCfmUser,
-        Contacts,
-        WhsCode,
-        CreateUser: currentUser.UserCode,
-        CreateDate: formVals.CreateDate || new Date(),
-        LineID: newLineID,
-        ApproveSts: 'O',
-        LineStatus: 'O',
-        Closed: 'N',
-        ClosedBy: 'P001',
       });
     });
-    this.setState({ formVals, orderModalVisible: false }, () => {
-      this.getTotal();
-    });
+    this.setState({ TI_Z00901 });
   };
 
   render() {

@@ -65,45 +65,9 @@ class InquiryEdit extends PureComponent {
       ),
     },
     {
-      title: '品牌',
-      width: 80,
-      align: 'center',
-      dataIndex: 'BrandName',
-    },
-    {
-      title: '名称',
-      dataIndex: 'ProductName',
-
-      width: 150,
-      align: 'center',
-    },
-    {
-      title: '型号',
-      width: 150,
-      dataIndex: 'ManufactureNO',
-
-      align: 'center',
-    },
-    {
-      title: '参数',
-      width: 150,
-      dataIndex: 'Parameters',
-
-      align: 'center',
-    },
-    {
-      title: '包装',
-      width: 150,
-      dataIndex: 'Package',
-
-      align: 'center',
-    },
-    {
       title: '单位',
       width: 80,
-
       dataIndex: 'Unit',
-
       align: 'center',
     },
     {
@@ -114,6 +78,52 @@ class InquiryEdit extends PureComponent {
 
       align: 'center',
     },
+    {
+      title: '品牌',
+      width: 80,
+      align: 'center',
+      dataIndex: 'BrandName',
+    },
+    {
+      title: '名称',
+      dataIndex: 'ProductName',
+      width: 100,
+      align: 'center',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
+    },
+    {
+      title: '型号',
+      width: 100,
+      dataIndex: 'ManufactureNO',
+      align: 'center',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
+    },
+    {
+      title: '参数',
+      width: 100,
+      dataIndex: 'Parameters',
+      align: 'center',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
+    },
+    {
+      title: '包装',
+      width: 100,
+      dataIndex: 'Package',
+      align: 'center',
+    },
+
     {
       title: '销售建议价',
       width: 100,
@@ -215,7 +225,6 @@ class InquiryEdit extends PureComponent {
       align: 'center',
       dataIndex: 'InquiryLineTotalLocal',
     },
-
     {
       title: '操作',
       fixed: 'right',
@@ -448,7 +457,7 @@ class InquiryEdit extends PureComponent {
             <StandardTable
               data={{ list: newdata }}
               rowKey="LineID"
-              scroll={{ x: 2600, y: 600 }}
+              scroll={{ x: 2500, y: 600 }}
               columns={this.skuColumns}
             />
           </TabPane>

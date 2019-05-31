@@ -60,3 +60,12 @@ export async function supplierRule(params) {
     },
   });
 }
+
+export async function getSupplierRule(params) {
+  return request('/MDM/TI_Z007/TI_Z00703', {
+    method: 'POST',
+    data: {
+      ...params,
+    },
+  });
+}

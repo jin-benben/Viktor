@@ -53,11 +53,13 @@ class NeedTabl extends React.Component {
       fixed: 'left',
       dataIndex: 'supplier',
       render: (text, record, index) => (
-        <SupplierSelect
-          initialValue={{ key: record.SupplierCode, label: record.SupplierName }}
-          onChange={value => this.changeSupplier(value, record, index)}
-          keyType="Name"
-        />
+        <div style={{ width: '190px' }}>
+          <SupplierSelect
+            initialValue={{ key: record.SupplierCode || '', label: record.SupplierName || '' }}
+            onChange={value => this.changeSupplier(value, record, index)}
+            keyType="Name"
+          />
+        </div>
       ),
     },
     {
@@ -312,7 +314,7 @@ class NeedTabl extends React.Component {
       ContactsID: LineID,
       Contacts: Name,
       Currency,
-      linkmanList: supplier.TI_Z00702List,
+      linkmanList: [...supplier.TI_Z00702List],
     });
     orderLineList[index] = record;
     this.setState({ orderLineList: [...orderLineList] });

@@ -89,8 +89,20 @@ class SupplierAsk extends Component {
             : '';
         },
       });
+      if (!item.linkmanList.length) {
+        await dispatch({
+          type: 'supplierAsk/fetch',
+          payload: {
+            Content: {
+              Code: item.CardCode,
+            },
+          },
+          callback: response => {
+            item.linkmanList = [response.Content.TI_Z00702List];
+          },
+        });
+      }
     });
-    console.log(lineList);
     this.setState({
       confimSelectedRows: [...lineList],
       lastConfrimList: [...lineList],
@@ -159,7 +171,7 @@ class SupplierAsk extends Component {
           Key,
           CardName: item.SupplierName,
           CardCode: item.SupplierCode,
-          linkmanList,
+          linkmanList: linkmanList || [],
           TI_Z02702: [
             {
               LineID: lineIndex + 1,

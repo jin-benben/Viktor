@@ -2,15 +2,19 @@ import React, { PureComponent } from 'react';
 
 import { Row, Col, Form, Input, Modal, Button, message } from 'antd';
 import StandardTable from '@/components/StandardTable';
-
+import { connect } from 'dva';
 import request from '@/utils/request';
 
 const FormItem = Form.Item;
 
 @Form.create()
+@connect(({ loading, global }) => ({
+  global,
+  loading: loading.models.global,
+}))
 class SupplierModal extends PureComponent {
   state = {
-    staffsList: [],
+    supplierList: [],
     selectedRows: [],
     queryData: {
       Content: {
@@ -43,10 +47,17 @@ class SupplierModal extends PureComponent {
     },
   ];
 
-  // componentDidMount() {
-  //   const { queryData } = this.state;
-  //   this.getCompany(queryData);
-  // }
+  static getDerivedStateFromProps(nextProps, prevState) {
+    if (
+      !prevState.supplierList.length &&
+      prevState.supplierList !== nextProps.global.SupplierList
+    ) {
+      return {
+        supplierList: nextProps.global.SupplierList,
+      };
+    }
+    return null;
+  }
 
   okHandle = () => {
     const { selectedRows } = this.state;
@@ -105,7 +116,7 @@ class SupplierModal extends PureComponent {
         const { rows, records, page } = response.Content;
         const { pagination } = this.state;
         this.setState({
-          staffsList: [...rows],
+          supplierList: [...rows],
           pagination: { ...pagination, total: records, current: page },
         });
       }
@@ -121,7 +132,7 @@ class SupplierModal extends PureComponent {
         <Row gutter={{ md: 8 }}>
           <Col>
             <FormItem>
-              {getFieldDecorator('SearchText')(<Input placeholder="请输入关键字" />)}
+              {getFieldDecorator('SearchText')(<Input autoFocus placeholder="请输入关键字" />)}
             </FormItem>
           </Col>
           <Col>
@@ -137,7 +148,7 @@ class SupplierModal extends PureComponent {
   }
 
   render() {
-    const { loading, pagination, staffsList } = this.state;
+    const { loading, pagination, supplierList } = this.state;
     const { modalVisible, handleModalVisible } = this.props;
     return (
       <Modal
@@ -152,7 +163,7 @@ class SupplierModal extends PureComponent {
           <div className="tableListForm">{this.renderSimpleForm()}</div>
           <StandardTable
             loading={loading}
-            data={{ list: staffsList }}
+            data={{ list: supplierList }}
             rowKey="Code"
             pagination={pagination}
             columns={this.columns}

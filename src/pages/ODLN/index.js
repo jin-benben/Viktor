@@ -213,13 +213,12 @@ class salerConfrim extends PureComponent {
         orderNo = { ...fieldsValue.orderNo };
       }
       const { DeliverSts, Owner } = fieldsValue;
-
       const queryData = {
         DocDateFrom,
         DocDateTo,
         DeliverDateFrom,
         DeliverDateTo,
-        DeliverSts,
+        DeliverSts: DeliverSts || 'N',
         Owner,
         ...orderNo,
       };
@@ -228,6 +227,7 @@ class salerConfrim extends PureComponent {
         payload: {
           Content: {
             QueryType: '1',
+            DeliverSts: 'N',
             SearchText: '',
             SearchKey: 'Name',
             ...queryData,
@@ -288,7 +288,6 @@ class salerConfrim extends PureComponent {
   // 确认需要采购询价
   selectNeed = () => {
     const { selectedRows } = this.state;
-    console.log(selectedRows);
     if (selectedRows.length) {
       this.handleModalVisible(true);
     } else {
@@ -346,7 +345,7 @@ class salerConfrim extends PureComponent {
             <Fragment>
               <Col md={4} sm={24}>
                 <FormItem key="DeliverSts" {...formLayout}>
-                  {getFieldDecorator('DeliverSts')(
+                  {getFieldDecorator('DeliverSts', { initialValue: 'N' })(
                     <Select placeholder="请选择发货状态">
                       <Option value="Y">已发货</Option>
                       <Option value="N">未发货</Option>
@@ -421,7 +420,7 @@ class salerConfrim extends PureComponent {
         </Card>
         <FooterToolbar>
           <Button style={{ marginTop: 20 }} onClick={this.selectNeed} type="primary">
-            确认收货
+            确认发货
           </Button>
         </FooterToolbar>
       </Fragment>

@@ -2,15 +2,19 @@ import React, { PureComponent } from 'react';
 
 import { Row, Col, Form, Input, Modal, Button, message } from 'antd';
 import StandardTable from '@/components/StandardTable';
-
+import { connect } from 'dva';
 import request from '@/utils/request';
 
 const FormItem = Form.Item;
 
 @Form.create()
+@connect(({ loading, global }) => ({
+  global,
+  loading: loading.models.global,
+}))
 class CompanyModal extends PureComponent {
   state = {
-    staffsList: [],
+    companyList: [],
     selectedRows: [],
     queryData: {
       Content: {
@@ -42,6 +46,15 @@ class CompanyModal extends PureComponent {
       dataIndex: 'Name',
     },
   ];
+
+  static getDerivedStateFromProps(nextProps, prevState) {
+    if (!prevState.companyList.length && prevState.companyList !== nextProps.global.CustomerList) {
+      return {
+        companyList: nextProps.global.CustomerList,
+      };
+    }
+    return null;
+  }
 
   okHandle = () => {
     const { selectedRows } = this.state;
@@ -100,7 +113,7 @@ class CompanyModal extends PureComponent {
         const { rows, records, page } = response.Content;
         const { pagination } = this.state;
         this.setState({
-          staffsList: [...rows],
+          companyList: [...rows],
           pagination: { ...pagination, total: records, current: page },
         });
       }
@@ -116,7 +129,7 @@ class CompanyModal extends PureComponent {
         <Row gutter={{ md: 8 }}>
           <Col>
             <FormItem>
-              {getFieldDecorator('SearchText')(<Input placeholder="请输入关键字" />)}
+              {getFieldDecorator('SearchText')(<Input autoFocus placeholder="请输入关键字" />)}
             </FormItem>
           </Col>
           <Col>
@@ -132,7 +145,7 @@ class CompanyModal extends PureComponent {
   }
 
   render() {
-    const { loading, pagination, staffsList } = this.state;
+    const { loading, pagination, companyList } = this.state;
     const { modalVisible, handleModalVisible } = this.props;
     return (
       <Modal
@@ -147,7 +160,7 @@ class CompanyModal extends PureComponent {
           <div className="tableListForm">{this.renderSimpleForm()}</div>
           <StandardTable
             loading={loading}
-            data={{ list: staffsList }}
+            data={{ list: companyList }}
             rowKey="Code"
             pagination={pagination}
             columns={this.columns}

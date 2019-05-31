@@ -4,6 +4,7 @@
  */
 import router from 'umi/router';
 import { extend } from 'umi-request';
+import { parse } from 'qs';
 import { notification } from 'antd';
 import { requestUrl } from './utils';
 
@@ -58,6 +59,11 @@ const request = extend({
 });
 
 request.interceptors.request.use((url, options) => {
+  const currentUser = localStorage.getItem('currentUser')
+    ? parse(localStorage.getItem('currentUser'))
+    : {};
+  if (currentUser.UserCode && currentUser.Token)
+    Object.assign(options.data, { UserCode: currentUser.UserCode, Tonken: currentUser.Token });
   return {
     url: requestUrl(url),
     options: { ...options, interceptors: true },
