@@ -50,7 +50,7 @@ class LinkManFrom extends PureComponent {
   render() {
     const {
       form: { getFieldDecorator },
-      global: { Company, Saler },
+      global: { Saler },
       form,
       modalVisible,
       handleModalVisible,
@@ -83,7 +83,6 @@ class LinkManFrom extends PureComponent {
         handleSubmit({ ...formVals, ...fieldsValue });
       });
     };
-    console.log(Company, Saler);
     return (
       <Modal
         width={640}
@@ -143,16 +142,6 @@ class LinkManFrom extends PureComponent {
                 })(<Input placeholder="请输入电话" />)}
               </FormItem>
             </Col>
-            <Col span={12}>
-              <FormItem key="CompanyCode" {...this.formLayout} label="交易主体">
-                {getFieldDecorator('CompanyCode', {
-                  rules: [{ required: true, message: '请选择交易主体！' }],
-                  initialValue: formVals.CompanyCode,
-                })(<MDMCommonality initialValue={formVals.CompanyCode} data={Company} />)}
-              </FormItem>
-            </Col>
-          </Row>
-          <Row>
             <Col span={12}>
               <FormItem key="Saler" {...this.formLayout} label="销售">
                 {getFieldDecorator('Saler', {

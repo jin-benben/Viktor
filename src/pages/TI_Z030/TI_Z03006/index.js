@@ -18,6 +18,7 @@ import {
 import StandardTable from '@/components/StandardTable';
 import MDMCommonality from '@/components/Select';
 import DocEntryFrom from '@/components/DocEntryFrom';
+import Link from 'umi/link';
 import { getName } from '@/utils/utils';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 
@@ -44,6 +45,7 @@ class agreementOrder extends PureComponent {
       width: 80,
       fixed: 'left',
       dataIndex: 'DocEntry',
+      render: text => <Link to={`/sellabout/TI_Z030/detail?DocEntry=${text}`}>{text}</Link>,
     },
     {
       title: '单据日期',
@@ -68,7 +70,7 @@ class agreementOrder extends PureComponent {
           ) : (
             <Fragment>
               <span>
-                {record.DocStatus === 'O' ? (
+                {record.ApproveSts === 'Y' ? (
                   <Badge color="green" text="未确认" />
                 ) : (
                   <Badge color="blue" text="已确认" />
@@ -229,11 +231,6 @@ class agreementOrder extends PureComponent {
     });
   };
 
-  handleOnRow = record => ({
-    // 详情or修改
-    onClick: () => router.push(`/sellabout/TI_Z030/detail?DocEntry=${record.DocEntry}`),
-  });
-
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
@@ -369,7 +366,6 @@ class agreementOrder extends PureComponent {
               rowKey="DocEntry"
               scroll={{ x: tableWidth, y: 500 }}
               columns={this.columns}
-              onRow={this.handleOnRow}
               onChange={this.handleStandardTableChange}
             />
           </div>

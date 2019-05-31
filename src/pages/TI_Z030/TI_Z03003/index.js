@@ -6,6 +6,7 @@ import router from 'umi/router';
 import StandardTable from '@/components/StandardTable';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
+import CancelOrder from '@/components/Modal/CancelOrder';
 import DescriptionList from 'ant-design-pro/lib/DescriptionList';
 import { getName } from '@/utils/utils';
 
@@ -149,19 +150,20 @@ class InquiryEdit extends React.Component {
       width: 100,
       inputType: 'date',
       dataIndex: 'DueDate',
-      render: text => <span>{moment(text).format('YYYY-MM-DD')}</span>,
       align: 'center',
+      render: (val, record) =>
+        record.lastIndex ? '' : <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
     {
       title: '仓库',
       width: 100,
       dataIndex: 'WhsCode',
       align: 'center',
-      render: text => {
+      render: (text, record) => {
         const {
           global: { WhsCode },
         } = this.props;
-        return <span>{getName(WhsCode, text)}</span>;
+        return record.lastIndex ? '' : <span>{getName(WhsCode, text)}</span>;
       },
     },
 
@@ -176,6 +178,12 @@ class InquiryEdit extends React.Component {
       width: 80,
       dataIndex: 'Currency',
       align: 'center',
+      render: (text, record) => {
+        const {
+          global: { Curr },
+        } = this.props;
+        return record.lastIndex ? '' : <span>{getName(Curr, text)}</span>;
+      },
     },
     {
       title: '单据汇率',
@@ -189,18 +197,19 @@ class InquiryEdit extends React.Component {
       width: 100,
       dataIndex: 'InquiryDueDate',
       align: 'center',
-      render: text => <span>{moment(text).format('YYYY-MM-DD')}</span>,
+      render: (val, record) =>
+        record.lastIndex ? '' : <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
     {
       title: '采购员',
       width: 80,
       dataIndex: 'Purchaser',
       align: 'center',
-      render: text => {
+      render: (text, record) => {
         const {
           global: { Purchaser },
         } = this.props;
-        return <span>{getName(Purchaser, text)}</span>;
+        return record.lastIndex ? '' : <span>{getName(Purchaser, text)}</span>;
       },
     },
     {
@@ -214,12 +223,16 @@ class InquiryEdit extends React.Component {
       width: 120,
       align: 'center',
       dataIndex: 'InquiryLineTotal',
+      render: (text, record) =>
+        record.lastIndex ? <span style={{ fontWeight: 'bolder' }}>{text}</span> : text,
     },
     {
       title: '询价行总计(本币)',
       width: 150,
       align: 'center',
       dataIndex: 'InquiryLineTotalLocal',
+      render: (text, record) =>
+        record.lastIndex ? <span style={{ fontWeight: 'bolder' }}>{text}</span> : text,
     },
 
     {
@@ -391,6 +404,29 @@ class InquiryEdit extends React.Component {
     return null;
   }
 
+  // 取消单据
+  cancelSubmit = ClosedComment => {
+    const { dispatch } = this.props;
+    const {
+      formVals: { UpdateTimestamp, DocEntry },
+    } = this.state;
+    dispatch({
+      type: 'agreementPreview/cancel',
+      payload: {
+        Content: {
+          DocEntry,
+          UpdateTimestamp,
+          ClosedComment,
+        },
+      },
+      callback: response => {
+        if (response && response.Status === 200) {
+          message.success('取消成功');
+        }
+      },
+    });
+  };
+
   lookLineAttachment = record => {
     this.setState({ attachmentVisible: true, prviewList: [...record.TI_Z03003] });
   };
@@ -419,11 +455,7 @@ class InquiryEdit extends React.Component {
 
   toUpdate = () => {
     const { formVals } = this.state;
-    if (formVals.Closed !== 'Y') {
-      router.push(`/sellabout/TI_Z030/update?DocEntry=${formVals.DocEntry}`);
-    } else {
-      message.warn('此单已被关闭，暂不可编辑');
-    }
+    router.push(`/sellabout/TI_Z030/update?DocEntry=${formVals.DocEntry}`);
   };
 
   render() {
@@ -443,7 +475,7 @@ class InquiryEdit extends React.Component {
       });
     }
     return (
-      <Card>
+      <Card bordered={false}>
         <DescriptionList style={{ marginBottom: 24 }}>
           <Description term="单号">{formVals.DocEntry}</Description>
           <Description term="客户ID">{formVals.CardCode}</Description>
@@ -459,6 +491,9 @@ class InquiryEdit extends React.Component {
           <Description term="创建人">
             <span>{getName(Saler, formVals.CreateUser)}</span>
           </Description>
+          <Description term="销售员">
+            <span>{getName(Saler, formVals.Owner)}</span>
+          </Description>
           <Description term="交易公司">
             <span>{getName(Company, formVals.CompanyCode)}</span>
           </Description>
@@ -467,7 +502,6 @@ class InquiryEdit extends React.Component {
             <span>{getName(OrderSource, formVals.OrderType)}</span>
           </Description>
           <Description term="客户参考号">{formVals.NumAtCard}</Description>
-          <Description term="状态">{formVals.DocStatus === 'O' ? '未清' : '已清'}</Description>
           <Description term="报价状态">
             {formVals.SDocStatus === 'O' ? '已报价' : '未报价'}
           </Description>
@@ -476,9 +510,9 @@ class InquiryEdit extends React.Component {
         <Tabs>
           <TabPane tab="物料" key="1">
             <StandardTable
-              data={{ list: formVals.TI_Z03002 }}
+              data={{ list: newdata }}
               rowKey="LineID"
-              scroll={{ x: 2900, y: 600 }}
+              scroll={{ x: 2600, y: 600 }}
               columns={this.skuColumns}
             />
           </TabPane>
@@ -522,12 +556,16 @@ class InquiryEdit extends React.Component {
             columns={this.attachmentColumns}
           />
         </Modal>
-
-        <FooterToolbar>
-          <Button onClick={this.toUpdate} type="primary">
-            编辑
-          </Button>
-        </FooterToolbar>
+        {formVals.Closed !== 'Y' ? (
+          <FooterToolbar>
+            <CancelOrder cancelSubmit={this.cancelSubmit} />
+            <Button onClick={this.toUpdate} type="primary">
+              编辑
+            </Button>
+          </FooterToolbar>
+        ) : (
+          ''
+        )}
       </Card>
     );
   }

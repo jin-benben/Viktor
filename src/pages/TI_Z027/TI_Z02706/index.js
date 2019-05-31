@@ -20,6 +20,7 @@ import StandardTable from '@/components/StandardTable';
 import MDMCommonality from '@/components/Select';
 import DocEntryFrom from '@/components/DocEntryFrom';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
+import { getName } from '@/utils/utils';
 
 const { RangePicker } = DatePicker;
 
@@ -41,7 +42,7 @@ class supplierQuotation extends PureComponent {
   columns = [
     {
       title: '单号',
-      width: 50,
+      width: 80,
       dataIndex: 'DocEntry',
       render: text => <Link to={`/purchase/TI_Z027/detail?DocEntry=${text}`}>{text}</Link>,
     },
@@ -81,15 +82,18 @@ class supplierQuotation extends PureComponent {
     },
     {
       title: '供应商',
+      width: 150,
       dataIndex: 'CardName',
     },
     {
       title: '客户参考号',
+      width: 150,
       dataIndex: 'NumAtCard',
     },
     {
       title: '联系方式',
       dataIndex: 'contact',
+      width: 150,
       render: (text, record) => (
         <span>
           {record.CellphoneNO}
@@ -100,19 +104,28 @@ class supplierQuotation extends PureComponent {
     },
     {
       title: '备注',
+      width: 100,
       dataIndex: 'Comment',
     },
     {
-      title: '所有人',
+      title: '采购员',
       width: 80,
       dataIndex: 'Owner',
+      render: text => {
+        const {
+          global: { Purchaser },
+        } = this.props;
+        return <span>{getName(Purchaser, text)}</span>;
+      },
     },
     {
       title: '询价总计',
+      width: 100,
       dataIndex: 'InquiryDocTotal',
     },
     {
       title: '本币总计',
+      width: 100,
       dataIndex: 'InquiryDocTotalLocal',
     },
   ];
@@ -132,7 +145,7 @@ class supplierQuotation extends PureComponent {
       type: 'global/getMDMCommonality',
       payload: {
         Content: {
-          CodeList: ['Saler', 'Purchaser'],
+          CodeList: ['Purchaser'],
         },
       },
     });
@@ -319,6 +332,7 @@ class supplierQuotation extends PureComponent {
               loading={loading}
               data={{ list: supplierQuotationList }}
               pagination={pagination}
+              scroll={{ x: 800, y: 800 }}
               rowKey="DocEntry"
               columns={this.columns}
               onChange={this.handleStandardTableChange}

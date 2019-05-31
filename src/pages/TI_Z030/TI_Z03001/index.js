@@ -13,7 +13,6 @@ import {
   Tabs,
   Button,
   Icon,
-  Switch,
   Modal,
   message,
   DatePicker,
@@ -28,9 +27,9 @@ import EditableFormTable from '@/components/EditableFormTable';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import UpdateLoad from '../components/modal';
 import AskPriceFetch from '../components/askPriceFetch';
-import Address from '@/components/Address';
 import Brand from '@/components/Brand';
 import MDMCommonality from '@/components/Select';
+import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import NeedAskPrice from '../components/needAskPrice';
 import SKUModal from '@/components/Modal/SKU';
 import CompanySelect from '@/components/Company/index';
@@ -40,13 +39,14 @@ const { TextArea } = Input;
 const { TabPane } = Tabs;
 const FormItem = Form.Item;
 const { Option } = Select;
-@connect(({ TI_Z030, loading, global }) => ({
-  TI_Z030,
+@connect(({ agreementEdit, loading, global }) => ({
+  agreementEdit,
   global,
-  loading: loading.models.TI_Z030,
+  addloading: loading.effects['agreementEdit/add'],
+  updateloading: loading.effects['agreementEdit/update'],
 }))
 @Form.create()
-class TI_Z030Component extends React.Component {
+class AgreementEdit extends React.Component {
   skuColumns = [
     {
       title: '行号',
@@ -61,7 +61,7 @@ class TI_Z030Component extends React.Component {
       title: 'SKU',
       dataIndex: 'SKU',
       align: 'center',
-      width: 150,
+      width: 100,
       render: (text, record, index) =>
         record.lastIndex ? null : (
           <Input
@@ -76,12 +76,17 @@ class TI_Z030Component extends React.Component {
     {
       title: '产品描述',
       dataIndex: 'SKUName',
-      width: 200,
+      width: 100,
       align: 'center',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '品牌',
-      width: 200,
+      width: 100,
       align: 'center',
       dataIndex: 'BrandName',
       render: (text, record, index) =>
@@ -98,7 +103,7 @@ class TI_Z030Component extends React.Component {
     {
       title: '名称',
       dataIndex: 'ProductName',
-      inputType: 'text',
+      inputType: 'textArea',
       width: 150,
       editable: true,
       align: 'center',
@@ -107,7 +112,7 @@ class TI_Z030Component extends React.Component {
       title: '型号',
       width: 150,
       dataIndex: 'ManufactureNO',
-      inputType: 'text',
+      inputType: 'textArea',
       editable: true,
       align: 'center',
     },
@@ -115,7 +120,7 @@ class TI_Z030Component extends React.Component {
       title: '参数',
       width: 150,
       dataIndex: 'Parameters',
-      inputType: 'text',
+      inputType: 'textArea',
       editable: true,
       align: 'center',
     },
@@ -123,13 +128,13 @@ class TI_Z030Component extends React.Component {
       title: '包装',
       width: 150,
       dataIndex: 'Package',
-      inputType: 'text',
+      inputType: 'textArea',
       editable: true,
       align: 'center',
     },
     {
       title: '数量',
-      width: 120,
+      width: 80,
       inputType: 'text',
       dataIndex: 'Quantity',
       editable: true,
@@ -145,7 +150,7 @@ class TI_Z030Component extends React.Component {
     },
     {
       title: '要求交期',
-      width: 150,
+      width: 120,
       inputType: 'date',
       dataIndex: 'DueDate',
       editable: true,
@@ -153,7 +158,7 @@ class TI_Z030Component extends React.Component {
     },
     {
       title: '仓库',
-      width: 150,
+      width: 120,
       dataIndex: 'WhsCode',
       align: 'center',
       render: (text, record, index) => {
@@ -177,14 +182,14 @@ class TI_Z030Component extends React.Component {
     {
       title: '备注',
       dataIndex: 'LineComment',
-      width: 150,
+      width: 100,
       inputType: 'text',
       editable: true,
       align: 'center',
     },
     {
       title: '销售建议价',
-      width: 120,
+      width: 100,
       inputType: 'text',
       dataIndex: 'Price',
       editable: true,
@@ -204,20 +209,22 @@ class TI_Z030Component extends React.Component {
     },
     {
       title: '单据汇率',
-      width: 100,
+      width: 80,
       inputType: 'text',
       dataIndex: 'DocRate',
       align: 'center',
     },
     {
       title: '最终交期',
-      width: 150,
+      width: 100,
       dataIndex: 'InquiryDueDate',
       align: 'center',
+      render: (val, record) =>
+        record.lastIndex ? '' : <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
     {
       title: '采购员',
-      width: 100,
+      width: 80,
       dataIndex: 'Purchaser',
       align: 'center',
       render: text => {
@@ -235,33 +242,43 @@ class TI_Z030Component extends React.Component {
     },
     {
       title: '询价行总计',
-      width: 120,
+      width: 100,
       align: 'center',
       dataIndex: 'InquiryLineTotal',
+      render: (text, record) =>
+        record.lastIndex ? <span style={{ fontWeight: 'bolder' }}>{text}</span> : text,
     },
     {
       title: '询价行总计(本币)',
       width: 150,
       align: 'center',
       dataIndex: 'InquiryLineTotalLocal',
+      render: (text, record) =>
+        record.lastIndex ? <span style={{ fontWeight: 'bolder' }}>{text}</span> : text,
     },
     {
       title: '其他成本',
-      width: 120,
+      width: 80,
       align: 'center',
       dataIndex: 'OtherTotal',
+      render: (text, record) =>
+        record.lastIndex ? <span style={{ fontWeight: 'bolder' }}>{text}</span> : text,
     },
     {
       title: '行利润',
-      width: 150,
+      width: 100,
       align: 'center',
       dataIndex: 'ProfitLineTotal',
+      render: (text, record) =>
+        record.lastIndex ? <span style={{ fontWeight: 'bolder' }}>{text}</span> : text,
     },
     {
       title: '销售行总计',
-      width: 150,
+      width: 100,
       align: 'center',
       dataIndex: 'LineTotal',
+      render: (text, record) =>
+        record.lastIndex ? <span style={{ fontWeight: 'bolder' }}>{text}</span> : text,
     },
     {
       title: '操作',
@@ -401,28 +418,18 @@ class TI_Z030Component extends React.Component {
   componentDidMount() {
     const {
       dispatch,
-      location: { query },
       global: { currentUser, CustomerList },
-      TI_Z030: { orderDetail },
+      agreementEdit: { orderDetail },
     } = this.props;
     if (!CustomerList.length) {
       dispatch({
         type: 'global/getCustomer',
       });
     }
-    if (query.DocEntry) {
-      dispatch({
-        type: 'TI_Z030/fetch',
-        payload: {
-          Content: {
-            DocEntry: query.DocEntry,
-          },
-        },
-      });
-    }
+
     const { CompanyCode, Owner, UserCode } = currentUser;
     dispatch({
-      type: 'TI_Z030/save',
+      type: 'agreementEdit/save',
       payload: {
         orderDetail: {
           ...orderDetail,
@@ -440,12 +447,13 @@ class TI_Z030Component extends React.Component {
         },
       },
     });
+    this.getDetail();
   }
 
   componentWillUnmount() {
     const { dispatch } = this.props;
     dispatch({
-      type: 'TI_Z030/save',
+      type: 'agreementEdit/save',
       payload: {
         orderDetail: {
           Comment: '',
@@ -489,20 +497,39 @@ class TI_Z030Component extends React.Component {
 
   static getDerivedStateFromProps(nextProps, prevState) {
     if (
-      nextProps.TI_Z030.orderDetail !== prevState.formVals ||
-      nextProps.TI_Z030.addList !== prevState.addList ||
-      nextProps.TI_Z030.linkmanList !== prevState.linkmanList
+      nextProps.agreementEdit.orderDetail !== prevState.formVals ||
+      nextProps.agreementEdit.addList !== prevState.addList ||
+      nextProps.agreementEdit.linkmanList !== prevState.linkmanList
     ) {
       return {
-        formVals: nextProps.TI_Z030.inquiryDetail,
-        addList: nextProps.TI_Z030.addList.length ? nextProps.TI_Z030.addList : prevState.addList,
-        linkmanList: nextProps.TI_Z030.linkmanList.length
-          ? nextProps.TI_Z030.linkmanList
+        formVals: nextProps.agreementEdit.orderDetail,
+        addList: nextProps.agreementEdit.addList.length
+          ? nextProps.agreementEdit.addList
+          : prevState.addList,
+        linkmanList: nextProps.agreementEdit.linkmanList.length
+          ? nextProps.agreementEdit.linkmanList
           : prevState.linkmanList,
       };
     }
     return null;
   }
+
+  getDetail = () => {
+    const {
+      dispatch,
+      location: { query },
+    } = this.props;
+    if (query.DocEntry) {
+      dispatch({
+        type: 'agreementEdit/fetch',
+        payload: {
+          Content: {
+            DocEntry: query.DocEntry,
+          },
+        },
+      });
+    }
+  };
 
   //  行内容改变
   rowChange = record => {
@@ -553,6 +580,7 @@ class TI_Z030Component extends React.Component {
     formVals.InquiryDocTotal = InquiryDocTotal;
     formVals.DocTotal = DocTotal;
     formVals.ProfitTotal = DocTotal - InquiryDocTotalLocal - OtherTotal;
+    formVals.OtherTotal = OtherTotal;
     this.setState({ formVals });
   };
 
@@ -573,8 +601,19 @@ class TI_Z030Component extends React.Component {
   // 物料弹出返回
   changeLineSKU = selection => {
     const [select] = selection;
+    const { BrandName, ManufactureNO, Name, Package, Parameters, ProductName, Unit, Code } = select;
     const { thisLine, LineID, formVals } = this.state;
-    formVals.TI_Z03002[LineID] = { ...thisLine, ...select, SKU: select.Code, SKUName: select.Name };
+    formVals.TI_Z03002[LineID] = {
+      ...thisLine,
+      SKU: Code,
+      SKUName: Name,
+      BrandName,
+      ManufactureNO,
+      Package,
+      Parameters,
+      ProductName,
+      Unit,
+    };
     this.setState({ formVals: { ...formVals } });
     this.handleModalVisible(false);
   };
@@ -663,6 +702,8 @@ class TI_Z030Component extends React.Component {
   };
 
   copyFromOrder = () => {
+    console.log(this.state);
+
     const { formVals } = this.state;
     const { queryData } = this.getAskPriceOrder.state;
     if (!formVals.CardCode) {
@@ -681,7 +722,7 @@ class TI_Z030Component extends React.Component {
         </Button>
       );
     }
-    if (tabIndex === '3') {
+    if (tabIndex === '4') {
       return (
         <Button
           icon="plus"
@@ -768,7 +809,8 @@ class TI_Z030Component extends React.Component {
     if (formVals.TI_Z03002.length) {
       newLineID = formVals.TI_Z03002[formVals.TI_Z03002.length - 1].LineID + 1;
     }
-    selectedRows.map(item => {
+    selectedRows.map((item, index) => {
+      newLineID += index;
       const {
         LineComment,
         SourceType,
@@ -868,7 +910,7 @@ class TI_Z030Component extends React.Component {
       delete fieldsValue.CardCode;
       delete fieldsValue.CardName;
       dispatch({
-        type: 'TI_Z030/add',
+        type: 'agreementEdit/add',
         payload: {
           Content: {
             ...formVals,
@@ -883,7 +925,7 @@ class TI_Z030Component extends React.Component {
         callback: response => {
           if (response && response.Status === 200) {
             message.success('添加成功');
-            router.push(`/TI_Z030/detail?DocEntry=${response.Content.DocEntry}`);
+            router.push(`/sellabout/TI_Z030/detail?DocEntry=${response.Content.DocEntry}`);
           }
         },
       });
@@ -904,7 +946,7 @@ class TI_Z030Component extends React.Component {
       delete fieldsValue.CardCode;
       delete fieldsValue.CardName;
       dispatch({
-        type: 'TI_Z030/update',
+        type: 'agreementEdit/update',
         payload: {
           Content: {
             ...formVals,
@@ -918,6 +960,7 @@ class TI_Z030Component extends React.Component {
         callback: response => {
           if (response && response.Status === 200) {
             message.success('更新成功');
+            this.getDetail();
           }
         },
       });
@@ -931,7 +974,7 @@ class TI_Z030Component extends React.Component {
       formVals: { UpdateTimestamp, DocEntry },
     } = this.state;
     dispatch({
-      type: 'TI_Z030/cancel',
+      type: 'agreementEdit/cancel',
       payload: {
         Content: {
           DocEntry,
@@ -951,13 +994,13 @@ class TI_Z030Component extends React.Component {
   submitNeedLine = select => {
     const {
       dispatch,
-      user: { currentUser },
+      global: { currentUser },
     } = this.props;
     const {
       formVals: { UpdateTimestamp, DocEntry },
     } = this.state;
     dispatch({
-      type: 'TI_Z030/confirm',
+      type: 'agreementEdit/confirm',
       payload: {
         Content: {
           UpdateTimestamp,
@@ -992,7 +1035,7 @@ class TI_Z030Component extends React.Component {
       formVals: { DocEntry, UpdateTimestamp },
     } = this.state;
     dispatch({
-      type: 'TI_Z030/costCheck',
+      type: 'agreementEdit/costCheck',
       payload: {
         Content: {
           DocEntry,
@@ -1013,6 +1056,8 @@ class TI_Z030Component extends React.Component {
     const {
       form: { getFieldDecorator },
       global: { Saler, Company },
+      addloading,
+      updateloading,
     } = this.props;
     const {
       formVals,
@@ -1065,12 +1110,14 @@ class TI_Z030Component extends React.Component {
         InquiryLineTotal: formVals.InquiryDocTotal,
         InquiryLineTotalLocal: formVals.InquiryDocTotalLocal,
         LineTotal: formVals.DocTotal,
+        OtherTotal: formVals.OtherTotal,
         ProfitLineTotal: formVals.ProfitTotal,
       });
     }
+    console.log(this.props);
 
     return (
-      <Card>
+      <Card bordered={false}>
         <Form {...formItemLayout}>
           <Row gutter={8}>
             <Col lg={10} md={12} sm={24}>
@@ -1149,6 +1196,23 @@ class TI_Z030Component extends React.Component {
               </FormItem>
             </Col>
             <Col lg={10} md={12} sm={24}>
+              <FormItem key="DueDate" {...this.formLayout} label="要求交期">
+                {getFieldDecorator('DueDate', {
+                  initialValue: formVals.DueDate ? moment(formVals.DueDate, 'YYYY-MM-DD') : null,
+                  rules: [{ required: true, message: '请选择要求交期！' }],
+                })(<DatePicker style={{ width: '100%' }} />)}
+              </FormItem>
+            </Col>
+          </Row>
+          <Row gutter={8}>
+            <Col lg={10} md={12} sm={24}>
+              <FormItem key="NumAtCard" {...this.formLayout} label="客户参考号">
+                {getFieldDecorator('NumAtCard', {
+                  initialValue: formVals.NumAtCard,
+                })(<Input placeholder="请输入客户参考号" />)}
+              </FormItem>
+            </Col>
+            <Col lg={10} md={12} sm={24}>
               <FormItem key="OrderType" {...this.formLayout} label="订单类型">
                 {getFieldDecorator('OrderType', {
                   initialValue: formVals.OrderType,
@@ -1161,51 +1225,26 @@ class TI_Z030Component extends React.Component {
               </FormItem>
             </Col>
           </Row>
-          <Row gutter={8}>
-            <Col lg={10} md={12} sm={24}>
-              <FormItem key="NumAtCard" {...this.formLayout} label="客户参考号">
-                {getFieldDecorator('NumAtCard', {
-                  initialValue: formVals.NumAtCard,
-                })(<Input placeholder="请输入客户参考号" />)}
-              </FormItem>
-            </Col>
-            {formVals.DocStatus ? (
-              <Col lg={10} md={12} sm={24}>
-                <FormItem key="DocStatus" {...this.formLayout} label="状态">
-                  <span>{formVals.DocStatus === 'O' ? '未清' : '已清'}</span>
-                </FormItem>
-              </Col>
-            ) : null}
-          </Row>
         </Form>
         <Tabs tabBarExtraContent={this.rightButton(tabIndex)} onChange={this.tabChange}>
           <TabPane tab="物料" key="1">
             <EditableFormTable
               rowChange={this.rowChange}
               rowKey="Key"
-              scroll={{ x: 3500, y: 600 }}
+              scroll={{ x: 2900, y: 600 }}
               columns={this.skuColumns}
               data={newdata}
             />
             <Row style={{ marginTop: 20 }} gutter={8}>
-              <Col lg={8} md={12} sm={24}>
-                <FormItem key="Owner" {...this.formLayout} label="所有者">
+              <Col lg={10} md={12} sm={24}>
+                <FormItem key="Owner" {...this.formLayout} label="销售员">
                   {getFieldDecorator('Owner', {
                     initialValue: formVals.Owner,
-                    rules: [{ required: true, message: '请选择所有者！' }],
+                    rules: [{ required: true, message: '请选择销售员！' }],
                   })(<MDMCommonality initialValue={formVals.Owner} data={Saler} />)}
                 </FormItem>
               </Col>
-              <Col lg={8} md={12} sm={24}>
-                <FormItem key="CreateDate" {...this.formLayout} label="创建日期">
-                  {getFieldDecorator('CreateDate', {
-                    initialValue: formVals.CreateDate
-                      ? moment(formVals.CreateDate, 'YYYY-MM-DD')
-                      : null,
-                  })(<DatePicker style={{ width: '100%' }} />)}
-                </FormItem>
-              </Col>
-              <Col lg={8} md={12} sm={24}>
+              <Col lg={10} md={12} sm={24}>
                 <FormItem key="Comment" {...this.formLayout} label="备注">
                   {getFieldDecorator('Comment', {
                     initialValue: formVals.Comment,
@@ -1246,7 +1285,6 @@ class TI_Z030Component extends React.Component {
                     initialValue: formVals.AddressID,
                   })(
                     <Select
-                      value={formVals}
                       placeholder="请选择地址"
                       onSelect={this.handleAdreessChange}
                       style={{ width: '100%' }}
@@ -1277,7 +1315,6 @@ class TI_Z030Component extends React.Component {
                   })(<MDMCommonality initialValue={formVals.CompanyCode} data={Company} />)}
                 </FormItem>
               </Col>
-
               <Col lg={8} md={12} sm={24}>
                 <FormItem key="ToDate" {...this.formLayout} label="有效期至">
                   {getFieldDecorator('ToDate', {
@@ -1285,39 +1322,6 @@ class TI_Z030Component extends React.Component {
                   })(<DatePicker style={{ width: '100%' }} />)}
                 </FormItem>
               </Col>
-              <Col lg={8} md={12} sm={24}>
-                <FormItem key="DueDate" {...this.formLayout} label="要求交期">
-                  {getFieldDecorator('DueDate', {
-                    initialValue: formVals.DueDate ? moment(formVals.DueDate, 'YYYY-MM-DD') : null,
-                    rules: [{ required: true, message: '请选择要求交期！' }],
-                  })(<DatePicker style={{ width: '100%' }} />)}
-                </FormItem>
-              </Col>
-
-              <Col lg={8} md={12} sm={24}>
-                <FormItem key="CreateUser" {...this.formLayout} label="创建人">
-                  <span>{getName(Saler, formVals.CreateUser)}</span>
-                </FormItem>
-              </Col>
-              {/* {formVals.DocEntry ? (
-                <Fragment>
-                  <Col lg={8} md={12} sm={24}>
-                    <FormItem key="Closed" {...this.formLayout} label="关闭状态">
-                      <Switch
-                        checkedChildren="已关闭"
-                        disabled
-                        unCheckedChildren="开启中"
-                        checked={formVals.Closed === 'Y'}
-                      />
-                    </FormItem>
-                  </Col>
-                  <Col lg={8} md={12} sm={24}>
-                    <FormItem key="ClosedBy " {...this.formLayout} label="关闭人">
-                      <span>{formVals.ClosedBy}</span>
-                    </FormItem>
-                  </Col>
-                </Fragment>
-              ) : null} */}
             </Row>
           </TabPane>
           <TabPane tab="其余成本" key="3">
@@ -1343,7 +1347,12 @@ class TI_Z030Component extends React.Component {
               <Button type="primary" onClick={this.costCheck}>
                 成本核算
               </Button>
-              <Button style={{ marginLeft: 10 }} onClick={this.updateHandle} type="primary">
+              <Button
+                loading={updateloading}
+                style={{ marginLeft: 10 }}
+                onClick={this.updateHandle}
+                type="primary"
+              >
                 更新
               </Button>
               <Button onClick={() => this.setState({ needmodalVisible: true })} type="primary">
@@ -1351,7 +1360,7 @@ class TI_Z030Component extends React.Component {
               </Button>
             </Fragment>
           ) : (
-            <Button onClick={this.saveHandle} type="primary">
+            <Button loading={addloading} onClick={this.saveHandle} type="primary">
               保存
             </Button>
           )}
@@ -1361,7 +1370,7 @@ class TI_Z030Component extends React.Component {
           onRef={c => {
             this.getAskPriceOrder = c;
           }}
-          SearchText={formVals.CardName}
+          SearchText={formVals.CardCode}
           {...orderParentMethods}
           modalVisible={orderModalVisible}
         />
@@ -1390,4 +1399,4 @@ class TI_Z030Component extends React.Component {
   }
 }
 
-export default TI_Z030Component;
+export default AgreementEdit;

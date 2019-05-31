@@ -25,7 +25,8 @@ class InquiryEdit extends React.Component {
       fixed: 'left',
       width: 50,
       align: 'center',
-      render: (text, record) => (record.lastIndex ? '合计' : text),
+      render: (text, record) =>
+        record.lastIndex ? <span style={{ fontWeight: 'bolder' }}>合计</span> : text,
     },
     {
       title: 'SKU',
@@ -106,10 +107,10 @@ class InquiryEdit extends React.Component {
     {
       title: '要求交期',
       width: 100,
-      inputType: 'date',
       dataIndex: 'DueDate',
       align: 'center',
-      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
+      render: (val, record) =>
+        record.lastIndex ? '' : <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
     {
       title: '价格',
@@ -122,7 +123,8 @@ class InquiryEdit extends React.Component {
       width: 100,
       dataIndex: 'InquiryDueDate',
       align: 'center',
-      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
+      render: (val, record) =>
+        record.lastIndex ? '' : <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
     {
       title: '行备注',
@@ -131,16 +133,20 @@ class InquiryEdit extends React.Component {
       align: 'center',
     },
     {
-      title: '采总计',
+      title: '总计',
       width: 100,
       align: 'center',
       dataIndex: 'LineTotal',
+      render: (text, record) =>
+        record.lastIndex ? <span style={{ fontWeight: 'bolder' }}>{text}</span> : text,
     },
     {
       title: '本币总计',
       width: 100,
       align: 'center',
       dataIndex: 'InquiryLineTotalLocal',
+      render: (text, record) =>
+        record.lastIndex ? <span style={{ fontWeight: 'bolder' }}>{text}</span> : text,
     },
     {
       title: '客询价单',
@@ -336,11 +342,11 @@ class InquiryEdit extends React.Component {
       newdata.push({
         LineID: newdata[newdata.length - 1].LineID + 1,
         lastIndex: true,
-        InquiryLineTotal: formVals.InquiryDocTotal,
+        LineTotal: formVals.InquiryDocTotal,
         InquiryLineTotalLocal: formVals.InquiryDocTotalLocal,
-        LineTotal: formVals.DocTotal,
       });
     }
+
     return (
       <Card bordered={false}>
         <DescriptionList style={{ marginBottom: 24 }}>
@@ -379,7 +385,7 @@ class InquiryEdit extends React.Component {
         <Tabs>
           <TabPane tab="物料" key="1">
             <StandardTable
-              data={{ list: formVals.TI_Z02702 }}
+              data={{ list: newdata }}
               rowKey="LineID"
               scroll={{ x: 1900 }}
               columns={this.skuColumns}

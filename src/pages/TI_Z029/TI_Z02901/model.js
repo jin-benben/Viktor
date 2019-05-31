@@ -14,12 +14,8 @@ export default {
   state: {
     orderDetail: {
       Comment: '',
-      SDocStatus: '',
-      PDocStatus: '',
-      Closed: '',
-      ClosedBy: '',
       SourceType: '',
-      OrderType: '',
+      OrderType: '1',
       DocDate: new Date(),
       CreateDate: new Date(),
       CardCode: '',

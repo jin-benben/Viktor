@@ -17,7 +17,13 @@ class EditableCell extends PureComponent {
           />
         );
       case 'textArea':
-        return <TextArea rows={1} onChange={e => this.InputChange(e, dataIndex, record)} />;
+        return (
+          <TextArea
+            value={defaultValue}
+            rows={1}
+            onChange={e => this.InputChange(e, dataIndex, record)}
+          />
+        );
       case 'select':
         return (
           <Select

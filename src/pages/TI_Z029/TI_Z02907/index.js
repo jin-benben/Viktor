@@ -6,8 +6,8 @@ import { Row, Col, Card, Form, Input, Button, Divider, Select, DatePicker, Icon 
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import StandardTable from '@/components/StandardTable';
 import MDMCommonality from '@/components/Select';
+import Link from 'umi/link';
 import DocEntryFrom from '@/components/DocEntryFrom';
-import { getName } from '@/utils/utils';
 
 const { RangePicker } = DatePicker;
 
@@ -32,11 +32,9 @@ class SalesQuotationSku extends PureComponent {
       width: 100,
       fixed: 'left',
       dataIndex: 'DocEntry',
-    },
-    {
-      title: '行号',
-      width: 50,
-      dataIndex: 'LineID',
+      render: (text, recond) => (
+        <Link to={`/sellabout/TI_Z029/detail?DocEntry=${text}`}>{`${text}-${recond.LineID}`}</Link>
+      ),
     },
     {
       title: '单据日期',

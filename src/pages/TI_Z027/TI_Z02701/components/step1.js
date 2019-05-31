@@ -2,7 +2,7 @@
 import React, { Fragment } from 'react';
 
 import moment from 'moment';
-import { Row, Col, Form, Input, Table, Button, DatePicker, Checkbox } from 'antd';
+import { Row, Col, Form, Input, Table, Button, DatePicker, Checkbox, message } from 'antd';
 import { connect } from 'dva';
 import Link from 'umi/link';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
@@ -247,7 +247,7 @@ class NeedTabl extends React.Component {
         ...params,
       },
     });
-    if (response.Status !== 200) {
+    if (response && response.Status !== 200) {
       return;
     }
     this.setState({ orderLineList: response.Content ? response.Content.rows : [] });
@@ -296,6 +296,10 @@ class NeedTabl extends React.Component {
   changeSupplier = (supplier, record, index) => {
     const { Code, Currency, CompanyCode } = supplier;
     const { orderLineList } = this.state;
+    if (!supplier.TI_Z00702List.length) {
+      message.warning('此供应商暂未维护联系，请先维护联系人');
+      return false;
+    }
     const { CellphoneNO, Email, PhoneNO, Name, LineID } = supplier.TI_Z00702List[0];
 
     record.SupplierCode = Code;

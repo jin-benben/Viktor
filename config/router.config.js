@@ -52,6 +52,11 @@ export default [
             path: '/base/TI_Z014',
             routes:[
               {
+                name: '添加',
+                path: '/base/TI_Z014/edit',
+                component: './TI_Z014/add',
+              },
+              {
                 name: '查询',
                 path: '/base/TI_Z014/search',
                 component: './TI_Z014/search',
@@ -62,11 +67,7 @@ export default [
                 path: '/base/TI_Z014/set',
                 component: './TI_Z014/set',
               },
-              {
-                name: '添加',
-                path: '/base/TI_Z014/edit',
-                component: './TI_Z014/add',
-              }
+             
             ]
           },
         ]
@@ -99,6 +100,11 @@ export default [
                   path: '/main/product/TI_Z009',
                   routes:[
                     {
+                      name: '物料添加',
+                      path: '/main/product/TI_Z009/TI_Z00901',
+                      component: './TI_Z009/TI_Z00901',
+                    },
+                    {
                       name: '物料查询',
                       path: '/main/product/TI_Z009/TI_Z00902',
                       component: './TI_Z009/TI_Z00902',
@@ -108,12 +114,8 @@ export default [
                       hideInMenu: true,
                       path: '/main/product/TI_Z009/TI_Z00903',
                       component: './TI_Z009/TI_Z00903',
-                    },
-                    {
-                      name: '物料添加',
-                      path: '/main/product/TI_Z009/TI_Z00901',
-                      component: './TI_Z009/TI_Z00901',
                     }
+                   
                   ]
                 },
                 {
@@ -122,14 +124,14 @@ export default [
                   path: '/main/product/TI_Z011',
                   routes:[
                     {
-                      name: 'SPU查询',
-                      path: '/main/product/TI_Z011/TI_Z01102',
-                      component: './TI_Z011/search.js',
-                    },
-                    {
                       name: 'SPU添加',
                       path: '/main/product/TI_Z011/TI_Z01101',
                       component: './TI_Z011/add.js',
+                    },
+                    {
+                      name: 'SPU查询',
+                      path: '/main/product/TI_Z011/TI_Z01102',
+                      component: './TI_Z011/search.js',
                     }
                   ]
                 },
@@ -186,7 +188,7 @@ export default [
                   component: './TI_Z006/TI_Z00601',
                 },
                 {
-                  path: '/main/TI_Z006/search',
+                  path: '/main/TI_Z006/serach',
                   name: '客户查询',
                   component: './TI_Z006/TI_Z00602',
                 },
@@ -211,6 +213,11 @@ export default [
             path: '/sellabout/TI_Z026',
             routes:[
               {
+                name: '单据添加',
+                path: '/sellabout/TI_Z026/TI_Z02601',
+                component: './TI_Z026/TI_Z02601',
+              },
+              {
                 name: '单据查询',
                 path: '/sellabout/TI_Z026/TI_Z02606',
                 component: './TI_Z026/TI_Z02606',
@@ -219,11 +226,6 @@ export default [
                 name: '明细查询',
                 path: '/sellabout/TI_Z026/TI_Z02607',
                 component: './TI_Z026/TI_Z02607',
-              },
-              {
-                name: '单据添加',
-                path: '/sellabout/TI_Z026/TI_Z02601',
-                component: './TI_Z026/TI_Z02601',
               },
               {
                 name: '客户询价详情',
@@ -246,6 +248,11 @@ export default [
             path: '/sellabout/TI_Z029',
             routes:[
               {
+                name: '单据添加',
+                path: '/sellabout/TI_Z029/add',
+                component: './TI_Z029/TI_Z02901',
+              },
+              {
                 name: '单据查询',
                 path: '/sellabout/TI_Z029/search',
                 component: './TI_Z029/TI_Z02906',
@@ -267,11 +274,7 @@ export default [
                 path: '/sellabout/TI_Z029/detail',
                 component: './TI_Z029/TI_Z02903',
               },
-              {
-                name: '单据添加',
-                path: '/sellabout/TI_Z029/add',
-                component: './TI_Z029/TI_Z02901',
-              }
+              
             ]
           },
           {
@@ -279,6 +282,11 @@ export default [
             icon: 'iconhetong',
             path: '/sellabout/TI_Z030',
             routes:[
+              {
+                name: '单据添加',
+                path: '/sellabout/TI_Z030/add',
+                component: './TI_Z030/TI_Z03001',
+              },
               {
                 name: '单据查询',
                 path: '/sellabout/TI_Z030/search',
@@ -296,16 +304,12 @@ export default [
                 component: './TI_Z030/TI_Z03003',
               },
               {
-                name: '销售合同详情',
+                name: '销售合同跟新',
                 hideInMenu: true,
                 path: '/sellabout/TI_Z030/update',
                 component: './TI_Z030/TI_Z03001',
               },
-              {
-                name: '单据添加',
-                path: '/sellabout/TI_Z030/add',
-                component: './TI_Z030/TI_Z03001',
-              }
+             
             ]
           },
          
@@ -321,6 +325,11 @@ export default [
             icon: 'iconxunjia',
             path: '/purchase/TI_Z027',
             routes:[
+              {
+                name: '单据添加',
+                path: '/purchase/TI_Z027/edit',
+                component: './TI_Z027/TI_Z02701',
+              },
               {
                 name: '单据查询',
                 path: '/purchase/TI_Z027/search',
@@ -342,12 +351,8 @@ export default [
                 hideInMenu: true,
                 path: '/purchase/TI_Z027/detail',
                 component: './TI_Z027/TI_Z02703',
-              },
-              {
-                name: '单据添加',
-                path: '/purchase/TI_Z027/edit',
-                component: './TI_Z027/TI_Z02701',
               }
+             
             ]
           },
           {
@@ -355,6 +360,11 @@ export default [
             icon: 'iconqueren',
             path: '/purchase/TI_Z028',
             routes:[
+              {
+                name: '单据添加',
+                path: '/purchase/TI_Z028/TI_Z02801',
+                component: './TI_Z028/TI_Z02801',
+              },
               {
                 name: '单据查询',
                 path: '/purchase/TI_Z028/TI_Z02803',
@@ -366,11 +376,6 @@ export default [
                 component: './TI_Z028/TI_Z02804',
               },
               {
-                name: '单据添加',
-                path: '/purchase/TI_Z028/TI_Z02801',
-                component: './TI_Z028/TI_Z02801',
-              },
-              {
                 name: '采购询价确认详情',
                 path: '/purchase/TI_Z028/TI_Z02802',
                 hideInMenu: true,
@@ -380,8 +385,19 @@ export default [
           },
         ]
       }, 
-     
-      
+      {
+        name: '交货及批次',
+        icon: 'iconjiaohuo',
+        path: '/confrmBatch',
+        routes:[
+          {
+            name: '确认交货',
+            icon: 'iconxunjia',
+            path: '/confrmBatch/TI_Z026',
+            component: './ODLN',
+          }
+        ]  
+      },
       {
         name: '消息管理',
         icon: 'smile',

@@ -4,7 +4,9 @@ export default {
   namespace: 'companyEdit',
 
   state: {
-    companyDetail: {},
+    companyDetail: {
+      Status: '1',
+    },
   },
 
   effects: {

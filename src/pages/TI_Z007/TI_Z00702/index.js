@@ -22,7 +22,7 @@ class supplierSearch extends PureComponent {
     {
       title: '供应商ID',
       dataIndex: 'Code',
-      render: text => <Link to={`/main/TI_Z006/detail?Code=${text}`}>{text}</Link>,
+      render: text => <Link to={`/main/product/TI_Z007/detail?Code=${text}`}>{text}</Link>,
     },
     {
       title: '供应商名称',

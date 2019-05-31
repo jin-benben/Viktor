@@ -26,9 +26,8 @@ class orderLine extends PureComponent {
     selectedRows: [],
     queryData: {
       Content: {
-        SLineStatus: 'O',
-        PLineStatus: 'C',
-        Closed: 'N',
+        QueryType: '4',
+        CardCode: '',
         SearchText: '',
         SearchKey: 'Name',
       },
@@ -201,7 +200,7 @@ class orderLine extends PureComponent {
   static getDerivedStateFromProps(nextProps, prevState) {
     const { queryData } = prevState;
     if (nextProps.SearchText !== queryData.SearchText) {
-      queryData.Content.SearchText = nextProps.SearchText;
+      queryData.Content.CardCode = nextProps.SearchText;
       return {
         queryData: { ...queryData },
       };
@@ -247,11 +246,7 @@ class orderLine extends PureComponent {
       };
       this.fetchOrder({
         Content: {
-          SLineStatus: 'O',
-          PLineStatus: 'C',
-          Closed: 'N',
-          SearchText: '',
-          SearchKey: 'Name',
+          ...this.state.queryData.Content,
           ...queryData,
         },
         page: 1,
@@ -321,9 +316,9 @@ class orderLine extends PureComponent {
       <Form onSubmit={this.handleSearch} {...formItemLayout}>
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={6} sm={24}>
-            <FormItem key="SearchText" label="客户名称" {...formLayout}>
+            <FormItem key="SearchText" {...formLayout}>
               {getFieldDecorator('SearchText', { initialValue: queryData.Content.SearchText })(
-                <Input placeholder="请输入客户名称" />
+                <Input placeholder="请输入关键字" />
               )}
             </FormItem>
           </Col>

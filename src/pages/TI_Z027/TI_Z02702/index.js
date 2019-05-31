@@ -13,11 +13,11 @@ import {
   Tabs,
   Button,
   Icon,
-  Switch,
   Modal,
   message,
   DatePicker,
   Popconfirm,
+  Select,
 } from 'antd';
 import moment from 'moment';
 import round from 'lodash/round';
@@ -30,16 +30,16 @@ import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import UpdateLoad from '../../TI_Z026/components/modal';
 import SKUModal from '@/components/Modal/SKU';
 import Brand from '@/components/Brand';
-import LinkMan from '../../TI_Z026/components/linkman';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import SupplierSelect from '@/components/Select/Supplier';
 
 const { TabPane } = Tabs;
 const FormItem = Form.Item;
+const { Option } = Select;
 @connect(({ supplierAskDetail, loading, global }) => ({
   supplierAskDetail,
   global,
-  loading: loading.models.supplierAskDetail,
+  updateloading: loading.effects['supplierAskDetail/update'],
 }))
 @Form.create()
 class InquiryEdit extends React.Component {
@@ -87,7 +87,7 @@ class InquiryEdit extends React.Component {
       render: (text, record, index) =>
         record.lastIndex ? null : (
           <Brand
-            defaultValue={record.BrandName}
+            initialValue={record.BrandName}
             keyType="Name"
             onChange={value => {
               this.rowSelectChange(value, record, index, 'BrandName');
@@ -340,10 +340,6 @@ class InquiryEdit extends React.Component {
       payload: {
         supplierAskDetailInfo: {
           Comment: '',
-          SDocStatus: '',
-          PDocStatus: '',
-          Closed: '',
-          ClosedBy: '',
           SourceType: '',
           OrderType: '',
           DocDate: null,
@@ -370,9 +366,13 @@ class InquiryEdit extends React.Component {
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    if (nextProps.supplierAskDetail.supplierAskDetailInfo !== prevState.formVals) {
+    if (
+      nextProps.supplierAskDetail.supplierAskDetailInfo !== prevState.formVals ||
+      nextProps.supplierAskDetail.linkmanList !== prevState.linkmanList
+    ) {
       return {
         formVals: nextProps.supplierAskDetail.supplierAskDetailInfo,
+        linkmanList: nextProps.supplierAskDetail.linkmanList,
       };
     }
     return null;
@@ -395,29 +395,24 @@ class InquiryEdit extends React.Component {
   //  计算总计
   getTotal = () => {
     const { formVals } = this.state;
-    let DocTotal = 0;
     let InquiryDocTotalLocal = 0;
     let InquiryDocTotal = 0;
     // eslint-disable-next-line array-callback-return
     formVals.TI_Z02702.map(record => {
-      record.InquiryLineTotalLocal = isNaN(record.Quantity * record.InquiryPrice)
+      record.InquiryLineTotalLocal = isNaN(record.Quantity * record.Price)
         ? 0
-        : record.Quantity * record.InquiryPrice;
+        : record.Quantity * record.Price;
       record.InquiryLineTotalLocal = round(record.InquiryLineTotalLocal, 2);
-      record.InquiryLineTotal = isNaN(record.Quantity * record.InquiryPrice * record.DocRate)
+      record.LineTotal = isNaN(record.Quantity * record.Price * formVals.DocRate)
         ? 0
-        : record.Quantity * record.InquiryPrice * record.DocRate;
-      record.InquiryLineTotal = round(record.InquiryLineTotal, 2);
-      record.LineTotal = isNaN(record.Quantity * record.Price) ? 0 : record.Quantity * record.Price;
+        : record.Quantity * record.Price * formVals.DocRate;
       record.LineTotal = round(record.LineTotal, 2);
-      DocTotal += record.LineTotal;
       InquiryDocTotalLocal += record.InquiryLineTotalLocal;
-      InquiryDocTotal += record.InquiryLineTotal;
+      InquiryDocTotal += record.LineTotal;
     });
-    formVals.DocTotal = DocTotal;
+
     formVals.InquiryDocTotalLocal = InquiryDocTotalLocal;
     formVals.InquiryDocTotal = InquiryDocTotal;
-    formVals.DocTotal = DocTotal;
     this.setState({ formVals });
   };
 
@@ -438,8 +433,19 @@ class InquiryEdit extends React.Component {
   // 物料弹出返回
   changeLineSKU = selection => {
     const [select] = selection;
+    const { BrandName, ManufactureNO, Name, Package, Parameters, ProductName, Unit, Code } = select;
     const { thisLine, LineID, formVals } = this.state;
-    formVals.TI_Z02702[LineID] = { ...thisLine, ...select, SKU: select.Code, SKUName: select.Name };
+    formVals.TI_Z02702[LineID] = {
+      ...thisLine,
+      SKU: Code,
+      SKUName: Name,
+      BrandName,
+      ManufactureNO,
+      Package,
+      Parameters,
+      ProductName,
+      Unit,
+    };
     this.setState({ formVals: { ...formVals } });
     this.handleModalVisible(false);
   };
@@ -553,39 +559,14 @@ class InquiryEdit extends React.Component {
   };
 
   // 联系人change
-  linkmanChange = Contacts => {
-    const { formVals } = this.state;
-    formVals.Contacts = Contacts;
-    this.setState({ formVals });
-  };
-
-  saveHandle = () => {
-    // 保存主数据
-    const { form, dispatch } = this.props;
-    const { formVals } = this.state;
-    form.validateFields((err, fieldsValue) => {
-      if (err) return;
-
-      delete fieldsValue.CardCode;
-      delete fieldsValue.CardName;
-      dispatch({
-        type: 'supplierAskDetail/add',
-        payload: {
-          Content: {
-            ...formVals,
-            ...fieldsValue,
-            ToDate: fieldsValue.ToDate ? fieldsValue.ToDate.format('YYYY-MM-DD') : '',
-            DocDate: fieldsValue.DocDate ? fieldsValue.DocDate.format('YYYY-MM-DD') : '',
-          },
-        },
-        callback: response => {
-          if (response && response.Status === 200) {
-            message.success('添加成功');
-            router.push(`/purchase/detail?DocEntry=${response.Content.DocEntry}`);
-          }
-        },
-      });
+  linkmanChange = value => {
+    const { formVals, linkmanList } = this.state;
+    const select = linkmanList.find(item => {
+      return item.LineID === value;
     });
+    const { CellphoneNO, Email, PhoneNO, UserID, Name } = select;
+    Object.assign(formVals, { CellphoneNO, Email, PhoneNO, UserID, Contacts: Name });
+    this.setState({ formVals });
   };
 
   // 更新主数据
@@ -664,7 +645,9 @@ class InquiryEdit extends React.Component {
           formVals.DocRate = response.Content.DropdownData.Rate[0]
             ? response.Content.DropdownData.Rate[0].Value
             : '';
-          this.setState({ formVals: { ...formVals } });
+          this.setState({ formVals: { ...formVals } }, () => {
+            this.getTotal();
+          });
         }
       },
     });
@@ -711,9 +694,8 @@ class InquiryEdit extends React.Component {
       newdata.push({
         LineID: newdata[newdata.length - 1].LineID + 1,
         lastIndex: true,
-        InquiryLineTotal: formVals.InquiryDocTotal,
+        LineTotal: formVals.InquiryDocTotal,
         InquiryLineTotalLocal: formVals.InquiryDocTotalLocal,
-        LineTotal: formVals.DocTotal,
       });
     }
     return (
@@ -768,16 +750,22 @@ class InquiryEdit extends React.Component {
           </Row>
           <Row gutter={8}>
             <Col lg={10} md={12} sm={24}>
-              <FormItem key="Contacts" {...this.formLayout} label="联系人">
-                {getFieldDecorator('Contacts', {
+              <FormItem key="ContactsID" {...this.formLayout} label="联系人">
+                {getFieldDecorator('ContactsID', {
                   rules: [{ required: true, message: '请输入联系人！' }],
-                  initialValue: formVals.Contacts,
+                  initialValue: formVals.ContactsID,
                 })(
-                  <LinkMan
-                    initialValue={formVals.Contacts}
-                    onChange={this.linkmanChange}
-                    data={linkmanList}
-                  />
+                  <Select
+                    placeholder="请选择联系人"
+                    onSelect={this.linkmanChange}
+                    style={{ width: '100%' }}
+                  >
+                    {linkmanList.map(option => (
+                      <Option key={option.LineID} value={option.LineID}>
+                        {option.Name}
+                      </Option>
+                    ))}
+                  </Select>
                 )}
               </FormItem>
             </Col>
@@ -881,31 +869,6 @@ class InquiryEdit extends React.Component {
                   {getFieldDecorator('ToDate', {
                     initialValue: formVals.ToDate ? moment(formVals.ToDate, 'YYYY-MM-DD') : null,
                   })(<DatePicker style={{ width: '100%' }} />)}
-                </FormItem>
-              </Col>
-              <Col lg={8} md={12} sm={24}>
-                <FormItem key="CreateUser" {...this.formLayout} label="创建人">
-                  <span>{formVals.CreateUser}</span>
-                </FormItem>
-              </Col>
-              <Col lg={8} md={12} sm={24}>
-                <FormItem key="Closed" {...this.formLayout} label="关闭状态">
-                  <Switch
-                    checkedChildren="已关闭"
-                    disabled
-                    unCheckedChildren="开启中"
-                    checked={formVals.Closed === 'Y'}
-                  />
-                </FormItem>
-              </Col>
-              <Col lg={8} md={12} sm={24}>
-                <FormItem key="ClosedComment " {...this.formLayout} label="关闭原因">
-                  <span>{formVals.ClosedComment}</span>
-                </FormItem>
-              </Col>
-              <Col lg={8} md={12} sm={24}>
-                <FormItem key="ClosedBy " {...this.formLayout} label="关闭人">
-                  <span>{formVals.ClosedBy}</span>
                 </FormItem>
               </Col>
             </Row>

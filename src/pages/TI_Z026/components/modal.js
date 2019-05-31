@@ -88,7 +88,7 @@ class UpdateLoad extends PureComponent {
           </FormItem>
           <FormItem key="AttachmentPath" {...this.formLayout} label="上传附件">
             <Upload
-              action="http://47.104.65.49:8001/OMSPicUpload/PictureUpLoad"
+              action="http://47.104.65.49:8001/EnclosureUpload/EnclosureUpload"
               listType="picture-card"
               data={{ UserCode: 'jinwentao', Folder: 'TI_Z026', Tonken: '22233' }}
               showUploadList={false}

@@ -19,6 +19,7 @@ import StandardTable from '@/components/StandardTable';
 import MDMCommonality from '@/components/Select';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import DocEntryFrom from '@/components/DocEntryFrom';
+import Link from 'umi/link';
 import { getName } from '@/utils/utils';
 
 const { RangePicker } = DatePicker;
@@ -43,6 +44,7 @@ class inquiryListPage extends PureComponent {
       title: '单号',
       width: 80,
       dataIndex: 'DocEntry',
+      render: text => <Link to={`/sellabout/TI_Z026/detail?DocEntry=${text}`}>{text}</Link>,
     },
     {
       title: '单据日期',

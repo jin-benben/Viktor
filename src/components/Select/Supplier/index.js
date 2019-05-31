@@ -2,10 +2,15 @@ import React, { PureComponent, Fragment } from 'react';
 import request from '@/utils/request';
 import SupplierModal from '@/components/Modal/Supplier';
 import { Select, Spin, Icon, Empty } from 'antd';
+import { connect } from 'dva';
 import debounce from 'lodash/debounce';
 
 const { Option } = Select;
 
+@connect(({ loading, global }) => ({
+  global,
+  loading: loading.models.global,
+}))
 class SupplierSelect extends PureComponent {
   constructor(props) {
     super(props);
@@ -15,13 +20,18 @@ class SupplierSelect extends PureComponent {
 
   state = {
     data: [],
-    value: '',
+    value: { key: '' },
     companyModal: false,
     fetching: false,
   };
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    if (nextProps.initialValue !== prevState.initialValue) {
+    if (!prevState.data.length && prevState.data !== nextProps.global.SupplierList) {
+      return {
+        data: nextProps.global.SupplierList,
+      };
+    }
+    if (nextProps.initialValue !== prevState.value) {
       return {
         value: nextProps.initialValue,
       };
@@ -29,12 +39,8 @@ class SupplierSelect extends PureComponent {
     return null;
   }
 
-  componentDidMount() {
-    this.fetchSupplier();
-  }
-
   fetchSupplier = async value => {
-    if (!value && this.lastFetchId !== 0) return;
+    if (!value) return;
     const { keyType } = this.props;
     this.lastFetchId += 1;
     const fetchId = this.lastFetchId;

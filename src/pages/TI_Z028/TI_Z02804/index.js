@@ -6,6 +6,7 @@ import { Row, Col, Card, Form, Input, Button, DatePicker } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import MDMCommonality from '@/components/Select';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
+import Link from 'umi/link';
 import { getName } from '@/utils/utils';
 
 const { RangePicker } = DatePicker;
@@ -21,26 +22,24 @@ const FormItem = Form.Item;
 class TI_Z02804 extends PureComponent {
   columns = [
     {
+      title: '采询价单',
+      width: 100,
+      dataIndex: 'DocEntry',
+      render: (text, recond) => (
+        <Link to={`/purchase/TI_Z028/TI_Z02802?DocEntry=${text}`}>{`${text}-${
+          recond.LineID
+        }`}</Link>
+      ),
+    },
+    {
       title: '客询价单',
-      width: 80,
+      width: 100,
       dataIndex: 'BaseEntry',
-    },
-    {
-      title: '客询价行',
-      width: 80,
-      dataIndex: 'BaseLineID',
-    },
-    {
-      title: '单据日期',
-      dataIndex: 'DocDate',
-      width: 100,
-      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
-    },
-    {
-      title: '创建日期',
-      width: 100,
-      dataIndex: 'CreateDate',
-      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
+      render: (text, recond) => (
+        <Link to={`/sellabout/TI_Z026/detail?DocEntry=${text}`}>{`${text}-${
+          recond.BaseLineID
+        }`}</Link>
+      ),
     },
     {
       title: '销售员',
@@ -139,6 +138,7 @@ class TI_Z02804 extends PureComponent {
     {
       title: '采购交期',
       width: 100,
+      dataIndex: 'InquiryDueDate',
       render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
     {
@@ -150,15 +150,16 @@ class TI_Z02804 extends PureComponent {
 
   childColumns = [
     {
-      title: '询价单号',
+      title: '采询价单号',
       width: 150,
       dataIndex: 'PInquiryEntry',
     },
     {
-      title: '询价单行',
+      title: '采询价单行',
       width: 80,
       dataIndex: 'PInquiryLineID',
     },
+
     {
       title: '询价日期',
       width: 100,
@@ -274,70 +275,41 @@ class TI_Z02804 extends PureComponent {
     });
   };
 
-  // handleOnRow = record => ({
-  //   // 详情or修改
-  //   onClick: () => router.push(`/TI_Z028/edit?DocEntry=${record.DocEntry}`),
-  // });
-
   // form表单
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
-      global: { Saler },
+      global: { Purchaser },
     } = this.props;
 
     const formLayout = {
       labelCol: { span: 8 },
       wrapperCol: { span: 16 },
     };
-    const formItemLayout = {
-      labelCol: {
-        xs: { span: 24 },
-        sm: { span: 10 },
-      },
-      wrapperCol: {
-        xs: { span: 24 },
-        sm: { span: 14 },
-        md: { span: 10 },
-      },
-    };
-    const searchFormItemLayout = {
-      wrapperCol: {
-        xs: {
-          span: 24,
-          offset: 0,
-        },
-        sm: {
-          span: 16,
-          offset: 8,
-        },
-      },
-    };
     return (
-      <Form onSubmit={this.handleSearch} {...formItemLayout}>
+      <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={8} sm={24}>
-            <FormItem key="SearchText" label="客户名称" {...formLayout}>
-              {getFieldDecorator('SearchText')(<Input placeholder="请输入客户名称" />)}
+          <Col md={4} sm={24}>
+            <FormItem key="SearchText" {...formLayout}>
+              {getFieldDecorator('SearchText')(<Input placeholder="请输入关键字" />)}
             </FormItem>
           </Col>
-          <Col md={8} sm={24}>
+          <Col md={6} sm={24}>
             <FormItem label="日期" {...formLayout}>
               {getFieldDecorator('dateArr', { rules: [{ type: 'array' }] })(
                 <RangePicker style={{ width: '100%' }} />
               )}
             </FormItem>
           </Col>
-          <Col md={8} sm={24}>
+          <Col md={4} sm={24}>
             <FormItem key="Owner" {...formLayout} label="所有者">
               {getFieldDecorator('Owner', { rules: [{ required: true, message: '请选择所有者' }] })(
-                <MDMCommonality data={Saler} />
+                <MDMCommonality data={Purchaser} />
               )}
             </FormItem>
           </Col>
-
-          <Col md={8} sm={24}>
-            <FormItem key="searchBtn" {...searchFormItemLayout}>
+          <Col md={4} sm={24}>
+            <FormItem key="searchBtn">
               <span className="submitButtons">
                 <Button type="primary" htmlType="submit">
                   查询

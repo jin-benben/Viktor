@@ -1,4 +1,4 @@
-import { querySingleRule } from '../service';
+import { querySingleRule, cancelRule } from '../service';
 
 export default {
   namespace: 'agreementPreview',
@@ -51,6 +51,10 @@ export default {
           },
         });
       }
+    },
+    *cancel({ payload, callback }, { call }) {
+      const response = yield call(cancelRule, payload);
+      if (callback) callback(response);
     },
   },
 

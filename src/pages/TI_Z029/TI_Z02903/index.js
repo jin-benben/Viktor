@@ -7,6 +7,7 @@ import StandardTable from '@/components/StandardTable';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import DescriptionList from 'ant-design-pro/lib/DescriptionList';
+import CancelOrder from '@/components/Modal/CancelOrder';
 import { getName } from '@/utils/utils';
 
 const { Description } = DescriptionList;
@@ -149,19 +150,20 @@ class InquiryEdit extends React.Component {
       width: 100,
       inputType: 'date',
       dataIndex: 'DueDate',
-      render: text => <span>{moment(text).format('YYYY-MM-DD')}</span>,
       align: 'center',
+      render: (val, record) =>
+        record.lastIndex ? '' : <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
     {
       title: '仓库',
       width: 100,
       dataIndex: 'WhsCode',
       align: 'center',
-      render: text => {
+      render: (text, record) => {
         const {
           global: { WhsCode },
         } = this.props;
-        return <span>{getName(WhsCode, text)}</span>;
+        return record.lastIndex ? '' : <span>{getName(WhsCode, text)}</span>;
       },
     },
 
@@ -180,7 +182,6 @@ class InquiryEdit extends React.Component {
     {
       title: '单据汇率',
       width: 80,
-
       dataIndex: 'DocRate',
       align: 'center',
     },
@@ -189,18 +190,19 @@ class InquiryEdit extends React.Component {
       width: 100,
       dataIndex: 'InquiryDueDate',
       align: 'center',
-      render: text => <span>{moment(text).format('YYYY-MM-DD')}</span>,
+      render: (val, record) =>
+        record.lastIndex ? '' : <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
     {
       title: '采购员',
       width: 80,
       dataIndex: 'Purchaser',
       align: 'center',
-      render: text => {
+      render: (text, record) => {
         const {
           global: { Purchaser },
         } = this.props;
-        return <span>{getName(Purchaser, text)}</span>;
+        return record.lastIndex ? '' : <span>{getName(Purchaser, text)}</span>;
       },
     },
     {
@@ -214,12 +216,16 @@ class InquiryEdit extends React.Component {
       width: 120,
       align: 'center',
       dataIndex: 'InquiryLineTotal',
+      render: (text, record) =>
+        record.lastIndex ? <span style={{ fontWeight: 'bolder' }}>{text}</span> : text,
     },
     {
       title: '询价行总计(本币)',
       width: 150,
       align: 'center',
       dataIndex: 'InquiryLineTotalLocal',
+      render: (text, record) =>
+        record.lastIndex ? <span style={{ fontWeight: 'bolder' }}>{text}</span> : text,
     },
 
     {
@@ -426,6 +432,30 @@ class InquiryEdit extends React.Component {
     }
   };
 
+  // 取消单据
+  cancelSubmit = ClosedComment => {
+    const { dispatch } = this.props;
+    const {
+      formVals: { UpdateTimestamp, DocEntry },
+    } = this.state;
+    dispatch({
+      type: 'SalesQuotationPreview/cancel',
+      payload: {
+        Content: {
+          DocEntry,
+          UpdateTimestamp,
+          ClosedComment,
+        },
+      },
+      callback: response => {
+        if (response && response.Status === 200) {
+          message.success('取消成功');
+          this.getDetail();
+        }
+      },
+    });
+  };
+
   render() {
     const {
       global: { Saler, Company },
@@ -476,7 +506,7 @@ class InquiryEdit extends React.Component {
         <Tabs>
           <TabPane tab="物料" key="1">
             <StandardTable
-              data={{ list: formVals.TI_Z02902 }}
+              data={{ list: newdata }}
               rowKey="LineID"
               scroll={{ x: 2600, y: 600 }}
               columns={this.skuColumns}
@@ -524,6 +554,7 @@ class InquiryEdit extends React.Component {
         </Modal>
 
         <FooterToolbar>
+          <CancelOrder cancelSubmit={this.cancelSubmit} />
           <Button onClick={this.toUpdate} type="primary">
             编辑
           </Button>

@@ -2,15 +2,15 @@ import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { getName } from '@/utils/utils';
 import moment from 'moment';
-import { Row, Col, Form, Input, Button, DatePicker, Select, Modal, message } from 'antd';
+import { Row, Col, Form, Input, Button, DatePicker, Modal, message } from 'antd';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import request from '@/utils/request';
 import StandardTable from '@/components/StandardTable';
 import DocEntryFrom from '@/components/DocEntryFrom';
 import MDMCommonality from '@/components/Select';
+import Link from 'umi/link';
 
 const { RangePicker } = DatePicker;
-const { Option } = Select;
 
 const FormItem = Form.Item;
 
@@ -27,9 +27,8 @@ class orderLine extends PureComponent {
     selectedRows: [],
     queryData: {
       Content: {
-        SLineStatus: 'O',
-        PLineStatus: 'C',
-        Closed: 'N',
+        QueryType: '2',
+        CardCode: '',
         SearchText: '',
         SearchKey: 'Name',
       },
@@ -54,11 +53,9 @@ class orderLine extends PureComponent {
       width: 50,
       fixed: 'left',
       dataIndex: 'DocEntry',
-    },
-    {
-      title: '行号',
-      width: 50,
-      dataIndex: 'LineID',
+      render: (text, recond) => (
+        <Link to={`/sellabout/TI_Z029/detail?DocEntry=${text}`}>{`${text}-${recond.LineID}`}</Link>
+      ),
     },
     {
       title: '单据日期',
@@ -196,13 +193,16 @@ class orderLine extends PureComponent {
 
   componentDidMount() {
     const { onRef } = this.props;
-    onRef(this);
+    if (onRef) onRef(this);
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
     const { queryData } = prevState;
-    if (nextProps.SearchText !== queryData.SearchText) {
-      queryData.Content.SearchText = nextProps.SearchText;
+    if (nextProps.SearchText !== queryData.SearchText || nextProps.QueryType) {
+      queryData.Content.CardCode = nextProps.SearchText;
+      queryData.Content.QueryType = nextProps.QueryType
+        ? nextProps.QueryType
+        : queryData.Content.QueryType;
       return {
         queryData: { ...queryData },
       };
@@ -240,17 +240,17 @@ class orderLine extends PureComponent {
         DocDateFrom = moment(fieldsValue.dateArr[0]).format('YYYY-MM-DD');
         DocDateTo = moment(fieldsValue.dateArr[1]).format('YYYY-MM-DD');
       }
+      delete fieldsValue.orderNo;
       const queryData = {
         ...fieldsValue,
         DocDateFrom,
         DocDateTo,
         ...fieldsValue.orderNo,
       };
+
       this.fetchOrder({
         Content: {
-          QueryType: '4',
-          SearchText: '',
-          SearchKey: 'Name',
+          ...this.state.queryData.Content,
           ...queryData,
         },
         page: 1,
@@ -288,42 +288,17 @@ class orderLine extends PureComponent {
       form: { getFieldDecorator },
       global: { Saler },
     } = this.props;
-    const { queryData } = this.state;
     const formLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 18 },
     };
-    const formItemLayout = {
-      labelCol: {
-        xs: { span: 24 },
-        sm: { span: 10 },
-      },
-      wrapperCol: {
-        xs: { span: 24 },
-        sm: { span: 14 },
-        md: { span: 10 },
-      },
-    };
-    const searchFormItemLayout = {
-      wrapperCol: {
-        xs: {
-          span: 24,
-          offset: 0,
-        },
-        sm: {
-          span: 16,
-          offset: 6,
-        },
-      },
-    };
+
     return (
-      <Form onSubmit={this.handleSearch} {...formItemLayout}>
+      <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={6} sm={24}>
-            <FormItem key="SearchText" label="客户名称" {...formLayout}>
-              {getFieldDecorator('SearchText', { initialValue: queryData.Content.SearchText })(
-                <Input placeholder="请输入客户名称" />
-              )}
+          <Col md={4} sm={24}>
+            <FormItem key="SearchText" {...formLayout}>
+              {getFieldDecorator('SearchText')(<Input placeholder="请输入关键字" />)}
             </FormItem>
           </Col>
           <Col md={6} sm={24}>
@@ -333,7 +308,7 @@ class orderLine extends PureComponent {
               )}
             </FormItem>
           </Col>
-          <Col md={6} sm={24}>
+          <Col md={4} sm={24}>
             <FormItem label="所有者" {...formLayout}>
               {getFieldDecorator('Owner')(<MDMCommonality data={Saler} />)}
             </FormItem>
@@ -346,8 +321,8 @@ class orderLine extends PureComponent {
             </FormItem>
           </Col>
 
-          <Col md={6} sm={24}>
-            <FormItem key="searchBtn" {...searchFormItemLayout}>
+          <Col md={2} sm={24}>
+            <FormItem key="searchBtn">
               <span className="submitButtons">
                 <Button type="primary" htmlType="submit">
                   查询

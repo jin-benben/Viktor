@@ -31,13 +31,13 @@ const FormItem = Form.Item;
 const { Option } = Select;
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ orderLine, loading, global }) => ({
-  orderLine,
+@connect(({ salerConfrim, loading, global }) => ({
+  salerConfrim,
   global,
-  loading: loading.models.orderLine,
+  loading: loading.models.salerConfrim,
 }))
 @Form.create()
-class orderLine extends PureComponent {
+class salerConfrim extends PureComponent {
   state = {
     expandForm: false,
     modalVisible: false,
@@ -47,12 +47,12 @@ class orderLine extends PureComponent {
   columns = [
     {
       title: '单号',
-      width: 100,
+      width: 80,
       fixed: 'left',
       dataIndex: 'DocEntry',
-      render: (text, recond) => (
-        <Link to={`/sellabout/TI_Z026/detail?DocEntry=${text}`}>{`${text}-${recond.LineID}`}</Link>
-      ),
+      // render: (text, recond) => (
+      //   <Link to={`/sellabout/TI_Z026/detail?DocEntry=${text}`}>{`${text}-${recond.LineID}`}</Link>
+      // ),
     },
     {
       title: '单据日期',
@@ -60,44 +60,11 @@ class orderLine extends PureComponent {
       width: 100,
       render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
-    {
-      title: '创建日期',
-      width: 100,
-      dataIndex: 'CreateDate',
-      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
-    },
-    {
-      title: '单据状态',
-      dataIndex: 'Status',
-      width: 100,
-      render: (text, record) => (
-        <Fragment>
-          {record.Closed === 'Y' ? (
-            <Badge color="red" text="已关闭" />
-          ) : (
-            <Fragment>
-              <span>
-                {record.SLineStatus === 'O' ? (
-                  <Badge color="green" text="未报价" />
-                ) : (
-                  <Badge color="blue" text="已报价" />
-                )}
-              </span>
-              <span>
-                {record.PLineStatus === 'O' ? (
-                  <Badge color="green" text="未询价" />
-                ) : (
-                  <Badge color="blue" text="已询价" />
-                )}{' '}
-              </span>
-            </Fragment>
-          )}
-        </Fragment>
-      ),
-    },
+
     {
       title: '客户',
       dataIndex: 'CardName',
+      width: 200,
       render: text => (
         <Ellipsis tooltip lines={1}>
           {' '}
@@ -124,19 +91,44 @@ class orderLine extends PureComponent {
       ),
     },
     {
-      title: '客户参考号',
+      title: '邮箱',
       width: 100,
-      dataIndex: 'NumAtCard',
+      dataIndex: 'Email',
     },
     {
-      title: 'SKU',
+      title: '交易公司',
+      width: 100,
+      dataIndex: 'CompanyCode',
+    },
+    {
+      title: '发货状态',
+      dataIndex: 'DeliverSts',
+      width: 100,
+      render: text => (
+        <span>
+          {text === 'Y' ? (
+            <Badge color="green" text="已发货" />
+          ) : (
+            <Badge color="blue" text="未发货" />
+          )}
+        </span>
+      ),
+    },
+    {
+      title: '发货时间',
+      width: 100,
+      dataIndex: 'DeliverDate',
+      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
+    },
+    {
+      title: '发货人',
       width: 80,
-      dataIndex: 'SKU',
+      dataIndex: 'DeliverUser',
     },
     {
-      title: '产品描述',
+      title: '快递单号',
       width: 150,
-      dataIndex: 'SKUName',
+      dataIndex: 'ExpressNumber',
       render: text => (
         <Ellipsis tooltip lines={1}>
           {text}
@@ -144,119 +136,28 @@ class orderLine extends PureComponent {
       ),
     },
     {
-      title: '品牌',
+      title: '销售员',
       width: 80,
-      dataIndex: 'BrandName',
+      dataIndex: 'SlpCode',
     },
     {
-      title: '名称',
-      width: 100,
-      dataIndex: 'ProductName',
+      title: '收货地址',
+      dataIndex: 'Address',
       render: text => (
         <Ellipsis tooltip lines={1}>
           {text}
         </Ellipsis>
       ),
-    },
-    {
-      title: '型号',
-      width: 100,
-      dataIndex: 'ManufactureNO',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
-    {
-      title: '参数',
-      width: 100,
-      dataIndex: 'Parameters',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {' '}
-          {text}{' '}
-        </Ellipsis>
-      ),
-    },
-    {
-      title: '包装',
-      width: 100,
-      dataIndex: 'Package',
-    },
-    {
-      title: '采购员',
-      width: 80,
-      dataIndex: 'Purchaser',
-      render: text => {
-        const {
-          global: { Purchaser },
-        } = this.props;
-        return <span>{getName(Purchaser, text)}</span>;
-      },
-    },
-    {
-      title: '数量',
-      width: 80,
-      dataIndex: 'Quantity',
-    },
-    {
-      title: '单位',
-      width: 80,
-      dataIndex: 'Unit',
-    },
-    {
-      title: '要求交期',
-      dataIndex: 'DueDate',
-      width: 100,
-      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
-    },
-    {
-      title: '价格',
-      width: 100,
-      dataIndex: 'Price',
-    },
-    {
-      title: '询价交期',
-      width: 100,
-      dataIndex: 'InquiryDueDate',
-      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
-    },
-    {
-      title: '行备注',
-      width: 80,
-      dataIndex: 'LineComment',
-    },
-    {
-      title: '销售总计',
-      width: 100,
-      dataIndex: 'LineTotal',
-    },
-    {
-      title: '询价总计',
-      width: 100,
-      dataIndex: 'InquiryLineTotalLocal',
-    },
-    {
-      title: '所有人',
-      width: 80,
-      dataIndex: 'Owner',
-      render: text => {
-        const {
-          global: { Saler },
-        } = this.props;
-        return <span>{getName(Saler, text)}</span>;
-      },
     },
   ];
 
   componentDidMount() {
     const {
       dispatch,
-      orderLine: { queryData },
+      salerConfrim: { queryData },
     } = this.props;
     dispatch({
-      type: 'orderLine/fetch',
+      type: 'salerConfrim/fetch',
       payload: {
         ...queryData,
       },
@@ -274,10 +175,10 @@ class orderLine extends PureComponent {
   handleStandardTableChange = pagination => {
     const {
       dispatch,
-      orderLine: { queryData },
+      salerConfrim: { queryData },
     } = this.props;
     dispatch({
-      type: 'orderLine/fetch',
+      type: 'salerConfrim/fetch',
       payload: {
         ...queryData,
         page: pagination.current,
@@ -299,16 +200,31 @@ class orderLine extends PureComponent {
         DocDateFrom = moment(fieldsValue.dateArr[0]).format('YYYY-MM-DD');
         DocDateTo = moment(fieldsValue.dateArr[1]).format('YYYY-MM-DD');
       }
-      console.log(fieldsValue.IsInquiry);
+
+      let DeliverDateFrom;
+      let DeliverDateTo;
+      if (fieldsValue.deliverArr) {
+        DeliverDateFrom = moment(fieldsValue.deliverArr[0]).format('YYYY-MM-DD');
+        DeliverDateTo = moment(fieldsValue.deliverArr[1]).format('YYYY-MM-DD');
+      }
+
+      let orderNo = {};
+      if (fieldsValue.orderNo) {
+        orderNo = { ...fieldsValue.orderNo };
+      }
+      const { DeliverSts, Owner } = fieldsValue;
+
       const queryData = {
-        ...fieldsValue,
         DocDateFrom,
         DocDateTo,
-        ...fieldsValue.orderNo,
-        IsInquiry: fieldsValue.IsInquiry && fieldsValue.IsInquiry ? 'N' : 'Y',
+        DeliverDateFrom,
+        DeliverDateTo,
+        DeliverSts,
+        Owner,
+        ...orderNo,
       };
       dispatch({
-        type: 'orderLine/fetch',
+        type: 'salerConfrim/fetch',
         payload: {
           Content: {
             QueryType: '1',
@@ -341,24 +257,24 @@ class orderLine extends PureComponent {
   submitNeedLine = select => {
     const {
       dispatch,
-      orderLine: { queryData },
+      salerConfrim: { queryData },
     } = this.props;
-    const loItemList = select.map(item => ({
+    const loODLN01RequestItem = select.map(item => ({
       DocEntry: item.DocEntry,
-      LineID: item.LineID,
+      ExpressNumber: item.ExpressNumber,
     }));
     dispatch({
-      type: 'orderLine/need',
+      type: 'salerConfrim/confirm',
       payload: {
         Content: {
-          loItemList,
+          loODLN01RequestItem,
         },
       },
       callback: response => {
         if (response && response.Status === 200) {
           message.success('提交成功');
           dispatch({
-            type: 'orderLine/fetch',
+            type: 'salerConfrim/fetch',
             payload: {
               ...queryData,
             },
@@ -399,13 +315,15 @@ class orderLine extends PureComponent {
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={4} sm={24}>
-            <FormItem key="SearchText" {...formLayout}>
-              {getFieldDecorator('SearchText')(<Input placeholder="请输入关键字" />)}
+          <Col md={5} sm={24}>
+            <FormItem key="orderNo" {...formLayout} label="单号">
+              {getFieldDecorator('orderNo', {
+                initialValue: { DocEntryFrom: '', DocEntryTo: '' },
+              })(<DocEntryFrom />)}
             </FormItem>
           </Col>
           <Col md={5} sm={24}>
-            <FormItem label="日期" {...formLayout}>
+            <FormItem label="单据日期" {...formLayout}>
               {getFieldDecorator('dateArr', { rules: [{ type: 'array' }] })(
                 <RangePicker style={{ width: '100%' }} />
               )}
@@ -416,51 +334,22 @@ class orderLine extends PureComponent {
               {getFieldDecorator('Owner')(<MDMCommonality data={Saler} />)}
             </FormItem>
           </Col>
-          <Col md={3} sm={24}>
-            <FormItem>
-              {getFieldDecorator('IsInquiry', { valuePropName: 'checked', initialValue: true })(
-                <Checkbox>无需报价</Checkbox>
+          <Col md={5} sm={24}>
+            <FormItem label="发货日期" {...formLayout}>
+              {getFieldDecorator('deliverArr', { rules: [{ type: 'array' }] })(
+                <RangePicker style={{ width: '100%' }} />
               )}
             </FormItem>
           </Col>
+
           {expandForm ? (
             <Fragment>
               <Col md={4} sm={24}>
-                <FormItem key="Closed" {...formLayout}>
-                  {getFieldDecorator('Closed')(
-                    <Select placeholder="请选择关闭状态">
-                      <Option value="Y">已关闭</Option>
-                      <Option value="N">未关闭</Option>
-                    </Select>
-                  )}
-                </FormItem>
-              </Col>
-              <Col md={5} sm={24}>
-                <FormItem key="orderNo" {...formLayout} label="单号">
-                  {getFieldDecorator('orderNo', {
-                    initialValue: { DocEntryFrom: '', DocEntryTo: '' },
-                  })(<DocEntryFrom />)}
-                </FormItem>
-              </Col>
-              <Col md={5} sm={24}>
-                <FormItem key="PLineStatus" {...formLayout} label="询价状态">
-                  {getFieldDecorator('PLineStatus')(
-                    <Select placeholder="请选择">
-                      <Option value="C">已询价</Option>
-                      <Option value="O">未询价</Option>
-                    </Select>
-                  )}
-                </FormItem>
-              </Col>
-
-              <Col md={5} sm={24}>
-                <FormItem key="QueryType" {...formLayout} label="查询类型">
-                  {getFieldDecorator('QueryType')(
-                    <Select placeholder="请选择">
-                      <Option value="1">常规查询</Option>
-                      <Option value="2">采购物料确认查询</Option>
-                      <Option value="3">采购询价单生成查询</Option>
-                      <Option value="4">复制到销售报价单</Option>
+                <FormItem key="DeliverSts" {...formLayout}>
+                  {getFieldDecorator('DeliverSts')(
+                    <Select placeholder="请选择发货状态">
+                      <Option value="Y">已发货</Option>
+                      <Option value="N">未发货</Option>
                     </Select>
                   )}
                 </FormItem>
@@ -494,7 +383,7 @@ class orderLine extends PureComponent {
 
   render() {
     const {
-      orderLine: { orderLineList, pagination },
+      salerConfrim: { orderLineList, pagination },
       loading,
     } = this.props;
     const { selectedRows, modalVisible } = this.state;
@@ -520,7 +409,7 @@ class orderLine extends PureComponent {
               data={{ list: orderLineList }}
               pagination={pagination}
               rowKey="Key"
-              scroll={{ x: 2600, y: 500 }}
+              scroll={{ x: 1500, y: 500 }}
               columns={columns}
               rowSelection={{
                 onSelectRow: this.onSelectRow,
@@ -532,7 +421,7 @@ class orderLine extends PureComponent {
         </Card>
         <FooterToolbar>
           <Button style={{ marginTop: 20 }} onClick={this.selectNeed} type="primary">
-            确认需采购询价
+            确认收货
           </Button>
         </FooterToolbar>
       </Fragment>
@@ -540,4 +429,4 @@ class orderLine extends PureComponent {
   }
 }
 
-export default orderLine;
+export default salerConfrim;

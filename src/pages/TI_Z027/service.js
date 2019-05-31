@@ -51,3 +51,12 @@ export async function cancelRule(params) {
     },
   });
 }
+
+export async function supplierRule(params) {
+  return request('/MDM/TI_Z007/TI_Z00703', {
+    method: 'POST',
+    data: {
+      ...params,
+    },
+  });
+}

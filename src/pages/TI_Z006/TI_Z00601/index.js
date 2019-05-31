@@ -183,7 +183,7 @@ class CompanyEdit extends PureComponent {
       type: 'global/getMDMCommonality',
       payload: {
         Content: {
-          CodeList: ['Company', 'PayMent', 'Trnsp', 'Saler', 'Card'],
+          CodeList: ['PayMent', 'Trnsp', 'Saler', 'Card'],
         },
       },
     });
@@ -348,7 +348,6 @@ class CompanyEdit extends PureComponent {
     const { formVals } = this.state;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
-      console.log(fieldsValue);
       dispatch({
         type: 'companyEdit/update',
         payload: {

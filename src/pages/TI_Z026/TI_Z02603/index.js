@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import { Card, Tabs, Modal, Button, Icon, message } from 'antd';
 import moment from 'moment';
@@ -6,6 +6,7 @@ import router from 'umi/router';
 import StandardTable from '@/components/StandardTable';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
+import CancelOrder from '@/components/Modal/CancelOrder';
 import DescriptionList from 'ant-design-pro/lib/DescriptionList';
 import { getName } from '@/utils/utils';
 
@@ -13,20 +14,20 @@ const { Description } = DescriptionList;
 const { TabPane } = Tabs;
 const OrderSource = [
   {
-    Code: '1',
-    Name: '线下',
+    Key: '1',
+    Value: '线下',
   },
   {
-    Code: '2',
-    Name: '网站',
+    Key: '2',
+    Value: '网站',
   },
   {
-    Code: '3',
-    Name: '电话',
+    Key: '3',
+    Value: '电话',
   },
   {
-    Code: '4',
-    Name: '其他来源',
+    Key: '4',
+    Value: '其他来源',
   },
 ];
 
@@ -35,7 +36,7 @@ const OrderSource = [
   global,
   loading: loading.models.inquiryPreview,
 }))
-class InquiryEdit extends React.Component {
+class InquiryEdit extends PureComponent {
   skuColumns = [
     {
       title: '行号',
@@ -134,8 +135,9 @@ class InquiryEdit extends React.Component {
       width: 100,
       inputType: 'date',
       dataIndex: 'DueDate',
-      render: text => <span>{moment(text).format('YYYY-MM-DD')}</span>,
       align: 'center',
+      render: (val, record) =>
+        record.lastIndex ? '' : <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
     {
       title: '仓库',
@@ -161,6 +163,12 @@ class InquiryEdit extends React.Component {
       width: 80,
       dataIndex: 'Currency',
       align: 'center',
+      render: text => {
+        const {
+          global: { Curr },
+        } = this.props;
+        return <span>{getName(Curr, text)}</span>;
+      },
     },
     {
       title: '单据汇率',
@@ -174,7 +182,8 @@ class InquiryEdit extends React.Component {
       width: 100,
       dataIndex: 'InquiryDueDate',
       align: 'center',
-      render: text => <span>{moment(text).format('YYYY-MM-DD')}</span>,
+      render: (val, record) =>
+        record.lastIndex ? '' : <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
     {
       title: '采购员',
@@ -215,12 +224,16 @@ class InquiryEdit extends React.Component {
       render: (text, record, index) =>
         record.lastIndex ? null : (
           <Fragment>
-            <Icon
-              title="预览"
-              type="eye"
-              onClick={() => this.lookLineAttachment(record, index)}
-              style={{ color: '#08c', marginRight: 5 }}
-            />
+            {record.TI_Z02604.length ? (
+              <Icon
+                title="预览"
+                type="eye"
+                onClick={() => this.lookLineAttachment(record, index)}
+                style={{ color: '#08c', marginRight: 5 }}
+              />
+            ) : (
+              ''
+            )}
           </Fragment>
         ),
     },
@@ -277,7 +290,9 @@ class InquiryEdit extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      formVals: {}, // 单据信息
+      formVals: {
+        TI_Z02602: [],
+      }, // 单据信息
       attachmentVisible: false,
       prviewList: [],
     };
@@ -290,7 +305,7 @@ class InquiryEdit extends React.Component {
       type: 'global/getMDMCommonality',
       payload: {
         Content: {
-          CodeList: ['Saler', 'Purchaser', 'WhsCode', 'Company'],
+          CodeList: ['Saler', 'Purchaser', 'Curr', 'WhsCode', 'Company'],
         },
       },
     });
@@ -303,41 +318,8 @@ class InquiryEdit extends React.Component {
       type: 'inquiryPreview/save',
       payload: {
         inquiryDetail: {
-          Comment: '',
-          SDocStatus: '',
-          PDocStatus: '',
-          Closed: '',
-          ClosedBy: '',
-          SourceType: '1',
-          OrderType: '1',
-          DocDate: new Date(),
-          CreateDate: new Date(),
-          CardCode: '',
-          CardName: '',
-          UserID: '1',
-          Contacts: '',
-          CellphoneNO: '',
-          PhoneNO: '',
-          Email: '',
-          CompanyCode: '',
-          DueDate: null,
-          ToDate: null,
-          InquiryDocTotal: '',
-          DocTotal: '',
-          ProvinceID: '',
-          Province: '',
-          CityID: '',
-          City: '',
-          AreaID: '',
-          Area: '',
-          StreetID: '',
-          Street: '',
-          Address: '',
-          NumAtCard: '',
-          Owner: '',
-          IsInquiry: '',
           TI_Z02602: [],
-          TI_Z02603: [],
+          TI_Z02604: [],
         },
       },
     });
@@ -378,6 +360,26 @@ class InquiryEdit extends React.Component {
     }
   };
 
+  // 取消单据
+  cancelSubmit = ClosedComment => {
+    const { dispatch } = this.props;
+    const { formVals } = this.state;
+    dispatch({
+      type: 'inquiryPreview/cancel',
+      payload: {
+        Content: {
+          DocEntry: formVals.DocEntry,
+          ClosedComment,
+        },
+      },
+      callback: response => {
+        if (response && response.Status === 200) {
+          message.success('取消成功');
+        }
+      },
+    });
+  };
+
   toUpdate = () => {
     const { formVals } = this.state;
     if (formVals.Closed !== 'Y') {
@@ -392,7 +394,6 @@ class InquiryEdit extends React.Component {
       global: { Saler, Company },
     } = this.props;
     const { formVals, attachmentVisible, prviewList } = this.state;
-
     const newdata = [...formVals.TI_Z02602];
     if (newdata.length > 0) {
       newdata.push({
@@ -403,6 +404,7 @@ class InquiryEdit extends React.Component {
         LineTotal: formVals.DocTotal,
       });
     }
+
     return (
       <Card bordered={false}>
         <DescriptionList style={{ marginBottom: 24 }}>
@@ -421,6 +423,9 @@ class InquiryEdit extends React.Component {
           </Description>
           <Description term="交易公司">
             <span>{getName(Company, formVals.CompanyCode)}</span>
+          </Description>
+          <Description term="销售员">
+            <span>{getName(Saler, formVals.Owner)}</span>
           </Description>
           <Description term="订单类型">{formVals.OrderType === '1' ? '正常订单' : ''}</Description>
           <Description term="来源类型">
@@ -441,7 +446,7 @@ class InquiryEdit extends React.Component {
         <Tabs>
           <TabPane tab="物料" key="1">
             <StandardTable
-              data={{ list: formVals.TI_Z02602 }}
+              data={{ list: newdata }}
               rowKey="LineID"
               scroll={{ x: 2600, y: 600 }}
               columns={this.skuColumns}
@@ -482,6 +487,7 @@ class InquiryEdit extends React.Component {
         </Modal>
 
         <FooterToolbar>
+          <CancelOrder cancelSubmit={this.cancelSubmit} />
           <Button onClick={this.toUpdate} type="primary">
             编辑
           </Button>

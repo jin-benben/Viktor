@@ -6,6 +6,7 @@ import { Row, Col, Card, Form, Input, Button, DatePicker } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import MDMCommonality from '@/components/Select';
 import { getName } from '@/utils/utils';
+import Link from 'umi/link';
 
 const { RangePicker } = DatePicker;
 const FormItem = Form.Item;
@@ -23,33 +24,46 @@ class TI_Z02803 extends PureComponent {
       title: '单号',
       width: 100,
       dataIndex: 'DocEntry',
+      align: 'center',
+      render: text => <Link to={`/purchase/TI_Z028/TI_Z02802?DocEntry=${text}`}>{text}</Link>,
     },
     {
       title: '单据日期',
       dataIndex: 'DocDate',
+      align: 'center',
+      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
+    },
+    {
+      title: '有效期日期',
+      dataIndex: 'ToDate',
+      align: 'center',
       render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
     {
       title: '创建日期',
       dataIndex: 'CreateDate',
+      align: 'center',
       render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
     {
       title: '所有人',
+      align: 'center',
       dataIndex: 'Owner',
       render: text => {
         const {
-          global: { Saler },
+          global: { Purchaser },
         } = this.props;
-        return <span>{getName(Saler, text)}</span>;
+        return <span>{getName(Purchaser, text)}</span>;
       },
     },
     {
       title: '询价总计',
+      align: 'center',
       dataIndex: 'InquiryDocTotal',
     },
     {
       title: '备注',
+      align: 'center',
       dataIndex: 'Comment',
     },
   ];
@@ -69,7 +83,7 @@ class TI_Z02803 extends PureComponent {
       type: 'global/getMDMCommonality',
       payload: {
         Content: {
-          CodeList: ['Saler'],
+          CodeList: ['Purchaser'],
         },
       },
     });
@@ -125,15 +139,10 @@ class TI_Z02803 extends PureComponent {
     });
   };
 
-  handleOnRow = record => ({
-    // 详情or修改
-    onClick: () => router.push(`/purchase/TI_Z028/TI_Z02802?DocEntry=${record.DocEntry}`),
-  });
-
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
-      global: { Saler },
+      global: { Purchaser },
     } = this.props;
 
     const formLayout = {
@@ -170,7 +179,7 @@ class TI_Z02803 extends PureComponent {
           </Col>
           <Col md={4} sm={24}>
             <FormItem key="Owner" {...formLayout} label="所有者">
-              {getFieldDecorator('Owner', {})(<MDMCommonality data={Saler} />)}
+              {getFieldDecorator('Owner', {})(<MDMCommonality data={Purchaser} />)}
             </FormItem>
           </Col>
 
@@ -184,7 +193,7 @@ class TI_Z02803 extends PureComponent {
                   icon="plus"
                   style={{ marginLeft: 8 }}
                   type="primary"
-                  onClick={() => router.push('/TI_Z028/TI_Z02801')}
+                  onClick={() => router.push('/purchase/TI_Z028/TI_Z02801')}
                 >
                   新建
                 </Button>
@@ -201,7 +210,6 @@ class TI_Z02803 extends PureComponent {
       TI_Z02803: { orderList, pagination },
       loading,
     } = this.props;
-    console.log(this.props);
     return (
       <Fragment>
         <Card bordered={false}>
@@ -213,7 +221,6 @@ class TI_Z02803 extends PureComponent {
               pagination={pagination}
               rowKey="DocEntry"
               columns={this.columns}
-              onRow={this.handleOnRow}
               onChange={this.handleStandardTableChange}
             />
           </div>

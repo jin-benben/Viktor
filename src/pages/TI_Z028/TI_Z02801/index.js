@@ -2,6 +2,7 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
+import Link from 'umi/link';
 import moment from 'moment';
 import { Row, Col, Card, Form, Input, Button, DatePicker, message } from 'antd';
 import StandardTable from '@/components/StandardTable';
@@ -28,15 +29,10 @@ class TI_Z02801 extends PureComponent {
       width: 80,
       dataIndex: 'BaseEntry',
       render: (val, record) => (
-        <a href={`/sellabout/TI_Z026/TI_Z02602?DocEntry=${record.DocEntry}`} alt="单号">
-          {val}
-        </a>
+        <Link to={`/sellabout/TI_Z026/detail?DocEntry=${record.BaseEntry}`}>
+          {`${val}-${record.BaseLineID}`}
+        </Link>
       ),
-    },
-    {
-      title: '客询价行',
-      width: 80,
-      dataIndex: 'BaseLineID',
     },
     {
       title: '单据日期',
@@ -192,16 +188,16 @@ class TI_Z02801 extends PureComponent {
   };
 
   childColumns = [
-    {
-      title: '询价单号',
-      width: 150,
-      dataIndex: 'PInquiryEntry',
-    },
-    {
-      title: '询价单行',
-      width: 80,
-      dataIndex: 'PInquiryLineID',
-    },
+    // {
+    //   title: '询价单号',
+    //   width: 150,
+    //   dataIndex: 'PInquiryEntry',
+    // },
+    // {
+    //   title: '询价单行',
+    //   width: 80,
+    //   dataIndex: 'PInquiryLineID',
+    // },
     {
       title: '询价日期',
       width: 100,
@@ -275,7 +271,7 @@ class TI_Z02801 extends PureComponent {
 
   childOnSelectRow = (selectRows, index) => {
     const { selectedRows } = this.state;
-    console.log(selectedRows);
+    if (!selectedRows.length) return;
     selectedRows[index].TI_Z02803 = [...selectRows];
   };
 
@@ -329,11 +325,6 @@ class TI_Z02801 extends PureComponent {
     });
   };
 
-  // handleOnRow = record => ({
-  //   // 详情or修改
-  //   onClick: () => router.push(`/TI_Z028/edit?DocEntry=${record.DocEntry}`),
-  // });
-
   onSelectRow = selectedRows => {
     this.setState({ selectedRows: [...selectedRows] });
   };
@@ -367,7 +358,7 @@ class TI_Z02801 extends PureComponent {
       callback: response => {
         if (response && response.Status === 200) {
           message.success('添加成功');
-          router.push(`/TI_Z028/TI_Z02802?DocEntry=${response.Content.DocEntry}`);
+          router.push(`/purchase/TI_Z028/TI_Z02802?DocEntry=${response.Content.DocEntry}`);
         }
       },
     });
@@ -381,23 +372,12 @@ class TI_Z02801 extends PureComponent {
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
-      global: { Saler },
+      global: { Purchaser },
     } = this.props;
 
     const formLayout = {
       labelCol: { span: 8 },
       wrapperCol: { span: 16 },
-    };
-    const formItemLayout = {
-      labelCol: {
-        xs: { span: 24 },
-        sm: { span: 10 },
-      },
-      wrapperCol: {
-        xs: { span: 24 },
-        sm: { span: 14 },
-        md: { span: 10 },
-      },
     };
     const searchFormItemLayout = {
       wrapperCol: {
@@ -427,10 +407,8 @@ class TI_Z02801 extends PureComponent {
             </FormItem>
           </Col>
           <Col md={6} sm={24}>
-            <FormItem key="Owner" {...formLayout} label="所有者">
-              {getFieldDecorator('Owner', { rules: [{ required: true, message: '请选择所有者' }] })(
-                <MDMCommonality data={Saler} />
-              )}
+            <FormItem key="Owner" {...formLayout} label="采购员">
+              {getFieldDecorator('Owner')(<MDMCommonality data={Purchaser} />)}
             </FormItem>
           </Col>
           <Col md={1} sm={24}>
@@ -474,7 +452,7 @@ class TI_Z02801 extends PureComponent {
               data={{ list: orderList }}
               pagination={pagination}
               rowKey="LineID"
-              scroll={{ x: 2250, y: 500 }}
+              scroll={{ x: 2250, y: 800 }}
               rowSelection={{
                 onSelectRow: this.onSelectRow,
               }}

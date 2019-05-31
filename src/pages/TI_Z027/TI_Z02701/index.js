@@ -15,7 +15,7 @@ const { Step } = Steps;
 @connect(({ supplierAsk, loading, global }) => ({
   supplierAsk,
   global,
-  loading: loading.models.supplierAsk,
+  addloading: loading.effects['supplierAsk/add'],
 }))
 @Form.create()
 class SupplierAsk extends Component {
@@ -53,7 +53,15 @@ class SupplierAsk extends Component {
   ];
 
   componentDidMount() {
-    const { dispatch } = this.props;
+    const {
+      dispatch,
+      global: { SupplierList },
+    } = this.props;
+    if (!SupplierList.length) {
+      dispatch({
+        type: 'global/getSupplier',
+      });
+    }
     dispatch({
       type: 'global/getMDMCommonality',
       payload: {
@@ -64,9 +72,9 @@ class SupplierAsk extends Component {
     });
   }
 
-  getDocRate = lineList => {
+  getDocRate = async lineList => {
     const { dispatch } = this.props;
-    lineList.map(async item => {
+    await lineList.map(async item => {
       await dispatch({
         type: 'global/getMDMCommonality',
         payload: {
@@ -110,7 +118,6 @@ class SupplierAsk extends Component {
         Unit,
         Key,
         DueDate,
-        Price,
         LineTotal,
         Comment,
         DocEntry,
@@ -170,7 +177,7 @@ class SupplierAsk extends Component {
               Quantity,
               Unit,
               DueDate,
-              Price,
+              Price: 0,
               InquiryDueDate: '',
               LineTotal,
             },
@@ -193,7 +200,7 @@ class SupplierAsk extends Component {
           Quantity,
           Unit,
           DueDate,
-          Price,
+          Price: 0,
           InquiryDueDate: '',
           LineTotal,
         });
@@ -259,6 +266,7 @@ class SupplierAsk extends Component {
 
   footerBtn = () => {
     const { current } = this.state;
+    const { addloading } = this.props;
     const secondButton = (
       <Fragment>
         <Button
@@ -268,7 +276,7 @@ class SupplierAsk extends Component {
         >
           上一步
         </Button>
-        <Button onClick={this.submitStepParent} type="primary">
+        <Button loading={addloading} onClick={this.submitStepParent} type="primary">
           确认生成
         </Button>
       </Fragment>

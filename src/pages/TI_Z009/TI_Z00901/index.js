@@ -10,6 +10,8 @@ import SPUCode from '@/components/SPUCode';
 import Category from '@/components/Category';
 import { connect } from 'dva';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
+import AskPriceFetch from '@/pages/TI_Z030/components/askPriceFetch';
+import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 
 const { Option } = Select;
 
@@ -20,6 +22,7 @@ const { Option } = Select;
 class AddSKU extends React.Component {
   state = {
     TI_Z00901: [],
+    orderModalVisible: false,
   };
 
   skuColumns = [
@@ -31,9 +34,15 @@ class AddSKU extends React.Component {
     },
     {
       title: '描述',
-      width: 300,
+      width: 100,
       dataIndex: 'Name',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
+
     {
       title: '品牌',
       width: 150,
@@ -324,25 +333,137 @@ class AddSKU extends React.Component {
     this.setState({ TI_Z00901 });
   };
 
+  handleModalVisible = flag => {
+    this.setState({ orderModalVisible: !!flag });
+  };
+
+  // 添加行
+  addLineSKU = selectedRows => {
+    const {
+      global: { currentUser },
+    } = this.props;
+    const { formVals } = this.state;
+    let newLineID = 1;
+    if (formVals.TI_Z03002.length) {
+      newLineID = formVals.TI_Z03002[formVals.TI_Z03002.length - 1].LineID + 1;
+    }
+    selectedRows.map((item, index) => {
+      newLineID += index;
+      const {
+        LineComment,
+        SourceType,
+        SKU,
+        SKUName,
+        BrandName,
+        ProductName,
+        ManufactureNO,
+        Parameters,
+        Package,
+        Purchaser,
+        Quantity,
+        Unit,
+        DueDate,
+        InquiryPrice,
+        Price,
+        InquiryDueDate,
+        InquiryComment,
+        InquiryLineTotal,
+        InquiryLineTotalLocal,
+        LineTotal,
+        OtherTotal,
+        Currency,
+        DocRate,
+        SupplierCode,
+        SupplierName,
+        InquiryCfmDate,
+        InquiryCfmUser,
+        Contacts,
+        WhsCode,
+        LineID,
+        BaseEntry,
+        BaseLineID,
+        DocEntry,
+      } = item;
+      formVals.TI_Z03002.push({
+        QuotationEntry: DocEntry,
+        QuotationLineID: LineID,
+        BaseEntry,
+        BaseLineID,
+        LineComment,
+        SourceType,
+        SKU,
+        SKUName,
+        BrandName,
+        ProductName,
+        ManufactureNO,
+        Parameters,
+        Package,
+        Purchaser,
+        Quantity,
+        Unit,
+        DueDate,
+        InquiryPrice,
+        Price,
+        InquiryDueDate,
+        InquiryComment,
+        InquiryLineTotal,
+        InquiryLineTotalLocal,
+        LineTotal,
+        OtherTotal: OtherTotal || 0,
+        Currency,
+        DocRate,
+        SupplierCode,
+        SupplierName,
+        InquiryCfmDate,
+        InquiryCfmUser,
+        Contacts,
+        WhsCode,
+        CreateUser: currentUser.UserCode,
+        CreateDate: formVals.CreateDate || new Date(),
+        LineID: newLineID,
+        ApproveSts: 'O',
+        LineStatus: 'O',
+        Closed: 'N',
+        ClosedBy: 'P001',
+      });
+    });
+    this.setState({ formVals, orderModalVisible: false }, () => {
+      this.getTotal();
+    });
+  };
+
   render() {
-    const { TI_Z00901 } = this.state;
+    const { TI_Z00901, orderModalVisible } = this.state;
+    const orderParentMethods = {
+      handleSubmit: this.addLineSKU,
+      handleModalVisible: this.handleModalVisible,
+    };
     return (
       <Card bordered={false}>
-        <Button icon="plus" onClick={this.addLine} style={{ marginBottom: 20 }} type="primary">
-          添加行
-        </Button>
         <EditableFormTable
           rowChange={this.rowChange}
           rowKey="LineID"
-          scroll={{ x: 2800 }}
+          scroll={{ x: 2500 }}
           columns={this.skuColumns}
           data={TI_Z00901}
         />
         <FooterToolbar>
+          <Button icon="plus" onClick={this.addLine} style={{ marginBottom: 20 }} type="primary">
+            添加行
+          </Button>
+          <Button
+            icon="plus"
+            style={{ marginLeft: 8 }}
+            type="primary"
+            onClick={() => this.handleModalVisible(true)}
+          >
+            复制从销售报价单
+          </Button>
           <Button onClick={this.addskulist} type="primary">
             保存
           </Button>
         </FooterToolbar>
+        <AskPriceFetch {...orderParentMethods} QueryType="3" modalVisible={orderModalVisible} />
       </Card>
     );
   }

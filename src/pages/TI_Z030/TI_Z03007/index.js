@@ -19,6 +19,7 @@ import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import StandardTable from '@/components/StandardTable';
 import MDMCommonality from '@/components/Select';
 import DocEntryFrom from '@/components/DocEntryFrom';
+import Link from 'umi/link';
 import { getName } from '@/utils/utils';
 
 const { RangePicker } = DatePicker;
@@ -41,15 +42,14 @@ class AgreementLine extends PureComponent {
   columns = [
     {
       title: '单号',
-      width: 50,
+      width: 100,
       fixed: 'left',
       dataIndex: 'DocEntry',
+      render: (text, recond) => (
+        <Link to={`/sellabout/TI_Z030/detail?DocEntry=${text}`}>{`${text}-${recond.LineID}`}</Link>
+      ),
     },
-    {
-      title: '行号',
-      width: 50,
-      dataIndex: 'LineID',
-    },
+
     {
       title: '单据日期',
       width: 100,
@@ -308,11 +308,6 @@ class AgreementLine extends PureComponent {
     });
   };
 
-  handleOnRow = record => ({
-    // 详情or修改
-    onClick: () => router.push(`/sellabout/TI_Z030/detail?DocEntry=${record.DocEntry}`),
-  });
-
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
@@ -462,7 +457,6 @@ class AgreementLine extends PureComponent {
               scroll={{ x: 2500, y: 500 }}
               rowKey="Key"
               columns={this.columns}
-              onRow={this.handleOnRow}
               onChange={this.handleStandardTableChange}
             />
           </div>

@@ -1,3 +1,4 @@
+import moment from 'moment';
 import {
   querySingleRule,
   addRule,
@@ -9,29 +10,25 @@ import {
 } from '../service';
 
 export default {
-  namespace: 'TI_Z030',
+  namespace: 'agreementEdit',
 
   state: {
     orderDetail: {
       Comment: '',
-      SDocStatus: '',
-      PDocStatus: '',
-      Closed: '',
-      ClosedBy: '',
-      SourceType: '',
-      OrderType: '',
-      DocDate: null,
-      CreateDate: null,
+      OrderType: '1',
+      DocDate: moment().format('YYYY/MM/DD'),
       CardCode: '',
       CardName: '',
-      UserID: '1',
+      UserID: '',
       Contacts: '',
       CellphoneNO: '',
       PhoneNO: '',
       Email: '',
       CompanyCode: '',
       DueDate: null,
-      ToDate: null,
+      ToDate: moment()
+        .add('30', 'day')
+        .format('YYYY/MM/DD'),
       InquiryDocTotal: '',
       DocTotal: '',
       ProvinceID: '',
@@ -45,7 +42,6 @@ export default {
       Address: '',
       NumAtCard: '',
       Owner: '',
-      IsInquiry: '',
       TI_Z03002: [],
       TI_Z03004: [],
     },

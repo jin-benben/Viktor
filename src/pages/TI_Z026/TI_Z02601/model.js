@@ -13,10 +13,6 @@ export default {
   state: {
     inquiryDetail: {
       Comment: '',
-      SDocStatus: '',
-      PDocStatus: '',
-      Closed: '',
-      ClosedBy: '',
       SourceType: '1',
       OrderType: '1',
       DocDate: new Date(),

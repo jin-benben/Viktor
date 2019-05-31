@@ -20,7 +20,7 @@ class CompanySelect extends PureComponent {
 
   state = {
     data: [],
-    initialValue: '',
+    value: { key: '' },
     companyModal: false,
     fetching: false,
   };
@@ -31,9 +31,9 @@ class CompanySelect extends PureComponent {
         data: nextProps.global.CustomerList,
       };
     }
-    if (nextProps.initialValue !== prevState.initialValue) {
+    if (nextProps.initialValue !== prevState.value) {
       return {
-        initialValue: nextProps.initialValue,
+        value: nextProps.initialValue,
       };
     }
     return null;
@@ -94,17 +94,17 @@ class CompanySelect extends PureComponent {
   };
 
   render() {
-    const { fetching, data, companyModal, initialValue } = this.state;
+    const { fetching, data, companyModal, value } = this.state;
     const companyParentMethods = {
       handleSubmit: this.changeCompany,
       handleModalVisible: this.handleModalVisible,
     };
+
     return (
       <Fragment>
         <Select
           showSearch
-          value={initialValue}
-          defaultValue={initialValue}
+          value={value}
           labelInValue
           suffixIcon={
             <Icon

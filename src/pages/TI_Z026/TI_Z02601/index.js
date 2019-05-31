@@ -42,7 +42,8 @@ const { Option } = Select;
 @connect(({ inquiryEdit, loading, global }) => ({
   inquiryEdit,
   global,
-  loading: loading.models.inquiryEdit,
+  addloading: loading.effects['inquiryEdit/add'],
+  updateloading: loading.effects['inquiryEdit/update'],
 }))
 @Form.create()
 class InquiryEdit extends React.Component {
@@ -103,7 +104,7 @@ class InquiryEdit extends React.Component {
     {
       title: '名称',
       dataIndex: 'ProductName',
-      inputType: 'text',
+      inputType: 'textArea',
       width: 150,
       editable: true,
       align: 'center',
@@ -142,7 +143,7 @@ class InquiryEdit extends React.Component {
     },
     {
       title: '数量',
-      width: 120,
+      width: 80,
       inputType: 'text',
       dataIndex: 'Quantity',
       editable: true,
@@ -150,7 +151,7 @@ class InquiryEdit extends React.Component {
     },
     {
       title: '销售建议价',
-      width: 120,
+      width: 100,
       inputType: 'text',
       dataIndex: 'Price',
       editable: true,
@@ -158,7 +159,7 @@ class InquiryEdit extends React.Component {
     },
     {
       title: '销售行总计',
-      width: 150,
+      width: 120,
       align: 'center',
       dataIndex: 'LineTotal',
       render: (text, record) =>
@@ -405,10 +406,6 @@ class InquiryEdit extends React.Component {
       payload: {
         inquiryDetail: {
           Comment: '',
-          SDocStatus: '',
-          PDocStatus: '',
-          Closed: '',
-          ClosedBy: '',
           SourceType: '1',
           OrderType: '1',
           DocDate: new Date(),
@@ -558,8 +555,19 @@ class InquiryEdit extends React.Component {
   // 物料弹出返回
   changeLineSKU = selection => {
     const [select] = selection;
+    const { BrandName, ManufactureNO, Name, Package, Parameters, ProductName, Unit, Code } = select;
     const { thisLine, LineID, formVals } = this.state;
-    formVals.TI_Z02602[LineID] = { ...thisLine, ...select, SKU: select.Code, SKUName: select.Name };
+    formVals.TI_Z02602[LineID] = {
+      ...thisLine,
+      SKU: Code,
+      SKUName: Name,
+      BrandName,
+      ManufactureNO,
+      Package,
+      Parameters,
+      ProductName,
+      Unit,
+    };
     this.setState({ formVals: { ...formVals } });
     this.handleModalVisible(false);
   };
@@ -761,20 +769,12 @@ class InquiryEdit extends React.Component {
       ManufactureNO: '',
       Parameters: '',
       Package: '',
-      Purchaser: '',
       Quantity: '',
       Unit: '',
-      DueDate: '',
+      DueDate: formVals.DueDate,
       WhsCode: DefaultWhsCode,
-      InquiryPrice: '',
       Price: '',
-      InquiryDueDate: '',
-      InquiryComment: '',
-      InquiryLineTotal: '',
-      InquiryLineTotalLocal: '',
       LineTotal: '',
-      Currency: '',
-      DocRate: '',
       TI_Z02604: [],
     });
     this.setState({ formVals });
@@ -805,7 +805,7 @@ class InquiryEdit extends React.Component {
         callback: response => {
           if (response && response.Status === 200) {
             message.success('添加成功');
-            router.push(`/sellabout/TI_Z02601/detail?DocEntry=${response.Content.DocEntry}`);
+            router.push(`/sellabout/TI_Z026/detail?DocEntry=${response.Content.DocEntry}`);
           }
         },
       });
@@ -846,7 +846,6 @@ class InquiryEdit extends React.Component {
   };
 
   // 取消单据
-
   cancelSubmit = ClosedComment => {
     const { dispatch } = this.props;
     const { formVals } = this.state;
@@ -903,6 +902,8 @@ class InquiryEdit extends React.Component {
   render() {
     const {
       form: { getFieldDecorator },
+      addloading,
+      updateloading,
       global: { Saler, Company },
     } = this.props;
     const {
@@ -1043,17 +1044,19 @@ class InquiryEdit extends React.Component {
             <Col lg={10} md={12} sm={24}>
               <FormItem key="NumAtCard" {...this.formLayout} label="客户参考号">
                 {getFieldDecorator('NumAtCard', {
+                  rules: [{ required: true, message: '请输入客户参考号' }],
                   initialValue: formVals.NumAtCard,
                 })(<Input placeholder="请输入客户参考号" />)}
               </FormItem>
             </Col>
-            {formVals.DocStatus ? (
-              <Col lg={10} md={12} sm={24}>
-                <FormItem key="DocStatus" {...this.formLayout} label="状态">
-                  <span>{formVals.DocStatus === 'O' ? '未清' : '已清'}</span>
-                </FormItem>
-              </Col>
-            ) : null}
+            <Col lg={10} md={12} sm={24}>
+              <FormItem key="DueDate" {...this.formLayout} label="要求交期">
+                {getFieldDecorator('DueDate', {
+                  initialValue: formVals.DueDate ? moment(formVals.DueDate, 'YYYY-MM-DD') : null,
+                  rules: [{ required: true, message: '请选择要求交期！' }],
+                })(<DatePicker style={{ width: '100%' }} />)}
+              </FormItem>
+            </Col>
           </Row>
         </Form>
         <Tabs tabBarExtraContent={this.rightButton(tabIndex)} onChange={this.tabChange}>
@@ -1105,7 +1108,6 @@ class InquiryEdit extends React.Component {
                     initialValue: formVals.AddressID,
                   })(
                     <Select
-                      value={formVals}
                       placeholder="请选择地址"
                       onSelect={this.handleAdreessChange}
                       style={{ width: '100%' }}
@@ -1158,48 +1160,6 @@ class InquiryEdit extends React.Component {
                   })(<DatePicker style={{ width: '100%' }} />)}
                 </FormItem>
               </Col>
-              <Col lg={8} md={12} sm={24}>
-                <FormItem key="DueDate" {...this.formLayout} label="要求交期">
-                  {getFieldDecorator('DueDate', {
-                    initialValue: formVals.DueDate ? moment(formVals.DueDate, 'YYYY-MM-DD') : null,
-                    rules: [{ required: true, message: '请选择要求交期！' }],
-                  })(<DatePicker style={{ width: '100%' }} />)}
-                </FormItem>
-              </Col>
-              <Col lg={8} md={12} sm={24}>
-                <FormItem key="CreateUser" {...this.formLayout} label="创建人">
-                  <span>{getName(Saler, formVals.CreateUser)}</span>
-                </FormItem>
-              </Col>
-              {formVals.DocEntry ? (
-                <Fragment>
-                  <Col lg={8} md={12} sm={24}>
-                    <FormItem key="SDocStatus" {...this.formLayout} label="报价状态">
-                      <span>{formVals.PDocStatus === 'O' ? '已报价' : '未报价'}</span>
-                    </FormItem>
-                  </Col>
-                  <Col lg={8} md={12} sm={24}>
-                    <FormItem key="PDocStatus" {...this.formLayout} label="询价状态">
-                      <span>{formVals.SDocStatus === 'O' ? '未询价' : '已询价'}</span>
-                    </FormItem>
-                  </Col>
-                  <Col lg={8} md={12} sm={24}>
-                    <FormItem key="Closed" {...this.formLayout} label="关闭状态">
-                      <Switch
-                        checkedChildren="已关闭"
-                        disabled
-                        unCheckedChildren="开启中"
-                        checked={formVals.Closed === 'Y'}
-                      />
-                    </FormItem>
-                  </Col>
-                  <Col lg={8} md={12} sm={24}>
-                    <FormItem key="ClosedBy " {...this.formLayout} label="关闭人">
-                      <span>{formVals.ClosedBy}</span>
-                    </FormItem>
-                  </Col>
-                </Fragment>
-              ) : null}
             </Row>
           </TabPane>
           <TabPane tab="附件" key="3">
@@ -1219,6 +1179,7 @@ class InquiryEdit extends React.Component {
                 style={{ marginLeft: 10, marginRight: 10 }}
                 onClick={this.updateHandle}
                 type="primary"
+                loading={updateloading}
               >
                 更新
               </Button>
@@ -1227,10 +1188,11 @@ class InquiryEdit extends React.Component {
               </Button>
             </Fragment>
           ) : (
-            <Button onClick={this.saveHandle} type="primary">
+            <Button loading={addloading} onClick={this.saveHandle} type="primary">
               保存
             </Button>
           )}
+          <Button type="primary">上传物料</Button>
         </FooterToolbar>
         <UpdateLoad {...uploadmodalMethods} modalVisible={uploadmodalVisible} />
         <SKUModal {...parentMethods} modalVisible={skuModalVisible} />

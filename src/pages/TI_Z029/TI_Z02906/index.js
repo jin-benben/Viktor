@@ -16,6 +16,7 @@ import {
   Icon,
 } from 'antd';
 import StandardTable from '@/components/StandardTable';
+import Link from 'umi/link';
 import MDMCommonality from '@/components/Select';
 import DocEntryFrom from '@/components/DocEntryFrom';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
@@ -44,6 +45,7 @@ class SalesQuotation extends PureComponent {
       width: 80,
       fixed: 'left',
       dataIndex: 'DocEntry',
+      render: text => <Link to={`/sellabout/TI_Z029/detail?DocEntry=${text}`}>{text}</Link>,
     },
     {
       title: '单据日期',

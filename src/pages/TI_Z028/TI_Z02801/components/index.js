@@ -3,6 +3,7 @@ import { Row, Col, Form, Input, DatePicker, Modal, Table, message } from 'antd';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import MDMCommonality from '@/components/Select';
 import moment from 'moment';
+import Link from 'umi/link';
 import { connect } from 'dva';
 import { getName } from '@/utils/utils';
 
@@ -23,11 +24,11 @@ class OrderPreview extends Component {
       title: '客询价单',
       width: 100,
       dataIndex: 'BaseEntry',
-    },
-    {
-      title: '客询价行',
-      width: 100,
-      dataIndex: 'BaseLineID',
+      render: (text, recond) => (
+        <Link to={`/sellabout/TI_Z026/detail?DocEntry=${text}`}>{`${text}-${
+          recond.BaseLineID
+        }`}</Link>
+      ),
     },
     {
       title: '单据日期',
@@ -153,6 +154,7 @@ class OrderPreview extends Component {
     {
       title: '采购交期',
       width: 120,
+      dataIndex: 'InquiryDueDate',
       render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
     {
@@ -172,6 +174,7 @@ class OrderPreview extends Component {
       return {
         orderLineList: nextProps.orderLineList,
         selectedRowKeys: nextProps.orderLineList.map(item => item.LineID),
+        selectedRows: nextProps.orderLineList,
       };
     }
     return null;
@@ -216,8 +219,7 @@ class OrderPreview extends Component {
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
-      Saler,
-      Company,
+      global: { Purchaser, currentUser },
     } = this.props;
 
     const formLayout = {
@@ -257,16 +259,10 @@ class OrderPreview extends Component {
           </Col>
           <Col md={8} sm={24}>
             <FormItem key="Owner" {...formLayout} label="所有者">
-              {getFieldDecorator('Owner', { rules: [{ required: true, message: '请选择所有者' }] })(
-                <MDMCommonality data={Saler} />
-              )}
-            </FormItem>
-          </Col>
-          <Col md={8} sm={24}>
-            <FormItem key="CompanyCode" {...formLayout} label="交易公司">
-              {getFieldDecorator('CompanyCode', {
-                rules: [{ required: true, message: '请选择交易公司' }],
-              })(<MDMCommonality data={Company} />)}
+              {getFieldDecorator('Owner', {
+                rules: [{ required: true, message: '请选择所有者' }],
+                initialValue: currentUser.Owner,
+              })(<MDMCommonality initialValue={currentUser.Owner} data={Purchaser} />)}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
@@ -301,7 +297,7 @@ class OrderPreview extends Component {
               pagination={false}
               dataSource={orderLineList}
               rowKey="LineID"
-              scroll={{ x: 2500 }}
+              scroll={{ x: 2800 }}
               rowSelection={{
                 onChange: this.onSelectRow,
                 selectedRowKeys,
