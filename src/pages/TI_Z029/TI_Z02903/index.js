@@ -178,6 +178,12 @@ class InquiryEdit extends React.Component {
       width: 80,
       dataIndex: 'Currency',
       align: 'center',
+      render: (text, record) => {
+        const {
+          global: { Curr },
+        } = this.props;
+        return record.lastIndex ? '' : <span>{getName(Curr, text)}</span>;
+      },
     },
     {
       title: '单据汇率',
@@ -329,16 +335,20 @@ class InquiryEdit extends React.Component {
   }
 
   componentDidMount() {
-    const { dispatch } = this.props;
-
-    dispatch({
-      type: 'global/getMDMCommonality',
-      payload: {
-        Content: {
-          CodeList: ['Saler', 'Purchaser', 'WhsCode', 'Company'],
+    const {
+      dispatch,
+      global: { Curr },
+    } = this.props;
+    if (!Curr.length) {
+      dispatch({
+        type: 'global/getMDMCommonality',
+        payload: {
+          Content: {
+            CodeList: ['Saler', 'Purchaser', 'Curr', 'WhsCode', 'Company'],
+          },
         },
-      },
-    });
+      });
+    }
     this.getDetail();
   }
 
@@ -375,8 +385,7 @@ class InquiryEdit extends React.Component {
           City: '',
           AreaID: '',
           Area: '',
-          StreetID: '',
-          Street: '',
+
           Address: '',
           NumAtCard: '',
           Owner: '',
@@ -518,8 +527,8 @@ class InquiryEdit extends React.Component {
               <Description term="联系人电话">{formVals.PhoneNO}</Description>
               <Description term="联系人邮箱">{formVals.Email}</Description>
               <Description term="地址">{`${formVals.Province}${formVals.City}${formVals.Area}${
-                formVals.Street
-              }${formVals.Address}`}</Description>
+                formVals.Address
+              }`}</Description>
             </DescriptionList>
           </TabPane>
           <TabPane tab="其余成本" key="3">
@@ -555,6 +564,14 @@ class InquiryEdit extends React.Component {
 
         <FooterToolbar>
           <CancelOrder cancelSubmit={this.cancelSubmit} />
+          <Button
+            icon="plus"
+            style={{ marginLeft: 8 }}
+            type="primary"
+            onClick={() => router.push('/sellabout/TI_Z029/add')}
+          >
+            新建
+          </Button>
           <Button onClick={this.toUpdate} type="primary">
             编辑
           </Button>

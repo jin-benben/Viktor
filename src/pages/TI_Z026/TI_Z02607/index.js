@@ -69,7 +69,7 @@ class orderLine extends PureComponent {
     {
       title: '单据状态',
       dataIndex: 'Status',
-      width: 100,
+      width: 120,
       render: (text, record) => (
         <Fragment>
           {record.Closed === 'Y' ? (

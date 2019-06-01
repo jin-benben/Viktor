@@ -30,8 +30,7 @@ export default {
       City: '',
       AreaID: '',
       Area: '',
-      StreetID: '',
-      Street: '',
+
       Address: '',
       NumAtCard: '',
       IsInquiry: '',

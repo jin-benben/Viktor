@@ -20,6 +20,7 @@ import StandardTable from '@/components/StandardTable';
 import MDMCommonality from '@/components/Select';
 import DocEntryFrom from '@/components/DocEntryFrom';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
+import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import { getName } from '@/utils/utils';
 
 const { RangePicker } = DatePicker;
@@ -84,22 +85,32 @@ class supplierQuotation extends PureComponent {
       title: '供应商',
       width: 150,
       dataIndex: 'CardName',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '客户参考号',
       width: 150,
       dataIndex: 'NumAtCard',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '联系方式',
       dataIndex: 'contact',
       width: 150,
       render: (text, record) => (
-        <span>
+        <Ellipsis tooltip lines={1}>
           {record.CellphoneNO}
           {record.CellphoneNO ? <Divider type="vertical" /> : null}
           {record.PhoneNO}
-        </span>
+        </Ellipsis>
       ),
     },
     {
@@ -332,7 +343,7 @@ class supplierQuotation extends PureComponent {
               loading={loading}
               data={{ list: supplierQuotationList }}
               pagination={pagination}
-              scroll={{ x: 800, y: 800 }}
+              scroll={{ x: 800, y: 600 }}
               rowKey="DocEntry"
               columns={this.columns}
               onChange={this.handleStandardTableChange}
@@ -346,7 +357,7 @@ class supplierQuotation extends PureComponent {
             type="primary"
             onClick={() => router.push('/purchase/TI_Z027/edit')}
           >
-            新建客户询价单
+            新建
           </Button>
         </FooterToolbar>
       </Fragment>

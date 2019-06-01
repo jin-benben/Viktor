@@ -19,6 +19,7 @@ import StandardTable from '@/components/StandardTable';
 import MDMCommonality from '@/components/Select';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import DocEntryFrom from '@/components/DocEntryFrom';
+import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import Link from 'umi/link';
 import { getName } from '@/utils/utils';
 
@@ -61,7 +62,7 @@ class inquiryListPage extends PureComponent {
     {
       title: '单据状态',
       dataIndex: 'Status',
-      width: 100,
+      width: 120,
       render: (text, record) => (
         <Fragment>
           {record.Closed === 'Y' ? (
@@ -91,6 +92,11 @@ class inquiryListPage extends PureComponent {
       title: '客户',
       width: 150,
       dataIndex: 'CardName',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '客户参考号',
@@ -102,11 +108,11 @@ class inquiryListPage extends PureComponent {
       width: 120,
       dataIndex: 'contact',
       render: (text, record) => (
-        <span>
+        <Ellipsis tooltip lines={1}>
           {record.CellphoneNO}
           {record.CellphoneNO ? <Divider type="vertical" /> : null}
           {record.PhoneNO}
-        </span>
+        </Ellipsis>
       ),
     },
     {
@@ -114,9 +120,9 @@ class inquiryListPage extends PureComponent {
       dataIndex: 'address',
       width: 300,
       render: (text, record) => (
-        <span>
-          {`${record.Province}/${record.City}/${record.Area}/${record.Street}/${record.Address}`}
-        </span>
+        <Ellipsis tooltip lines={1}>
+          {`${record.Province}/${record.City}/${record.Area}/${record.Address}`}
+        </Ellipsis>
       ),
     },
     {
@@ -221,11 +227,6 @@ class inquiryListPage extends PureComponent {
       expandForm: !expandForm,
     });
   };
-
-  handleOnRow = record => ({
-    // 详情or修改
-    onClick: () => router.push(`/sellabout/TI_Z026/detail?DocEntry=${record.DocEntry}`),
-  });
 
   renderSimpleForm() {
     const {
@@ -353,7 +354,6 @@ class inquiryListPage extends PureComponent {
               rowKey="DocEntry"
               columns={this.columns}
               scroll={{ x: 1500, y: 800 }}
-              onRow={this.handleOnRow}
               onChange={this.handleStandardTableChange}
             />
           </div>

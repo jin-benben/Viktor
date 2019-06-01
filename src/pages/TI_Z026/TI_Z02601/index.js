@@ -367,13 +367,18 @@ class InquiryEdit extends React.Component {
   componentDidMount() {
     const {
       dispatch,
-      global: { currentUser, CustomerList },
+      global: { currentUser, CustomerList, BrandList },
       inquiryEdit: { inquiryDetail },
     } = this.props;
     const { CompanyCode, Owner, DefaultWhsCode, UserCode } = currentUser;
     if (!CustomerList.length) {
       dispatch({
         type: 'global/getCustomer',
+      });
+    }
+    if (!BrandList.length) {
+      dispatch({
+        type: 'global/getBrand',
       });
     }
     this.setState({ DefaultWhsCode });
@@ -419,7 +424,8 @@ class InquiryEdit extends React.Component {
           CompanyCode: '',
           DueDate: null,
           ToDate: null,
-          InquiryDocTotal: '',
+          InquiryDocTotal: 0,
+          InquiryDocTotalLocal: 0,
           DocTotal: '',
           ProvinceID: '',
           Province: '',
@@ -427,8 +433,7 @@ class InquiryEdit extends React.Component {
           City: '',
           AreaID: '',
           Area: '',
-          StreetID: '',
-          Street: '',
+
           Address: '',
           NumAtCard: '',
           Owner: '',
@@ -483,12 +488,9 @@ class InquiryEdit extends React.Component {
     let thisIndex = 0;
     formVals.TI_Z02602.map((item, index) => {
       if (item.LineID === record.LineID) {
-        record.SKUName =
-          record.BrandName +
-          record.ProductName +
-          record.ManufactureNO +
-          record.Parameters +
-          record.Package;
+        record.SKUName = `${record.BrandName}  ${record.ProductName}  ${record.ManufactureNO}  ${
+          record.Parameters
+        }  ${record.Package}`;
         thisIndex = index;
         return record;
       }
@@ -504,27 +506,12 @@ class InquiryEdit extends React.Component {
   getTotal = () => {
     const { formVals } = this.state;
     let DocTotal = 0;
-    let InquiryDocTotalLocal = 0;
-    let InquiryDocTotal = 0;
     // eslint-disable-next-line array-callback-return
     formVals.TI_Z02602.map(record => {
-      record.InquiryLineTotalLocal = isNaN(record.Quantity * record.InquiryPrice)
-        ? 0
-        : record.Quantity * record.InquiryPrice;
-      record.InquiryLineTotalLocal = round(record.InquiryLineTotalLocal, 2);
-      record.InquiryLineTotal = isNaN(record.Quantity * record.InquiryPrice * record.DocRate)
-        ? 0
-        : record.Quantity * record.InquiryPrice * record.DocRate;
-      record.InquiryLineTotal = round(record.InquiryLineTotal, 2);
       record.LineTotal = isNaN(record.Quantity * record.Price) ? 0 : record.Quantity * record.Price;
       record.LineTotal = round(record.LineTotal, 2);
       DocTotal += record.LineTotal;
-      InquiryDocTotalLocal += record.InquiryLineTotalLocal;
-      InquiryDocTotal += record.InquiryLineTotal;
     });
-    formVals.DocTotal = DocTotal;
-    formVals.InquiryDocTotalLocal = InquiryDocTotalLocal;
-    formVals.InquiryDocTotal = InquiryDocTotal;
     formVals.DocTotal = DocTotal;
     this.setState({ formVals });
   };
@@ -534,12 +521,9 @@ class InquiryEdit extends React.Component {
   rowSelectChange = (value, record, index, key) => {
     const { formVals } = this.state;
     record[key] = value;
-    record.SKUName =
-      record.BrandName +
-      record.ProductName +
-      record.ManufactureNO +
-      record.Parameters +
-      record.Package;
+    record.SKUName = `${record.BrandName}  ${record.ProductName}  ${record.ManufactureNO}  ${
+      record.Parameters
+    }  ${record.Package}`;
     formVals.TI_Z02602[index] = record;
 
     this.setState({ formVals: { ...formVals } }, () => {
@@ -698,9 +682,7 @@ class InquiryEdit extends React.Component {
   // 联系人change
   linkmanChange = value => {
     const { formVals, linkmanList } = this.state;
-    const select = linkmanList.find(item => {
-      return item.UserID === value;
-    });
+    const select = linkmanList.find(item => item.UserID === value);
     const { CellphoneNO, Email, PhoneNO, UserID, Name } = select;
     Object.assign(formVals, { CellphoneNO, Email, PhoneNO, UserID, Contacts: Name });
     this.setState({ formVals });
@@ -709,9 +691,7 @@ class InquiryEdit extends React.Component {
   // 地址改变
   handleAdreessChange = value => {
     const { addList, formVals } = this.state;
-    const select = addList.find(item => {
-      return item.AddressID === value;
-    });
+    const select = addList.find(item => item.AddressID === value);
     const {
       Province,
       ProvinceID,
@@ -719,8 +699,7 @@ class InquiryEdit extends React.Component {
       CityID,
       Area,
       AreaID,
-      Street,
-      StreetID,
+
       AddressID,
       Address,
     } = select;
@@ -731,8 +710,7 @@ class InquiryEdit extends React.Component {
       CityID,
       Area,
       AreaID,
-      Street,
-      StreetID,
+
       AddressID,
       Address,
     });
@@ -743,7 +721,7 @@ class InquiryEdit extends React.Component {
     // 自动添加行
     // 如果行中品牌,SKU,参数，名称都不为空则添加一行，最后一行时有效
     const { formVals } = this.state;
-    const length = formVals.TI_Z02602.length;
+    const { length } = formVals.TI_Z02602;
     if (
       index === length - 1 &&
       record.SKU &&
@@ -786,6 +764,7 @@ class InquiryEdit extends React.Component {
     const { formVals } = this.state;
     form.validateFields((err, fieldsValue) => {
       if (err) {
+        // eslint-disable-next-line compat/compat
         message.error(Object.values(err)[0].errors[0].message);
         return;
       }
@@ -818,6 +797,7 @@ class InquiryEdit extends React.Component {
     const { formVals } = this.state;
     form.validateFields((err, fieldsValue) => {
       if (err) {
+        // eslint-disable-next-line compat/compat
         message.error(Object.values(err)[0].errors[0].message);
         return;
       }
@@ -954,8 +934,6 @@ class InquiryEdit extends React.Component {
       });
     }
 
-    console.log(formVals);
-
     return (
       <Card bordered={false}>
         <Form {...formItemLayout}>
@@ -1053,7 +1031,6 @@ class InquiryEdit extends React.Component {
               <FormItem key="DueDate" {...this.formLayout} label="要求交期">
                 {getFieldDecorator('DueDate', {
                   initialValue: formVals.DueDate ? moment(formVals.DueDate, 'YYYY-MM-DD') : null,
-                  rules: [{ required: true, message: '请选择要求交期！' }],
                 })(<DatePicker style={{ width: '100%' }} />)}
               </FormItem>
             </Col>
@@ -1104,7 +1081,6 @@ class InquiryEdit extends React.Component {
               <Col lg={8} md={12} sm={24}>
                 <FormItem key="address" {...this.formLayout} label="地址">
                   {getFieldDecorator('address', {
-                    rules: [{ required: true, message: '请选择地址！' }],
                     initialValue: formVals.AddressID,
                   })(
                     <Select
@@ -1114,7 +1090,7 @@ class InquiryEdit extends React.Component {
                     >
                       {addList.map(option => (
                         <Option key={option.AddressID} value={option.AddressID}>
-                          {`${option.Province}/${option.City}/${option.Area}/${option.Street}`}
+                          {`${option.Province}/${option.City}/${option.Area}`}
                         </Option>
                       ))}
                     </Select>
@@ -1124,7 +1100,6 @@ class InquiryEdit extends React.Component {
               <Col lg={8} md={12} sm={24}>
                 <FormItem key="Address" {...this.formLayout} label="地址">
                   {getFieldDecorator('Address', {
-                    rules: [{ required: true, message: '请输入详细地址！' }],
                     initialValue: formVals.Address,
                   })(<Input placeholder="请输入详细地址！" />)}
                 </FormItem>
@@ -1157,6 +1132,7 @@ class InquiryEdit extends React.Component {
                 <FormItem key="ToDate" {...this.formLayout} label="有效期至">
                   {getFieldDecorator('ToDate', {
                     initialValue: formVals.ToDate ? moment(formVals.ToDate, 'YYYY-MM-DD') : null,
+                    rules: [{ required: true, message: '请选择有效期！' }],
                   })(<DatePicker style={{ width: '100%' }} />)}
                 </FormItem>
               </Col>
@@ -1175,6 +1151,14 @@ class InquiryEdit extends React.Component {
           {formVals.DocEntry ? (
             <Fragment>
               <CancelOrder cancelSubmit={this.cancelSubmit} />
+              <Button
+                icon="plus"
+                style={{ marginLeft: 8 }}
+                type="primary"
+                onClick={() => router.push('/sellabout/TI_Z026/TI_Z02601')}
+              >
+                新建
+              </Button>
               <Button
                 style={{ marginLeft: 10, marginRight: 10 }}
                 onClick={this.updateHandle}

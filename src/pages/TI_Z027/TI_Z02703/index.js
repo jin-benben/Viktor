@@ -426,6 +426,14 @@ class InquiryEdit extends React.Component {
           <Button onClick={this.toUpdate} type="primary">
             编辑
           </Button>
+          <Button
+            icon="plus"
+            style={{ marginLeft: 8 }}
+            type="primary"
+            onClick={() => router.push('/purchase/TI_Z027/edit')}
+          >
+            新建
+          </Button>
         </FooterToolbar>
       </Card>
     );

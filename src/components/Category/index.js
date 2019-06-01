@@ -1,21 +1,22 @@
 import React from 'react';
 import request from '@/utils/request';
 import { Cascader } from 'antd';
+import { connect } from 'dva';
 
+@connect(({ global }) => ({
+  global,
+}))
 class CategoryCascader extends React.Component {
   state = {
     options: [],
     value: [],
   };
 
-  componentDidMount() {
-    this.getCategory();
-  }
-
   static getDerivedStateFromProps(nextProps, prevState) {
-    if (nextProps.initialValue !== prevState.value) {
+    if (nextProps.initialValue !== prevState.value || !prevState.options.length) {
       return {
         value: nextProps.initialValue,
+        options: nextProps.global.CategoryTree,
       };
     }
     return null;
@@ -23,6 +24,7 @@ class CategoryCascader extends React.Component {
 
   // eslint-disable-next-line consistent-return
   getCategory = async () => {
+    const { dispatch } = this.props;
     const response = await request('/MDM/TI_Z010/TI_Z01002', {
       method: 'POST',
       data: {
@@ -32,6 +34,12 @@ class CategoryCascader extends React.Component {
     if (response.Status !== 200) {
       return false;
     }
+    dispatch({
+      type: 'global/save',
+      payload: {
+        CategoryList: response.Content,
+      },
+    });
     this.setState({ options: response.Content });
   };
 

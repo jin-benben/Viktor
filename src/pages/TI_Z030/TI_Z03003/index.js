@@ -382,8 +382,7 @@ class InquiryEdit extends React.Component {
           City: '',
           AreaID: '',
           Area: '',
-          StreetID: '',
-          Street: '',
+
           Address: '',
           NumAtCard: '',
           Owner: '',
@@ -522,8 +521,8 @@ class InquiryEdit extends React.Component {
               <Description term="联系人电话">{formVals.PhoneNO}</Description>
               <Description term="联系人邮箱">{formVals.Email}</Description>
               <Description term="地址">{`${formVals.Province}${formVals.City}${formVals.Area}${
-                formVals.Street
-              }${formVals.Address}`}</Description>
+                formVals.Address
+              }`}</Description>
             </DescriptionList>
           </TabPane>
           <TabPane tab="其余成本" key="3">
@@ -556,16 +555,27 @@ class InquiryEdit extends React.Component {
             columns={this.attachmentColumns}
           />
         </Modal>
-        {formVals.Closed !== 'Y' ? (
-          <FooterToolbar>
-            <CancelOrder cancelSubmit={this.cancelSubmit} />
-            <Button onClick={this.toUpdate} type="primary">
-              编辑
-            </Button>
-          </FooterToolbar>
-        ) : (
-          ''
-        )}
+        <FooterToolbar>
+          {formVals.Closed !== 'Y' ? (
+            <Fragment>
+              <CancelOrder cancelSubmit={this.cancelSubmit} />
+              <Button onClick={this.toUpdate} type="primary">
+                编辑
+              </Button>
+            </Fragment>
+          ) : (
+            ''
+          )}
+
+          <Button
+            icon="plus"
+            style={{ marginLeft: 8 }}
+            type="primary"
+            onClick={() => router.push('/sellabout/TI_Z030/add')}
+          >
+            新建
+          </Button>
+        </FooterToolbar>
       </Card>
     );
   }

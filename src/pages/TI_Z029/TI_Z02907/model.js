@@ -1,4 +1,4 @@
-import { TI_Z02907 } from '../service';
+import { TI_Z02907, confirmRule } from '../service';
 
 export default {
   namespace: 'SalesQuotationSku',
@@ -52,6 +52,10 @@ export default {
           });
         }
       }
+    },
+    *confirm({ payload, callback }, { call }) {
+      const response = yield call(confirmRule, payload);
+      if (callback) callback(response);
     },
   },
   reducers: {

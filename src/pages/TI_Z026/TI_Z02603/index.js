@@ -183,7 +183,6 @@ class InquiryEdit extends PureComponent {
     {
       title: '单据汇率',
       width: 80,
-
       dataIndex: 'DocRate',
       align: 'center',
     },
@@ -224,6 +223,30 @@ class InquiryEdit extends PureComponent {
       width: 150,
       align: 'center',
       dataIndex: 'InquiryLineTotalLocal',
+    },
+    {
+      title: '报价状态',
+      width: 80,
+      dataIndex: 'SLineStatus',
+      align: 'center',
+      render: (text, record) =>
+        record.lastIndex ? null : <span>{text === 'O' ? '未报价' : '已报价'}</span>,
+    },
+    {
+      title: '采询确认',
+      width: 80,
+      dataIndex: 'PLineStatus',
+      align: 'center',
+      render: (text, record) =>
+        record.lastIndex ? null : <span>{text === 'O' ? '未确认' : '已确认'}</span>,
+    },
+    {
+      title: '是否需询价',
+      width: 80,
+      dataIndex: 'PLineStatus',
+      align: 'center',
+      render: (text, record) =>
+        record.lastIndex ? null : <span>{text === 'Y' ? '需询价' : '不需询价'}</span>,
     },
     {
       title: '操作',
@@ -441,7 +464,9 @@ class InquiryEdit extends PureComponent {
             <span>{getName(OrderSource, formVals.OrderType)}</span>
           </Description>
           <Description term="客户参考号">{formVals.NumAtCard}</Description>
-          <Description term="状态">{formVals.DocStatus === 'O' ? '未清' : '已清'}</Description>
+          <Description term="是否需询价">
+            {formVals.IsInquiry === 'Y' ? '需询价' : '不需询价'}
+          </Description>
           <Description term="报价状态">
             {formVals.SDocStatus === 'O' ? '已报价' : '未报价'}
           </Description>
@@ -457,7 +482,7 @@ class InquiryEdit extends PureComponent {
             <StandardTable
               data={{ list: newdata }}
               rowKey="LineID"
-              scroll={{ x: 2500, y: 600 }}
+              scroll={{ x: 2700, y: 600 }}
               columns={this.skuColumns}
             />
           </TabPane>
@@ -467,8 +492,8 @@ class InquiryEdit extends PureComponent {
               <Description term="联系人电话">{formVals.PhoneNO}</Description>
               <Description term="联系人邮箱">{formVals.Email}</Description>
               <Description term="地址">{`${formVals.Province}${formVals.City}${formVals.Area}${
-                formVals.Street
-              }${formVals.Address}`}</Description>
+                formVals.Address
+              }`}</Description>
             </DescriptionList>
           </TabPane>
           <TabPane tab="附件" key="3">
@@ -494,11 +519,26 @@ class InquiryEdit extends PureComponent {
             columns={this.attachmentColumns}
           />
         </Modal>
-
         <FooterToolbar>
-          <CancelOrder cancelSubmit={this.cancelSubmit} />
-          <Button onClick={this.toUpdate} type="primary">
-            编辑
+          {formVals.Closed === 'N' ? (
+            <Fragment>
+              {' '}
+              <CancelOrder cancelSubmit={this.cancelSubmit} />
+              <Button onClick={this.toUpdate} type="primary">
+                编辑
+              </Button>
+            </Fragment>
+          ) : (
+            ''
+          )}
+
+          <Button
+            icon="plus"
+            style={{ marginLeft: 8 }}
+            type="primary"
+            onClick={() => router.push('/sellabout/TI_Z026/TI_Z02601')}
+          >
+            新建
           </Button>
         </FooterToolbar>
       </Card>

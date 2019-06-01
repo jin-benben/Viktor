@@ -426,7 +426,7 @@ class supplierQuotationSku extends PureComponent {
               data={{ list: supplierQuotationSkuList }}
               pagination={pagination}
               rowKey="Key"
-              scroll={{ x: 2350, y: 500 }}
+              scroll={{ x: 2400, y: 500 }}
               columns={this.columns}
               onChange={this.handleStandardTableChange}
             />
@@ -439,7 +439,7 @@ class supplierQuotationSku extends PureComponent {
             type="primary"
             onClick={() => router.push('/purchase/TI_Z027/edit')}
           >
-            新建客户询价单
+            新建
           </Button>
         </FooterToolbar>
       </Fragment>

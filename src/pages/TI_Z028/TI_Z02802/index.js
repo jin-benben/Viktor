@@ -1,11 +1,12 @@
 import React, { PureComponent } from 'react';
-import { Card, Table } from 'antd';
+import { Card, Table, Button } from 'antd';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
-
+import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import DescriptionList from 'ant-design-pro/lib/DescriptionList';
 import moment from 'moment';
 import { connect } from 'dva';
 import Link from 'umi/link';
+import router from 'umi/router';
 import { getName } from '@/utils/utils';
 
 const { Description } = DescriptionList;
@@ -301,6 +302,16 @@ class TI_Z02802 extends PureComponent {
           columns={this.columns}
           onChange={this.handleStandardTableChange}
         />
+        <FooterToolbar>
+          <Button
+            icon="plus"
+            style={{ marginLeft: 8 }}
+            type="primary"
+            onClick={() => router.push('/purchase/TI_Z028/TI_Z02801')}
+          >
+            新建
+          </Button>
+        </FooterToolbar>
       </Card>
     );
   }

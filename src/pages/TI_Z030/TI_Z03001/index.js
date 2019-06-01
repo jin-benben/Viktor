@@ -1,3 +1,6 @@
+/* eslint-disable consistent-return */
+/* eslint-disable array-callback-return */
+/* eslint-disable compat/compat */
 /* eslint-disable no-restricted-globals */
 /* eslint-disable camelcase */
 /* eslint-disable no-param-reassign */
@@ -206,6 +209,12 @@ class AgreementEdit extends React.Component {
       width: 100,
       dataIndex: 'Currency',
       align: 'center',
+      render: text => {
+        const {
+          global: { Curr },
+        } = this.props;
+        return <span>{getName(Curr, text)}</span>;
+      },
     },
     {
       title: '单据汇率',
@@ -418,12 +427,27 @@ class AgreementEdit extends React.Component {
   componentDidMount() {
     const {
       dispatch,
-      global: { currentUser, CustomerList },
+      global: { currentUser, CustomerList, BrandList, Curr },
       agreementEdit: { orderDetail },
     } = this.props;
     if (!CustomerList.length) {
       dispatch({
         type: 'global/getCustomer',
+      });
+    }
+    if (!BrandList.length) {
+      dispatch({
+        type: 'global/getBrand',
+      });
+    }
+    if (!Curr.length) {
+      dispatch({
+        type: 'global/getMDMCommonality',
+        payload: {
+          Content: {
+            CodeList: ['Saler', 'Purchaser', 'WhsCode', 'Company'],
+          },
+        },
       });
     }
 
@@ -439,14 +463,7 @@ class AgreementEdit extends React.Component {
         },
       },
     });
-    dispatch({
-      type: 'global/getMDMCommonality',
-      payload: {
-        Content: {
-          CodeList: ['Saler', 'Purchaser', 'WhsCode', 'Company'],
-        },
-      },
-    });
+
     this.getDetail();
   }
 
@@ -482,8 +499,7 @@ class AgreementEdit extends React.Component {
           City: '',
           AreaID: '',
           Area: '',
-          StreetID: '',
-          Street: '',
+
           Address: '',
           NumAtCard: '',
           Owner: '',
@@ -554,26 +570,25 @@ class AgreementEdit extends React.Component {
     let OtherTotal = 0;
     // eslint-disable-next-line array-callback-return
     formVals.TI_Z03002.map(record => {
-      record.InquiryLineTotalLocal = isNaN(record.Quantity * record.InquiryPrice)
+      record.InquiryLineTotal = isNaN(record.Quantity * record.InquiryPrice)
         ? 0
         : record.Quantity * record.InquiryPrice;
-      record.InquiryLineTotalLocal = round(record.InquiryLineTotalLocal, 2);
-      record.InquiryLineTotal = isNaN(record.Quantity * record.InquiryPrice * record.DocRate)
+      record.InquiryLineTotal = round(record.InquiryLineTotal, 2);
+      record.InquiryDocTotalLocal = isNaN(record.Quantity * record.InquiryPrice * record.DocRate)
         ? 0
         : record.Quantity * record.InquiryPrice * record.DocRate;
-      record.InquiryLineTotal = round(record.InquiryLineTotal, 2);
+      record.InquiryLineTotal = round(record.InquiryDocTotalLocal, 2);
       record.LineTotal = isNaN(record.Quantity * record.Price) ? 0 : record.Quantity * record.Price;
       record.LineTotal = round(record.LineTotal, 2);
-      console.log(isNaN(record.OtherTotal) ? record.OtherTotal : 0);
       record.ProfitLineTotal =
         record.LineTotal -
         record.InquiryLineTotalLocal -
-        (isNaN(record.OtherTotal) ? record.OtherTotal : 0);
+        (record.OtherTotal ? record.OtherTotal : 0);
       record.ProfitLineTotal = round(record.ProfitLineTotal, 2);
       DocTotal += record.LineTotal;
       InquiryDocTotalLocal += record.InquiryLineTotalLocal;
       InquiryDocTotal += record.InquiryLineTotal;
-      OtherTotal += record.OtherTotal;
+      OtherTotal += record.OtherTotal || 0;
     });
     formVals.DocTotal = DocTotal;
     formVals.InquiryDocTotalLocal = InquiryDocTotalLocal;
@@ -702,8 +717,6 @@ class AgreementEdit extends React.Component {
   };
 
   copyFromOrder = () => {
-    console.log(this.state);
-
     const { formVals } = this.state;
     const { queryData } = this.getAskPriceOrder.state;
     if (!formVals.CardCode) {
@@ -758,9 +771,7 @@ class AgreementEdit extends React.Component {
   // 联系人change
   linkmanChange = value => {
     const { formVals, linkmanList } = this.state;
-    const select = linkmanList.find(item => {
-      return item.UserID === value;
-    });
+    const select = linkmanList.find(item => item.UserID === value);
     const { CellphoneNO, Email, PhoneNO, UserID, Name } = select;
     Object.assign(formVals, { CellphoneNO, Email, PhoneNO, UserID, Contacts: Name });
     this.setState({ formVals });
@@ -769,9 +780,7 @@ class AgreementEdit extends React.Component {
   // 地址改变
   handleAdreessChange = value => {
     const { addList, formVals } = this.state;
-    const select = addList.find(item => {
-      return item.AddressID === value;
-    });
+    const select = addList.find(item => item.AddressID === value);
     const {
       Province,
       ProvinceID,
@@ -779,8 +788,7 @@ class AgreementEdit extends React.Component {
       CityID,
       Area,
       AreaID,
-      Street,
-      StreetID,
+
       AddressID,
       Address,
     } = select;
@@ -791,8 +799,7 @@ class AgreementEdit extends React.Component {
       CityID,
       Area,
       AreaID,
-      Street,
-      StreetID,
+
       AddressID,
       Address,
     });
@@ -991,7 +998,7 @@ class AgreementEdit extends React.Component {
   };
 
   // 发送需询价
-  submitNeedLine = select => {
+  submitNeedLine = () => {
     const {
       dispatch,
       global: { currentUser },
@@ -1114,8 +1121,6 @@ class AgreementEdit extends React.Component {
         ProfitLineTotal: formVals.ProfitTotal,
       });
     }
-    console.log(this.props);
-
     return (
       <Card bordered={false}>
         <Form {...formItemLayout}>
@@ -1291,7 +1296,7 @@ class AgreementEdit extends React.Component {
                     >
                       {addList.map(option => (
                         <Option key={option.AddressID} value={option.AddressID}>
-                          {`${option.Province}/${option.City}/${option.Area}/${option.Street}`}
+                          {`${option.Province}/${option.City}/${option.Area}`}
                         </Option>
                       ))}
                     </Select>
@@ -1344,6 +1349,14 @@ class AgreementEdit extends React.Component {
           {formVals.DocEntry ? (
             <Fragment>
               <CancelOrder cancelSubmit={this.cancelSubmit} />
+              <Button
+                icon="plus"
+                style={{ marginLeft: 8 }}
+                type="primary"
+                onClick={() => router.push('/sellabout/TI_Z030/add')}
+              >
+                新建
+              </Button>
               <Button type="primary" onClick={this.costCheck}>
                 成本核算
               </Button>

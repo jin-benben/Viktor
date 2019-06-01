@@ -1,7 +1,7 @@
-import React, { Fragment } from 'react';
+/* eslint-disable no-param-reassign */
+import React, { Component, Fragment } from 'react';
 import { Card, Icon, Button, message, Select } from 'antd';
 import EditableFormTable from '@/components/EditableFormTable';
-import request from '@/utils/request';
 import MDMCommonality from '@/components/Select';
 import Brand from '@/components/Brand';
 import HSCode from '@/components/HSCode';
@@ -15,13 +15,18 @@ import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 
 const { Option } = Select;
 
-@connect(({ global, loading }) => ({
+@connect(({ global, loading, skuAdd }) => ({
   global,
+  skuAdd,
   loading: loading.models.global,
+  addloading: loading.effects['skuAdd/add'],
+  matchloading: loading.effects['skuAdd/match'],
+  confirmloading: loading.effects['skuAdd/confrim'],
 }))
-class AddSKU extends React.Component {
+class AddSKU extends Component {
   state = {
     TI_Z00901: [],
+    selectedRows: [],
     orderModalVisible: false,
   };
 
@@ -31,6 +36,12 @@ class AddSKU extends React.Component {
       dataIndex: 'LineID',
       fixed: 'left',
       width: 50,
+    },
+    {
+      title: '代码',
+      dataIndex: 'Code',
+      fixed: 'left',
+      width: 80,
     },
     {
       title: '描述',
@@ -50,6 +61,7 @@ class AddSKU extends React.Component {
       render: (text, record, index) => (
         <Brand
           keyType="Name"
+          initialValue={text}
           onChange={value => {
             this.codeChange(value, record, index, 'BrandName');
           }}
@@ -117,6 +129,12 @@ class AddSKU extends React.Component {
       editable: true,
     },
     {
+      title: '重量',
+      width: 100,
+      dataIndex: 'Rweight',
+      editable: true,
+    },
+    {
       title: '分类',
       width: 150,
       dataIndex: 'category',
@@ -167,7 +185,7 @@ class AddSKU extends React.Component {
     },
     {
       title: '上架日期',
-      width: 180,
+      width: 120,
       inputType: 'date',
       editable: true,
       dataIndex: 'PutawayDateTime',
@@ -177,41 +195,59 @@ class AddSKU extends React.Component {
       width: 150,
       inputType: 'text',
       dataIndex: 'HSCode',
-      render: (text, record, index) => (
-        <HSCode
-          initialValue={text}
-          onChange={hsCode => {
-            this.codeChange(hsCode, record, index, 'HSCode');
-          }}
-        />
-      ),
+      render: (text, record, index) => {
+        const {
+          skuAdd: { hscodeList },
+        } = this.props;
+        return (
+          <HSCode
+            initialValue={text}
+            data={hscodeList}
+            onChange={hsCode => {
+              this.codeChange(hsCode, record, index, 'HSCode');
+            }}
+          />
+        );
+      },
     },
     {
       title: 'FHS编码',
       width: 150,
       inputType: 'text',
       dataIndex: 'FHSCode',
-      render: (text, record, index) => (
-        <FHSCode
-          initialValue={text}
-          onChange={hsCode => {
-            this.codeChange(hsCode, record, index, 'FHSCode');
-          }}
-        />
-      ),
+      render: (text, record, index) => {
+        const {
+          skuAdd: { fhscodeList },
+        } = this.props;
+        return (
+          <FHSCode
+            initialValue={text}
+            data={fhscodeList}
+            onChange={hsCode => {
+              this.codeChange(hsCode, record, index, 'FHSCode');
+            }}
+          />
+        );
+      },
     },
     {
       title: 'SPU编码',
       width: 150,
       dataIndex: 'SPUCode',
-      render: (text, record, index) => (
-        <SPUCode
-          initialValue={text}
-          onChange={hsCode => {
-            this.codeChange(hsCode, record, index, 'SPUCode');
-          }}
-        />
-      ),
+      render: (text, record, index) => {
+        const {
+          skuAdd: { spuList },
+        } = this.props;
+        return (
+          <SPUCode
+            initialValue={text}
+            data={spuList}
+            onChange={hsCode => {
+              this.codeChange(hsCode, record, index, 'SPUCode');
+            }}
+          />
+        );
+      },
     },
     {
       title: '操作',
@@ -232,14 +268,33 @@ class AddSKU extends React.Component {
   ];
 
   componentDidMount() {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'global/getMDMCommonality',
-      payload: {
-        Content: {
-          CodeList: ['Purchaser', 'WhsCode'],
+    const {
+      dispatch,
+      global: { BrandList, CategoryTree, Purchaser, WhsCode },
+    } = this.props;
+    if (!Purchaser.length || WhsCode.length) {
+      dispatch({
+        type: 'global/getMDMCommonality',
+        payload: {
+          Content: {
+            CodeList: ['Purchaser', 'WhsCode'],
+          },
         },
-      },
+      });
+    }
+    if (!BrandList.length) {
+      dispatch({
+        type: 'global/getBrand',
+      });
+    }
+    if (!CategoryTree.length) {
+      dispatch({
+        type: 'global/getCategory',
+      });
+    }
+
+    dispatch({
+      type: 'skuAdd/fetch',
     });
   }
 
@@ -282,18 +337,21 @@ class AddSKU extends React.Component {
 
   addskulist = async () => {
     const { TI_Z00901 } = this.state;
-    const response = await request('/MDM/TI_Z009/TI_Z00901', {
-      method: 'POST',
-      data: {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'skuAdd/add',
+      payload: {
         Content: {
           TI_Z00901,
         },
       },
+      callback: response => {
+        if (response && response.Status === 200) {
+          message.success('添加成功');
+          this.setState({ TI_Z00901: [] });
+        }
+      },
     });
-    if (response && response.Status === 200) {
-      message.success('添加成功');
-      this.setState({ TI_Z00901: [] });
-    }
   };
 
   addLine = () => {
@@ -301,6 +359,9 @@ class AddSKU extends React.Component {
     const lastLine = TI_Z00901[TI_Z00901.length - 1]
       ? TI_Z00901[TI_Z00901.length - 1].LineID + 1
       : 1;
+    const {
+      global: { currentUser },
+    } = this.props;
     const line = {
       LineID: lastLine,
       Name: '',
@@ -309,8 +370,9 @@ class AddSKU extends React.Component {
       ManufactureNO: '',
       Parameters: '',
       PurchaserName: '',
+      Rweight: '',
       Package: '',
-      Purchaser: '',
+      Purchaser: currentUser.Owner,
       Unit: '',
       ManLocation: '',
       Category1: '',
@@ -343,8 +405,22 @@ class AddSKU extends React.Component {
     const lastLine = TI_Z00901[TI_Z00901.length - 1]
       ? TI_Z00901[TI_Z00901.length - 1].LineID + 1
       : 1;
+    const {
+      global: { currentUser },
+    } = this.props;
     selectedRows.map((item, index) => {
-      const { BrandName, ProductName, ManufactureNO, Parameters, Package, Unit } = item;
+      const {
+        BrandName,
+        SKUName,
+        ProductName,
+        ManufactureNO,
+        Purchaser,
+        Parameters,
+        Package,
+        Unit,
+        DocEntry,
+        LineID,
+      } = item;
       TI_Z00901.push({
         LineID: lastLine + index,
         BrandName,
@@ -353,13 +429,106 @@ class AddSKU extends React.Component {
         Parameters,
         Package,
         Unit,
+        Name: SKUName,
+        Purchaser: Purchaser || currentUser.Owner,
+        ManLocation: '',
+        Rweight: '',
+        Category1: '',
+        Category2: '',
+        Category3: '',
+        Cate1Name: '',
+        Cate2Name: '',
+        Cate3Name: '',
+        Putaway: '1',
+        PutawayDateTime: new Date(),
+        InvoiceName: '',
+        InvoicePro: '',
+        InvoiceMenu: '',
+        HSCode: '',
+        FHSCode: '',
+        SPUCode: '',
+        QutoNo: DocEntry,
+        QutoLine: LineID,
       });
     });
-    this.setState({ TI_Z00901 });
+    this.setState({ TI_Z00901: [...TI_Z00901], orderModalVisible: false });
+  };
+
+  // 根据报价单行名字匹配已有SKU
+  matchingLine = () => {
+    const { TI_Z00901 } = this.state;
+    const { dispatch } = this.props;
+    if (!TI_Z00901.length) return;
+    const NameList = TI_Z00901.map(item => item.Name);
+    dispatch({
+      type: 'skuAdd/match',
+      payload: {
+        Content: {
+          NameList,
+        },
+      },
+      callback: response => {
+        if (response && response.Status === 200) {
+          message.success('匹配成功');
+          if (response.Content) {
+            response.Content.SKUList.map((item, index) => {
+              TI_Z00901[index].Code = item.Code;
+            });
+            this.setState({ TI_Z00901: [...TI_Z00901] });
+          }
+        }
+      },
+    });
+  };
+
+  // 确认匹配结果选择
+  onSelectRow = (selectedRowKeys, selectedRows) => {
+    this.setState({ selectedRows: [...selectedRows] });
+  };
+
+  // 确认匹配结果
+  confirmMatch = () => {
+    const { selectedRows } = this.state;
+    const { dispatch } = this.props;
+    if (!selectedRows.length) return;
+    const MatchList = selectedRows.map(item => {
+      const { LineID, Code, QutoNo, QutoLine } = item;
+      return {
+        LineID,
+        Code,
+        QutoNo,
+        QutoLine,
+      };
+    });
+    dispatch({
+      type: 'skuAdd/confrim',
+      payload: {
+        Content: {
+          MatchList,
+        },
+      },
+      callback: response => {
+        if (response && response.Status === 200) {
+          const { TI_Z00901 } = this.state;
+          if (response.Content) {
+            response.Content.MatchList.map(item => {
+              if (item.Status === '1') {
+                const thisIndex = TI_Z00901.findIndex(value => value.LineID === item.LineID);
+                TI_Z00901.splice(thisIndex, 1);
+              } else {
+                message.success(item.Message);
+              }
+            });
+          }
+          this.setState({ TI_Z00901: [...TI_Z00901] });
+        }
+      },
+    });
   };
 
   render() {
     const { TI_Z00901, orderModalVisible } = this.state;
+    const { addloading, matchloading, confirmloading } = this.props;
     const orderParentMethods = {
       handleSubmit: this.addLineSKU,
       handleModalVisible: this.handleModalVisible,
@@ -370,6 +539,9 @@ class AddSKU extends React.Component {
           rowChange={this.rowChange}
           rowKey="LineID"
           scroll={{ x: 2500 }}
+          rowSelection={{
+            onChange: this.onSelectRow,
+          }}
           columns={this.skuColumns}
           data={TI_Z00901}
         />
@@ -385,7 +557,13 @@ class AddSKU extends React.Component {
           >
             复制从销售报价单
           </Button>
-          <Button onClick={this.addskulist} type="primary">
+          <Button loading={matchloading} onClick={this.matchingLine} type="primary">
+            匹配
+          </Button>
+          <Button loading={confirmloading} onClick={this.confirmMatch} type="primary">
+            确认匹配
+          </Button>
+          <Button loading={addloading} onClick={this.addskulist} type="primary">
             保存
           </Button>
         </FooterToolbar>

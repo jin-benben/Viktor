@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Row, Col, Card, Form, Input, Modal, Button, message } from 'antd';
+import { Row, Col, Card, Form, Input, Modal, Button, message, Select } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import Supplier from '@/components/Supplier';
 import Upload from '@/components/Upload';
@@ -10,6 +10,23 @@ import { getName } from '@/utils/utils';
 
 const { TextArea } = Input;
 const FormItem = Form.Item;
+const { Option } = Select;
+
+const brandLevel = [
+  {
+    Key: '1',
+    Value: '优势',
+  },
+  {
+    Key: '2',
+    Value: '可询价',
+  },
+  {
+    Key: '3',
+    Value: '国外不询价',
+  },
+];
+
 @connect(({ global }) => ({
   global,
 }))
@@ -102,6 +119,29 @@ class CreateForm extends PureComponent {
               initialValue: { key: formVals.CardCode, label: formVals.CardName },
             })(<Supplier labelInValue />)}
           </FormItem>
+          <FormItem key="WebSite" {...this.formLayout} label="官网">
+            {getFieldDecorator('WebSite', {
+              initialValue: formVals.WebSite,
+            })(<Input placeholder="请输入官网！" />)}
+          </FormItem>
+          <FormItem key="Abbreviate" {...this.formLayout} label="简写">
+            {getFieldDecorator('Abbreviate', {
+              initialValue: formVals.Abbreviate,
+            })(<Input placeholder="请输入简写！" />)}
+          </FormItem>
+          <FormItem key="BrandLevel" {...this.formLayout} label="级别">
+            {getFieldDecorator('BrandLevel', {
+              initialValue: formVals.BrandLevel,
+            })(
+              <Select placeholder="请选择品牌级别" style={{ width: '100%' }}>
+                {brandLevel.map(option => (
+                  <Option key={option.Key} value={option.Key}>
+                    {option.Value}
+                  </Option>
+                ))}
+              </Select>
+            )}
+          </FormItem>
           <FormItem key="Content" {...this.formLayout} label="品牌介绍">
             {getFieldDecorator('Content', {
               initialValue: formVals.Content,
@@ -144,6 +184,14 @@ class BrandList extends PureComponent {
     {
       title: '品牌名称',
       dataIndex: 'Name',
+      render: (val, record) =>
+        record.WebSite ? (
+          <a target="_blank" href={record.WebSite}>
+            {val}
+          </a>
+        ) : (
+          val
+        ),
     },
     {
       title: '品牌介绍',
@@ -168,6 +216,15 @@ class BrandList extends PureComponent {
         } = this.props;
         return <span>{getName(Purchaser, text)}</span>;
       },
+    },
+    {
+      title: '品牌级别',
+      dataIndex: 'BrandLevel',
+      render: text => <span>{getName(brandLevel, text)}</span>,
+    },
+    {
+      title: '简写',
+      dataIndex: 'Abbreviate',
     },
     {
       title: '默认供应商',

@@ -144,6 +144,7 @@ class Organization extends PureComponent {
         payload: {
           Content: {
             ...fieldsValue,
+            DDCode: 0,
           },
         },
         callback: response => {

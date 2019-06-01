@@ -75,7 +75,7 @@ class StandardTable extends PureComponent {
     const {
       rowSelection: { onSelectRow },
     } = this.props;
-    console.log(selectedRows, selectedRowKeys);
+
     if (onSelectRow) {
       onSelectRow(selectedRows);
     }

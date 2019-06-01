@@ -6,105 +6,85 @@ import React, { PureComponent } from 'react';
 import { Cascader } from 'antd';
 import CityList from '../../../public/js/cities';
 import AreaList from '../../../public/js/areas';
-import StreetList from '../../../public/js/streets';
 import ProvinceList from '../../../public/js/provinces';
+
+const getCity = code => {
+  // 获取城市
+  // eslint-disable-next-line array-callback-return
+  const children = CityList.filter(city => {
+    if (city.provinceCode === code) {
+      city.isLeaf = false;
+      return city;
+    }
+  });
+  return children;
+};
+
+const getArea = code => {
+  // 获取地区
+
+  // eslint-disable-next-line array-callback-return
+  const children = AreaList.filter(area => {
+    if (area.cityCode === code) {
+      return area;
+    }
+  });
+  return children;
+};
+
+const getIndex = (code, arr) => {
+  return arr.findIndex(item => {
+    return item.code === code;
+  });
+};
 
 class AddressCascader extends PureComponent {
   state = {
     value: [],
     provinceIndex: 0, // 当前省份下标
     cityIndex: 0, // 当前城市
-    areaIndex: 0, // 当前区下标
     options: ProvinceList.map(province => {
       province.isLeaf = false;
       return province;
     }),
   };
 
-  static getDerivedStateFromProps(nextProps) {
+  static getDerivedStateFromProps(nextProps, preState) {
     if (nextProps.initialValue && nextProps.initialValue[0]) {
+      const { options } = preState;
+      const provinceIndex = getIndex(nextProps.initialValue[0], ProvinceList);
+      options[provinceIndex].children = getCity(nextProps.initialValue[0]);
+      const cityIndex = getIndex(nextProps.initialValue[1], getCity(nextProps.initialValue[0]));
+      options[provinceIndex].children[cityIndex].children = getArea(nextProps.initialValue[2]);
       return {
         value: nextProps.initialValue,
+        options: [...options],
       };
     }
     return null;
   }
 
-  getIndex = (code, arr) => {
-    return arr.findIndex(item => {
-      return item.code === code;
-    });
-  };
-
   loadData = selectedOptions => {
     const target = selectedOptions[selectedOptions.length - 1];
     const { options } = this.state;
-    let { provinceIndex, cityIndex, areaIndex } = this.state;
-
+    let { provinceIndex, cityIndex } = this.state;
     if (selectedOptions.length === 1) {
-      provinceIndex = this.getIndex(target.code, ProvinceList);
-      options[provinceIndex].children = this.getCity(target.code);
+      provinceIndex = getIndex(target.code, ProvinceList);
+      options[provinceIndex].children = getCity(target.code);
     }
     if (selectedOptions.length === 2) {
-      cityIndex = this.getIndex(target.code, this.getCity(target.provinceCode));
-      options[provinceIndex].children[cityIndex].children = this.getArea(target.code);
+      cityIndex = getIndex(target.code, getCity(target.provinceCode));
+      options[provinceIndex].children[cityIndex].children = getArea(target.code);
     }
-
-    if (selectedOptions.length === 3) {
-      areaIndex = this.getIndex(target.code, this.getArea(target.cityCode));
-      options[provinceIndex].children[cityIndex].children[areaIndex].children = this.getStreet(
-        target.code
-      );
-    }
-
-    console.log(options);
-
-    this.setState({ options: [...options], provinceIndex, cityIndex, areaIndex });
-  };
-
-  getCity = code => {
-    // 获取城市
-    // eslint-disable-next-line array-callback-return
-    const children = CityList.filter(city => {
-      if (city.provinceCode === code) {
-        city.isLeaf = false;
-        return city;
-      }
-    });
-    return children;
-  };
-
-  getArea = code => {
-    // 获取地区
-
-    // eslint-disable-next-line array-callback-return
-    const children = AreaList.filter(area => {
-      if (area.cityCode === code) {
-        area.isLeaf = false;
-        return area;
-      }
-    });
-    return children;
-  };
-
-  getStreet = code => {
-    // 街道
-
-    // eslint-disable-next-line array-callback-return
-    const children = StreetList.filter(street => {
-      if (street.areaCode === code) {
-        return street;
-      }
-    });
-    return children;
+    this.setState({ options: [...options], provinceIndex, cityIndex });
   };
 
   handleChange = (value, selectedOptions) => {
-    const [province, city, area, street] = selectedOptions;
+    const [province, city, area] = selectedOptions;
 
     this.setState({ value: [...value] });
     let address;
-    if (selectedOptions.length === 4) {
+    if (selectedOptions.length === 3) {
       address = {
         ProvinceID: province.code,
         Province: province.name,
@@ -112,8 +92,6 @@ class AddressCascader extends PureComponent {
         City: city.name,
         AreaID: area.code,
         Area: area.name,
-        StreetID: street.code,
-        Street: street.name,
       };
     }
     const { onChange } = this.props;
@@ -124,6 +102,7 @@ class AddressCascader extends PureComponent {
 
   render() {
     const { value, options } = this.state;
+    console.log(value);
     return (
       <Cascader
         style={{ width: '100%' }}

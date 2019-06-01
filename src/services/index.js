@@ -65,3 +65,28 @@ export async function customerRule() {
     },
   });
 }
+
+export async function brandRule() {
+  return request('/MDM/TI_Z005/TI_Z00502', {
+    method: 'POST',
+    data: {
+      Content: {
+        SearchText: '',
+        SearchKey: 'Name',
+      },
+      page: 1,
+      rows: 30,
+      sidx: 'Code',
+      sord: 'Desc',
+    },
+  });
+}
+
+export async function categoryRule() {
+  return request(`/MDM/TI_Z010/TI_Z01002`, {
+    method: 'POST',
+    data: {
+      Content: {},
+    },
+  });
+}

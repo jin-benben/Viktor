@@ -1,8 +1,8 @@
 import React, { PureComponent } from 'react';
 import moment from 'moment';
 import { connect } from 'dva';
-import { Form, Modal, message } from 'antd';
-import StandardTable from '@/components/StandardTable';
+import { Form, Modal, message, Table } from 'antd';
+import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import { getName } from '@/utils/utils';
 
 @connect(({ global }) => ({
@@ -13,12 +13,13 @@ class OrderLine extends PureComponent {
   state = {
     data: [],
     selectedRows: [],
+    selectedRowKeys: [],
   };
 
   skuColumns = [
     {
       title: '单号',
-      width: 50,
+      width: 80,
       fixed: 'left',
       dataIndex: 'DocEntry',
     },
@@ -26,7 +27,7 @@ class OrderLine extends PureComponent {
       title: '行号',
       dataIndex: 'LineID',
       fixed: 'left',
-      width: 50,
+      width: 80,
       align: 'center',
     },
     {
@@ -38,10 +39,13 @@ class OrderLine extends PureComponent {
     {
       title: '产品描述',
       dataIndex: 'SKUName',
-
       width: 200,
-
       align: 'center',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '品牌',
@@ -52,34 +56,50 @@ class OrderLine extends PureComponent {
     {
       title: '名称',
       dataIndex: 'ProductName',
-
       width: 150,
-
       align: 'center',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '型号',
-      width: 150,
+      width: 100,
       dataIndex: 'ManufactureNO',
       align: 'center',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '参数',
-      width: 150,
+      width: 100,
       dataIndex: 'Parameters',
-
       align: 'center',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '包装',
-      width: 150,
+      width: 100,
       dataIndex: 'Package',
-
       align: 'center',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '采购员',
-      width: 100,
+      width: 80,
       dataIndex: 'Purchaser',
       align: 'center',
       render: text => {
@@ -91,7 +111,7 @@ class OrderLine extends PureComponent {
     },
     {
       title: '数量',
-      width: 100,
+      width: 80,
       dataIndex: 'Quantity',
       align: 'center',
     },
@@ -103,14 +123,14 @@ class OrderLine extends PureComponent {
     },
     {
       title: '要求交期',
-      width: 150,
+      width: 100,
       dataIndex: 'DueDate',
       align: 'center',
       render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
     {
       title: '仓库',
-      width: 150,
+      width: 100,
       dataIndex: 'WhsCode',
       align: 'center',
       render: text => {
@@ -129,14 +149,17 @@ class OrderLine extends PureComponent {
     {
       title: '询价备注',
       dataIndex: 'InquiryComment',
-
-      width: 150,
-
+      width: 100,
       align: 'center',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '销售行总计',
-      width: 150,
+      width: 120,
       align: 'center',
       dataIndex: 'LineTotal',
     },
@@ -147,6 +170,7 @@ class OrderLine extends PureComponent {
       return {
         data: nextProps.data,
         selectedRows: nextProps.data,
+        selectedRowKeys: nextProps.data.map(item => (item.Key ? item.Key : item.LineID)),
       };
     }
     return null;
@@ -162,13 +186,13 @@ class OrderLine extends PureComponent {
     }
   };
 
-  onSelectRow = selectedRows => {
-    this.setState({ selectedRows: [...selectedRows] });
+  onSelectRow = (selectedRowKeys, selectedRows) => {
+    this.setState({ selectedRows: [...selectedRows], selectedRowKeys: [...selectedRowKeys] });
   };
 
   render() {
-    const { modalVisible, handleModalVisible } = this.props;
-    const { data, selectedRows } = this.state;
+    const { modalVisible, handleModalVisible, rowKey } = this.props;
+    const { data, selectedRowKeys } = this.state;
     return (
       <Modal
         width={1200}
@@ -179,17 +203,17 @@ class OrderLine extends PureComponent {
         onCancel={() => handleModalVisible()}
       >
         <div className="tableList">
-          <StandardTable
-            data={{ list: data }}
-            rowKey="Key"
+          <Table
+            dataSource={data}
+            bordered
+            pagination={false}
+            rowKey={rowKey || 'Key'}
             columns={this.skuColumns}
-            scroll={{ x: 2000 }}
+            scroll={{ x: 1800 }}
             rowSelection={{
-              onSelectRow: this.onSelectRow,
+              onChange: this.onSelectRow,
+              selectedRowKeys,
             }}
-            isAll
-            selectedRows={selectedRows}
-            onChange={this.handleStandardTableChange}
           />
         </div>
       </Modal>

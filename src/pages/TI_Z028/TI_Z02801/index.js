@@ -4,15 +4,17 @@ import { connect } from 'dva';
 import router from 'umi/router';
 import Link from 'umi/link';
 import moment from 'moment';
-import { Row, Col, Card, Form, Input, Button, DatePicker, message } from 'antd';
+import { Row, Col, Card, Form, Input, Button, DatePicker, List, Icon, message, Radio } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import MDMCommonality from '@/components/Select';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import OrderPreview from './components';
 import { getName } from '@/utils/utils';
+import styles from './style.less';
 
 const { RangePicker } = DatePicker;
+
 const FormItem = Form.Item;
 
 /* eslint react/no-multi-comp:0 */
@@ -183,21 +185,11 @@ class TI_Z02801 extends PureComponent {
 
   state = {
     selectedRows: [],
-    selectedChildRows: [],
+    orderLineList: [],
     modalVisible: false,
   };
 
   childColumns = [
-    // {
-    //   title: '询价单号',
-    //   width: 150,
-    //   dataIndex: 'PInquiryEntry',
-    // },
-    // {
-    //   title: '询价单行',
-    //   width: 80,
-    //   dataIndex: 'PInquiryLineID',
-    // },
     {
       title: '询价日期',
       width: 100,
@@ -259,20 +251,82 @@ class TI_Z02801 extends PureComponent {
     });
   }
 
+  static getDerivedStateFromProps(nextProps, prevState) {
+    if (nextProps.TI_Z02801.orderList !== prevState.orderLineList) {
+      return {
+        orderLineList: nextProps.TI_Z02801.orderList,
+      };
+    }
+    return null;
+  }
+
   expandedRowRender = (record, index) => (
-    <StandardTable
-      data={{ list: record.TI_Z02803 }}
-      rowSelection={{
-        onSelectRow: selectRows => this.childOnSelectRow(selectRows, index),
-      }}
-      columns={this.childColumns}
-    />
+    <Radio.Group onChange={item => this.childChange(item, record, index)}>
+      <List
+        itemLayout="horizontal"
+        style={{ marginLeft: 60 }}
+        className={styles.askInfo}
+        dataSource={record.TI_Z02803}
+        renderItem={item => (
+          <List.Item>
+            <List.Item.Meta
+              title={`${item.CardName}(${item.CardCode})`}
+              avatar={<Radio value={item} />}
+              description={
+                <ul>
+                  <li>
+                    联系人：<span>{item.Contacts}</span>
+                  </li>
+                  <li>
+                    手机：<span>{item.CellphoneNO}</span>
+                  </li>
+                  <li>
+                    邮箱：<span>{item.Email}</span>
+                  </li>
+                  <li>
+                    备注：<span>{item.LineComment}</span>
+                  </li>
+                  <li>
+                    价格：<span>{item.Price}</span>
+                    <Link
+                      style={{ marginLeft: 10 }}
+                      to={`/purchase/TI_Z027/update?DocEntry=${item.PInquiryEntry}`}
+                    >
+                      修改
+                    </Link>
+                  </li>
+                  <li>
+                    交期：<span>{moment(item.InquiryDueDate).format('YYYY-MM-DD')}</span>
+                  </li>
+                  <li>
+                    询价日期：<span>{moment(item.CreateDate).format('YYYY-MM-DD')}</span>
+                  </li>
+                  <li>
+                    最优：
+                    <span>
+                      {item.IsSelect === 'Y' ? (
+                        <Icon type="smile" theme="twoTone" />
+                      ) : (
+                        <Icon type="frown" theme="twoTone" />
+                      )}
+                    </span>
+                  </li>
+                </ul>
+              }
+            />
+          </List.Item>
+        )}
+      />
+    </Radio.Group>
   );
 
-  childOnSelectRow = (selectRows, index) => {
-    const { selectedRows } = this.state;
-    if (!selectedRows.length) return;
-    selectedRows[index].TI_Z02803 = [...selectRows];
+  childChange = (item, record, index) => {
+    const { orderLineList } = this.state;
+    console.log(orderLineList);
+    const newrecord = orderLineList[index];
+    Object.assign(newrecord, item);
+    orderLineList[index] = newrecord;
+    this.setState({ orderLineList: [...orderLineList] });
   };
 
   handleStandardTableChange = pagination => {
@@ -435,8 +489,9 @@ class TI_Z02801 extends PureComponent {
     const { modalVisible, selectedRows } = this.state;
 
     const columns = this.columns.map(item => {
-      item.align = 'center';
-      return item;
+      const newitem = item;
+      newitem.align = 'center';
+      return newitem;
     });
     const parentMethods = {
       handleSubmit: this.okHandle,

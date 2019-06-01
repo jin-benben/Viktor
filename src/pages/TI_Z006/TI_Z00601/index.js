@@ -103,7 +103,7 @@ class CompanyEdit extends PureComponent {
       key: 'address',
       render: (text, record) => (
         <Fragment>
-          <span>{`${record.Province + record.City + record.Area + record.Street}`}</span>
+          <span>{`${record.Province + record.City + record.Area}`}</span>
           <span>{`${record.Address}`}</span>
         </Fragment>
       ),
@@ -155,8 +155,7 @@ class CompanyEdit extends PureComponent {
         City: '',
         AreaID: '',
         Area: '',
-        StreetID: '',
-        Street: '',
+
         Address: '',
         UserName: '',
         ReceiverPhone: '',
@@ -432,8 +431,7 @@ class CompanyEdit extends PureComponent {
         City: '',
         AreaID: '',
         Area: '',
-        StreetID: '',
-        Street: '',
+
         Address: '',
         UserName: '',
         ReceiverPhone: '',

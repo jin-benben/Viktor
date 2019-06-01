@@ -114,8 +114,10 @@ class AddressInfo extends PureComponent {
             <FormItem key="address" {...this.formLayout} label="地址">
               {getFieldDecorator('address', {
                 rules: [{ required: true, message: '请选择地址！' }],
-                initialValue: formVals.ReceiverPhone,
-              })(<Address {...formVals} />)}
+                initialValue: [formVals.ProvinceID, formVals.CityID, formVals.AreaID],
+              })(
+                <Address initialValue={[formVals.ProvinceID, formVals.CityID, formVals.AreaID]} />
+              )}
             </FormItem>
           </Row>
           <Row>

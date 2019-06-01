@@ -2,10 +2,24 @@ import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
 import moment from 'moment';
-import { Row, Col, Card, Form, Input, Button, Divider, Select, DatePicker, Icon } from 'antd';
+import {
+  Row,
+  Col,
+  Card,
+  Form,
+  Input,
+  Button,
+  Divider,
+  Select,
+  DatePicker,
+  Icon,
+  message,
+} from 'antd';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import StandardTable from '@/components/StandardTable';
 import MDMCommonality from '@/components/Select';
+import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
+import NeedAskPrice from '../components/needAskPrice';
 import Link from 'umi/link';
 import DocEntryFrom from '@/components/DocEntryFrom';
 
@@ -24,6 +38,8 @@ const { Option } = Select;
 class SalesQuotationSku extends PureComponent {
   state = {
     expandForm: false,
+    needmodalVisible: false,
+    selectedRows: [],
   };
 
   columns = [
@@ -51,14 +67,14 @@ class SalesQuotationSku extends PureComponent {
     {
       title: '确认状态',
       dataIndex: 'LineStatus',
-      width: 100,
-      render: (text, record) => <span>确认状态{record.LineStatus}</span>,
+      width: 80,
+      render: (text, record) => <span>{record.LineStatus === 'O' ? '未确认' : '已确认'}</span>,
     },
     {
       title: '合同状态',
-      dataIndex: 'LineStatus',
-      width: 100,
-      render: (text, record) => <span>确认状态{record.LineStatus}</span>,
+      dataIndex: 'ApproveSts',
+      width: 80,
+      render: (text, record) => <span>{record.ApproveSts === 'Y' ? '已通过' : '未通过'}</span>,
     },
     {
       title: '客户',
@@ -95,7 +111,7 @@ class SalesQuotationSku extends PureComponent {
     },
     {
       title: 'SKU',
-      width: 100,
+      width: 80,
       dataIndex: 'SKU',
     },
     {
@@ -156,32 +172,33 @@ class SalesQuotationSku extends PureComponent {
 
     {
       title: '数量',
-      width: 100,
+      width: 80,
       dataIndex: 'Quantity',
     },
     {
       title: '单位',
-      width: 100,
+      width: 80,
       dataIndex: 'Unit',
     },
     {
       title: '要求交期',
       dataIndex: 'DueDate',
+      width: 100,
       render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
     {
       title: '询价价格',
-      width: 100,
+      width: 80,
       dataIndex: 'InquiryPrice',
     },
     {
       title: '价格',
-      width: 100,
+      width: 80,
       dataIndex: 'Price',
     },
     {
       title: '其他成本',
-      width: 100,
+      width: 80,
       dataIndex: 'OtherTotal',
     },
     // {
@@ -305,10 +322,55 @@ class SalesQuotationSku extends PureComponent {
     });
   };
 
-  handleOnRow = record => ({
-    // 详情or修改
-    onClick: () => router.push(`/sellabout/TI_Z029/detail?DocEntry=${record.DocEntry}`),
-  });
+  onSelectRow = selectedRows => {
+    this.setState({ selectedRows: [...selectedRows] });
+  };
+
+  toConfrim = () => {
+    const { selectedRows } = this.state;
+    if (!selectedRows.length) {
+      message.warning('请先选择');
+    }
+    this.setState({ needmodalVisible: true });
+  };
+
+  // 发送需报价
+  submitNeedLine = selectedRows => {
+    const {
+      dispatch,
+      SalesQuotationSku: { queryData },
+    } = this.props;
+    // eslint-disable-next-line camelcase
+    const TI_Z02908RequestItem = selectedRows.map(item => ({
+      DocEntry: item.DocEntry,
+      LineID: item.LineID,
+      UpdateTimestamp: item.UpdateTimestamp,
+    }));
+    dispatch({
+      type: 'SalesQuotationSku/confirm',
+      payload: {
+        Content: {
+          TI_Z02908RequestItem,
+        },
+      },
+      callback: response => {
+        if (response && response.Status === 200) {
+          message.success('提交成功');
+          this.setState({ needmodalVisible: false });
+          dispatch({
+            type: 'SalesQuotationSku/fetch',
+            payload: {
+              ...queryData,
+            },
+          });
+        }
+      },
+    });
+  };
+
+  handleModalVisible = flag => {
+    this.setState({ needmodalVisible: !!flag });
+  };
 
   renderSimpleForm() {
     const {
@@ -446,6 +508,11 @@ class SalesQuotationSku extends PureComponent {
       SalesQuotationSku: { SalesQuotationSkuList, pagination },
       loading,
     } = this.props;
+    const { needmodalVisible, selectedRows } = this.state;
+    const needParentMethods = {
+      handleSubmit: this.submitNeedLine,
+      handleModalVisible: this.handleModalVisible,
+    };
     return (
       <Fragment>
         <Card bordered={false}>
@@ -455,14 +522,22 @@ class SalesQuotationSku extends PureComponent {
               loading={loading}
               data={{ list: SalesQuotationSkuList }}
               pagination={pagination}
-              scroll={{ x: 2500 }}
+              scroll={{ x: 2300 }}
               rowKey="Key"
               columns={this.columns}
-              onRow={this.handleOnRow}
+              rowSelection={{
+                onSelectRow: this.onSelectRow,
+              }}
               onChange={this.handleStandardTableChange}
             />
           </div>
         </Card>
+        <NeedAskPrice data={selectedRows} {...needParentMethods} modalVisible={needmodalVisible} />
+        <FooterToolbar>
+          <Button onClick={this.toConfrim} type="primary">
+            确认销售报价
+          </Button>
+        </FooterToolbar>
       </Fragment>
     );
   }

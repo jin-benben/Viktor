@@ -1,10 +1,14 @@
 import React, { PureComponent } from 'react';
 import request from '@/utils/request';
 import { Select, Spin, Empty } from 'antd';
+import { connect } from 'dva';
 import debounce from 'lodash/debounce';
 
 const { Option } = Select;
 
+@connect(({ global }) => ({
+  global,
+}))
 class Brands extends PureComponent {
   constructor(props) {
     super(props);
@@ -18,16 +22,13 @@ class Brands extends PureComponent {
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    if (!prevState.value && nextProps.initialValue !== prevState.value) {
+    if (nextProps.initialValue !== prevState.value || !prevState.data.length) {
       return {
         value: nextProps.initialValue,
+        data: nextProps.global.BrandList,
       };
     }
     return null;
-  }
-
-  componentDidMount() {
-    this.fetchUser();
   }
 
   fetchUser = async value => {

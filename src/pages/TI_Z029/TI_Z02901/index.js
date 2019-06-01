@@ -191,12 +191,20 @@ class TI_Z029Component extends React.Component {
       align: 'center',
     },
     {
-      title: '销售建议价',
+      title: '销建议价',
       width: 120,
       inputType: 'text',
       dataIndex: 'Price',
       editable: true,
       align: 'center',
+    },
+    {
+      title: '销行总计',
+      width: 120,
+      align: 'center',
+      dataIndex: 'LineTotal',
+      render: (text, record) =>
+        record.lastIndex ? <span style={{ fontWeight: 'bolder' }}>{text}</span> : text,
     },
     {
       title: '询价最终价',
@@ -269,14 +277,7 @@ class TI_Z029Component extends React.Component {
       align: 'center',
       dataIndex: 'ProfitLineTotal',
     },
-    {
-      title: '销售行总计',
-      width: 150,
-      align: 'center',
-      dataIndex: 'LineTotal',
-      render: (text, record) =>
-        record.lastIndex ? <span style={{ fontWeight: 'bolder' }}>{text}</span> : text,
-    },
+
     {
       title: '操作',
       fixed: 'right',
@@ -417,13 +418,18 @@ class TI_Z029Component extends React.Component {
   componentDidMount() {
     const {
       dispatch,
-      global: { currentUser, CustomerList },
+      global: { currentUser, CustomerList, BrandList },
       TI_Z029: { orderDetail },
     } = this.props;
     const { CompanyCode, Owner, UserCode } = currentUser;
     if (!CustomerList.length) {
       dispatch({
         type: 'global/getCustomer',
+      });
+    }
+    if (!BrandList.length) {
+      dispatch({
+        type: 'global/getBrand',
       });
     }
     dispatch({
@@ -480,8 +486,7 @@ class TI_Z029Component extends React.Component {
           City: '',
           AreaID: '',
           Area: '',
-          StreetID: '',
-          Street: '',
+
           Address: '',
           NumAtCard: '',
           Owner: '',
@@ -532,6 +537,9 @@ class TI_Z029Component extends React.Component {
     const { formVals } = this.state;
     formVals.TI_Z02902.map(item => {
       if (item.key === record.key) {
+        record.SKUName = `${record.BrandName}  ${record.ProductName}  ${record.ManufactureNO}  ${
+          record.Parameters
+        }  ${record.Package}`;
         return record;
       }
       return item;
@@ -560,7 +568,6 @@ class TI_Z029Component extends React.Component {
       record.InquiryLineTotal = round(record.InquiryLineTotal, 2);
       record.LineTotal = isNaN(record.Quantity * record.Price) ? 0 : record.Quantity * record.Price;
       record.LineTotal = round(record.LineTotal, 2);
-      console.log(isNaN(record.OtherTotal) ? record.OtherTotal : 0);
       record.ProfitLineTotal =
         record.LineTotal -
         record.InquiryLineTotalLocal -
@@ -584,6 +591,9 @@ class TI_Z029Component extends React.Component {
   rowSelectChange = (value, record, index, key) => {
     const { formVals } = this.state;
     record[key] = value;
+    record.SKUName = `${record.BrandName}  ${record.ProductName}  ${record.ManufactureNO}  ${
+      record.Parameters
+    }  ${record.Package}`;
     formVals.TI_Z02902[index] = record;
     this.setState({ formVals: { ...formVals } });
   };
@@ -768,8 +778,7 @@ class TI_Z029Component extends React.Component {
       CityID,
       Area,
       AreaID,
-      Street,
-      StreetID,
+
       AddressID,
       Address,
     } = select;
@@ -780,8 +789,7 @@ class TI_Z029Component extends React.Component {
       CityID,
       Area,
       AreaID,
-      Street,
-      StreetID,
+
       AddressID,
       Address,
     });
@@ -798,7 +806,6 @@ class TI_Z029Component extends React.Component {
     if (formVals.TI_Z02902.length) {
       newLineID = formVals.TI_Z02902[formVals.TI_Z02902.length - 1].LineID + 1;
     }
-    console.log(currentUser.UserCode);
     selectedRows.map((item, index) => {
       newLineID += index;
       const {
@@ -1259,7 +1266,6 @@ class TI_Z029Component extends React.Component {
               <Col lg={8} md={12} sm={24}>
                 <FormItem key="address" {...this.formLayout} label="地址">
                   {getFieldDecorator('address', {
-                    rules: [{ required: true, message: '请选择地址！' }],
                     initialValue: formVals.AddressID,
                   })(
                     <Select
@@ -1270,7 +1276,7 @@ class TI_Z029Component extends React.Component {
                     >
                       {addList.map(option => (
                         <Option key={option.AddressID} value={option.AddressID}>
-                          {`${option.Province}/${option.City}/${option.Area}/${option.Street}`}
+                          {`${option.Province}/${option.City}/${option.Area}`}
                         </Option>
                       ))}
                     </Select>
@@ -1280,7 +1286,6 @@ class TI_Z029Component extends React.Component {
               <Col lg={8} md={12} sm={24}>
                 <FormItem key="Address" {...this.formLayout} label="地址">
                   {getFieldDecorator('Address', {
-                    rules: [{ required: true, message: '请输入详细地址！' }],
                     initialValue: formVals.Address,
                   })(<Input placeholder="请输入详细地址！" />)}
                 </FormItem>
@@ -1325,6 +1330,14 @@ class TI_Z029Component extends React.Component {
           {formVals.DocEntry ? (
             <Fragment>
               <CancelOrder cancelSubmit={this.cancelSubmit} />
+              <Button
+                icon="plus"
+                style={{ marginLeft: 8 }}
+                type="primary"
+                onClick={() => router.push('/sellabout/TI_Z029/add')}
+              >
+                新建
+              </Button>
               <Button type="primary" onClick={this.costCheck}>
                 成本核算
               </Button>
@@ -1373,6 +1386,7 @@ class TI_Z029Component extends React.Component {
         <NeedAskPrice
           data={formVals.TI_Z02902}
           {...needParentMethods}
+          rowKey="LineID"
           modalVisible={needmodalVisible}
         />
       </Card>

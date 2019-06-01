@@ -18,14 +18,11 @@ class Brand extends PureComponent {
     fetching: false,
   };
 
-  componentDidMount() {
-    this.fetchUser();
-  }
-
   static getDerivedStateFromProps(nextProps, prevState) {
-    if (nextProps.initialValue !== prevState.value) {
+    if (nextProps.initialValue !== prevState.value || !prevState.data.length) {
       return {
         value: nextProps.initialValue,
+        data: nextProps.data,
       };
     }
     return null;

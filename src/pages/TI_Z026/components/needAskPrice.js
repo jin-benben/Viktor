@@ -134,7 +134,7 @@ class OrderLine extends PureComponent {
   static getDerivedStateFromProps(nextProps, prevState) {
     if (nextProps.data !== prevState.data) {
       return {
-        data: nextProps.data,
+        data: nextProps.data.filter(item => item.IsInquiry === 'Y'),
         selectedRows: nextProps.data,
       };
     }

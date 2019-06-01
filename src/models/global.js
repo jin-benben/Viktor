@@ -1,4 +1,11 @@
-import { getMDMCommonalityRule, tokenOutRule, customerRule, supplierRule } from '@/services';
+import {
+  getMDMCommonalityRule,
+  tokenOutRule,
+  categoryRule,
+  brandRule,
+  customerRule,
+  supplierRule,
+} from '@/services';
 import { routerRedux } from 'dva/router';
 import { notification } from 'antd';
 import { parse } from 'qs';
@@ -21,6 +28,8 @@ export default {
     Curr: [], // 交易币种
     SupplierList: [], // 供应商
     CustomerList: [], // 客户
+    BrandList: [], // 品牌
+    CategoryTree: [], // 分类
   },
 
   effects: {
@@ -97,6 +106,42 @@ export default {
         }
       }
     },
+    // 获取品牌下拉框初始值
+    *getBrand(_, { put, call }) {
+      const response = yield call(brandRule);
+      if (response && response.Status === 200) {
+        if (!response.Content) {
+          yield put({
+            type: 'save',
+            payload: {
+              BrandList: [],
+            },
+          });
+        } else {
+          const { rows } = response.Content;
+          yield put({
+            type: 'save',
+            payload: {
+              BrandList: rows,
+            },
+          });
+        }
+      }
+    },
+    // 获取分类下拉框初始值
+    *getCategory(_, { put, call }) {
+      const response = yield call(categoryRule);
+      if (response && response.Status === 200) {
+        if (response.Content) {
+          yield put({
+            type: 'save',
+            payload: {
+              CategoryTree: response.Content,
+            },
+          });
+        }
+      }
+    },
     // 获取供应商下拉框及弹窗初始值
     *getSupplier(_, { put, call }) {
       const response = yield call(supplierRule);
@@ -121,6 +166,7 @@ export default {
         }
       }
     },
+    // 验证token
     *checkToken(_, { put, call }) {
       const currentUser = localStorage.getItem('currentUser')
         ? parse(localStorage.getItem('currentUser'))

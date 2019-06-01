@@ -1,11 +1,12 @@
 import React, { Component, Fragment } from 'react';
-import { Row, Col, Form, Input, DatePicker, Modal, Table, message } from 'antd';
+import { Row, Col, Form, Input, DatePicker, Modal, Table, List, Icon, message } from 'antd';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import MDMCommonality from '@/components/Select';
 import moment from 'moment';
 import Link from 'umi/link';
 import { connect } from 'dva';
 import { getName } from '@/utils/utils';
+import styles from '../style.less';
 
 const FormItem = Form.Item;
 
@@ -147,11 +148,6 @@ class OrderPreview extends Component {
       render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
     {
-      title: '采购价格',
-      width: 100,
-      dataIndex: 'Price',
-    },
-    {
       title: '采购交期',
       width: 120,
       dataIndex: 'InquiryDueDate',
@@ -184,18 +180,56 @@ class OrderPreview extends Component {
     this.setState({ selectedRows: [...selectedRows], selectedRowKeys: [...selectedRowKeys] });
   };
 
-  expandedRowRender = record => {
-    const { childColumns } = this.props;
-    return (
-      <Table
-        dataSource={record.TI_Z02803}
-        pagination={false}
-        bordered
-        rowKey="Key"
-        columns={childColumns}
-      />
-    );
-  };
+  expandedRowRender = record => (
+    <List
+      itemLayout="horizontal"
+      style={{ marginLeft: 60 }}
+      className={styles.askInfo}
+      dataSource={record.TI_Z02803}
+      renderItem={item => (
+        <List.Item>
+          <List.Item.Meta
+            title={`${item.CardName}(${item.CardCode})`}
+            description={
+              <ul>
+                <li>
+                  联系人：<span>{item.Contacts}</span>
+                </li>
+                <li>
+                  手机：<span>{item.CellphoneNO}</span>
+                </li>
+                <li>
+                  邮箱：<span>{item.Email}</span>
+                </li>
+                <li>
+                  备注：<span>{item.LineComment}</span>
+                </li>
+                <li>
+                  价格：<span>{item.Price}</span>
+                </li>
+                <li>
+                  交期：<span>{moment(item.InquiryDueDate).format('YYYY-MM-DD')}</span>
+                </li>
+                <li>
+                  询价日期：<span>{moment(item.CreateDate).format('YYYY-MM-DD')}</span>
+                </li>
+                <li>
+                  最优：
+                  <span>
+                    {item.IsSelect === 'Y' ? (
+                      <Icon type="smile" theme="twoTone" />
+                    ) : (
+                      <Icon type="frown" theme="twoTone" />
+                    )}
+                  </span>
+                </li>
+              </ul>
+            }
+          />
+        </List.Item>
+      )}
+    />
+  );
 
   okHandle = () => {
     const { selectedRows } = this.state;
@@ -267,9 +301,7 @@ class OrderPreview extends Component {
           </Col>
           <Col md={8} sm={24}>
             <FormItem key="Comment" {...formLayout} label="备注">
-              {getFieldDecorator('Comment', {
-                rules: [{ required: true, message: '请输入备注' }],
-              })(<Input placeholder="请输入客户名称" />)}
+              {getFieldDecorator('Comment')(<Input placeholder="请输入客户名称" />)}
             </FormItem>
           </Col>
         </Row>
@@ -297,7 +329,7 @@ class OrderPreview extends Component {
               pagination={false}
               dataSource={orderLineList}
               rowKey="LineID"
-              scroll={{ x: 2800 }}
+              scroll={{ x: 2500 }}
               rowSelection={{
                 onChange: this.onSelectRow,
                 selectedRowKeys,

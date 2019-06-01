@@ -112,9 +112,7 @@ class agreementOrder extends PureComponent {
       title: '送货地址',
       dataIndex: 'address',
       render: (text, record) => (
-        <span>
-          {`${record.Province}/${record.City}/${record.Area}/${record.Street}/${record.Adress}`}
-        </span>
+        <span>{`${record.Province}/${record.City}/${record.Area}/${record.Adress}`}</span>
       ),
     },
     {
@@ -137,12 +135,6 @@ class agreementOrder extends PureComponent {
       title: '成本总计',
       width: 100,
       dataIndex: 'OtherTotal',
-    },
-    {
-      title: '利润',
-      width: 100,
-      dataIndex: 'profit',
-      render: text => <span>{`${0}`}</span>,
     },
     {
       title: '备注',

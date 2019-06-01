@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import React, { Component } from 'react';
 import moment from 'moment';
 import { DatePicker, Select, Input } from 'antd';
@@ -94,20 +95,22 @@ class SelectionLine extends Component {
       title: '联系人',
       width: 150,
       dataIndex: 'ContactsID',
-      render: (text, record, index) => (
-        <Select
-          placeholder="请选择联系人"
-          value={text}
-          onSelect={LineID => this.linkmanChange(LineID, record, index)}
-          style={{ width: '100%' }}
-        >
-          {record.linkmanList.map(option => (
-            <Option key={option.LineID} value={option.LineID}>
-              {option.Name}
-            </Option>
-          ))}
-        </Select>
-      ),
+      render: (text, record, index) => {
+        return (
+          <Select
+            placeholder="请选择联系人"
+            value={text}
+            onSelect={LineID => this.linkmanChange(LineID, record, index)}
+            style={{ width: '100%' }}
+          >
+            {record.linkmanList.map(option => (
+              <Option key={option.LineID} value={option.LineID}>
+                {option.Name}
+              </Option>
+            ))}
+          </Select>
+        );
+      },
     },
     {
       title: '备注',
@@ -123,7 +126,6 @@ class SelectionLine extends Component {
 
   static getDerivedStateFromProps(nextProps, prevState) {
     if (nextProps.orderLineList !== prevState.orderLineList) {
-      console.log(nextProps.orderLineList);
       return {
         orderLineList: nextProps.orderLineList,
         selectedRows: nextProps.orderLineList,
@@ -134,9 +136,7 @@ class SelectionLine extends Component {
 
   linkmanChange = (id, record, index) => {
     const { orderLineList } = this.state;
-    const select = record.linkmanList.find(item => {
-      return item.LineID === id;
-    });
+    const select = record.linkmanList.find(item => item.LineID === id);
     const { CellphoneNO, Email, PhoneNO, LineID, Name } = select;
     Object.assign(record, { CellphoneNO, Email, PhoneNO, ContactsID: LineID, Contacts: Name });
     orderLineList[index] = record;
@@ -144,16 +144,16 @@ class SelectionLine extends Component {
   };
 
   // 币种修改
-  currencyChange = (Currency, index, record) => {
+  currencyChange = (currency, record, index) => {
     const { orderLineList } = this.state;
     const { dispatch } = this.props;
-    record.Currency = Currency;
+    record.Currency = currency;
     dispatch({
       type: 'global/getMDMCommonality',
       payload: {
         Content: {
           CodeList: ['Rate'],
-          key: Currency,
+          key: currency,
         },
       },
       callback: response => {

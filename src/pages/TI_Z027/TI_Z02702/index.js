@@ -105,7 +105,7 @@ class InquiryEdit extends React.Component {
     },
     {
       title: '型号',
-      width: 100,
+      width: 130,
       dataIndex: 'ManufactureNO',
       inputType: 'textArea',
       editable: true,
@@ -113,7 +113,7 @@ class InquiryEdit extends React.Component {
     },
     {
       title: '参数',
-      width: 100,
+      width: 130,
       dataIndex: 'Parameters',
       inputType: 'textArea',
       editable: true,
@@ -399,20 +399,18 @@ class InquiryEdit extends React.Component {
     let InquiryDocTotal = 0;
     // eslint-disable-next-line array-callback-return
     formVals.TI_Z02702.map(record => {
-      record.InquiryLineTotalLocal = isNaN(record.Quantity * record.Price)
-        ? 0
-        : record.Quantity * record.Price;
-      record.InquiryLineTotalLocal = round(record.InquiryLineTotalLocal, 2);
-      record.LineTotal = isNaN(record.Quantity * record.Price * formVals.DocRate)
+      record.LineTotal = isNaN(record.Quantity * record.Price) ? 0 : record.Quantity * record.Price;
+      record.LineTotal = round(record.LineTotal, 2);
+      record.InquiryLineTotalLocal = isNaN(record.Quantity * record.Price * formVals.DocRate)
         ? 0
         : record.Quantity * record.Price * formVals.DocRate;
-      record.LineTotal = round(record.LineTotal, 2);
+      record.InquiryLineTotalLocal = round(record.InquiryLineTotalLocal, 2);
       InquiryDocTotalLocal += record.InquiryLineTotalLocal;
       InquiryDocTotal += record.LineTotal;
     });
 
-    formVals.InquiryDocTotalLocal = InquiryDocTotalLocal;
-    formVals.InquiryDocTotal = InquiryDocTotal;
+    formVals.InquiryDocTotalLocal = round(InquiryDocTotalLocal, 2);
+    formVals.InquiryDocTotal = round(InquiryDocTotal, 2);
     this.setState({ formVals });
   };
 
@@ -804,7 +802,7 @@ class InquiryEdit extends React.Component {
             <EditableFormTable
               rowChange={this.rowChange}
               rowKey="LineID"
-              scroll={{ x: 2000 }}
+              scroll={{ x: 2100 }}
               columns={this.skuColumns}
               data={newdata}
             />
@@ -884,6 +882,14 @@ class InquiryEdit extends React.Component {
 
         <FooterToolbar>
           <CancelOrder cancelSubmit={this.cancelSubmit} />
+          <Button
+            icon="plus"
+            style={{ marginLeft: 8 }}
+            type="primary"
+            onClick={() => router.push('/purchase/TI_Z027/edit')}
+          >
+            新建
+          </Button>
           <Button
             style={{ marginLeft: 10, marginRight: 10 }}
             onClick={this.updateHandle}

@@ -53,7 +53,7 @@ class NeedTabl extends React.Component {
       fixed: 'left',
       dataIndex: 'supplier',
       render: (text, record, index) => (
-        <div style={{ width: '190px' }}>
+        <div style={{ width: '180px' }}>
           <SupplierSelect
             initialValue={{ key: record.SupplierCode || '', label: record.SupplierName || '' }}
             onChange={value => this.changeSupplier(value, record, index)}
@@ -73,12 +73,12 @@ class NeedTabl extends React.Component {
     {
       title: '单据日期',
       dataIndex: 'DocDate',
-      width: 120,
+      width: 100,
       render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
     {
       title: '创建日期',
-      width: 120,
+      width: 100,
       dataIndex: 'CreateDate',
       render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
@@ -95,7 +95,7 @@ class NeedTabl extends React.Component {
     },
     {
       title: '销售员',
-      width: 100,
+      width: 80,
       dataIndex: 'Owner',
       render: text => {
         const {
@@ -208,12 +208,12 @@ class NeedTabl extends React.Component {
     {
       title: '要求交期',
       dataIndex: 'DueDate',
-      width: 120,
+      width: 100,
       render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
     {
       title: '价格',
-      width: 100,
+      width: 80,
       dataIndex: 'Price',
     },
     {
@@ -222,8 +222,8 @@ class NeedTabl extends React.Component {
       dataIndex: 'LineComment',
     },
     {
-      title: '销售总计',
-      width: 100,
+      title: '销总计',
+      width: 80,
       dataIndex: 'LineTotal',
     },
   ];

@@ -35,8 +35,7 @@ export default {
       City: '',
       AreaID: '',
       Area: '',
-      StreetID: '',
-      Street: '',
+
       Address: '',
       NumAtCard: '',
       ClosedDate: '2019-05-25',

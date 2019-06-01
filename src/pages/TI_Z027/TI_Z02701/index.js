@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 /* eslint-disable array-callback-return */
 import React, { Component, Fragment } from 'react';
 import StandardTable from '@/components/StandardTable';
@@ -9,6 +10,7 @@ import NeedTabl from './components/step1';
 import ConfirmTabl from './components/step2';
 import OrderModal from './components/orderModal';
 import styles from './style.less';
+import request from '@/utils/request';
 
 const { Step } = Steps;
 /* eslint react/no-multi-comp:0 */
@@ -73,36 +75,51 @@ class SupplierAsk extends Component {
   }
 
   getDocRate = async lineList => {
-    const { dispatch } = this.props;
-    await lineList.map(async item => {
-      await dispatch({
-        type: 'global/getMDMCommonality',
-        payload: {
-          Content: {
-            CodeList: ['Rate'],
-            key: item.Currency,
+    await Promise.all(
+      lineList.map(async item => {
+        const newItem = item;
+        const responseCurrency = await request('/MDM/MDMCommonality/MDMCommonality01', {
+          method: 'POST',
+          data: {
+            Content: {
+              CodeList: ['Rate'],
+              key: newItem.Currency,
+            },
           },
-        },
-        callback: response => {
-          item.DocRate = response.Content.DropdownData.Rate[0]
-            ? response.Content.DropdownData.Rate[0].Value
+        });
+        if (responseCurrency && responseCurrency.Status === 200) {
+          newItem.DocRate = responseCurrency.Content.DropdownData.Rate[0]
+            ? responseCurrency.Content.DropdownData.Rate[0].Value
             : '';
-        },
-      });
-      if (!item.linkmanList.length) {
-        await dispatch({
-          type: 'supplierAsk/fetch',
-          payload: {
+        }
+        const responseSupplier = await request('/MDM/TI_Z007/TI_Z00703', {
+          method: 'POST',
+          data: {
             Content: {
               Code: item.CardCode,
             },
           },
-          callback: response => {
-            item.linkmanList = [response.Content.TI_Z00702List];
-          },
         });
-      }
-    });
+        if (responseSupplier && responseSupplier.Status === 200) {
+          const {
+            CellphoneNO,
+            Email,
+            PhoneNO,
+            Name,
+            LineID,
+          } = responseSupplier.Content.TI_Z00702List[0];
+          Object.assign(newItem, {
+            CellphoneNO,
+            Email,
+            PhoneNO,
+            Contacts: Name,
+            ContactsID: LineID,
+            linkmanList: [...responseSupplier.Content.TI_Z00702List],
+          });
+        }
+        return newItem;
+      })
+    );
     this.setState({
       confimSelectedRows: [...lineList],
       lastConfrimList: [...lineList],
@@ -218,6 +235,7 @@ class SupplierAsk extends Component {
         });
       }
     });
+    console.log(lineList);
     this.getDocRate(lineList);
   };
 

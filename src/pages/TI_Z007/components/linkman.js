@@ -27,14 +27,6 @@ class LinkManFrom extends PureComponent {
     return null;
   }
 
-  validatorPhone = (rule, value, callback) => {
-    if (value && !checkPhone(value)) {
-      callback(new Error('手机号格式不正确'));
-    } else {
-      callback();
-    }
-  };
-
   validatorEmail = (rule, value, callback) => {
     if (value && !chechEmail(value)) {
       callback(new Error('邮箱格式不正确'));
@@ -100,12 +92,6 @@ class LinkManFrom extends PureComponent {
             <Col span={12}>
               <FormItem key="CellphoneNO" {...this.formLayout} label="手机号">
                 {getFieldDecorator('CellphoneNO', {
-                  rules: [
-                    { required: true, message: '请输入手机号！' },
-                    {
-                      validator: this.validatorPhone,
-                    },
-                  ],
                   initialValue: formVals.CellphoneNO,
                 })(<Input addonBefore={prefixSelector} placeholder="请输入手机号" />)}
               </FormItem>
@@ -115,7 +101,10 @@ class LinkManFrom extends PureComponent {
             <Col span={12}>
               <FormItem key="Email" {...this.formLayout} label="邮箱">
                 {getFieldDecorator('Email', {
-                  rules: [{ validator: this.validatorEmail }],
+                  rules: [
+                    { required: true, message: '请输入邮箱' },
+                    { validator: this.validatorEmail },
+                  ],
                   initialValue: formVals.Email,
                 })(<Input placeholder="请输入邮箱" />)}
               </FormItem>
@@ -133,6 +122,7 @@ class LinkManFrom extends PureComponent {
             <Col span={12}>
               <FormItem key="PhoneNO" {...this.formLayout} label="电话">
                 {getFieldDecorator('PhoneNO', {
+                  rules: [{ required: true, message: '请输入电话' }],
                   initialValue: formVals.PhoneNO,
                 })(<Input placeholder="请输入电话" />)}
               </FormItem>
