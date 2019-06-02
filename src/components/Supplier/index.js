@@ -1,10 +1,13 @@
 import React, { PureComponent } from 'react';
 import request from '@/utils/request';
 import { Select, Spin, message, Empty } from 'antd';
+import { connect } from 'dva';
 import debounce from 'lodash/debounce';
 
 const { Option } = Select;
-
+@connect(({ global }) => ({
+  global,
+}))
 class Staffs extends PureComponent {
   constructor(props) {
     super(props);
@@ -12,9 +15,19 @@ class Staffs extends PureComponent {
     this.fetchUser = debounce(this.fetchUser, 1000);
     this.state = {
       data: [],
-      value: props.value,
+      value: { key: '', label: '' },
       fetching: false,
     };
+  }
+
+  static getDerivedStateFromProps(nextProps, prevState) {
+    if (nextProps.initialValue !== prevState.value || !prevState.data.length) {
+      return {
+        value: nextProps.initialValue.key ? nextProps.initialValue : prevState.value,
+        data: nextProps.global.SupplierList,
+      };
+    }
+    return null;
   }
 
   fetchUser = async value => {
@@ -50,6 +63,7 @@ class Staffs extends PureComponent {
       value,
       fetching: false,
     });
+
     const { onChange } = this.props;
     if (onChange) {
       onChange(value);
@@ -58,14 +72,14 @@ class Staffs extends PureComponent {
 
   render() {
     const { fetching, data, value } = this.state;
-    const { initialValue, labelInValue } = this.props;
+    const { labelInValue } = this.props;
+    console.log(value);
     return (
       <Select
         showSearch
         showArrow={false}
         labelInValue={labelInValue}
         value={value}
-        defaultValue={initialValue}
         placeholder="输入名称"
         notFoundContent={fetching ? <Spin size="small" /> : <Empty />}
         filterOption={false}

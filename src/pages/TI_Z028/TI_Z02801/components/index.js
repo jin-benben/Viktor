@@ -191,7 +191,7 @@ class OrderPreview extends Component {
           <List.Item.Meta
             title={`${item.CardName}(${item.CardCode})`}
             description={
-              <ul>
+              <ul className={styles.itemInfo}>
                 <li>
                   联系人：<span>{item.Contacts}</span>
                 </li>

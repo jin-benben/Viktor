@@ -1,7 +1,7 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
-import { Row, Col, Card, Form, Input, Button } from 'antd';
+import { Row, Col, Card, Form, Input, Button, Checkbox } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import Link from 'umi/link';
 import { getName } from '@/utils/utils';
@@ -112,12 +112,13 @@ class supplierSearch extends PureComponent {
     form.validateFields((err, fieldsValue) => {
       if (err) return;
       dispatch({
-        type: 'staffs/fetch',
+        type: 'supplierSearch/fetch',
         payload: {
           Content: {
             SearchText: '',
             SearchKey: 'Name',
             ...fieldsValue,
+            IsCheck: fieldsValue.IsCheck ? 'Y' : 'N',
           },
           page: 1,
           rows: 30,
@@ -140,7 +141,16 @@ class supplierSearch extends PureComponent {
               {getFieldDecorator('SearchText')(<Input placeholder="请输入关键字" />)}
             </FormItem>
           </Col>
-
+          <Col md={5} sm={24}>
+            <FormItem>{getFieldDecorator('BrandName')(<Input placeholder="品牌" />)}</FormItem>
+          </Col>
+          <Col md={3} sm={24}>
+            <FormItem>
+              {getFieldDecorator('IsCheck', { valuePropName: 'checked', initialValue: true })(
+                <Checkbox>是否勾选</Checkbox>
+              )}
+            </FormItem>
+          </Col>
           <Col md={8} sm={24}>
             <span className="submitButtons">
               <Button type="primary" htmlType="submit">

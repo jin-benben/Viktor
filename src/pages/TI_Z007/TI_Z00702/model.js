@@ -8,6 +8,8 @@ export default {
     queryData: {
       Content: {
         SearchText: '',
+        BrandName: '',
+        IsCheck: 'N',
         SearchKey: 'Name',
       },
       page: 1,

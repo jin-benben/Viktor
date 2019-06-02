@@ -47,7 +47,7 @@ export default {
         type: 'save',
         payload: response,
       });
-      if (callback) callback();
+      if (callback) callback(response);
     },
 
     *update({ payload, callback }, { call, put }) {

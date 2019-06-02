@@ -20,27 +20,48 @@ class CreateForm extends React.Component {
       inputType: 'text',
       editable: true,
     },
+    {
+      title: '税率',
+      dataIndex: 'U_VatRate',
+      inputType: 'text',
+      editable: true,
+    },
+    {
+      title: '特殊税率',
+      dataIndex: 'U_VatRateOther',
+      inputType: 'text',
+      editable: true,
+    },
+    {
+      title: '申报要素',
+      dataIndex: 'U_Elements',
+      inputType: 'text',
+      editable: true,
+    },
   ];
 
   constructor(props) {
     super(props);
-    let { formVals } = props;
-    formVals = formVals.map((item, index) => {
-      // eslint-disable-next-line no-param-reassign
-      item.key = index;
-      return item;
-    });
+
     this.state = {
-      TI_Z03601: formVals,
+      TI_Z03601: [],
+      method: 'A',
     };
   }
 
-  static getDerivedStateFromProps(nextProps, prevState) {
-    if (nextProps.formVals !== prevState.formVals) {
+  static getDerivedStateFromProps(nextProps, preState) {
+    if (nextProps.method !== preState.method) {
+      const formVals = nextProps.formVals.map((item, index) => {
+        // eslint-disable-next-line no-param-reassign
+        item.key = index;
+        return item;
+      });
       return {
-        TI_Z03601: nextProps.formVals,
+        TI_Z03601: formVals,
+        method: nextProps.method,
       };
     }
+
     return null;
   }
 
@@ -64,33 +85,50 @@ class CreateForm extends React.Component {
   addLine = () => {
     const { TI_Z03601 } = this.state;
     if (!TI_Z03601.length) {
-      TI_Z03601.push({ Code: '', Name: '', key: 1 });
-      this.setState({ TI_Z03601: [...TI_Z03601] });
+      this.setState({
+        TI_Z03601: [
+          ...TI_Z03601,
+          { Code: '', Name: '', key: 1, U_VatRate: '', U_VatRateOther: '', U_Elements: '' },
+        ],
+      });
       return;
     }
     const last = TI_Z03601[TI_Z03601.length - 1];
     if (last.Code && last.Name) {
-      TI_Z03601.push({ Code: '', Name: '', key: last.key + 1 });
-      this.setState({ TI_Z03601: [...TI_Z03601] });
+      this.setState({
+        TI_Z03601: [
+          ...TI_Z03601,
+          {
+            Code: '',
+            Name: '',
+            key: last.key + 1,
+            U_VatRate: '',
+            U_VatRateOther: '',
+            U_Elements: '',
+          },
+        ],
+      });
     } else {
       message.warning('请先填完上一个');
     }
   };
 
   render() {
-    const { modalVisible, handleModalVisible, method } = this.props;
-    const { TI_Z03601 } = this.state;
+    const { modalVisible, handleModalVisible } = this.props;
+    const { TI_Z03601, method } = this.state;
+    console.log(TI_Z03601);
     const columns = this.columns.map(col => {
-      if (col.dataIndex === 'Code' && method === 'U') {
+      console.log(method);
+      if (col.dataIndex === 'Code') {
         // eslint-disable-next-line no-param-reassign
-        col.editable = false;
+        col.editable = method === 'A';
         return col;
       }
       return col;
     });
     return (
       <Modal
-        width={640}
+        width={960}
         destroyOnClose
         title="编辑"
         okText="保存"
@@ -137,6 +175,18 @@ class HSCode extends PureComponent {
     {
       title: '名称',
       dataIndex: 'Name',
+    },
+    {
+      title: '税率',
+      dataIndex: 'U_VatRate',
+    },
+    {
+      title: '特殊税率',
+      dataIndex: 'U_VatRateOther',
+    },
+    {
+      title: '申报要素',
+      dataIndex: 'U_Elements',
     },
     {
       title: '操作',
@@ -306,6 +356,7 @@ class HSCode extends PureComponent {
       loading,
     } = this.props;
     const { modalVisible, formValues, method } = this.state;
+    console.log(method);
     const parentMethods = {
       handleSubmit: this.handleSubmit,
       handleModalVisible: this.handleModalVisible,

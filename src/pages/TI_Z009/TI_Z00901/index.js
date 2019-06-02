@@ -1,3 +1,4 @@
+/* eslint-disable array-callback-return */
 /* eslint-disable no-param-reassign */
 import React, { Component, Fragment } from 'react';
 import { Card, Icon, Button, message, Select } from 'antd';

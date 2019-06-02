@@ -1,16 +1,19 @@
 import React, { PureComponent } from 'react';
 
 import { Row, Col, Form, Input, Modal, Button, message } from 'antd';
+import { connect } from 'dva';
 import StandardTable from '@/components/StandardTable';
-
 import request from '@/utils/request';
 
 const FormItem = Form.Item;
 
 @Form.create()
+@connect(({ global }) => ({
+  global,
+}))
 class BrandModal extends PureComponent {
   state = {
-    staffsList: [],
+    brandList: [],
     selectedRows: [],
     queryData: {
       Content: {
@@ -43,9 +46,13 @@ class BrandModal extends PureComponent {
     },
   ];
 
-  componentDidMount() {
-    const { queryData } = this.state;
-    this.getCompany(queryData);
+  static getDerivedStateFromProps(nextProps, prevState) {
+    if (!prevState.brandList.length) {
+      return {
+        brandList: nextProps.global.BrandList,
+      };
+    }
+    return null;
   }
 
   okHandle = () => {
@@ -70,7 +77,7 @@ class BrandModal extends PureComponent {
       rows: pagination.pageSize,
     };
     this.setState({ queryData });
-    this.getCompany(queryData);
+    this.getBrand(queryData);
   };
 
   handleSearch = e => {
@@ -89,12 +96,12 @@ class BrandModal extends PureComponent {
         sidx: 'Code',
         sord: 'Desc',
       };
-      this.getCompany(queryData);
+      this.getBrand(queryData);
     });
   };
 
-  getCompany = async params => {
-    const response = await request('/MDM/TI_Z006/TI_Z00602', {
+  getBrand = async params => {
+    const response = await request('/MDM/TI_Z005/TI_Z00502', {
       method: 'POST',
       data: {
         ...params,
@@ -105,7 +112,7 @@ class BrandModal extends PureComponent {
         const { rows, records, page } = response.Content;
         const { pagination } = this.state;
         this.setState({
-          staffsList: [...rows],
+          brandList: [...rows],
           pagination: { ...pagination, total: records, current: page },
         });
       }
@@ -116,20 +123,15 @@ class BrandModal extends PureComponent {
     const {
       form: { getFieldDecorator },
     } = this.props;
-    const { queryData } = this.state;
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8 }}>
-          <Col className="submitButtons">
-            {queryData.SearchKey === 'Name' ? (
-              <FormItem label="客户名称">
-                {getFieldDecorator('SearchText')(<Input placeholder="请输入" />)}
-              </FormItem>
-            ) : (
-              <FormItem label="客户ID">
-                {getFieldDecorator('SearchText')(<Input placeholder="请输入" />)}
-              </FormItem>
-            )}
+          <Col>
+            <FormItem>
+              {getFieldDecorator('SearchText')(<Input placeholder="请输入关键字" />)}
+            </FormItem>
+          </Col>
+          <Col>
             <FormItem>
               <Button type="primary" htmlType="submit">
                 查询
@@ -142,7 +144,7 @@ class BrandModal extends PureComponent {
   }
 
   render() {
-    const { loading, pagination, staffsList } = this.state;
+    const { loading, pagination, brandList } = this.state;
     const { modalVisible, handleModalVisible } = this.props;
     return (
       <Modal
@@ -157,11 +159,13 @@ class BrandModal extends PureComponent {
           <div className="tableListForm">{this.renderSimpleForm()}</div>
           <StandardTable
             loading={loading}
-            data={{ list: staffsList }}
+            data={{ list: brandList }}
             rowKey="Code"
+            scroll={{ y: 400 }}
             pagination={pagination}
             columns={this.columns}
             rowSelection={{
+              type: 'radio',
               onSelectRow: this.onSelectRow,
             }}
             onChange={this.handleStandardTableChange}

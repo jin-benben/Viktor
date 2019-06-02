@@ -92,13 +92,15 @@ class InquiryEdit extends React.Component {
       dataIndex: 'BrandName',
       render: (text, record, index) =>
         record.lastIndex ? null : (
-          <Brand
-            initialValue={record.BrandName}
-            keyType="Name"
-            onChange={value => {
-              this.rowSelectChange(value, record, index, 'BrandName');
-            }}
-          />
+          <div style={{ width: 90 }}>
+            <Brand
+              initialValue={record.BrandName}
+              keyType="Name"
+              onChange={value => {
+                this.rowSelectChange(value, record, index, 'BrandName');
+              }}
+            />
+          </div>
         ),
     },
     {
@@ -138,6 +140,14 @@ class InquiryEdit extends React.Component {
       width: 80,
       inputType: 'text',
       dataIndex: 'Unit',
+      editable: true,
+      align: 'center',
+    },
+    {
+      title: '备注',
+      dataIndex: 'LineComment',
+      inputType: 'textArea',
+      width: 150,
       editable: true,
       align: 'center',
     },
@@ -356,6 +366,7 @@ class InquiryEdit extends React.Component {
         // 当前行
         TI_Z02604: [],
       },
+      selectedRows: [], // 需询价
       DefaultWhsCode: '', // 当前仓库
     };
     this.formLayout = {
@@ -871,11 +882,13 @@ class InquiryEdit extends React.Component {
 
   // 确认需要采购询价
   selectNeed = () => {
-    const { selectedRows } = this.state;
+    const { formVals } = this.state;
+    const selectedRows = formVals.TI_Z02602.filter(item => item.IsInquiry === 'N');
     if (selectedRows.length) {
+      this.setState({ selectedRows: [...selectedRows] });
       this.handleModalVisible(true);
     } else {
-      message.warning('请先选择');
+      message.warning('暂无需询价的行');
     }
   };
 
@@ -896,6 +909,7 @@ class InquiryEdit extends React.Component {
       skuModalVisible,
       needmodalVisible,
       attachmentVisible,
+      selectedRows,
     } = this.state;
     const formItemLayout = {
       labelCol: {
@@ -1041,7 +1055,7 @@ class InquiryEdit extends React.Component {
             <EditableFormTable
               rowChange={this.rowChange}
               rowKey="LineID"
-              scroll={{ x: 2900, y: 600 }}
+              scroll={{ x: 3000, y: 600 }}
               columns={this.skuColumns}
               data={newdata}
             />
@@ -1167,7 +1181,7 @@ class InquiryEdit extends React.Component {
               >
                 更新
               </Button>
-              <Button onClick={() => this.setState({ needmodalVisible: true })} type="primary">
+              <Button onClick={this.selectNeed} type="primary">
                 确认需采购询价
               </Button>
             </Fragment>
@@ -1194,11 +1208,7 @@ class InquiryEdit extends React.Component {
             columns={this.attachmentColumns}
           />
         </Modal>
-        <NeedAskPrice
-          data={formVals.TI_Z02602}
-          {...needParentMethods}
-          modalVisible={needmodalVisible}
-        />
+        <NeedAskPrice data={selectedRows} {...needParentMethods} modalVisible={needmodalVisible} />
       </Card>
     );
   }

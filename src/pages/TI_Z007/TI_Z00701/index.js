@@ -3,7 +3,7 @@ import React, { Fragment } from 'react';
 import { connect } from 'dva';
 import { Row, Col, Form, Input, Card, Switch, Tabs, Button, message } from 'antd';
 import StandardTable from '@/components/StandardTable';
-import Brand from '@/components/Brand';
+import BrandModal from '@/components/Modal/Brand';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import LinkMan from '../components/linkman';
 import MDMCommonality from '@/components/Select';
@@ -75,15 +75,6 @@ class CompanyEdit extends React.Component {
     {
       title: '品牌名称',
       dataIndex: 'BrandName',
-      render: (text, record) => (
-        <Brand
-          initialValue={{ key: record.Brand, label: record.BrandName }}
-          labelInValue
-          onChange={val => {
-            this.brandLineChange(val, record);
-          }}
-        />
-      ),
     },
   ];
 
@@ -110,6 +101,7 @@ class CompanyEdit extends React.Component {
       },
       tabIndex: '1',
       LinkManmodalVisible: false,
+      brandmodalVisible: false,
       linkManVal: {
         Name: '',
         CellphoneNO: '',
@@ -127,7 +119,15 @@ class CompanyEdit extends React.Component {
   }
 
   componentDidMount() {
-    const { dispatch } = this.props;
+    const {
+      dispatch,
+      global: { BrandList },
+    } = this.props;
+    if (!BrandList.length) {
+      dispatch({
+        type: 'global/getBrand',
+      });
+    }
     dispatch({
       type: 'global/getMDMCommonality',
       payload: {
@@ -178,38 +178,28 @@ class CompanyEdit extends React.Component {
     }
   };
 
-  brandLineChange = (valuekey, record) => {
-    // 品牌修改添加
-    let { formVals } = this.state;
-    const brandList = formVals.TI_Z00703List;
-    brandList.map(brand => {
-      if (record.Brand === brand.Brand) {
-        const newbrand = brand;
-        newbrand.Brand = valuekey.key;
-        newbrand.BrandName = valuekey.label;
-        if (newbrand.Brand && newbrand.BrandName) {
-          this.addBrandFetch(newbrand, record);
-        }
-        return newbrand;
-      }
-      return brand;
-    });
-    formVals = { ...formVals, TI_Z00703List: [...brandList] };
-    this.setState({ formVals });
-  };
-
-  addBrandFetch = (newbrand, record) => {
+  addBrandFetch = newbrand => {
     // 保存品牌
     const { formVals } = this.state;
+    const { Name, Code } = newbrand;
     const { dispatch } = this.props;
+    const last = formVals.TI_Z00703List[formVals.TI_Z00703List.length - 1];
     dispatch({
       type: 'supplierEdit/addbrand',
       payload: {
         Content: {
-          ...record,
-          ...newbrand,
+          Brand: Code,
+          BrandName: Name,
           Code: formVals.Code,
+          LineID: last ? last.LineID + 1 : 1,
         },
+      },
+      callback: response => {
+        if (response && response.Status === 200) {
+          message.success('添加成功');
+          this.handleModalVisible(false);
+          this.getDetail();
+        }
       },
     });
   };
@@ -238,6 +228,7 @@ class CompanyEdit extends React.Component {
   handleModalVisible = flag => {
     this.setState({
       LinkManmodalVisible: !!flag,
+      brandmodalVisible: !!flag,
     });
   };
 
@@ -295,18 +286,6 @@ class CompanyEdit extends React.Component {
     this.setState({ tabIndex });
   };
 
-  addBrand = () => {
-    let { formVals } = this.state;
-    const brandList = formVals.TI_Z00703List;
-    let OrderID = 1;
-    if (brandList[brandList.length - 1]) {
-      OrderID = brandList[brandList.length - 1].OrderID + 1;
-    }
-    brandList.push({ Brand: '', BrandName: '', OrderID });
-    formVals = { ...formVals, TI_Z00703List: [...brandList] };
-    this.setState({ formVals });
-  };
-
   rightButton = tabIndex => {
     if (tabIndex === '1') {
       return (
@@ -317,7 +296,12 @@ class CompanyEdit extends React.Component {
     }
     if (tabIndex === '2') {
       return (
-        <Button icon="plus" style={{ marginLeft: 8 }} type="primary" onClick={this.addBrand}>
+        <Button
+          icon="plus"
+          style={{ marginLeft: 8 }}
+          type="primary"
+          onClick={() => this.handleModalVisible(true)}
+        >
           添加品牌
         </Button>
       );
@@ -361,7 +345,7 @@ class CompanyEdit extends React.Component {
       form: { getFieldDecorator },
       global: { Company, PayMent, Curr, Supplier },
     } = this.props;
-    const { formVals, tabIndex, LinkManmodalVisible, linkManVal } = this.state;
+    const { formVals, tabIndex, LinkManmodalVisible, linkManVal, brandmodalVisible } = this.state;
     const formItemLayout = {
       labelCol: {
         xs: { span: 24 },
@@ -375,6 +359,10 @@ class CompanyEdit extends React.Component {
     };
     const linkmanParentMethods = {
       handleSubmit: this.handleLinkmanSubmit,
+      handleModalVisible: this.handleModalVisible,
+    };
+    const brandParentMethods = {
+      handleSubmit: this.addBrandFetch,
       handleModalVisible: this.handleModalVisible,
     };
     return (
@@ -397,7 +385,6 @@ class CompanyEdit extends React.Component {
             <Col lg={8} md={12} sm={24}>
               <FormItem key="OpeningBank" {...this.formLayout} label="营业执照开户行">
                 {getFieldDecorator('OpeningBank', {
-                  rules: [{ required: true, message: '请输入营业执照开户行！' }],
                   initialValue: formVals.OpeningBank,
                 })(<Input placeholder="请输入营业执照开户行！" />)}
               </FormItem>
@@ -405,7 +392,6 @@ class CompanyEdit extends React.Component {
             <Col lg={8} md={12} sm={24}>
               <FormItem key="BankAccount" {...this.formLayout} label="营业执照账户">
                 {getFieldDecorator('BankAccount', {
-                  rules: [{ required: true, message: '请输入营业执照账户！' }],
                   initialValue: formVals.BankAccount,
                 })(<Input placeholder="请输入营业执照账户" />)}
               </FormItem>
@@ -413,7 +399,6 @@ class CompanyEdit extends React.Component {
             <Col lg={8} md={12} sm={24}>
               <FormItem key="DutyNo" {...this.formLayout} label="营业执照税号">
                 {getFieldDecorator('DutyNo', {
-                  rules: [{ required: true, message: '请输入营业执照税号！' }],
                   initialValue: formVals.DutyNo,
                 })(<Input placeholder="请输入营业执照税号" />)}
               </FormItem>
@@ -421,7 +406,6 @@ class CompanyEdit extends React.Component {
             <Col lg={8} md={12} sm={24}>
               <FormItem key="Laddress" {...this.formLayout} label="营业执照地址">
                 {getFieldDecorator('Laddress', {
-                  rules: [{ required: true, message: '请输入营业执照地址！' }],
                   initialValue: formVals.Laddress,
                 })(<Input placeholder="请输入营业执照地址" />)}
               </FormItem>
@@ -429,7 +413,6 @@ class CompanyEdit extends React.Component {
             <Col lg={8} md={12} sm={24}>
               <FormItem key="LPhone" {...this.formLayout} label="营业执照电话">
                 {getFieldDecorator('LPhone', {
-                  rules: [{ required: true, message: '请输入营业执照电话！' }],
                   initialValue: formVals.LPhone,
                 })(<Input placeholder="请输入营业执照电话" />)}
               </FormItem>
@@ -437,7 +420,6 @@ class CompanyEdit extends React.Component {
             <Col lg={8} md={12} sm={24}>
               <FormItem key="CreditCode" {...this.formLayout} label="营业执照信用代码">
                 {getFieldDecorator('CreditCode', {
-                  rules: [{ required: true, message: '请输入营业执照信用代码！' }],
                   initialValue: formVals.CreditCode,
                 })(<Input placeholder="请输入营业执照信用代码" />)}
               </FormItem>
@@ -521,14 +503,14 @@ class CompanyEdit extends React.Component {
               <TabPane tab="联系人" key="1">
                 <StandardTable
                   data={{ list: formVals.TI_Z00702List }}
-                  rowKey="UserID"
+                  rowKey="LineID"
                   columns={this.linkmanColumns}
                 />
               </TabPane>
               <TabPane tab="品牌" key="2">
                 <StandardTable
                   data={{ list: formVals.TI_Z00703List }}
-                  rowKey="Brand"
+                  rowKey="LineID"
                   columns={this.brandColumns}
                 />
               </TabPane>
@@ -538,6 +520,7 @@ class CompanyEdit extends React.Component {
               formVals={linkManVal}
               modalVisible={LinkManmodalVisible}
             />
+            <BrandModal {...brandParentMethods} modalVisible={brandmodalVisible} />
           </Fragment>
         ) : null}
         <FooterToolbar>

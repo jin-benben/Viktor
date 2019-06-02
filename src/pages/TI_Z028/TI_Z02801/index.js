@@ -273,7 +273,7 @@ class TI_Z02801 extends PureComponent {
               title={`${item.CardName}(${item.CardCode})`}
               avatar={<Radio value={item} />}
               description={
-                <ul>
+                <ul className={styles.itemInfo}>
                   <li>
                     联系人：<span>{item.Contacts}</span>
                   </li>
@@ -322,10 +322,11 @@ class TI_Z02801 extends PureComponent {
 
   childChange = (item, record, index) => {
     const { orderLineList } = this.state;
-    console.log(orderLineList);
+    console.log(orderLineList, index, item);
     const newrecord = orderLineList[index];
-    Object.assign(newrecord, item);
+    Object.assign(newrecord, item.target.value);
     orderLineList[index] = newrecord;
+    console.log(orderLineList, index, newrecord);
     this.setState({ orderLineList: [...orderLineList] });
   };
 
@@ -481,12 +482,12 @@ class TI_Z02801 extends PureComponent {
 
   render() {
     const {
-      TI_Z02801: { orderList, pagination },
+      TI_Z02801: { pagination },
       global: { Purchaser, Company, Saler },
       loading,
     } = this.props;
 
-    const { modalVisible, selectedRows } = this.state;
+    const { modalVisible, selectedRows, orderLineList } = this.state;
 
     const columns = this.columns.map(item => {
       const newitem = item;
@@ -504,7 +505,7 @@ class TI_Z02801 extends PureComponent {
             <div className="tableListForm">{this.renderSimpleForm()}</div>
             <StandardTable
               loading={loading}
-              data={{ list: orderList }}
+              data={{ list: orderLineList }}
               pagination={pagination}
               rowKey="LineID"
               scroll={{ x: 2250, y: 800 }}

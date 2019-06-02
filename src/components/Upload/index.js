@@ -14,10 +14,10 @@ class MyUpload extends React.Component {
       return;
     }
     if (info.file.response.Status === 200) {
-      const { FilePath } = info.file.response;
+      const { FilePath, FileCode, FilePathX } = info.file.response;
       const { onChange } = this.props;
       if (onChange) {
-        onChange(FilePath);
+        onChange({ FilePath, FileCode, FilePathX });
       }
       this.setState({ FilePath });
     }

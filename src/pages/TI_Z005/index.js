@@ -35,7 +35,10 @@ class CreateForm extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      formVals: props.formVals,
+      formVals: {
+        CardCode: '',
+        CardName: '',
+      },
     };
     this.formLayout = {
       labelCol: { span: 7 },
@@ -44,15 +47,25 @@ class CreateForm extends PureComponent {
   }
 
   componentDidMount() {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'global/getMDMCommonality',
-      payload: {
-        Content: {
-          CodeList: ['Purchaser'],
+    const {
+      dispatch,
+      global: { Purchaser, SupplierList },
+    } = this.props;
+    if (!SupplierList.length) {
+      dispatch({
+        type: 'global/getSupplier',
+      });
+    }
+    if (!Purchaser.length) {
+      dispatch({
+        type: 'global/getMDMCommonality',
+        payload: {
+          Content: {
+            CodeList: ['Purchaser'],
+          },
         },
-      },
-    });
+      });
+    }
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
@@ -63,6 +76,11 @@ class CreateForm extends PureComponent {
     }
     return null;
   }
+
+  changePicture = ({ FilePath, FilePathX }) => {
+    const { formVals } = this.props;
+    Object.assign(formVals, { Picture: FilePath, Picture_List: FilePathX });
+  };
 
   render() {
     const {
@@ -89,6 +107,7 @@ class CreateForm extends PureComponent {
       form.validateFields((err, fieldsValue) => {
         if (err) return;
         form.resetFields();
+        delete fieldsValue.Picture;
         handleSubmit({ ...formVals, ...fieldsValue });
       });
     };
@@ -117,7 +136,12 @@ class CreateForm extends PureComponent {
           <FormItem key="supplier" {...this.formLayout} label="默认供应商">
             {getFieldDecorator('supplier', {
               initialValue: { key: formVals.CardCode, label: formVals.CardName },
-            })(<Supplier labelInValue />)}
+            })(
+              <Supplier
+                initialValue={{ key: formVals.CardCode, label: formVals.CardName }}
+                labelInValue
+              />
+            )}
           </FormItem>
           <FormItem key="WebSite" {...this.formLayout} label="官网">
             {getFieldDecorator('WebSite', {
@@ -150,12 +174,7 @@ class CreateForm extends PureComponent {
           <FormItem key="Picture" {...this.formLayout} label="品牌主图">
             {getFieldDecorator('Picture', {
               initialValue: formVals.Picture,
-            })(<Upload initialValue={formVals.Picture} />)}
-          </FormItem>
-          <FormItem key="Picture_List" {...this.formLayout} label="品牌图列表">
-            {getFieldDecorator('Picture_List', {
-              initialValue: formVals.Picture_List,
-            })(<Upload initialValue={formVals.Picture_List} />)}
+            })(<Upload onChange={this.changePicture} initialValue={formVals.Picture} />)}
           </FormItem>
         </Form>
       </Modal>
@@ -186,7 +205,7 @@ class BrandList extends PureComponent {
       dataIndex: 'Name',
       render: (val, record) =>
         record.WebSite ? (
-          <a target="_blank" href={record.WebSite}>
+          <a target="_blank" href={record.WebSite} rel="noopener noreferrer">
             {val}
           </a>
         ) : (

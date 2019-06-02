@@ -241,9 +241,9 @@ class InquiryEdit extends PureComponent {
         record.lastIndex ? null : <span>{text === 'O' ? '未确认' : '已确认'}</span>,
     },
     {
-      title: '是否需询价',
+      title: '需询价',
       width: 80,
-      dataIndex: 'PLineStatus',
+      dataIndex: 'IsInquiry',
       align: 'center',
       render: (text, record) =>
         record.lastIndex ? null : <span>{text === 'Y' ? '需询价' : '不需询价'}</span>,
@@ -482,7 +482,7 @@ class InquiryEdit extends PureComponent {
             <StandardTable
               data={{ list: newdata }}
               rowKey="LineID"
-              scroll={{ x: 2700, y: 600 }}
+              scroll={{ x: 2800, y: 600 }}
               columns={this.skuColumns}
             />
           </TabPane>

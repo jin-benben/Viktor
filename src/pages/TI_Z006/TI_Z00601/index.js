@@ -493,7 +493,6 @@ class CompanyEdit extends PureComponent {
             <Col lg={8} md={12} sm={24}>
               <FormItem key="OpeningBank" {...this.formLayout} label="营业执照开户行">
                 {getFieldDecorator('OpeningBank', {
-                  rules: [{ required: true, message: '请输入营业执照开户行！' }],
                   initialValue: formVals.OpeningBank,
                 })(<Input placeholder="请输入营业执照开户行！" />)}
               </FormItem>
@@ -501,7 +500,6 @@ class CompanyEdit extends PureComponent {
             <Col lg={8} md={12} sm={24}>
               <FormItem key="BankAccount" {...this.formLayout} label="营业执照账户">
                 {getFieldDecorator('BankAccount', {
-                  rules: [{ required: true, message: '请输入营业执照账户！' }],
                   initialValue: formVals.BankAccount,
                 })(<Input placeholder="请输入营业执照账户" />)}
               </FormItem>
@@ -509,7 +507,6 @@ class CompanyEdit extends PureComponent {
             <Col lg={8} md={12} sm={24}>
               <FormItem key="DutyNo" {...this.formLayout} label="营业执照税号">
                 {getFieldDecorator('DutyNo', {
-                  rules: [{ required: true, message: '请输入营业执照税号！' }],
                   initialValue: formVals.DutyNo,
                 })(<Input placeholder="请输入营业执照税号" />)}
               </FormItem>
@@ -517,7 +514,6 @@ class CompanyEdit extends PureComponent {
             <Col lg={8} md={12} sm={24}>
               <FormItem key="Laddress" {...this.formLayout} label="营业执照地址">
                 {getFieldDecorator('Laddress', {
-                  rules: [{ required: true, message: '请输入营业执照地址！' }],
                   initialValue: formVals.Laddress,
                 })(<Input placeholder="请输入营业执照地址" />)}
               </FormItem>
@@ -525,7 +521,6 @@ class CompanyEdit extends PureComponent {
             <Col lg={8} md={12} sm={24}>
               <FormItem key="LPhone" {...this.formLayout} label="营业执照电话">
                 {getFieldDecorator('LPhone', {
-                  rules: [{ required: true, message: '请输入营业执照电话！' }],
                   initialValue: formVals.LPhone,
                 })(<Input placeholder="请输入营业执照电话" />)}
               </FormItem>
@@ -533,7 +528,6 @@ class CompanyEdit extends PureComponent {
             <Col lg={8} md={12} sm={24}>
               <FormItem key="CreditCode" {...this.formLayout} label="营业执照信用代码">
                 {getFieldDecorator('CreditCode', {
-                  rules: [{ required: true, message: '请输入营业执照信用代码！' }],
                   initialValue: formVals.CreditCode,
                 })(<Input placeholder="请输入营业执照信用代码" />)}
               </FormItem>
