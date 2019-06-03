@@ -13,7 +13,7 @@ import {
   Tabs,
   Button,
   Icon,
-  Switch,
+  Upload,
   Modal,
   message,
   DatePicker,
@@ -892,12 +892,36 @@ class InquiryEdit extends React.Component {
     }
   };
 
+  // 上传需求文件
+  uploadChange = info => {
+    if (info.file.status === 'uploading') {
+      return;
+    }
+    if (info.file.response.Status === 200) {
+      const { formVals } = this.state;
+      const last = formVals.TI_Z02602[formVals.TI_Z02602.length - 1];
+      const LineID = last ? last.LineID + 1 : 1;
+      const {
+        loTI_Z026ExcelFiledList: { rows },
+      } = info.file.response;
+      const newArr = rows.map((item, index) => {
+        const newItem = item;
+        item.LineID = LineID + index;
+        return newItem;
+      });
+      Object.assign(formVals, { TI_Z02602: [...newArr, ...formVals.TI_Z02602] });
+      this.setState({ formVals });
+    } else {
+      message.warning(info.file.response.Message);
+    }
+  };
+
   render() {
     const {
       form: { getFieldDecorator },
       addloading,
       updateloading,
-      global: { Saler, Company },
+      global: { Saler, Company, currentUser },
     } = this.props;
     const {
       formVals,
@@ -1190,7 +1214,16 @@ class InquiryEdit extends React.Component {
               保存
             </Button>
           )}
-          <Button type="primary">上传物料</Button>
+          <Upload
+            action="http://47.104.65.49:8001/TI_Z026/TI_Z02609"
+            showUploadList={false}
+            onChange={this.uploadChange}
+            data={{ UserCode: currentUser.UserCode, Tonken: currentUser.Token }}
+          >
+            <Button style={{ marginLeft: 20 }} type="primary">
+              上传物料
+            </Button>
+          </Upload>
         </FooterToolbar>
         <UpdateLoad {...uploadmodalMethods} modalVisible={uploadmodalVisible} />
         <SKUModal {...parentMethods} modalVisible={skuModalVisible} />

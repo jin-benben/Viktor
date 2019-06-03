@@ -45,7 +45,11 @@ class inquiryListPage extends PureComponent {
       title: '单号',
       width: 80,
       dataIndex: 'DocEntry',
-      render: text => <Link to={`/sellabout/TI_Z026/detail?DocEntry=${text}`}>{text}</Link>,
+      render: text => (
+        <Link target="_blank" to={`/sellabout/TI_Z026/detail?DocEntry=${text}`}>
+          {text}
+        </Link>
+      ),
     },
     {
       title: '单据日期',

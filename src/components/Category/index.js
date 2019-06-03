@@ -13,7 +13,7 @@ class CategoryCascader extends React.Component {
   };
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    if (nextProps.initialValue !== prevState.value || !prevState.options.length) {
+    if (!prevState.options.length && nextProps.initialValue !== prevState.value) {
       return {
         value: nextProps.initialValue,
         options: nextProps.global.CategoryTree,

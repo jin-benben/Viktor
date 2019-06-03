@@ -24,23 +24,25 @@ class CreateForm extends React.Component {
 
   constructor(props) {
     super(props);
-    let { formVals } = props;
-    formVals = formVals.map((item, index) => {
-      // eslint-disable-next-line no-param-reassign
-      item.key = index;
-      return item;
-    });
     this.state = {
-      TI_Z03701: formVals,
+      TI_Z03701: [],
+      method: 'A',
     };
   }
 
-  static getDerivedStateFromProps(nextProps, prevState) {
-    if (nextProps.formVals !== prevState.formVals) {
+  static getDerivedStateFromProps(nextProps, preState) {
+    if (nextProps.method !== preState.method) {
+      const formVals = nextProps.formVals.map((item, index) => {
+        // eslint-disable-next-line no-param-reassign
+        item.key = index;
+        return item;
+      });
       return {
-        TI_Z03701: nextProps.formVals,
+        TI_Z03701: formVals,
+        method: nextProps.method,
       };
     }
+
     return null;
   }
 
@@ -82,9 +84,9 @@ class CreateForm extends React.Component {
     const { modalVisible, handleModalVisible, method } = this.props;
     const { TI_Z03701 } = this.state;
     const columns = this.columns.map(col => {
-      if (col.dataIndex === 'Code' && method === 'U') {
+      if (col.dataIndex === 'Code') {
         // eslint-disable-next-line no-param-reassign
-        col.editable = false;
+        col.editable = method === 'A';
         return col;
       }
       return col;

@@ -505,13 +505,6 @@ class CompanyEdit extends PureComponent {
               </FormItem>
             </Col>
             <Col lg={8} md={12} sm={24}>
-              <FormItem key="DutyNo" {...this.formLayout} label="营业执照税号">
-                {getFieldDecorator('DutyNo', {
-                  initialValue: formVals.DutyNo,
-                })(<Input placeholder="请输入营业执照税号" />)}
-              </FormItem>
-            </Col>
-            <Col lg={8} md={12} sm={24}>
               <FormItem key="Laddress" {...this.formLayout} label="营业执照地址">
                 {getFieldDecorator('Laddress', {
                   initialValue: formVals.Laddress,

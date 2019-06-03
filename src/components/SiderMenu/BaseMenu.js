@@ -96,7 +96,8 @@ export default class BaseMenu extends PureComponent {
     return (
       <Link
         to={itemPath}
-        target={target}
+        //   target={target}
+        target="_blank"
         replace={itemPath === location.pathname}
         onClick={
           isMobile

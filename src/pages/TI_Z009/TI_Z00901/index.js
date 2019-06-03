@@ -293,7 +293,6 @@ class AddSKU extends Component {
         type: 'global/getCategory',
       });
     }
-
     dispatch({
       type: 'skuAdd/fetch',
     });

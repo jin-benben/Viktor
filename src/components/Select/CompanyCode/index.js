@@ -60,7 +60,6 @@ class CompanyCode extends PureComponent {
     const { fetching, data, value } = this.state;
     const { initialValue, labelInValue } = this.props;
 
-    console.log(initialValue);
     return (
       <Select
         showSearch

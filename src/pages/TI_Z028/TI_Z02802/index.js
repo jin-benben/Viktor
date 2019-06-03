@@ -26,7 +26,7 @@ class TI_Z02802 extends PureComponent {
       width: 100,
       dataIndex: 'BaseEntry',
       render: (text, recond) => (
-        <Link to={`/sellabout/TI_Z026/detail?DocEntry=${text}`}>{`${text}-${
+        <Link target="_blank" to={`/sellabout/TI_Z026/detail?DocEntry=${text}`}>{`${text}-${
           recond.BaseLineID
         }`}</Link>
       ),

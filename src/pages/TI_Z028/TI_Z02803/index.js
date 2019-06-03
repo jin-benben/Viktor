@@ -25,7 +25,11 @@ class TI_Z02803 extends PureComponent {
       width: 100,
       dataIndex: 'DocEntry',
       align: 'center',
-      render: text => <Link to={`/purchase/TI_Z028/TI_Z02802?DocEntry=${text}`}>{text}</Link>,
+      render: text => (
+        <Link target="_blank" to={`/purchase/TI_Z028/TI_Z02802?DocEntry=${text}`}>
+          {text}
+        </Link>
+      ),
     },
     {
       title: '单据日期',

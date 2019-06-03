@@ -4,6 +4,7 @@ import router from 'umi/router';
 import { Row, Col, Card, Form, Input, Button } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
+import Link from 'umi/link';
 
 const FormItem = Form.Item;
 
@@ -14,15 +15,16 @@ const FormItem = Form.Item;
 }))
 @Form.create()
 class SkuFetchComponent extends PureComponent {
-  state = {
-    expandForm: false,
-  };
-
   columns = [
     {
       title: '物料代码',
       width: 80,
       dataIndex: 'Code',
+      render: text => (
+        <Link target="_blank" to={`/main/product/TI_Z009/TI_Z00903?Code=${text}`}>
+          {text}
+        </Link>
+      ),
     },
     {
       title: '物料描述',
@@ -144,19 +146,6 @@ class SkuFetchComponent extends PureComponent {
     });
   };
 
-  toggleForm = () => {
-    // 是否展开
-    const { expandForm } = this.state;
-    this.setState({
-      expandForm: !expandForm,
-    });
-  };
-
-  handleOnRow = record => ({
-    // 详情or修改
-    onClick: () => router.push(`/main/product/TI_Z009/TI_Z00903?Code=${record.Code}`),
-  });
-
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
@@ -205,7 +194,6 @@ class SkuFetchComponent extends PureComponent {
               pagination={pagination}
               rowKey="Code"
               columns={this.columns}
-              onRow={this.handleOnRow}
               onChange={this.handleStandardTableChange}
             />
           </div>

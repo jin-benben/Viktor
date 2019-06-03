@@ -52,12 +52,12 @@ export default [
             path: '/base/TI_Z014',
             routes:[
               {
-                name: '添加',
+                name: '角色添加',
                 path: '/base/TI_Z014/edit',
-                component: './TI_Z014/add',
+                component: './TI_Z014/add'
               },
               {
-                name: '查询',
+                name: '角色查询',
                 path: '/base/TI_Z014/search',
                 component: './TI_Z014/search',
               },

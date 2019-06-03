@@ -27,7 +27,7 @@ class EditableCell extends React.Component {
       <EditableContext.Consumer>
         {form => {
           const { getFieldDecorator } = form;
-          console.log(editing);
+
           return (
             <td {...restProps}>
               {editing ? (

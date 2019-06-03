@@ -209,14 +209,12 @@ export default {
 
   reducers: {
     changeLayoutCollapsed(state, { payload }) {
-      console.log(payload);
       return {
         ...state,
         collapsed: payload,
       };
     },
     save(state, { payload }) {
-      console.log(payload);
       return {
         ...state,
         ...payload,

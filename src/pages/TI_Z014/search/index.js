@@ -66,7 +66,7 @@ class inquiryList extends PureComponent {
       dispatch,
       authorityGroup: { queryData },
     } = this.props;
-    console.log(queryData);
+
     dispatch({
       type: 'authorityGroup/fetch',
       payload: {

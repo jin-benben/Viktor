@@ -47,7 +47,9 @@ class supplierQuotationSku extends PureComponent {
       fixed: 'left',
       dataIndex: 'DocEntry',
       render: (text, recond) => (
-        <Link to={`/purchase/TI_Z027/detail?DocEntry=${text}`}>{`${text}-${recond.LineID}`}</Link>
+        <Link target="_blank" to={`/purchase/TI_Z027/detail?DocEntry=${text}`}>{`${text}-${
+          recond.LineID
+        }`}</Link>
       ),
     },
     {
@@ -55,7 +57,7 @@ class supplierQuotationSku extends PureComponent {
       width: 100,
       dataIndex: 'BaseEntry',
       render: (text, recond) => (
-        <Link to={`/sellabout/TI_Z026/detail?DocEntry=${text}`}>{`${text}-${
+        <Link target="_blank" to={`/sellabout/TI_Z026/detail?DocEntry=${text}`}>{`${text}-${
           recond.BaseLineID
         }`}</Link>
       ),

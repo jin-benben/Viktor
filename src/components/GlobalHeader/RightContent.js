@@ -71,14 +71,13 @@ export default class GlobalHeaderRight extends PureComponent {
       </Menu>
     );
 
-    console.log(currentUser);
-
     let className = styles.right;
     if (theme === 'dark') {
       className = `${styles.right}  ${styles.dark}`;
     }
     return (
       <div className={className}>
+        <span>秦皇岛维克托国际贸易有限公司</span>
         {currentUser.UserName ? (
           <HeaderDropdown overlay={menu}>
             <span className={`${styles.action} ${styles.account}`}>

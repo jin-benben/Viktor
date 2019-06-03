@@ -828,7 +828,6 @@ class InquiryEdit extends React.Component {
                 <FormItem key="CellphoneNO" {...this.formLayout} label="手机号码">
                   {getFieldDecorator('CellphoneNO', {
                     initialValue: formVals.CellphoneNO,
-                    rules: [{ required: true, message: '请输入手机号码！' }],
                   })(<Input placeholder="联系人手机号码" />)}
                 </FormItem>
               </Col>

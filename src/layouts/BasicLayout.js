@@ -7,10 +7,11 @@ import { connect } from 'dva';
 import { ContainerQuery } from 'react-container-query';
 import { Scrollbars } from 'react-custom-scrollbars';
 import classNames from 'classnames';
+
 import pathToRegexp from 'path-to-regexp';
 import { conversionBreadcrumbList } from '@/components/PageHeader/breadcrumb';
 import Media from 'react-media';
-import Authorized from '@/utils/Authorized';
+
 import logo from '../assets/log.jpg';
 
 import Header from './Header';
@@ -145,11 +146,15 @@ class BasicLayout extends React.PureComponent {
       isMobile,
       menuData,
       breadcrumbNameMap,
-      route: { routes },
+      // route: { routes },
       fixedHeader,
     } = this.props;
     const isTop = PropsLayout === 'topmenu';
-    const routerConfig = this.getRouterAuthority(pathname, routes);
+    // const routerConfig = this.getRouterAuthority(pathname, routes);
+    const breadcrumbObj = conversionBreadcrumbList({
+      ...this.props,
+    });
+    const isbreadcrumb = breadcrumbObj.routes.length > 1;
     const contentStyle = !fixedHeader ? { paddingTop: 0 } : {};
     const layout = (
       <Scrollbars style={{ minHeight: '100vh' }}>
@@ -178,14 +183,8 @@ class BasicLayout extends React.PureComponent {
               {...this.props}
             />
             <Content className={styles.content} style={contentStyle}>
-              <Authorized authority={routerConfig} noMatch={<p>Exception403</p>}>
-                <PageHeader
-                  breadcrumb={conversionBreadcrumbList({
-                    ...this.props,
-                  })}
-                />
-                {children}
-              </Authorized>
+              {isbreadcrumb ? <PageHeader breadcrumb={breadcrumbObj} /> : null}
+              {children}
             </Content>
           </Layout>
         </Layout>

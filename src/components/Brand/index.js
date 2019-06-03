@@ -22,7 +22,10 @@ class Brands extends PureComponent {
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    if (nextProps.initialValue !== prevState.value || !prevState.data.length) {
+    if (
+      (!prevState.value && nextProps.initialValue !== prevState.value) ||
+      !prevState.data.length
+    ) {
       return {
         value: nextProps.initialValue,
         data: nextProps.global.BrandList,
@@ -61,6 +64,7 @@ class Brands extends PureComponent {
       value,
       fetching: false,
     });
+
     const { onChange } = this.props;
     if (onChange) {
       onChange(value);

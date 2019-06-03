@@ -27,6 +27,15 @@ export async function addRule(params) {
   });
 }
 
+export async function updateRule(params) {
+  return request('/MDM/TI_Z009/TI_Z00904', {
+    method: 'POST',
+    data: {
+      ...params,
+    },
+  });
+}
+
 export async function matchRule(params) {
   return request('/MDM/TI_Z009/TI_Z00907', {
     method: 'POST',

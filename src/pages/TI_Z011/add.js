@@ -7,8 +7,9 @@ import Category from '@/components/Category';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import { connect } from 'dva';
 
-@connect(({ spu, loading }) => ({
+@connect(({ spu, loading, global }) => ({
   spu,
+  global,
   loading: loading.models.spu,
 }))
 class AddSKU extends React.Component {
@@ -29,7 +30,8 @@ class AddSKU extends React.Component {
       dataIndex: 'BrandName',
       render: (text, record, index) => (
         <Brand
-          defaultValue={record.BrandName}
+          initialValue={record.BrandName}
+          keyType="Name"
           onChange={value => {
             this.codeChange(value, record, index, 'BrandName');
           }}
@@ -88,9 +90,36 @@ class AddSKU extends React.Component {
     },
   ];
 
+  componentDidMount() {
+    const {
+      dispatch,
+      global: { BrandList, CategoryTree },
+    } = this.props;
+    if (!BrandList.length) {
+      dispatch({
+        type: 'global/getBrand',
+      });
+    }
+    if (!CategoryTree.length) {
+      dispatch({
+        type: 'global/getCategory',
+      });
+    }
+  }
+
   deleteLine = (record, index) => {
     const { TI_Z01101 } = this.state;
     TI_Z01101.splice(index, 1);
+    this.setState({ TI_Z01101 });
+  };
+
+  codeChange = (value, row, index, key) => {
+    // eslint-disable-next-line no-param-reassign
+    row[key] = value;
+    // eslint-disable-next-line no-param-reassign
+    row.Name = `${row.BrandName}  ${row.ProductName} `;
+    const { TI_Z01101 } = this.state;
+    TI_Z01101[index] = row;
     this.setState({ TI_Z01101 });
   };
 
@@ -104,7 +133,8 @@ class AddSKU extends React.Component {
     const { TI_Z01101 } = this.state;
     TI_Z01101.map(item => {
       if (item.key === record.key) {
-        record.Name = record.BrandName + record.ProductName;
+        // eslint-disable-next-line no-param-reassign
+        record.Name = `${record.BrandName}  ${record.ProductName} `;
         return record;
       }
       return item;

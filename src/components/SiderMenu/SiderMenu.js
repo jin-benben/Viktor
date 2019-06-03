@@ -54,7 +54,7 @@ export default class SiderMenu extends PureComponent {
       [styles.fixSiderbar]: fixSiderbar,
       [styles.light]: theme === 'light',
     });
-    console.log(collapsed);
+
     return (
       <Sider
         trigger={null}

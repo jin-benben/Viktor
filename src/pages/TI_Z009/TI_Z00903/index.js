@@ -1,20 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
-import {
-  Row,
-  Col,
-  Form,
-  Input,
-  Card,
-  Tabs,
-  Button,
-  message,
-  Upload,
-  Icon,
-  DatePicker,
-  Select,
-} from 'antd';
+import { Row, Col, Form, Input, Card, Tabs, Button, message, Icon, DatePicker, Select } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import MDMCommonality from '@/components/Select';
@@ -23,6 +10,7 @@ import HSCode from '@/components/HSCode';
 import FHSCode from '@/components/FHSCode';
 import SPUCode from '@/components/SPUCode';
 import Category from '@/components/Category';
+import Upload from '@/components/Upload';
 
 const FormItem = Form.Item;
 const { TabPane } = Tabs;
@@ -101,6 +89,54 @@ class SKUDetail extends Component {
   componentDidMount() {
     const {
       dispatch,
+      global: { BrandList, CategoryTree },
+    } = this.props;
+
+    if (!BrandList.length) {
+      dispatch({
+        type: 'global/getBrand',
+      });
+    }
+    if (!CategoryTree.length) {
+      dispatch({
+        type: 'global/getCategory',
+      });
+    }
+    dispatch({
+      type: 'global/getMDMCommonality',
+      payload: {
+        Content: {
+          CodeList: ['Purchaser'],
+        },
+      },
+    });
+    dispatch({
+      type: 'skuDetail/fetchcode',
+    });
+    this.getDetail();
+  }
+
+  static getDerivedStateFromProps(nextProps, prevState) {
+    if (nextProps.skuDetail.skuDetailInfo !== prevState.formVals) {
+      return {
+        formVals: nextProps.skuDetail.skuDetailInfo,
+      };
+    }
+    return null;
+  }
+
+  changePicture = ({ FilePath, FileCode, FilePathX }) => {
+    const { formVals } = this.state;
+    Object.assign(formVals, {
+      PicturePath: FilePath,
+      PicCode: FileCode,
+      ListPiclocation: FilePathX,
+    });
+  };
+
+  getDetail = () => {
+    const {
+      dispatch,
       location: { query },
     } = this.props;
     if (query.Code) {
@@ -113,24 +149,7 @@ class SKUDetail extends Component {
         },
       });
     }
-    dispatch({
-      type: 'global/getMDMCommonality',
-      payload: {
-        Content: {
-          CodeList: ['Purchaser'],
-        },
-      },
-    });
-  }
-
-  static getDerivedStateFromProps(nextProps, prevState) {
-    if (nextProps.skuDetail.skuDetailInfo !== prevState.formVals) {
-      return {
-        formVals: nextProps.skuDetail.skuDetailInfo,
-      };
-    }
-    return null;
-  }
+  };
 
   tabChange = tabIndex => {
     this.setState({ tabIndex });
@@ -165,8 +184,8 @@ class SKUDetail extends Component {
     form.validateFields((err, fieldsValue) => {
       if (err) return;
       let category;
-      if (fieldsValue.address) {
-        category = { ...fieldsValue.address };
+      if (fieldsValue.category) {
+        category = { ...fieldsValue.category };
       }
       delete fieldsValue.category;
       dispatch({
@@ -188,6 +207,7 @@ class SKUDetail extends Component {
         callback: response => {
           if (response && response.Status === 200) {
             message.success('更新成功');
+            this.getDetail();
           }
         },
       });
@@ -229,7 +249,9 @@ class SKUDetail extends Component {
     const {
       form: { getFieldDecorator },
       global: { Purchaser },
+      skuDetail: { spuList, fhscodeList, hscodeList },
     } = this.props;
+
     const formItemLayout = {
       labelCol: {
         xs: { span: 24 },
@@ -249,7 +271,7 @@ class SKUDetail extends Component {
       </div>
     );
     const { tabIndex, formVals } = this.state;
-    console.log(formVals);
+
     return (
       <Card>
         <Form {...formItemLayout} onSubmit={this.handleSubmit}>
@@ -369,7 +391,7 @@ class SKUDetail extends Component {
               <FormItem key="HSCode" {...this.formLayout} label="国内海关编码">
                 {getFieldDecorator('HSCode', {
                   initialValue: formVals.HSCode,
-                })(<HSCode initialValue={formVals.HSCode} />)}
+                })(<HSCode data={hscodeList} initialValue={formVals.HSCode} />)}
               </FormItem>
             </Col>
           </Row>
@@ -378,14 +400,14 @@ class SKUDetail extends Component {
               <FormItem key="FHSCode" {...this.formLayout} label="国外海关编码">
                 {getFieldDecorator('FHSCode', {
                   initialValue: formVals.FHSCode,
-                })(<FHSCode initialValue={formVals.FHSCode} />)}
+                })(<FHSCode data={fhscodeList} initialValue={formVals.FHSCode} />)}
               </FormItem>
             </Col>
             <Col lg={12} md={12} sm={24}>
               <FormItem key="SPUCode" {...this.formLayout} label="SPU代码">
                 {getFieldDecorator('SPUCode', {
                   initialValue: formVals.SPUCode,
-                })(<SPUCode initialValue={formVals.SPUCode} />)}
+                })(<SPUCode data={spuList} initialValue={formVals.SPUCode} />)}
               </FormItem>
             </Col>
           </Row>
@@ -418,41 +440,12 @@ class SKUDetail extends Component {
             <Row>
               <Col lg={4}>
                 <Upload
-                  action="http://117.149.160.231:9301/MDMPicUpload/PictureUpLoad"
-                  listType="picture-card"
-                  showUploadList={false}
-                  onChange={this.handleChange}
-                  data={{ UserCode: 'jinwentao', Folder: 'TI_Z026', Tonken: '22233' }}
-                >
-                  {formVals.PicturePath ? (
-                    <img
-                      style={{ width: 80, height: 80 }}
-                      src={formVals.PicturePath}
-                      alt="avatar"
-                    />
-                  ) : (
-                    <UploadButton title="主图" />
-                  )}
-                </Upload>
-              </Col>
-              <Col lg={4}>
-                <Upload
-                  action="http://117.149.160.231:9301/MDMPicUpload/PictureUpLoad"
-                  listType="picture-card"
-                  showUploadList={false}
-                  onChange={this.handleListChange}
-                  data={{ UserCode: 'jinwentao', Folder: 'TI_Z026', Tonken: '22233' }}
-                >
-                  {formVals.ListPiclocation ? (
-                    <img
-                      style={{ width: 80, height: 80 }}
-                      src={formVals.ListPiclocation}
-                      alt="avatar"
-                    />
-                  ) : (
-                    <UploadButton title="列表图" />
-                  )}
-                </Upload>
+                  onChange={this.changePicture}
+                  type="MDM"
+                  Folder="TI_Z009"
+                  title="主图"
+                  initialValue={formVals.PicturePath}
+                />
               </Col>
             </Row>
           </TabPane>

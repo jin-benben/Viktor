@@ -45,7 +45,11 @@ class supplierQuotation extends PureComponent {
       title: '单号',
       width: 80,
       dataIndex: 'DocEntry',
-      render: text => <Link to={`/purchase/TI_Z027/detail?DocEntry=${text}`}>{text}</Link>,
+      render: text => (
+        <Link target="_blank" to={`/purchase/TI_Z027/detail?DocEntry=${text}`}>
+          {text}
+        </Link>
+      ),
     },
     {
       title: '单据日期',

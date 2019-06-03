@@ -174,7 +174,14 @@ class CreateForm extends PureComponent {
           <FormItem key="Picture" {...this.formLayout} label="品牌主图">
             {getFieldDecorator('Picture', {
               initialValue: formVals.Picture,
-            })(<Upload onChange={this.changePicture} initialValue={formVals.Picture} />)}
+            })(
+              <Upload
+                onChange={this.changePicture}
+                type="MDM"
+                Folder="TI_Z005"
+                initialValue={formVals.Picture}
+              />
+            )}
           </FormItem>
         </Form>
       </Modal>

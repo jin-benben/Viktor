@@ -31,7 +31,7 @@ class TI_Z02801 extends PureComponent {
       width: 80,
       dataIndex: 'BaseEntry',
       render: (val, record) => (
-        <Link to={`/sellabout/TI_Z026/detail?DocEntry=${record.BaseEntry}`}>
+        <Link target="_blank" to={`/sellabout/TI_Z026/detail?DocEntry=${record.BaseEntry}`}>
           {`${val}-${record.BaseLineID}`}
         </Link>
       ),
@@ -289,6 +289,7 @@ class TI_Z02801 extends PureComponent {
                   <li>
                     价格：<span>{item.Price}</span>
                     <Link
+                      target="_blank"
                       style={{ marginLeft: 10 }}
                       to={`/purchase/TI_Z027/update?DocEntry=${item.PInquiryEntry}`}
                     >
@@ -322,11 +323,11 @@ class TI_Z02801 extends PureComponent {
 
   childChange = (item, record, index) => {
     const { orderLineList } = this.state;
-    console.log(orderLineList, index, item);
+
     const newrecord = orderLineList[index];
     Object.assign(newrecord, item.target.value);
     orderLineList[index] = newrecord;
-    console.log(orderLineList, index, newrecord);
+
     this.setState({ orderLineList: [...orderLineList] });
   };
 

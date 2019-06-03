@@ -45,7 +45,11 @@ class agreementOrder extends PureComponent {
       width: 80,
       fixed: 'left',
       dataIndex: 'DocEntry',
-      render: text => <Link to={`/sellabout/TI_Z030/detail?DocEntry=${text}`}>{text}</Link>,
+      render: text => (
+        <Link target="_blank" to={`/sellabout/TI_Z030/detail?DocEntry=${text}`}>
+          {text}
+        </Link>
+      ),
     },
     {
       title: '单据日期',
@@ -345,7 +349,7 @@ class agreementOrder extends PureComponent {
       loading,
     } = this.props;
     const tableWidth = document.body.offsetWidth < 1500 ? 1900 : 0;
-    console.log(tableWidth);
+
     return (
       <Fragment>
         <Card bordered={false}>

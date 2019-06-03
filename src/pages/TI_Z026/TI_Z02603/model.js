@@ -1,4 +1,4 @@
-import { querySingleRule, cancelRule } from '../service';
+import { querySingleRule, cancelRule, confirmRule } from '../service';
 
 export default {
   namespace: 'inquiryPreview',
@@ -6,14 +6,9 @@ export default {
   state: {
     inquiryDetail: {
       Comment: '',
-      SDocStatus: '',
-      PDocStatus: '',
-      Closed: '',
-      ClosedBy: '',
       SourceType: '1',
       OrderType: '1',
       DocDate: '',
-      CreateDate: '',
       CardCode: '',
       CardName: '',
       Contacts: '',
@@ -30,7 +25,6 @@ export default {
       City: '',
       AreaID: '',
       Area: '',
-
       Address: '',
       NumAtCard: '',
       IsInquiry: '',
@@ -50,6 +44,10 @@ export default {
           },
         });
       }
+    },
+    *confirm({ payload, callback }, { call }) {
+      const response = yield call(confirmRule, payload);
+      if (callback) callback(response);
     },
     *cancel({ payload, callback }, { call }) {
       const response = yield call(cancelRule, payload);

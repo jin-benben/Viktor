@@ -57,20 +57,7 @@ class CreateForm extends PureComponent {
         handleSubmit({ ...formVals, ...fieldsValue });
       });
     };
-    const categoryArr = [
-      {
-        Code: formVals.Category1,
-        Name: formVals.Cate1Name,
-      },
-      {
-        Code: formVals.Category2,
-        Name: formVals.Cate2Name,
-      },
-      {
-        Code: formVals.Category3,
-        Name: formVals.Cate3Name,
-      },
-    ];
+
     return (
       <Modal
         width={640}
@@ -102,7 +89,7 @@ class CreateForm extends PureComponent {
           <FormItem key="category" {...this.formLayout} label="分类">
             {getFieldDecorator('category', {
               rules: [{ required: true, message: '请输入分类！' }],
-              initialValue: categoryArr,
+              initialValue: [formVals.Category1, formVals.Category2, formVals.Category3],
             })(
               <Category
                 initialValue={[formVals.Category1, formVals.Category2, formVals.Category3]}
@@ -120,8 +107,9 @@ class CreateForm extends PureComponent {
   }
 }
 /* eslint react/no-multi-comp:0 */
-@connect(({ spu, loading }) => ({
+@connect(({ spu, loading, global }) => ({
   spu,
+  global,
   loading: loading.models.rule,
 }))
 @Form.create()
@@ -169,6 +157,7 @@ class SkuFetchComponent extends PureComponent {
     const {
       dispatch,
       spu: { queryData },
+      global: { BrandList, CategoryTree },
     } = this.props;
     dispatch({
       type: 'spu/fetch',
@@ -176,6 +165,16 @@ class SkuFetchComponent extends PureComponent {
         ...queryData,
       },
     });
+    if (!BrandList.length) {
+      dispatch({
+        type: 'global/getBrand',
+      });
+    }
+    if (!CategoryTree.length) {
+      dispatch({
+        type: 'global/getCategory',
+      });
+    }
   }
 
   handleSubmit = fieldsValue => {
@@ -189,19 +188,8 @@ class SkuFetchComponent extends PureComponent {
         ...fieldsValue,
       },
     });
-    let category;
-    if (fieldsValue.category) {
-      category = {
-        Cate1Name: fieldsValue.category[0].Name,
-        Cate2Name: fieldsValue.category[1].Name,
-        Cate3Name: fieldsValue.category[2].Name,
-        Category1: fieldsValue.category[0].Code,
-        Category2: fieldsValue.category[1].Code,
-        Category3: fieldsValue.category[2].Code,
-      };
-    }
+    const category = { ...fieldsValue.category };
     delete fieldsValue.category;
-
     dispatch({
       type: 'spu/update',
       payload: {

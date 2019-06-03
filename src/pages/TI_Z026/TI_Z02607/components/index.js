@@ -24,7 +24,9 @@ class OrderLine extends PureComponent {
       fixed: 'left',
       dataIndex: 'DocEntry',
       render: (text, recond) => (
-        <Link to={`/sellabout/TI_Z026/detail?DocEntry=${text}`}>{`${text}-${recond.LineID}`}</Link>
+        <Link target="_blank" to={`/sellabout/TI_Z026/detail?DocEntry=${text}`}>{`${text}-${
+          recond.LineID
+        }`}</Link>
       ),
     },
     {

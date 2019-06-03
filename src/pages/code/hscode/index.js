@@ -35,7 +35,7 @@ class CreateForm extends React.Component {
     {
       title: '申报要素',
       dataIndex: 'U_Elements',
-      inputType: 'text',
+      inputType: 'textArea',
       editable: true,
     },
   ];
@@ -116,9 +116,8 @@ class CreateForm extends React.Component {
   render() {
     const { modalVisible, handleModalVisible } = this.props;
     const { TI_Z03601, method } = this.state;
-    console.log(TI_Z03601);
+
     const columns = this.columns.map(col => {
-      console.log(method);
       if (col.dataIndex === 'Code') {
         // eslint-disable-next-line no-param-reassign
         col.editable = method === 'A';
@@ -356,7 +355,7 @@ class HSCode extends PureComponent {
       loading,
     } = this.props;
     const { modalVisible, formValues, method } = this.state;
-    console.log(method);
+
     const parentMethods = {
       handleSubmit: this.handleSubmit,
       handleModalVisible: this.handleModalVisible,

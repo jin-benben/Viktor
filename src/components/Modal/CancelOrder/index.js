@@ -10,7 +10,6 @@ class CancelOrder extends Component {
   };
 
   reasonChange = e => {
-    console.log(e.target.value);
     this.setState({ reason: e.target.value });
   };
 
@@ -35,9 +34,7 @@ class CancelOrder extends Component {
         }
         cancelSubmit(reason);
       },
-      onCancel() {
-        console.log('Cancel');
-      },
+      onCancel() {},
     });
   };
 

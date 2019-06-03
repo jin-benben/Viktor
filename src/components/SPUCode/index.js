@@ -19,7 +19,10 @@ class Brand extends PureComponent {
   };
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    if (nextProps.initialValue !== prevState.value || !prevState.data.length) {
+    if (
+      (!prevState.value && nextProps.initialValue !== prevState.value) ||
+      !prevState.data.length
+    ) {
       return {
         value: nextProps.initialValue,
         data: nextProps.data,

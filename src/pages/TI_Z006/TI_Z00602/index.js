@@ -37,11 +37,15 @@ class companySearch extends PureComponent {
       title: '客户ID',
       width: 80,
       dataIndex: 'Code',
-      render: text => <Link to={`/main/TI_Z006/detail?Code=${text}`}>{text}</Link>,
+      render: text => (
+        <Link target="_blank" to={`/main/TI_Z006/detail?Code=${text}`}>
+          {text}
+        </Link>
+      ),
     },
     {
       title: '客户名称',
-      width: 200,
+      width: 250,
       dataIndex: 'Name',
     },
     {
@@ -55,13 +59,7 @@ class companySearch extends PureComponent {
       dataIndex: 'BankAccount',
     },
     {
-      title: '税号',
-      width: 150,
-      dataIndex: 'DutyNo',
-    },
-    {
       title: '地址',
-      width: 400,
       dataIndex: 'Laddress',
     },
     {
@@ -76,7 +74,7 @@ class companySearch extends PureComponent {
     },
     {
       title: '客户类型',
-      width: 100,
+      width: 80,
       dataIndex: 'CardType',
       render: val => {
         const { global } = this.props;
@@ -93,7 +91,7 @@ class companySearch extends PureComponent {
     {
       title: '状态',
       dataIndex: 'Status',
-      width: 100,
+      width: 80,
       render: val => <span>{val === '1' ? '开启' : '禁用'}</span>,
     },
   ];
@@ -203,7 +201,6 @@ class companySearch extends PureComponent {
             <StandardTable
               loading={loading}
               data={{ list: companyList }}
-              scroll={{ x: 1800 }}
               rowKey="Code"
               pagination={pagination}
               columns={this.columns}

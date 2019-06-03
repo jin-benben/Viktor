@@ -22,7 +22,6 @@ const getCity = code => {
 
 const getArea = code => {
   // 获取地区
-
   // eslint-disable-next-line array-callback-return
   const children = AreaList.filter(area => {
     if (area.cityCode === code) {
@@ -41,8 +40,6 @@ const getIndex = (code, arr) => {
 class AddressCascader extends PureComponent {
   state = {
     value: [],
-    provinceIndex: 0, // 当前省份下标
-    cityIndex: 0, // 当前城市
     options: ProvinceList.map(province => {
       province.isLeaf = false;
       return province;
@@ -50,12 +47,13 @@ class AddressCascader extends PureComponent {
   };
 
   static getDerivedStateFromProps(nextProps, preState) {
-    if (nextProps.initialValue && nextProps.initialValue[0]) {
+    if (!preState.value.length && nextProps.initialValue && nextProps.initialValue[0]) {
       const { options } = preState;
       const provinceIndex = getIndex(nextProps.initialValue[0], ProvinceList);
       options[provinceIndex].children = getCity(nextProps.initialValue[0]);
       const cityIndex = getIndex(nextProps.initialValue[1], getCity(nextProps.initialValue[0]));
-      options[provinceIndex].children[cityIndex].children = getArea(nextProps.initialValue[2]);
+      options[provinceIndex].children[cityIndex].children = getArea(nextProps.initialValue[1]);
+
       return {
         value: nextProps.initialValue,
         options: [...options],
@@ -67,21 +65,21 @@ class AddressCascader extends PureComponent {
   loadData = selectedOptions => {
     const target = selectedOptions[selectedOptions.length - 1];
     const { options } = this.state;
-    let { provinceIndex, cityIndex } = this.state;
+
     if (selectedOptions.length === 1) {
-      provinceIndex = getIndex(target.code, ProvinceList);
+      const provinceIndex = getIndex(target.code, ProvinceList);
       options[provinceIndex].children = getCity(target.code);
     }
     if (selectedOptions.length === 2) {
-      cityIndex = getIndex(target.code, getCity(target.provinceCode));
+      const provinceIndex = getIndex(target.provinceCode, ProvinceList);
+      const cityIndex = getIndex(target.code, getCity(target.provinceCode));
       options[provinceIndex].children[cityIndex].children = getArea(target.code);
     }
-    this.setState({ options: [...options], provinceIndex, cityIndex });
+    this.setState({ options: [...options] });
   };
 
   handleChange = (value, selectedOptions) => {
     const [province, city, area] = selectedOptions;
-
     this.setState({ value: [...value] });
     let address;
     if (selectedOptions.length === 3) {
@@ -102,7 +100,7 @@ class AddressCascader extends PureComponent {
 
   render() {
     const { value, options } = this.state;
-    console.log(value);
+
     return (
       <Cascader
         style={{ width: '100%' }}

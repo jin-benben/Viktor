@@ -8,6 +8,7 @@ import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import CancelOrder from '@/components/Modal/CancelOrder';
 import DescriptionList from 'ant-design-pro/lib/DescriptionList';
+import NeedAskPrice from '../components/needAskPrice';
 import { getName } from '@/utils/utils';
 
 const { Description } = DescriptionList;
@@ -326,6 +327,8 @@ class InquiryEdit extends PureComponent {
         TI_Z02602: [],
       }, // 单据信息
       attachmentVisible: false,
+      selectedRows: [],
+      needmodalVisible: false,
       prviewList: [],
     };
   }
@@ -371,7 +374,7 @@ class InquiryEdit extends PureComponent {
   };
 
   handleModalVisible = flag => {
-    this.setState({ attachmentVisible: !!flag });
+    this.setState({ attachmentVisible: !!flag, needmodalVisible: !!flag });
   };
 
   // 获取单据详情
@@ -421,11 +424,47 @@ class InquiryEdit extends PureComponent {
     }
   };
 
+  // 确认需要采购询价
+  selectNeed = () => {
+    const { formVals } = this.state;
+    const selectedRows = formVals.TI_Z02602.filter(item => item.IsInquiry === 'N');
+    if (selectedRows.length) {
+      this.setState({ selectedRows: [...selectedRows] });
+      this.handleModalVisible(true);
+    } else {
+      message.warning('暂无需询价的行');
+    }
+  };
+
+  // 发送需询价
+  submitNeedLine = select => {
+    const { dispatch } = this.props;
+    const loItemList = select.map(item => ({
+      DocEntry: item.DocEntry,
+      LineID: item.LineID,
+    }));
+    dispatch({
+      type: 'inquiryPreview/confirm',
+      payload: {
+        Content: {
+          loItemList,
+        },
+      },
+      callback: response => {
+        if (response && response.Status === 200) {
+          message.success('提交成功');
+
+          this.setState({ needmodalVisible: false });
+        }
+      },
+    });
+  };
+
   render() {
     const {
       global: { Saler, Company },
     } = this.props;
-    const { formVals, attachmentVisible, prviewList } = this.state;
+    const { formVals, attachmentVisible, prviewList, selectedRows, needmodalVisible } = this.state;
     const newdata = [...formVals.TI_Z02602];
     if (newdata.length > 0) {
       newdata.push({
@@ -436,6 +475,11 @@ class InquiryEdit extends PureComponent {
         LineTotal: formVals.DocTotal,
       });
     }
+
+    const needParentMethods = {
+      handleSubmit: this.submitNeedLine,
+      handleModalVisible: this.handleModalVisible,
+    };
 
     return (
       <Card bordered={false}>
@@ -491,9 +535,9 @@ class InquiryEdit extends PureComponent {
               <Description term="手机号码">{formVals.CellphoneNO}</Description>
               <Description term="联系人电话">{formVals.PhoneNO}</Description>
               <Description term="联系人邮箱">{formVals.Email}</Description>
-              <Description term="地址">{`${formVals.Province}${formVals.City}${formVals.Area}${
-                formVals.Address
-              }`}</Description>
+              <Description term="地址">
+                {`${formVals.Province}${formVals.City}${formVals.Area}${formVals.Address}`}
+              </Description>
             </DescriptionList>
           </TabPane>
           <TabPane tab="附件" key="3">
@@ -527,6 +571,9 @@ class InquiryEdit extends PureComponent {
               <Button onClick={this.toUpdate} type="primary">
                 编辑
               </Button>
+              <Button onClick={this.selectNeed} type="primary">
+                确认需采购询价
+              </Button>
             </Fragment>
           ) : (
             ''
@@ -540,6 +587,11 @@ class InquiryEdit extends PureComponent {
           >
             新建
           </Button>
+          <NeedAskPrice
+            data={selectedRows}
+            {...needParentMethods}
+            modalVisible={needmodalVisible}
+          />
         </FooterToolbar>
       </Card>
     );

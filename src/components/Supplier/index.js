@@ -73,7 +73,7 @@ class Staffs extends PureComponent {
   render() {
     const { fetching, data, value } = this.state;
     const { labelInValue } = this.props;
-    console.log(value);
+
     return (
       <Select
         showSearch

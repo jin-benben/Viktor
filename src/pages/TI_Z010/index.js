@@ -8,16 +8,15 @@ import {
   Col,
   Form,
   Input,
-  Upload,
   Button,
   message,
   Switch,
-  Icon,
   Modal,
   Select,
   Popover,
   Divider,
 } from 'antd';
+import Upload from '@/components/Upload';
 
 const FormItem = Form.Item;
 const { TreeNode } = Tree;
@@ -26,28 +25,24 @@ const { Option } = Select;
 class CreateForm extends React.Component {
   constructor(props) {
     super(props);
-    console.log(props.formVals.PicturePath);
+
     this.state = {
-      PicturePath: props.formVals.PicturePath,
-      PicCode: props.formVals.PicCode,
-      Status: props.formVals.Status ? '1' : '2',
+      formVals: {},
     };
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    if (nextProps.formVals.PicturePath !== prevState.PicturePath) {
-      const { PicturePath, PicCode, Status } = nextProps.formVals;
+    if (nextProps.formVals !== prevState.formVals) {
       return {
-        PicturePath,
-        PicCode,
-        Status,
+        formVals: nextProps.formVals,
       };
     }
     return null;
   }
 
-  switchChange = Status => {
-    this.setState({ Status });
+  changePicture = ({ FilePath, FileCode }) => {
+    const { formVals } = this.props;
+    Object.assign(formVals, { PicturePath: FilePath, PicCode: FileCode });
   };
 
   handleChange = info => {
@@ -91,16 +86,10 @@ class CreateForm extends React.Component {
       form.validateFields((err, fieldsValue) => {
         if (err) return;
         form.resetFields();
-        handleSubmit({ ...formVals, ...fieldsValue, ...this.state });
+        handleSubmit({ ...formVals, ...fieldsValue });
       });
     };
-    const uploadButton = (
-      <div>
-        <Icon type="plus" />
-        <div className="ant-upload-text">Upload</div>
-      </div>
-    );
-    const { PicturePath, Status } = this.state;
+
     return (
       <Modal
         width={640}
@@ -140,28 +129,19 @@ class CreateForm extends React.Component {
             })(<Input placeholder="请输入名称！" />)}
           </FormItem>
           <FormItem key="Status" {...formLayout} label="状态">
-            <Switch
-              checkedChildren="启用"
-              unCheckedChildren="禁用"
-              defaultChecked={formVals.Status === '1'}
-              onChange={this.switchChange}
-              checked={Status}
-            />
+            {getFieldDecorator('Status', {
+              rules: [{ required: true, message: '请输入名称！' }],
+              valuePropName: 'checked',
+              initialValue: formVals.Status === '1',
+            })(<Switch checkedChildren="启用" unCheckedChildren="禁用" />)}
           </FormItem>
           <FormItem key="PicturePath" {...formLayout} label="分类图片">
             <Upload
-              action="http://117.149.160.231:9301/MDMPicUpload/PictureUpLoad"
-              listType="picture-card"
-              showUploadList={false}
-              onChange={this.handleChange}
-              data={{ UserCode: 'jinwentao', Folder: 'TI_Z026', Tonken: '22233' }}
-            >
-              {PicturePath ? (
-                <img style={{ width: 80, height: 80 }} src={PicturePath} alt="avatar" />
-              ) : (
-                uploadButton
-              )}
-            </Upload>
+              onChange={this.changePicture}
+              type="MDM"
+              Folder="TI_Z010"
+              initialValue={formVals.PicturePath}
+            />
           </FormItem>
         </Form>
       </Modal>

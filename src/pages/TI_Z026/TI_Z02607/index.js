@@ -51,7 +51,9 @@ class orderLine extends PureComponent {
       fixed: 'left',
       dataIndex: 'DocEntry',
       render: (text, recond) => (
-        <Link to={`/sellabout/TI_Z026/detail?DocEntry=${text}`}>{`${text}-${recond.LineID}`}</Link>
+        <Link target="_blank" to={`/sellabout/TI_Z026/detail?DocEntry=${text}`}>{`${text}-${
+          recond.LineID
+        }`}</Link>
       ),
     },
     {
@@ -299,7 +301,7 @@ class orderLine extends PureComponent {
         DocDateFrom = moment(fieldsValue.dateArr[0]).format('YYYY-MM-DD');
         DocDateTo = moment(fieldsValue.dateArr[1]).format('YYYY-MM-DD');
       }
-      console.log(fieldsValue.IsInquiry);
+
       const queryData = {
         ...fieldsValue,
         DocDateFrom,
@@ -372,7 +374,7 @@ class orderLine extends PureComponent {
   // 确认需要采购询价
   selectNeed = () => {
     const { selectedRows } = this.state;
-    console.log(selectedRows);
+
     if (selectedRows.length) {
       this.handleModalVisible(true);
     } else {

@@ -6,10 +6,20 @@ const { TreeNode } = TreeSelect;
 class Organization extends PureComponent {
   state = {
     treeData: [],
+    value: '',
   };
 
   componentDidMount() {
     this.getCategory();
+  }
+
+  static getDerivedStateFromProps(nextProps, prevState) {
+    if (!prevState.value && nextProps.initialValue !== prevState.value) {
+      return {
+        value: nextProps.initialValue,
+      };
+    }
+    return null;
   }
 
   // eslint-disable-next-line consistent-return
@@ -27,8 +37,8 @@ class Organization extends PureComponent {
   };
 
   handleChange = value => {
-    console.log(value);
     const { onChange } = this.props;
+    this.setState({ value });
     if (onChange) {
       onChange(value);
     }
@@ -37,7 +47,6 @@ class Organization extends PureComponent {
   renderTreeNodes = data =>
     data.map(item => {
       if (item.children) {
-        console.log(item.Name);
         return (
           <TreeNode title={item.Name} value={item.Code} key={item.Code}>
             {this.renderTreeNodes(item.children)}
@@ -48,11 +57,12 @@ class Organization extends PureComponent {
     });
 
   render() {
-    const { treeData } = this.state;
-    const { initialValue } = this.props;
+    const { treeData, value } = this.state;
+    console.log(value);
     return (
       <TreeSelect
         style={{ width: '100%' }}
+        value={value}
         dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
         placeholder="请选择部门"
         treeDefaultExpandAll

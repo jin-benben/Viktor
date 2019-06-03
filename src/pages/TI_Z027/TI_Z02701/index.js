@@ -235,7 +235,7 @@ class SupplierAsk extends Component {
         });
       }
     });
-    console.log(lineList);
+
     this.getDocRate(lineList);
   };
 

@@ -45,7 +45,11 @@ class SalesQuotation extends PureComponent {
       width: 80,
       fixed: 'left',
       dataIndex: 'DocEntry',
-      render: text => <Link to={`/sellabout/TI_Z029/detail?DocEntry=${text}`}>{text}</Link>,
+      render: text => (
+        <Link target="_blank" to={`/sellabout/TI_Z029/detail?DocEntry=${text}`}>
+          {text}
+        </Link>
+      ),
     },
     {
       title: '单据日期',

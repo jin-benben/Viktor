@@ -283,7 +283,7 @@ class SelectionLine extends Component {
 
   render() {
     const { selectedRows, orderLineList } = this.state;
-    console.log(orderLineList);
+
     return (
       <div>
         <StandardTable

@@ -217,7 +217,6 @@ class Organization extends PureComponent {
     const { dispatch } = this.props;
     const { method } = this.state;
     if (method === 'A') {
-      console.log(fieldsValue);
       dispatch({
         type: 'authority/add',
         payload: {

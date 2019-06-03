@@ -25,7 +25,7 @@ class EditableCell extends PureComponent {
       <EditableContext.Consumer>
         {form => {
           const { getFieldDecorator } = form;
-          console.log(form);
+
           return (
             <td {...restProps}>
               {editing ? (

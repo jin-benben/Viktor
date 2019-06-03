@@ -67,7 +67,9 @@ class NeedTabl extends React.Component {
       width: 100,
       dataIndex: 'DocEntry',
       render: (val, record) => (
-        <Link to={`/sellabout/TI_Z026/detail?DocEntry=${val}`}>{`${val}-${record.LineID}`}</Link>
+        <Link target="_blank" to={`/sellabout/TI_Z026/detail?DocEntry=${val}`}>{`${val}-${
+          record.LineID
+        }`}</Link>
       ),
     },
     {

@@ -6,7 +6,7 @@ import { getFlatMenuKeys } from './SiderMenuUtils';
 const SiderMenuWrapper = React.memo(props => {
   const { isMobile, menuData, collapsed, onCollapse } = props;
   const flatMenuKeys = getFlatMenuKeys(menuData);
-  console.log('isMobile', isMobile, collapsed);
+
   return isMobile ? (
     <Drawer
       visible={!collapsed}
