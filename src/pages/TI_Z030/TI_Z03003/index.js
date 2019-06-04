@@ -7,6 +7,7 @@ import StandardTable from '@/components/StandardTable';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import CancelOrder from '@/components/Modal/CancelOrder';
+import MyTag from '@/components/Tag';
 import DescriptionList from 'ant-design-pro/lib/DescriptionList';
 import { getName } from '@/utils/utils';
 
@@ -116,34 +117,37 @@ class InquiryEdit extends React.Component {
     },
     {
       title: '单位',
-      width: 80,
+      width: 50,
       dataIndex: 'Unit',
 
       align: 'center',
     },
     {
       title: '数量',
-      width: 80,
+      width: 50,
 
       dataIndex: 'Quantity',
 
       align: 'center',
     },
     {
-      title: '销售建议价',
-      width: 100,
-
+      title: '销建议价',
+      width: 80,
       dataIndex: 'Price',
-
       align: 'center',
     },
     {
-      title: '销售行总计',
-      width: 120,
+      title: '销行总计',
+      width: 100,
       align: 'center',
       dataIndex: 'LineTotal',
       render: (text, record) =>
         record.lastIndex ? <span style={{ fontWeight: 'bolder' }}>{text}</span> : text,
+    },
+    {
+      title: '行利润',
+      width: 80,
+      dataIndex: 'ProfitLineTotal',
     },
     {
       title: '要求交期',
@@ -166,12 +170,22 @@ class InquiryEdit extends React.Component {
         return record.lastIndex ? '' : <span>{getName(WhsCode, text)}</span>;
       },
     },
-
     {
       title: '询价最终价',
       width: 100,
       dataIndex: 'InquiryPrice',
       align: 'center',
+    },
+    {
+      title: '供应商',
+      width: 100,
+      dataIndex: 'SupplierName',
+      align: 'center',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '询价币种',
@@ -188,7 +202,6 @@ class InquiryEdit extends React.Component {
     {
       title: '单据汇率',
       width: 80,
-
       dataIndex: 'DocRate',
       align: 'center',
     },
@@ -219,22 +232,27 @@ class InquiryEdit extends React.Component {
       align: 'center',
     },
     {
-      title: '询价行总计',
-      width: 120,
+      title: '询行总计',
+      width: 100,
       align: 'center',
       dataIndex: 'InquiryLineTotal',
       render: (text, record) =>
         record.lastIndex ? <span style={{ fontWeight: 'bolder' }}>{text}</span> : text,
     },
     {
-      title: '询价行总计(本币)',
-      width: 150,
+      title: '询行本总计',
+      width: 100,
       align: 'center',
       dataIndex: 'InquiryLineTotalLocal',
       render: (text, record) =>
         record.lastIndex ? <span style={{ fontWeight: 'bolder' }}>{text}</span> : text,
     },
-
+    {
+      title: '确认状态',
+      dataIndex: 'LineStatus',
+      width: 80,
+      render: (text, record) => <MyTag type="确认" value={record.LineStatus} />,
+    },
     {
       title: '操作',
       fixed: 'right',
@@ -342,7 +360,7 @@ class InquiryEdit extends React.Component {
       type: 'global/getMDMCommonality',
       payload: {
         Content: {
-          CodeList: ['Saler', 'Purchaser', 'WhsCode', 'Company'],
+          CodeList: ['Saler', 'Purchaser', 'Curr', 'WhsCode', 'Company'],
         },
       },
     });
@@ -459,7 +477,7 @@ class InquiryEdit extends React.Component {
 
   render() {
     const {
-      global: { Saler, Company },
+      global: { Saler, Company, TI_Z004 },
     } = this.props;
     const { formVals, attachmentVisible, prviewList } = this.state;
 
@@ -488,23 +506,29 @@ class InquiryEdit extends React.Component {
           <Description term="联系人">{formVals.Contacts}</Description>
           <Description term="备注">{formVals.Comment}</Description>
           <Description term="创建人">
-            <span>{getName(Saler, formVals.CreateUser)}</span>
+            <span>{getName(TI_Z004, formVals.CreateUser)}</span>
           </Description>
-          <Description term="销售员">
+          <Description term="销售">
             <span>{getName(Saler, formVals.Owner)}</span>
           </Description>
           <Description term="交易公司">
             <span>{getName(Company, formVals.CompanyCode)}</span>
           </Description>
           <Description term="订单类型">{formVals.OrderType === '1' ? '正常订单' : ''}</Description>
-          <Description term="来源类型">
-            <span>{getName(OrderSource, formVals.OrderType)}</span>
-          </Description>
           <Description term="客户参考号">{formVals.NumAtCard}</Description>
-          <Description term="报价状态">
-            {formVals.SDocStatus === 'O' ? '已报价' : '未报价'}
+          <Description term="单据状态">
+            {formVals.Closed === 'Y' ? (
+              <MyTag type="关闭" value="Y" />
+            ) : (
+              <MyTag type="确认" value={formVals.DocStatus} />
+            )}
           </Description>
-          <Description term="关闭状态">{formVals.Closed === 'Y' ? '已关闭' : '未关闭'}</Description>
+          {formVals.Closed === 'N' ? null : (
+            <Fragment>
+              <Description term="关闭原因">{formVals.ClosedComment}</Description>
+              <Description term="关闭人">{formVals.ClosedBy}</Description>
+            </Fragment>
+          )}
         </DescriptionList>
         <Tabs>
           <TabPane tab="物料" key="1">
@@ -520,9 +544,9 @@ class InquiryEdit extends React.Component {
               <Description term="手机号码">{formVals.CellphoneNO}</Description>
               <Description term="联系人电话">{formVals.PhoneNO}</Description>
               <Description term="联系人邮箱">{formVals.Email}</Description>
-              <Description term="地址">{`${formVals.Province}${formVals.City}${formVals.Area}${
-                formVals.Address
-              }`}</Description>
+              <Description term="地址">
+                {`${formVals.Province}${formVals.City}${formVals.Area}${formVals.Address}`}
+              </Description>
             </DescriptionList>
           </TabPane>
           <TabPane tab="其余成本" key="3">

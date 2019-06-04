@@ -90,6 +90,13 @@ class AddressInfo extends PureComponent {
       >
         <Form {...formItemLayout}>
           <Row>
+            <FormItem key="AddressName" {...this.formLayout} label="收货人姓名">
+              {getFieldDecorator('AddressName', {
+                initialValue: formVals.AddressName,
+              })(<Input placeholder="请输入地址描述" />)}
+            </FormItem>
+          </Row>
+          <Row>
             <FormItem key="UserName" {...this.formLayout} label="收货人姓名">
               {getFieldDecorator('UserName', {
                 rules: [{ required: true, message: '请输入姓名！' }],

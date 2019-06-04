@@ -21,7 +21,12 @@ class Staffs extends PureComponent {
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    if (nextProps.initialValue !== prevState.value || !prevState.data.length) {
+    if (
+      (nextProps.initialValue.key !== undefined &&
+        nextProps.initialValue.key !== prevState.value.key) ||
+      !prevState.data.length
+    ) {
+      console.log(prevState.data.length, nextProps.initialValue.key, prevState.value.key);
       return {
         value: nextProps.initialValue.key ? nextProps.initialValue : prevState.value,
         data: nextProps.global.SupplierList,

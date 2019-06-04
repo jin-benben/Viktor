@@ -2,6 +2,7 @@ import React, { PureComponent } from 'react';
 import moment from 'moment';
 import { connect } from 'dva';
 import { Form, Modal, Table, message } from 'antd';
+import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import { getName } from '@/utils/utils';
 
 @connect(({ global }) => ({
@@ -39,6 +40,11 @@ class OrderLine extends PureComponent {
       dataIndex: 'SKUName',
       width: 200,
       align: 'center',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '品牌',

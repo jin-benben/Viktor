@@ -2,24 +2,13 @@ import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
 import moment from 'moment';
-import {
-  Row,
-  Col,
-  Card,
-  Form,
-  Input,
-  Button,
-  Divider,
-  Select,
-  Badge,
-  DatePicker,
-  Icon,
-} from 'antd';
+import { Row, Col, Card, Form, Input, Button, Divider, Select, DatePicker, Icon } from 'antd';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import StandardTable from '@/components/StandardTable';
 import MDMCommonality from '@/components/Select';
 import DocEntryFrom from '@/components/DocEntryFrom';
 import Link from 'umi/link';
+import MyTag from '@/components/Tag';
 import { getName } from '@/utils/utils';
 
 const { RangePicker } = DatePicker;
@@ -42,7 +31,7 @@ class AgreementLine extends PureComponent {
   columns = [
     {
       title: '单号',
-      width: 100,
+      width: 80,
       fixed: 'left',
       dataIndex: 'DocEntry',
       render: (text, recond) => (
@@ -67,48 +56,33 @@ class AgreementLine extends PureComponent {
     {
       title: '确认状态',
       dataIndex: 'LineStatus',
-      width: 100,
-      render: text => (
-        <Fragment>
-          <span>
-            {text === 'O' ? (
-              <Badge color="green" text="未确认" />
-            ) : (
-              <Badge color="blue" text="已确认" />
-            )}
-          </span>
-        </Fragment>
-      ),
+      width: 80,
+      render: (text, record) => <MyTag type="确认" value={record.LineStatus} />,
     },
     {
       title: '合同状态',
-      dataIndex: 'LineStatus',
-      width: 100,
-      render: text => (
-        <Fragment>
-          <span>
-            {text === 'O' ? (
-              <Badge color="green" text="未确认" />
-            ) : (
-              <Badge color="blue" text="已确认" />
-            )}
-          </span>
-        </Fragment>
-      ),
+      dataIndex: 'ApproveSts',
+      width: 80,
+      render: (text, record) => <MyTag type="通过" value={record.ApproveSts} />,
     },
     {
       title: '客户',
-      width: 150,
+      width: 200,
       dataIndex: 'CardName',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '客户参考号',
-      width: 150,
+      width: 100,
       dataIndex: 'NumAtCard',
     },
     {
       title: '联系人',
-      width: 100,
+      width: 80,
       dataIndex: 'Contacts',
     },
     {
@@ -126,33 +100,58 @@ class AgreementLine extends PureComponent {
     },
     {
       title: 'SKU',
-      width: 100,
+      width: 80,
       dataIndex: 'SKU',
     },
     {
       title: '产品描述',
       width: 150,
       dataIndex: 'SKUName',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '品牌',
       width: 100,
       dataIndex: 'BrandName',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '名称',
       width: 100,
       dataIndex: 'ProductName',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '型号',
       width: 100,
       dataIndex: 'ManufactureNO',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '参数',
       width: 100,
       dataIndex: 'Parameters',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '包装',
@@ -162,72 +161,94 @@ class AgreementLine extends PureComponent {
 
     {
       title: '数量',
-      width: 100,
+      width: 50,
       dataIndex: 'Quantity',
     },
     {
       title: '单位',
-      width: 100,
+      width: 50,
       dataIndex: 'Unit',
     },
     {
       title: '要求交期',
       dataIndex: 'DueDate',
+      width: 100,
       render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
     {
       title: '询价价格',
-      width: 100,
+      width: 80,
       dataIndex: 'InquiryPrice',
     },
     {
       title: '价格',
-      width: 100,
+      width: 80,
       dataIndex: 'Price',
     },
     {
-      title: '其他成本',
+      title: '销行总计',
       width: 100,
+      dataIndex: 'LineTotal',
+    },
+    {
+      title: '采行总计',
+      width: 100,
+      dataIndex: 'InquiryLineTotal',
+    },
+    {
+      title: '其他成本',
+      width: 80,
       dataIndex: 'OtherTotal',
     },
-    // {
-    //   title: '询价最终交期',
-    //   width:100,
-    //   dataIndex: 'InquiryDueDate',
-    //   render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
-    // },
+    {
+      title: '行利润',
+      width: 80,
+      dataIndex: 'ProfitLineTotal',
+    },
+    {
+      title: '询终交期',
+      width: 100,
+      dataIndex: 'InquiryDueDate',
+      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
+    },
+    {
+      title: '供应商',
+      width: 100,
+      dataIndex: 'SupplierName',
+      align: 'center',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
+    },
     {
       title: '行备注',
       width: 100,
       dataIndex: 'LineComment',
     },
-    // {
-    //   title: '采购行总计',
-    //   width:150,
-    //   dataIndex: 'InquiryDocTotal',
-    // },
-    // {
-    //   title: '销售行总计',
-    //   width:150,
-    //   dataIndex: 'DocTotal',
-    // },
-    // {
-    //   title: '采购员',
-    //   width:100,
-    //   dataIndex: 'Purchase',
-    //   render: text => {
-    //     const { global:{Purchaser} } = this.props;
-    //     return <span>{getName(Purchaser, text)}</span>;
-    //   },
-    // },
-    // {
-    //   title: '所有人',
-    //   dataIndex: 'Owner',
-    //   render: text => {
-    //     const { global:{Saler} } = this.props;
-    //     return <span>{getName(Saler, text)}</span>;
-    //   },
-    // },
+    {
+      title: '采购员',
+      width: 80,
+      dataIndex: 'Purchase',
+      render: text => {
+        const {
+          global: { Purchaser },
+        } = this.props;
+        return <span>{getName(Purchaser, text)}</span>;
+      },
+    },
+    {
+      title: '销售',
+      dataIndex: 'Owner',
+      width: 80,
+      render: text => {
+        const {
+          global: { Saler },
+        } = this.props;
+        return <span>{getName(Saler, text)}</span>;
+      },
+    },
   ];
 
   componentDidMount() {
@@ -456,7 +477,7 @@ class AgreementLine extends PureComponent {
               loading={loading}
               data={{ list: agreementLineList }}
               pagination={pagination}
-              scroll={{ x: 2500, y: 500 }}
+              scroll={{ x: 2850, y: 600 }}
               rowKey="Key"
               columns={this.columns}
               onChange={this.handleStandardTableChange}

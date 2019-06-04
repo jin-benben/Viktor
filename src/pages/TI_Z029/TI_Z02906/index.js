@@ -2,24 +2,13 @@ import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
 import moment from 'moment';
-import {
-  Row,
-  Col,
-  Card,
-  Form,
-  Input,
-  Button,
-  Divider,
-  Select,
-  Badge,
-  DatePicker,
-  Icon,
-} from 'antd';
+import { Row, Col, Card, Form, Input, Button, Divider, Select, DatePicker, Icon } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import Link from 'umi/link';
 import MDMCommonality from '@/components/Select';
 import DocEntryFrom from '@/components/DocEntryFrom';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
+import MyTag from '@/components/Tag';
 import { getName } from '@/utils/utils';
 
 const { RangePicker } = DatePicker;
@@ -65,24 +54,22 @@ class SalesQuotation extends PureComponent {
     },
     {
       title: '单据状态',
-      width: 100,
-      dataIndex: 'DocStatus',
-      render: text => (
+      dataIndex: 'Status',
+      width: 80,
+      render: (text, record) => (
         <Fragment>
-          <span>
-            {text === 'O' ? (
-              <Badge color="green" text="未报价" />
-            ) : (
-              <Badge color="blue" text="已报价" />
-            )}
-          </span>
+          {record.Closed === 'Y' ? (
+            <MyTag type="关闭" value="Y" />
+          ) : (
+            <MyTag type="报价" value={record.DocStatus} />
+          )}
         </Fragment>
       ),
     },
     {
       title: '客户',
-      width: 150,
       dataIndex: 'CardName',
+      width: 200,
       render: text => (
         <Ellipsis tooltip lines={1}>
           {text}
@@ -96,8 +83,8 @@ class SalesQuotation extends PureComponent {
     },
     {
       title: '联系方式',
-      width: 120,
       dataIndex: 'contact',
+      width: 200,
       render: (text, record) => (
         <Ellipsis tooltip lines={1}>
           {record.CellphoneNO}
@@ -110,7 +97,7 @@ class SalesQuotation extends PureComponent {
       title: '送货地址',
       dataIndex: 'address',
       render: (text, record) => (
-        <span>{`${record.Province}/${record.City}/${record.Area}/${record.Adress}`}</span>
+        <span>{`${record.Province}/${record.City}/${record.Area}/${record.Address}`}</span>
       ),
     },
     {

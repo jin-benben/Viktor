@@ -94,7 +94,7 @@ class CreateForm extends React.Component {
       <Modal
         width={640}
         destroyOnClose
-        title="分离编辑"
+        title="分类编辑"
         visible={modalVisible}
         onOk={okHandle}
         onCancel={() => handleModalVisible()}
@@ -118,9 +118,8 @@ class CreateForm extends React.Component {
           </FormItem>
           <FormItem key="Code" {...formLayout} label="分类ID">
             {getFieldDecorator('Code', {
-              rules: [{ required: true, message: '请输入分类ID！' }],
               initialValue: formVals.Code,
-            })(<Input placeholder="请输入分类ID！" />)}
+            })(<Input disabled placeholder="请输入分类ID！" />)}
           </FormItem>
           <FormItem key="Name" {...formLayout} label="名称">
             {getFieldDecorator('Name', {

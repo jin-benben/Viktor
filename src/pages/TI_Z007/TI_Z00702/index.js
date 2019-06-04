@@ -41,10 +41,6 @@ class supplierSearch extends PureComponent {
       dataIndex: 'BankAccount',
     },
     {
-      title: '税号',
-      dataIndex: 'DutyNo',
-    },
-    {
       title: '地址',
       dataIndex: 'Laddress',
     },
@@ -57,8 +53,30 @@ class supplierSearch extends PureComponent {
       dataIndex: 'CreditCode',
     },
     {
-      title: '供应商类型',
+      title: '交易币种',
       width: 100,
+      dataIndex: 'Currency',
+      render: val => {
+        const {
+          global: { Curr },
+        } = this.props;
+        return <span>{getName(Curr, val)}</span>;
+      },
+    },
+    {
+      title: '交易主体',
+      width: 100,
+      dataIndex: 'CompanyCode',
+      render: val => {
+        const {
+          global: { Company },
+        } = this.props;
+        return <span>{getName(Company, val)}</span>;
+      },
+    },
+    {
+      title: '类型',
+      width: 80,
       dataIndex: 'CardType',
       render: val => {
         const {
@@ -70,6 +88,7 @@ class supplierSearch extends PureComponent {
     {
       title: '状态',
       dataIndex: 'Status',
+      width: 80,
       render: val => <span>{val === '1' ? '开启' : '禁用'}</span>,
     },
   ];
@@ -89,7 +108,7 @@ class supplierSearch extends PureComponent {
       type: 'global/getMDMCommonality',
       payload: {
         Content: {
-          CodeList: ['Supplier'],
+          CodeList: ['Supplier', 'Curr', 'Company'],
         },
       },
     });

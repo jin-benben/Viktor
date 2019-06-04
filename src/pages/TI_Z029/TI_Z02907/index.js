@@ -22,6 +22,7 @@ import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import NeedAskPrice from '../components/needAskPrice';
 import Link from 'umi/link';
 import DocEntryFrom from '@/components/DocEntryFrom';
+import MyTag from '@/components/Tag';
 
 const { RangePicker } = DatePicker;
 
@@ -70,13 +71,13 @@ class SalesQuotationSku extends PureComponent {
       title: '确认状态',
       dataIndex: 'LineStatus',
       width: 80,
-      render: (text, record) => <span>{record.LineStatus === 'O' ? '未确认' : '已确认'}</span>,
+      render: (text, record) => <MyTag type="确认" value={record.LineStatus} />,
     },
     {
       title: '合同状态',
       dataIndex: 'ApproveSts',
       width: 80,
-      render: (text, record) => <span>{record.ApproveSts === 'Y' ? '已通过' : '未通过'}</span>,
+      render: (text, record) => <MyTag type="通过" value={record.ApproveSts} />,
     },
     {
       title: '客户',

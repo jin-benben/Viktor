@@ -7,7 +7,6 @@ import {
   supplierRule,
 } from '@/services';
 import { routerRedux } from 'dva/router';
-import { notification } from 'antd';
 import { parse } from 'qs';
 
 export default {
@@ -30,6 +29,8 @@ export default {
     CustomerList: [], // 客户
     BrandList: [], // 品牌
     CategoryTree: [], // 分类
+    TI_Z004: [], // 员工列表
+    TI_Z003: [], // 部门
   },
 
   effects: {
@@ -193,10 +194,6 @@ export default {
           });
         }
         if (response && response.Status !== 200) {
-          notification.error({
-            message: '验证失败',
-            description: '登录已过期，请重新登录',
-          });
           yield put(
             routerRedux.replace({
               pathname: '/user/login',

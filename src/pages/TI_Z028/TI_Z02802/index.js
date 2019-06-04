@@ -267,7 +267,7 @@ class TI_Z02802 extends PureComponent {
   render() {
     const { purchaseDetail } = this.state;
     const {
-      global: { Purchaser },
+      global: { Purchaser, TI_Z004 },
     } = this.props;
 
     return (
@@ -286,6 +286,9 @@ class TI_Z02802 extends PureComponent {
           <Description term="询价总计">{purchaseDetail.InquiryDocTotal}</Description>
           <Description term="询价总计(本币)">{purchaseDetail.InquiryDocTotalLocal}</Description>
           <Description term="备注">{purchaseDetail.DocEntry}</Description>
+          <Description term="创建人">
+            <span>{getName(TI_Z004, purchaseDetail.CreateUser)}</span>
+          </Description>
           <Description term="采购员">
             <span>{getName(Purchaser, purchaseDetail.Owner)}</span>
           </Description>

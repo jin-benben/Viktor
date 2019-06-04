@@ -2,23 +2,12 @@ import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
 import moment from 'moment';
-import {
-  Row,
-  Col,
-  Card,
-  Form,
-  Input,
-  Button,
-  Divider,
-  Select,
-  Badge,
-  DatePicker,
-  Icon,
-} from 'antd';
+import { Row, Col, Card, Form, Input, Button, Divider, Select, DatePicker, Icon } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import MDMCommonality from '@/components/Select';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import DocEntryFrom from '@/components/DocEntryFrom';
+import MyTag from '@/components/Tag';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import Link from 'umi/link';
 import { getName } from '@/utils/utils';
@@ -70,23 +59,11 @@ class inquiryListPage extends PureComponent {
       render: (text, record) => (
         <Fragment>
           {record.Closed === 'Y' ? (
-            <Badge color="red" text="已关闭" />
+            <MyTag type="关闭" value="Y" />
           ) : (
             <Fragment>
-              <span>
-                {record.SDocStatus === 'O' ? (
-                  <Badge color="green" text="未报价" />
-                ) : (
-                  <Badge color="blue" text="已报价" />
-                )}
-              </span>
-              <span>
-                {record.PDocStatus === 'O' ? (
-                  <Badge color="green" text="未询价" />
-                ) : (
-                  <Badge color="blue" text="已询价" />
-                )}{' '}
-              </span>
+              <MyTag type="报价" value={record.SDocStatus} />
+              <MyTag type="询价" value={record.PDocStatus} />
             </Fragment>
           )}
         </Fragment>

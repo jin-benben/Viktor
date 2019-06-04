@@ -912,7 +912,7 @@ class InquiryEdit extends React.Component {
       Object.assign(formVals, { TI_Z02602: [...newArr, ...formVals.TI_Z02602] });
       this.setState({ formVals });
     } else {
-      message.warning(info.file.response.Message);
+      message.warning(info.file.response.MessageString);
     }
   };
 
@@ -1066,9 +1066,10 @@ class InquiryEdit extends React.Component {
               </FormItem>
             </Col>
             <Col lg={10} md={12} sm={24}>
-              <FormItem key="DueDate" {...this.formLayout} label="要求交期">
-                {getFieldDecorator('DueDate', {
-                  initialValue: formVals.DueDate ? moment(formVals.DueDate, 'YYYY-MM-DD') : null,
+              <FormItem key="ToDate" {...this.formLayout} label="有效期至">
+                {getFieldDecorator('ToDate', {
+                  initialValue: formVals.ToDate ? moment(formVals.ToDate, 'YYYY-MM-DD') : null,
+                  rules: [{ required: true, message: '请选择有效期！' }],
                 })(<DatePicker style={{ width: '100%' }} />)}
               </FormItem>
             </Col>
@@ -1167,10 +1168,9 @@ class InquiryEdit extends React.Component {
                 </FormItem>
               </Col>
               <Col lg={8} md={12} sm={24}>
-                <FormItem key="ToDate" {...this.formLayout} label="有效期至">
-                  {getFieldDecorator('ToDate', {
-                    initialValue: formVals.ToDate ? moment(formVals.ToDate, 'YYYY-MM-DD') : null,
-                    rules: [{ required: true, message: '请选择有效期！' }],
+                <FormItem key="DueDate" {...this.formLayout} label="要求交期">
+                  {getFieldDecorator('DueDate', {
+                    initialValue: formVals.DueDate ? moment(formVals.DueDate, 'YYYY-MM-DD') : null,
                   })(<DatePicker style={{ width: '100%' }} />)}
                 </FormItem>
               </Col>

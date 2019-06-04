@@ -2,25 +2,14 @@ import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
 import moment from 'moment';
-import {
-  Row,
-  Col,
-  Card,
-  Form,
-  Input,
-  Button,
-  Divider,
-  Badge,
-  Select,
-  DatePicker,
-  Icon,
-} from 'antd';
+import { Row, Col, Card, Form, Input, Button, Divider, Select, DatePicker, Icon } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import MDMCommonality from '@/components/Select';
 import DocEntryFrom from '@/components/DocEntryFrom';
 import Link from 'umi/link';
 import { getName } from '@/utils/utils';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
+import MyTag from '@/components/Tag';
 
 const { RangePicker } = DatePicker;
 
@@ -66,28 +55,20 @@ class agreementOrder extends PureComponent {
     {
       title: '单据状态',
       dataIndex: 'Status',
-      width: 100,
+      width: 80,
       render: (text, record) => (
         <Fragment>
           {record.Closed === 'Y' ? (
-            <Badge color="red" text="已关闭" />
+            <MyTag type="关闭" value="Y" />
           ) : (
-            <Fragment>
-              <span>
-                {record.ApproveSts === 'Y' ? (
-                  <Badge color="green" text="未确认" />
-                ) : (
-                  <Badge color="blue" text="已确认" />
-                )}
-              </span>
-            </Fragment>
+            <MyTag type="通过" value={record.ApproveSts} />
           )}
         </Fragment>
       ),
     },
     {
       title: '客户',
-      width: 150,
+      width: 300,
       dataIndex: 'CardName',
       render: text => (
         <Ellipsis tooltip lines={1}>
@@ -102,7 +83,7 @@ class agreementOrder extends PureComponent {
     },
     {
       title: '联系方式',
-      width: 120,
+      width: 200,
       dataIndex: 'contact',
       render: (text, record) => (
         <Ellipsis tooltip lines={1}>
@@ -114,9 +95,10 @@ class agreementOrder extends PureComponent {
     },
     {
       title: '送货地址',
+      width: 300,
       dataIndex: 'address',
       render: (text, record) => (
-        <span>{`${record.Province}/${record.City}/${record.Area}/${record.Adress}`}</span>
+        <span>{`${record.Province}/${record.City}/${record.Area}/${record.Address}`}</span>
       ),
     },
     {
@@ -348,7 +330,7 @@ class agreementOrder extends PureComponent {
       agreementOrder: { agreementOrderList, pagination },
       loading,
     } = this.props;
-    const tableWidth = document.body.offsetWidth < 1500 ? 1900 : 0;
+    const tableWidth = document.body.offsetWidth < 1800 ? 1700 : 0;
 
     return (
       <Fragment>

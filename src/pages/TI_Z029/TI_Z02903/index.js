@@ -7,6 +7,7 @@ import StandardTable from '@/components/StandardTable';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import DescriptionList from 'ant-design-pro/lib/DescriptionList';
+import MyTag from '@/components/Tag';
 import CancelOrder from '@/components/Modal/CancelOrder';
 import { getName } from '@/utils/utils';
 
@@ -344,7 +345,7 @@ class InquiryEdit extends React.Component {
         type: 'global/getMDMCommonality',
         payload: {
           Content: {
-            CodeList: ['Saler', 'Purchaser', 'Curr', 'WhsCode', 'Company'],
+            CodeList: ['Saler', 'Purchaser', 'TI_Z004', 'Curr', 'WhsCode', 'Company'],
           },
         },
       });
@@ -467,7 +468,7 @@ class InquiryEdit extends React.Component {
 
   render() {
     const {
-      global: { Saler, Company },
+      global: { TI_Z004, Saler, Company },
     } = this.props;
     const { formVals, attachmentVisible, prviewList } = this.state;
 
@@ -496,7 +497,10 @@ class InquiryEdit extends React.Component {
           <Description term="联系人">{formVals.Contacts}</Description>
           <Description term="备注">{formVals.Comment}</Description>
           <Description term="创建人">
-            <span>{getName(Saler, formVals.CreateUser)}</span>
+            <span>{getName(TI_Z004, formVals.CreateUser)}</span>
+          </Description>
+          <Description term="销售">
+            <span>{getName(Saler, formVals.Owner)}</span>
           </Description>
           <Description term="交易公司">
             <span>{getName(Company, formVals.CompanyCode)}</span>
@@ -506,11 +510,19 @@ class InquiryEdit extends React.Component {
             <span>{getName(OrderSource, formVals.OrderType)}</span>
           </Description>
           <Description term="客户参考号">{formVals.NumAtCard}</Description>
-          <Description term="状态">{formVals.DocStatus === 'O' ? '未清' : '已清'}</Description>
-          <Description term="报价状态">
-            {formVals.SDocStatus === 'O' ? '已报价' : '未报价'}
+          <Description term="单据状态">
+            {formVals.Closed === 'Y' ? (
+              <MyTag type="关闭" value="Y" />
+            ) : (
+              <MyTag type="确认" value={formVals.DocStatus} />
+            )}
           </Description>
-          <Description term="关闭状态">{formVals.Closed === 'Y' ? '已关闭' : '未关闭'}</Description>
+          {formVals.Closed === 'N' ? null : (
+            <Fragment>
+              <Description term="关闭原因">{formVals.ClosedComment}</Description>
+              <Description term="关闭人">{formVals.ClosedBy}</Description>
+            </Fragment>
+          )}
         </DescriptionList>
         <Tabs>
           <TabPane tab="物料" key="1">

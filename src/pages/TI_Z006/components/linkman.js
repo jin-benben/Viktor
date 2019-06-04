@@ -145,6 +145,7 @@ class LinkManFrom extends PureComponent {
             <Col span={12}>
               <FormItem key="Saler" {...this.formLayout} label="销售">
                 {getFieldDecorator('Saler', {
+                  rules: [{ required: true, message: '请选择销售' }],
                   initialValue: formVals.Saler,
                 })(<MDMCommonality initialValue={formVals.Saler} data={Saler} />)}
               </FormItem>

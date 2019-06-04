@@ -8,6 +8,7 @@ import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import CancelOrder from '@/components/Modal/CancelOrder';
 import DescriptionList from 'ant-design-pro/lib/DescriptionList';
+import MyTag from '@/components/Tag';
 import NeedAskPrice from '../components/needAskPrice';
 import { getName } from '@/utils/utils';
 
@@ -67,16 +68,14 @@ class InquiryEdit extends PureComponent {
     },
     {
       title: '单位',
-      width: 80,
+      width: 50,
       dataIndex: 'Unit',
       align: 'center',
     },
     {
       title: '数量',
       width: 80,
-
       dataIndex: 'Quantity',
-
       align: 'center',
     },
     {
@@ -84,6 +83,11 @@ class InquiryEdit extends PureComponent {
       width: 80,
       align: 'center',
       dataIndex: 'BrandName',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '名称',
@@ -126,7 +130,7 @@ class InquiryEdit extends PureComponent {
     },
 
     {
-      title: '销售建议价',
+      title: '建议价',
       width: 100,
 
       dataIndex: 'Price',
@@ -134,8 +138,8 @@ class InquiryEdit extends PureComponent {
       align: 'center',
     },
     {
-      title: '销售行总计',
-      width: 120,
+      title: '销行总计',
+      width: 100,
       align: 'center',
       dataIndex: 'LineTotal',
       render: (text, record) =>
@@ -214,14 +218,14 @@ class InquiryEdit extends PureComponent {
       align: 'center',
     },
     {
-      title: '询价行总计',
-      width: 120,
+      title: '询行总计',
+      width: 100,
       align: 'center',
       dataIndex: 'InquiryLineTotal',
     },
     {
-      title: '询价行总计(本币)',
-      width: 150,
+      title: '询行本总计',
+      width: 100,
       align: 'center',
       dataIndex: 'InquiryLineTotalLocal',
     },
@@ -230,24 +234,21 @@ class InquiryEdit extends PureComponent {
       width: 80,
       dataIndex: 'SLineStatus',
       align: 'center',
-      render: (text, record) =>
-        record.lastIndex ? null : <span>{text === 'O' ? '未报价' : '已报价'}</span>,
+      render: (text, record) => (record.lastIndex ? null : <MyTag type="报价" value={text} />),
     },
     {
       title: '采询确认',
       width: 80,
       dataIndex: 'PLineStatus',
       align: 'center',
-      render: (text, record) =>
-        record.lastIndex ? null : <span>{text === 'O' ? '未确认' : '已确认'}</span>,
+      render: (text, record) => (record.lastIndex ? null : <MyTag type="确认" value={text} />),
     },
     {
       title: '需询价',
       width: 80,
       dataIndex: 'IsInquiry',
       align: 'center',
-      render: (text, record) =>
-        record.lastIndex ? null : <span>{text === 'Y' ? '需询价' : '不需询价'}</span>,
+      render: (text, record) => (record.lastIndex ? null : <MyTag type="IsInquiry" value={text} />),
     },
     {
       title: '操作',
@@ -340,7 +341,7 @@ class InquiryEdit extends PureComponent {
       type: 'global/getMDMCommonality',
       payload: {
         Content: {
-          CodeList: ['Saler', 'Purchaser', 'Curr', 'WhsCode', 'Company'],
+          CodeList: ['Saler', 'Purchaser', 'TI_Z004', 'Curr', 'WhsCode', 'Company'],
         },
       },
     });
@@ -462,7 +463,7 @@ class InquiryEdit extends PureComponent {
 
   render() {
     const {
-      global: { Saler, Company },
+      global: { Saler, Company, TI_Z004 },
     } = this.props;
     const { formVals, attachmentVisible, prviewList, selectedRows, needmodalVisible } = this.state;
     const newdata = [...formVals.TI_Z02602];
@@ -495,7 +496,7 @@ class InquiryEdit extends PureComponent {
           <Description term="联系人">{formVals.Contacts}</Description>
           <Description term="备注">{formVals.Comment}</Description>
           <Description term="创建人">
-            <span>{getName(Saler, formVals.CreateUser)}</span>
+            <span>{getName(TI_Z004, formVals.CreateUser)}</span>
           </Description>
           <Description term="交易公司">
             <span>{getName(Company, formVals.CompanyCode)}</span>
@@ -508,25 +509,32 @@ class InquiryEdit extends PureComponent {
             <span>{getName(OrderSource, formVals.OrderType)}</span>
           </Description>
           <Description term="客户参考号">{formVals.NumAtCard}</Description>
-          <Description term="是否需询价">
-            {formVals.IsInquiry === 'Y' ? '需询价' : '不需询价'}
+          <Description term="需询价">
+            <MyTag type="IsInquiry" value={formVals.IsInquiry} />
           </Description>
-          <Description term="报价状态">
-            {formVals.SDocStatus === 'O' ? '已报价' : '未报价'}
+          <Description term="单据状态">
+            {formVals.Closed === 'Y' ? (
+              <MyTag type="关闭" value="Y" />
+            ) : (
+              <Fragment>
+                <MyTag type="报价" value={formVals.SDocStatus} />
+                <MyTag type="询价" value={formVals.PDocStatus} />
+              </Fragment>
+            )}
           </Description>
-          <Description term="询价状态">
-            {formVals.PDocStatus === 'O' ? '已询价' : '未询价'}
-          </Description>
-          <Description term="关闭状态">{formVals.Closed === 'Y' ? '已关闭' : '未关闭'}</Description>
-          <Description term="关闭原因">{formVals.ClosedComment}</Description>
-          <Description term="关闭人">{formVals.ClosedBy}</Description>
+          {formVals.Closed === 'N' ? null : (
+            <Fragment>
+              <Description term="关闭原因">{formVals.ClosedComment}</Description>
+              <Description term="关闭人">{formVals.ClosedBy}</Description>
+            </Fragment>
+          )}
         </DescriptionList>
         <Tabs>
           <TabPane tab="物料" key="1">
             <StandardTable
               data={{ list: newdata }}
               rowKey="LineID"
-              scroll={{ x: 2800, y: 600 }}
+              scroll={{ x: 2500, y: 600 }}
               columns={this.skuColumns}
             />
           </TabPane>

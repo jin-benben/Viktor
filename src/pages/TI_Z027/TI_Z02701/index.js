@@ -78,44 +78,64 @@ class SupplierAsk extends Component {
     await Promise.all(
       lineList.map(async item => {
         const newItem = item;
-        const responseCurrency = await request('/MDM/MDMCommonality/MDMCommonality01', {
-          method: 'POST',
-          data: {
-            Content: {
-              CodeList: ['Rate'],
-              key: newItem.Currency,
+        if (newItem.Currency) {
+          const responseCurrency = await request('/MDM/MDMCommonality/MDMCommonality01', {
+            method: 'POST',
+            data: {
+              Content: {
+                CodeList: ['Rate'],
+                key: newItem.Currency,
+              },
             },
-          },
-        });
-        if (responseCurrency && responseCurrency.Status === 200) {
-          newItem.DocRate = responseCurrency.Content.DropdownData.Rate[0]
-            ? responseCurrency.Content.DropdownData.Rate[0].Value
-            : '';
-        }
-        const responseSupplier = await request('/MDM/TI_Z007/TI_Z00703', {
-          method: 'POST',
-          data: {
-            Content: {
-              Code: item.CardCode,
-            },
-          },
-        });
-        if (responseSupplier && responseSupplier.Status === 200) {
-          const {
-            CellphoneNO,
-            Email,
-            PhoneNO,
-            Name,
-            LineID,
-          } = responseSupplier.Content.TI_Z00702List[0];
-          Object.assign(newItem, {
-            CellphoneNO,
-            Email,
-            PhoneNO,
-            Contacts: Name,
-            ContactsID: LineID,
-            linkmanList: [...responseSupplier.Content.TI_Z00702List],
           });
+          if (responseCurrency && responseCurrency.Status === 200) {
+            newItem.DocRate = responseCurrency.Content.DropdownData.Rate[0]
+              ? responseCurrency.Content.DropdownData.Rate[0].Value
+              : '';
+          }
+        }
+
+        if (!item.linkmanList.length) {
+          const responseSupplier = await request('/MDM/TI_Z007/TI_Z00703', {
+            method: 'POST',
+            data: {
+              Content: {
+                Code: item.CardCode,
+              },
+            },
+          });
+          if (responseSupplier && responseSupplier.Status === 200) {
+            const {
+              CellphoneNO,
+              Email,
+              PhoneNO,
+              Name,
+              LineID,
+            } = responseSupplier.Content.TI_Z00702List[0];
+            const responseCurrency = await request('/MDM/MDMCommonality/MDMCommonality01', {
+              method: 'POST',
+              data: {
+                Content: {
+                  CodeList: ['Rate'],
+                  key: responseSupplier.Content.Currency,
+                },
+              },
+            });
+            if (responseCurrency && responseCurrency.Status === 200) {
+              newItem.DocRate = responseCurrency.Content.DropdownData.Rate[0]
+                ? responseCurrency.Content.DropdownData.Rate[0].Value
+                : '';
+            }
+            Object.assign(newItem, {
+              CellphoneNO,
+              Email,
+              Currency: responseSupplier.Content.Currency,
+              PhoneNO,
+              Contacts: Name,
+              ContactsID: LineID,
+              linkmanList: [...responseSupplier.Content.TI_Z00702List],
+            });
+          }
         }
         return newItem;
       })

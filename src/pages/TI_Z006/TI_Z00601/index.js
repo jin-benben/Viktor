@@ -38,7 +38,7 @@ class CompanyEdit extends PureComponent {
     },
     {
       title: '电话号码',
-      dataIndex: 'PhoneNo',
+      dataIndex: 'PhoneNO',
     },
     {
       title: 'Email',
@@ -89,6 +89,10 @@ class CompanyEdit extends PureComponent {
       title: 'ID',
       width: 50,
       dataIndex: 'AddressID',
+    },
+    {
+      title: '地址描述',
+      dataIndex: 'AddressName',
     },
     {
       title: '收货人姓名',
@@ -183,6 +187,7 @@ class CompanyEdit extends PureComponent {
       payload: {
         Content: {
           CodeList: ['PayMent', 'Trnsp', 'Saler', 'Card'],
+          Key: 's',
         },
       },
     });

@@ -16,19 +16,6 @@ const { TextArea } = Input;
 }))
 @Form.create()
 class CreateForm extends PureComponent {
-  componentDidMount() {
-    const { dispatch } = this.props;
-
-    dispatch({
-      type: 'global/getMDMCommonality',
-      payload: {
-        Content: {
-          CodeList: ['Company', 'WhsCode'],
-        },
-      },
-    });
-  }
-
   validatorPhone = (rule, value, callback) => {
     if (value && !checkPhone(value)) {
       callback(new Error('手机号格式不正确'));
@@ -155,13 +142,13 @@ class CreateForm extends PureComponent {
               </FormItem>
             </Col>
             <Col span={12}>
-              <FormItem key="Dmanager" {...formLayout} label="部门主管">
+              <FormItem key="Dmanager" {...formLayout} label="级别">
                 {getFieldDecorator('Dmanager', {
                   initialValue: formVals.Dmanager,
                 })(
                   <Select placeholder="请选择">
-                    <Option value="1">是</Option>
-                    <Option value="2">否</Option>
+                    <Option value="1">主管</Option>
+                    <Option value="2">员工</Option>
                   </Select>
                 )}
               </FormItem>
@@ -252,7 +239,6 @@ class Staffs extends PureComponent {
     {
       title: '员工ID',
       dataIndex: 'Code',
-      width: 80,
     },
     {
       title: '姓名',
@@ -261,11 +247,17 @@ class Staffs extends PureComponent {
     {
       title: '部门',
       dataIndex: 'Department',
+      render: val => {
+        const {
+          global: { TI_Z003 },
+        } = this.props;
+        return <span>{getName(TI_Z003, val)}</span>;
+      },
     },
     {
-      title: '部门主管',
+      title: '级别',
       dataIndex: 'Dmanager',
-      render: val => <span>{val === '1' ? '是' : '否'}</span>,
+      render: val => <span>{val === '1' ? '主管' : '员工'}</span>,
     },
     {
       title: '手机号',
@@ -285,7 +277,7 @@ class Staffs extends PureComponent {
       render: val => <span>{val === '1' ? '男' : '女'}</span>,
     },
     {
-      title: '在职状态',
+      title: '状态',
       dataIndex: 'Status',
       render: val => <span>{val === '1' ? '在职' : '离职'}</span>,
     },
@@ -335,8 +327,19 @@ class Staffs extends PureComponent {
   componentDidMount() {
     const {
       dispatch,
+      global: { TI_Z003, Company, WhsCode },
       staffs: { queryData },
     } = this.props;
+    if (!TI_Z003.length || !WhsCode.length || !Company.length) {
+      dispatch({
+        type: 'global/getMDMCommonality',
+        payload: {
+          Content: {
+            CodeList: ['Company', 'WhsCode', 'TI_Z003'],
+          },
+        },
+      });
+    }
     dispatch({
       type: 'staffs/fetch',
       payload: {

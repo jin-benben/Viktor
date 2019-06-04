@@ -3,24 +3,13 @@ import { connect } from 'dva';
 import router from 'umi/router';
 import Link from 'umi/link';
 import moment from 'moment';
-import {
-  Row,
-  Col,
-  Card,
-  Form,
-  Input,
-  Button,
-  Divider,
-  Badge,
-  Select,
-  DatePicker,
-  Icon,
-} from 'antd';
+import { Row, Col, Card, Form, Input, Button, Divider, Select, DatePicker, Icon } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import MDMCommonality from '@/components/Select';
 import { getName } from '@/utils/utils';
 import DocEntryFrom from '@/components/DocEntryFrom';
+import MyTag from '@/components/Tag';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 
 const { RangePicker } = DatePicker;
@@ -77,21 +66,13 @@ class supplierQuotationSku extends PureComponent {
     {
       title: '单据状态',
       dataIndex: 'Status',
-      width: 100,
+      width: 80,
       render: (text, record) => (
         <Fragment>
           {record.Closed === 'Y' ? (
-            <Badge color="red" text="已关闭" />
+            <MyTag type="关闭" value="Y" />
           ) : (
-            <Fragment>
-              <span>
-                {record.LineStatus === 'O' ? (
-                  <Badge color="green" text="未询价" />
-                ) : (
-                  <Badge color="blue" text="已询价" />
-                )}
-              </span>
-            </Fragment>
+            <MyTag type="询价" value={record.LineStatus} />
           )}
         </Fragment>
       ),
@@ -143,6 +124,11 @@ class supplierQuotationSku extends PureComponent {
       title: '品牌',
       width: 100,
       dataIndex: 'BrandName',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '名称',
@@ -186,12 +172,12 @@ class supplierQuotationSku extends PureComponent {
     },
     {
       title: '数量',
-      width: 80,
+      width: 50,
       dataIndex: 'Quantity',
     },
     {
       title: '单位',
-      width: 80,
+      width: 50,
       dataIndex: 'Unit',
     },
     {
@@ -357,7 +343,6 @@ class supplierQuotationSku extends PureComponent {
                 <Select placeholder="请选择">
                   <Option value="1">已报价</Option>
                   <Option value="2">未报价</Option>
-                  <Option value="3">不详</Option>
                 </Select>
               )}
             </FormItem>
@@ -428,7 +413,7 @@ class supplierQuotationSku extends PureComponent {
               data={{ list: supplierQuotationSkuList }}
               pagination={pagination}
               rowKey="Key"
-              scroll={{ x: 2400, y: 500 }}
+              scroll={{ x: 2400, y: 700 }}
               columns={this.columns}
               onChange={this.handleStandardTableChange}
             />

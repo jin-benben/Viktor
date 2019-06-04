@@ -9,7 +9,6 @@ import {
   Input,
   Button,
   Divider,
-  Badge,
   Select,
   DatePicker,
   Checkbox,
@@ -19,6 +18,7 @@ import {
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import StandardTable from '@/components/StandardTable';
 import DocEntryFrom from '@/components/DocEntryFrom';
+import MyTag from '@/components/Tag';
 import NeedAskPrice from './components';
 import MDMCommonality from '@/components/Select';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
@@ -71,27 +71,15 @@ class orderLine extends PureComponent {
     {
       title: '单据状态',
       dataIndex: 'Status',
-      width: 120,
+      width: 130,
       render: (text, record) => (
         <Fragment>
           {record.Closed === 'Y' ? (
-            <Badge color="red" text="已关闭" />
+            <MyTag type="关闭" value="Y" />
           ) : (
             <Fragment>
-              <span>
-                {record.SLineStatus === 'O' ? (
-                  <Badge color="green" text="未报价" />
-                ) : (
-                  <Badge color="blue" text="已报价" />
-                )}
-              </span>
-              <span>
-                {record.PLineStatus === 'O' ? (
-                  <Badge color="green" text="未询价" />
-                ) : (
-                  <Badge color="blue" text="已询价" />
-                )}{' '}
-              </span>
+              <MyTag type="报价" value={record.SDocStatus} />
+              <MyTag type="询价" value={record.PDocStatus} />
             </Fragment>
           )}
         </Fragment>
@@ -149,6 +137,11 @@ class orderLine extends PureComponent {
       title: '品牌',
       width: 80,
       dataIndex: 'BrandName',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '名称',

@@ -45,17 +45,14 @@ class companySearch extends PureComponent {
     },
     {
       title: '客户名称',
-      width: 250,
       dataIndex: 'Name',
     },
     {
       title: '开户行',
-      width: 150,
       dataIndex: 'OpeningBank',
     },
     {
       title: '账号',
-      width: 150,
       dataIndex: 'BankAccount',
     },
     {
@@ -64,18 +61,16 @@ class companySearch extends PureComponent {
     },
     {
       title: '电话',
-      width: 150,
       dataIndex: 'LPhone',
     },
     {
       title: '信用代码',
-      width: 150,
       dataIndex: 'CreditCode',
     },
     {
-      title: '客户类型',
-      width: 80,
+      title: '类型',
       dataIndex: 'CardType',
+      width: 80,
       render: val => {
         const { global } = this.props;
         const CardList = global.Card;
@@ -83,9 +78,9 @@ class companySearch extends PureComponent {
       },
     },
     {
-      title: '客户来源',
-      width: 100,
+      title: '来源',
       dataIndex: 'CusSource',
+      width: 80,
       render: val => <span>{getName(CusSource, val)}</span>,
     },
     {

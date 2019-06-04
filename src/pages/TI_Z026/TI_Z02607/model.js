@@ -8,6 +8,7 @@ export default {
     queryData: {
       Content: {
         SearchText: '',
+        IsInquiry: 'N',
         SearchKey: '',
         QueryType: '1',
       },

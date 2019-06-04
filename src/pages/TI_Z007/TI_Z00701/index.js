@@ -133,6 +133,7 @@ class CompanyEdit extends React.Component {
       payload: {
         Content: {
           CodeList: ['Company', 'PayMent', 'Curr', 'Supplier'],
+          Key: 'p',
         },
       },
     });
@@ -394,13 +395,6 @@ class CompanyEdit extends React.Component {
                 {getFieldDecorator('BankAccount', {
                   initialValue: formVals.BankAccount,
                 })(<Input placeholder="请输入营业执照账户" />)}
-              </FormItem>
-            </Col>
-            <Col lg={8} md={12} sm={24}>
-              <FormItem key="DutyNo" {...this.formLayout} label="营业执照税号">
-                {getFieldDecorator('DutyNo', {
-                  initialValue: formVals.DutyNo,
-                })(<Input placeholder="请输入营业执照税号" />)}
               </FormItem>
             </Col>
             <Col lg={8} md={12} sm={24}>

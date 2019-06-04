@@ -23,7 +23,7 @@ class TI_Z02804 extends PureComponent {
   columns = [
     {
       title: '采询价单',
-      width: 100,
+      width: 80,
       dataIndex: 'DocEntry',
       render: (text, recond) => (
         <Link target="_blank" to={`/purchase/TI_Z028/TI_Z02802?DocEntry=${text}`}>{`${text}-${
@@ -33,7 +33,7 @@ class TI_Z02804 extends PureComponent {
     },
     {
       title: '客询价单',
-      width: 100,
+      width: 80,
       dataIndex: 'BaseEntry',
       render: (text, recond) => (
         <Link target="_blank" to={`/sellabout/TI_Z026/detail?DocEntry=${text}`}>{`${text}-${
@@ -77,21 +77,45 @@ class TI_Z02804 extends PureComponent {
       title: '品牌',
       width: 80,
       dataIndex: 'BrandName',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {' '}
+          {text}{' '}
+        </Ellipsis>
+      ),
     },
     {
       title: '名称',
       width: 100,
       dataIndex: 'ProductName',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {' '}
+          {text}{' '}
+        </Ellipsis>
+      ),
     },
     {
       title: '型号',
       width: 100,
       dataIndex: 'ManufactureNO',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {' '}
+          {text}{' '}
+        </Ellipsis>
+      ),
     },
     {
       title: '参数',
       width: 100,
       dataIndex: 'Parameters',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {' '}
+          {text}{' '}
+        </Ellipsis>
+      ),
     },
     {
       title: '包装',
@@ -111,12 +135,12 @@ class TI_Z02804 extends PureComponent {
     },
     {
       title: '数量',
-      width: 80,
+      width: 50,
       dataIndex: 'Quantity',
     },
     {
       title: '单位',
-      width: 80,
+      width: 50,
       dataIndex: 'Unit',
     },
     {
