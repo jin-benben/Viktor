@@ -8,13 +8,14 @@ export default class AddMessage extends Component {
 
   handleChange = content => {
     this.state.content = content;
+    console.log(content);
   };
 
   render() {
     const { content } = this.state;
 
     return (
-      <div style={{ width: 1000, textAlign: 50, marginLeft: 50 }}>
+      <div style={{ width: 800, textAlign: 50, marginLeft: 50 }}>
         <UEditor
           content={content}
           onChange={this.handleChange}

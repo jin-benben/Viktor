@@ -3,16 +3,16 @@ import React, { Component } from 'react';
 class UEditor extends Component {
   componentDidMount() {
     let script = document.createElement('script');
-    script.setAttribute('src', 'public/ueditor/ueditor.config.js');
+    script.setAttribute('src', '/ueditor/ueditor.config.js');
     document.getElementsByTagName('head')[0].appendChild(script);
     script = document.createElement('script');
-    script.setAttribute('src', 'public/ueditor/ueditor.all.min.js');
+    script.setAttribute('src', '/ueditor/ueditor.all.min.js');
     document.getElementsByTagName('head')[0].appendChild(script);
 
     script.onload = () => {
       const { UE } = window;
       const ue = UE.getEditor('container', {
-        UEDITOR_HOME_URL: 'public/ueditor/',
+        UEDITOR_HOME_URL: '/ueditor/',
         serverUrl: '/ueditor',
         initialFrameHeight: 300,
         toolbars: [
@@ -25,12 +25,9 @@ class UEditor extends Component {
             'strikethrough', // 删除线
             'subscript', // 下标
             'superscript', // 上标
-            'source', // 源代码
-            'blockquote', // 引用
             'pasteplain', // 纯文本粘贴模式
             'horizontal', // 分隔线
             'removeformat', // 清除格式
-            'unlink', // 取消链接
             'inserttitle', // 插入标题
             'simpleupload', // 单图上传
             'insertimage', // 多图上传
@@ -38,8 +35,6 @@ class UEditor extends Component {
             'emotion', // 表情
             'spechars', // 特殊字符
             'searchreplace', // 查询替换
-            'map', // Baidu地图
-            'insertvideo', // 视频
             'justifyleft', // 居左对齐
             'justifyright', // 居右对齐
             'justifycenter', // 居中对齐
@@ -48,15 +43,10 @@ class UEditor extends Component {
             'imagecenter', // 居中
             'edittip ', // 编辑提示
             'customstyle', // 自定义标题
-            'background', // 背景
-            'scrawl', // 涂鸦
-            'music', // 音乐
+
             'inserttable', // 插入表格
-            'drafts', // 从草稿箱加载
-            'charts', // 图表
-            'fontfamily', // 字体
+
             'fontsize', // 字号
-            'insertcode', // 代码语言
             'insertorderedlist', // 有序列表
             'insertunorderedlist', // 无序列表
             'lineheight', // 行间距
@@ -70,9 +60,9 @@ class UEditor extends Component {
       });
 
       this.editor = ue;
-
+      const { onChange } = this.props;
       ue.addListener('contentChange', () => {
-        this.props.onChange(ue.getContent());
+        onChange(ue.getContent());
       });
     };
   }
@@ -80,11 +70,12 @@ class UEditor extends Component {
   componentWillUnmount() {
     this.editor.destroy();
 
-    let child = document.getElementById('edui_fixedlayer');
+    const child = document.getElementById('edui_fixedlayer');
     child.parentNode.removeChild(child);
   }
 
   render() {
+    const { content } = this.props;
     return (
       <div>
         <textarea
@@ -92,7 +83,7 @@ class UEditor extends Component {
           name="blog"
           type="text/plain"
           onChange={() => {}}
-          value={this.props.content}
+          value={content}
           style={{ margin: '15px 0' }}
         />
       </div>
