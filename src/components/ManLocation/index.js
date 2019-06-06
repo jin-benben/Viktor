@@ -1,28 +1,41 @@
 import React, { PureComponent } from 'react';
 import request from '@/utils/request';
-import { Select, Spin, message, Empty } from 'antd';
+import { Select, Spin, Empty } from 'antd';
 import debounce from 'lodash/debounce';
 
 const { Option } = Select;
 
-class CompanyCode extends PureComponent {
+class ManLocation extends PureComponent {
   constructor(props) {
     super(props);
     this.lastFetchId = 0;
     this.fetchUser = debounce(this.fetchUser, 1000);
-    this.state = {
-      data: [],
-      value: props.value,
-      fetching: false,
-    };
+  }
+
+  state = {
+    data: [],
+    value: '',
+    fetching: false,
+  };
+
+  static getDerivedStateFromProps(nextProps, prevState) {
+    if (
+      (!prevState.value && nextProps.initialValue !== prevState.value) ||
+      !prevState.data.length
+    ) {
+      return {
+        value: nextProps.initialValue,
+        data: nextProps.data,
+      };
+    }
+    return null;
   }
 
   fetchUser = async value => {
-    if (!value) return;
     this.lastFetchId += 1;
     const fetchId = this.lastFetchId;
     this.setState({ data: [], fetching: true });
-    const response = await request('/MDM/TI_Z007/TI_Z00702', {
+    const response = await request('/MDM/TI_Z042/TI_Z04202', {
       method: 'POST',
       data: {
         Content: {
@@ -38,9 +51,6 @@ class CompanyCode extends PureComponent {
     this.setState({ fetching: false });
     if (response.Status !== 200 || fetchId !== this.lastFetchId) {
       return;
-    }
-    if (!response.Content || !response.Content.rows.length) {
-      message.warn('暂无匹配');
     }
     this.setState({ data: response.Content ? response.Content.rows : [], fetching: false });
   };
@@ -58,15 +68,11 @@ class CompanyCode extends PureComponent {
 
   render() {
     const { fetching, data, value } = this.state;
-    const { initialValue, labelInValue } = this.props;
-
     return (
       <Select
         showSearch
         showArrow={false}
-        labelInValue={labelInValue}
         value={value}
-        defaultValue={initialValue}
         placeholder="输入名称"
         notFoundContent={fetching ? <Spin size="small" /> : <Empty />}
         filterOption={false}
@@ -84,4 +90,4 @@ class CompanyCode extends PureComponent {
   }
 }
 
-export default CompanyCode;
+export default ManLocation;

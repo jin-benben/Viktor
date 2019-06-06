@@ -1,6 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Row, Col, Card, Form, Input, Modal, Button, message } from 'antd';
+import { Row, Col, Card, Form, Input, Modal, Button, message, Divider } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import EditableFormTable from '@/components/EditableFormTable';
 
@@ -193,8 +193,10 @@ class HSCode extends PureComponent {
       render: (text, record) => (
         <Fragment>
           <a onClick={() => this.handleUpdateModalVisible(true, record)}>修改</a>
-          {/* <Divider type="vertical" />
-          <a href="">删除</a> */}
+          <Divider type="vertical" />
+          <a href={`/main/product/code/hscode/detail?Code=${record.Code}`} alt="产地">
+            产地
+          </a>
         </Fragment>
       ),
     },

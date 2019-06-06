@@ -17,6 +17,8 @@ import {
   Divider,
 } from 'antd';
 import Upload from '@/components/Upload';
+import Link from 'umi/link';
+import router from 'umi/router';
 
 const FormItem = Form.Item;
 const { TreeNode } = Tree;
@@ -43,19 +45,6 @@ class CreateForm extends React.Component {
   changePicture = ({ FilePath, FileCode }) => {
     const { formVals } = this.props;
     Object.assign(formVals, { PicturePath: FilePath, PicCode: FileCode });
-  };
-
-  handleChange = info => {
-    if (info.file.status === 'uploading') {
-      return;
-    }
-    if (info.file.response.Status === 200) {
-      const { FilePath, FileCode } = info.file.response;
-      this.setState({
-        PicturePath: FilePath,
-        PicCode: FileCode,
-      });
-    }
   };
 
   render() {
@@ -278,6 +267,12 @@ class Organization extends PureComponent {
         修改
       </a>
       <Divider type="vertical" />
+      <a
+        href="javascript:;"
+        onClick={() => router.push(`/main/product/TI_Z009/TI_Z00902?Category=${tree.Code}`)}
+      >
+        物料
+      </a>
     </Fragment>
   );
 

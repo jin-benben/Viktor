@@ -233,6 +233,17 @@ class Staffs extends PureComponent {
       Mobile: '',
       Email: '',
     },
+    queryData: {
+      Content: {
+        Department: '',
+        SearchText: '',
+        SearchKey: 'Name',
+      },
+      page: 1,
+      rows: 30,
+      sidx: 'Code',
+      sord: 'Desc',
+    },
   };
 
   columns = [
@@ -327,9 +338,13 @@ class Staffs extends PureComponent {
   componentDidMount() {
     const {
       dispatch,
+      location: { query },
       global: { TI_Z003, Company, WhsCode },
-      staffs: { queryData },
     } = this.props;
+    const { Department } = query;
+    const { queryData } = this.state;
+    Object.assign(queryData.Content, { Department: Department || '' });
+    this.setState({ queryData: { ...queryData } });
     if (!TI_Z003.length || !WhsCode.length || !Company.length) {
       dispatch({
         type: 'global/getMDMCommonality',
@@ -349,10 +364,8 @@ class Staffs extends PureComponent {
   }
 
   handleStandardTableChange = pagination => {
-    const {
-      dispatch,
-      staffs: { queryData },
-    } = this.props;
+    const { dispatch } = this.props;
+    const { queryData } = this.state;
     dispatch({
       type: 'staffs/fetch',
       payload: {
@@ -366,14 +379,14 @@ class Staffs extends PureComponent {
   handleSearch = e => {
     e.preventDefault();
     const { dispatch, form } = this.props;
+    const { queryData } = this.state;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
       dispatch({
         type: 'staffs/fetch',
         payload: {
           Content: {
-            SearchText: '',
-            SearchKey: 'Name',
+            ...queryData.Content,
             ...fieldsValue,
           },
           page: 1,
@@ -456,12 +469,24 @@ class Staffs extends PureComponent {
     const {
       form: { getFieldDecorator },
     } = this.props;
+    const {
+      queryData: {
+        Content: { Department },
+      },
+    } = this.state;
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={5} sm={24}>
             <FormItem>
               {getFieldDecorator('SearchText')(<Input placeholder="请输入关键字" />)}
+            </FormItem>
+          </Col>
+          <Col md={5} sm={24}>
+            <FormItem key="Department" label="部门">
+              {getFieldDecorator('Department', { initialValue: Department })(
+                <Input placeholder="请输入部门代码" />
+              )}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>

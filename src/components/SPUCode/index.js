@@ -62,8 +62,11 @@ class Brand extends PureComponent {
       fetching: false,
     });
     const { onChange } = this.props;
+
     if (onChange) {
-      onChange(value);
+      const { data } = this.state;
+      const select = data.find(item => item.Code === value);
+      onChange(select);
     }
   };
 

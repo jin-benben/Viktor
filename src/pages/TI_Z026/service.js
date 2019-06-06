@@ -71,3 +71,12 @@ export async function companyRule(params) {
     },
   });
 }
+
+export async function queryHSCodeRule(params) {
+  return request(`/MDM/TI_Z036/TI_Z03602`, {
+    method: 'POST',
+    data: {
+      ...params,
+    },
+  });
+}

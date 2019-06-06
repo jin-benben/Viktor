@@ -95,6 +95,12 @@ export default [
                   component: './TI_Z010',
                 },
                 {
+                  name: '产地',
+                  icon: 'iconwsdzb_zbgzt_xxzx_newpxb_type',
+                  path: '/main/product/TI_Z042',
+                  component: './TI_Z042',
+                },
+                {
                   name: '物料管理',
                   icon: 'iconSKU',
                   path: '/main/product/TI_Z009',
@@ -144,6 +150,12 @@ export default [
                       name: '国内海关编码',
                       path: '/main/product/code/hscode',
                       component: './code/hscode',
+                    },
+                    {
+                      name: '国内海关编码详情',
+                      hideInMenu:true,
+                      path: '/main/product/code/hscode/detail',
+                      component: './code/hscode/detail',
                     },
                     {
                       name: '国外海关编码',

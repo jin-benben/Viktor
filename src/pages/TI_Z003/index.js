@@ -2,6 +2,7 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import { Card, Tree, Row, Col, Form, Input, message, Modal, Select, Popover, Divider } from 'antd';
+import router from 'umi/router';
 
 const FormItem = Form.Item;
 const { TreeNode } = Tree;
@@ -227,6 +228,9 @@ class Organization extends PureComponent {
         修改
       </a>
       <Divider type="vertical" />
+      <a href="javascript:;" onClick={() => router.push(`/base/TI_Z004?Department=${tree.Code}`)}>
+        员工
+      </a>
     </Fragment>
   );
 

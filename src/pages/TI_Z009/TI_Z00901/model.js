@@ -77,7 +77,7 @@ export default {
             },
           });
         } else {
-          const { rows } = spuRes.Content;
+          const { rows } = hsRes.Content;
           yield put({
             type: 'save',
             payload: {

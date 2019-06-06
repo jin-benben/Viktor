@@ -57,7 +57,7 @@ class AddSKU extends Component {
 
     {
       title: '品牌',
-      width: 150,
+      width: 100,
       dataIndex: 'BrandName',
       render: (text, record, index) => (
         <Brand
@@ -72,22 +72,29 @@ class AddSKU extends Component {
     {
       title: '名称',
       dataIndex: 'ProductName',
-      inputType: 'text',
+      inputType: 'textArea',
       width: 100,
+      editable: true,
+    },
+    {
+      title: '英文名称',
+      width: 100,
+      inputType: 'textArea',
+      dataIndex: 'EnglishName',
       editable: true,
     },
     {
       title: '型号',
       width: 100,
       dataIndex: 'ManufactureNO',
-      inputType: 'text',
+      inputType: 'textArea',
       editable: true,
     },
     {
       title: '参数',
       width: 150,
       dataIndex: 'Parameters',
-      inputType: 'text',
+      inputType: 'textArea',
       editable: true,
     },
     {
@@ -99,7 +106,7 @@ class AddSKU extends Component {
     },
     {
       title: '采购员',
-      width: 150,
+      width: 100,
       dataIndex: 'Purchaser',
       render: (text, record, index) => {
         const {
@@ -131,47 +138,42 @@ class AddSKU extends Component {
     },
     {
       title: '重量',
-      width: 100,
+      width: 80,
       dataIndex: 'Rweight',
       editable: true,
     },
     {
       title: '分类',
-      width: 150,
+      width: 200,
       dataIndex: 'category',
-      render: (text, record, index) => (
-        <Category
-          initialValue={[record.Category1, record.Category2, record.Category3]}
-          onChange={selectedOptions => {
-            this.categoryChange(selectedOptions, record, index);
-          }}
-        />
+      render: (text, record) => (
+        <span>{`${record.Cate1Name}${record.Cate2Name}${record.Cate3Name}`}</span>
       ),
     },
     {
       title: '开票名称',
-      width: 100,
-      inputType: 'text',
+      width: 150,
+      inputType: 'textArea',
       dataIndex: 'InvoiceName',
       editable: true,
     },
     {
       title: '开票核心规格',
       width: 150,
-      inputType: 'text',
+      inputType: 'textArea',
       dataIndex: 'InvoicePro',
       editable: true,
     },
     {
       title: '开票目录分类',
       width: 150,
-      inputType: 'text',
+      inputType: 'textArea',
       dataIndex: 'InvoiceMenu',
       editable: true,
     },
     {
       title: '上架状态',
-      width: 100,
+      width: 80,
       dataIndex: 'Putaway',
       render: (text, record, index) => (
         <Select
@@ -186,7 +188,7 @@ class AddSKU extends Component {
     },
     {
       title: '上架日期',
-      width: 120,
+      width: 130,
       inputType: 'date',
       editable: true,
       dataIndex: 'PutawayDateTime',
@@ -243,8 +245,8 @@ class AddSKU extends Component {
           <SPUCode
             initialValue={text}
             data={spuList}
-            onChange={hsCode => {
-              this.codeChange(hsCode, record, index, 'SPUCode');
+            onChange={select => {
+              this.spuChange(select, record, index);
             }}
           />
         );
@@ -297,6 +299,23 @@ class AddSKU extends Component {
       type: 'skuAdd/fetch',
     });
   }
+
+  // spu change 获取code与分类
+  spuChange = (select, record, index) => {
+    const { Code, Cate1Name, Cate2Name, Cate3Name, Category1, Category2, Category3 } = select;
+    const { TI_Z00901 } = this.state;
+    Object.assign(record, {
+      SPUCode: Code,
+      Cate1Name,
+      Cate2Name,
+      Cate3Name,
+      Category1,
+      Category2,
+      Category3,
+    });
+    TI_Z00901[index] = record;
+    this.setState({ TI_Z00901 });
+  };
 
   deleteLine = (record, index) => {
     const { TI_Z00901 } = this.state;
@@ -420,6 +439,7 @@ class AddSKU extends Component {
         Unit,
         DocEntry,
         LineID,
+        ManLocation,
       } = item;
       TI_Z00901.push({
         LineID: lastLine + index,
@@ -431,7 +451,7 @@ class AddSKU extends Component {
         Unit,
         Name: SKUName,
         Purchaser: Purchaser || currentUser.Owner,
-        ManLocation: '',
+        ManLocation,
         Rweight: '',
         Category1: '',
         Category2: '',
@@ -440,6 +460,7 @@ class AddSKU extends Component {
         Cate2Name: '',
         Cate3Name: '',
         Putaway: '1',
+        EnglishName: '',
         PutawayDateTime: new Date(),
         InvoiceName: '',
         InvoicePro: '',
@@ -538,7 +559,7 @@ class AddSKU extends Component {
         <EditableFormTable
           rowChange={this.rowChange}
           rowKey="LineID"
-          scroll={{ x: 2500 }}
+          scroll={{ x: 2600 }}
           rowSelection={{
             onChange: this.onSelectRow,
           }}

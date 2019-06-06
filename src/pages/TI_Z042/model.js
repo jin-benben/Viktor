@@ -1,7 +1,7 @@
 import { queryRule, removeRule, addRule, updateRule } from './service';
 
 export default {
-  namespace: 'staffs',
+  namespace: 'manLocation',
 
   state: {
     staffsList: [],
@@ -18,13 +18,14 @@ export default {
 
   effects: {
     *fetch({ payload }, { call, put }) {
+      console.log(payload);
       const response = yield call(queryRule, payload);
       if (response && response.Status === 200) {
         if (!response.Content) {
           yield put({
             type: 'save',
             payload: {
-              staffsList: [],
+              manLocationList: [],
             },
           });
         } else {
@@ -32,7 +33,7 @@ export default {
           yield put({
             type: 'save',
             payload: {
-              staffsList: rows,
+              manLocationList: rows,
               pagination: {
                 total: records,
                 pageSize: payload.rows,

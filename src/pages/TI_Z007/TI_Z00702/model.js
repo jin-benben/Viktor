@@ -5,18 +5,6 @@ export default {
 
   state: {
     supplierList: [],
-    queryData: {
-      Content: {
-        SearchText: '',
-        BrandName: '',
-        IsCheck: 'N',
-        SearchKey: 'Name',
-      },
-      page: 1,
-      rows: 30,
-      sidx: 'Code',
-      sord: 'Desc',
-    },
     pagination: {
       showSizeChanger: true,
       showTotal: total => `共 ${total} 条`,

@@ -95,11 +95,30 @@ class SkuFetchComponent extends PureComponent {
     },
   ];
 
+  state = {
+    queryData: {
+      Content: {
+        BrandName: '',
+        Category: '',
+        SearchText: '',
+        SearchKey: 'Name',
+      },
+      page: 1,
+      rows: 30,
+      sidx: 'Code',
+      sord: 'Desc',
+    },
+  };
+
   componentDidMount() {
     const {
       dispatch,
-      skuFetch: { queryData },
+      location: { query },
     } = this.props;
+    const { BrandName, Category } = query;
+    const { queryData } = this.state;
+    Object.assign(queryData.Content, { BrandName: BrandName || '', Category: Category || '' });
+    this.setState({ queryData: { ...queryData } });
     dispatch({
       type: 'skuFetch/fetch',
       payload: {
@@ -109,10 +128,8 @@ class SkuFetchComponent extends PureComponent {
   }
 
   handleStandardTableChange = pagination => {
-    const {
-      dispatch,
-      skuFetch: { queryData },
-    } = this.props;
+    const { dispatch } = this.props;
+    const { queryData } = this.state;
     dispatch({
       type: 'skuFetch/fetch',
       payload: {
@@ -127,6 +144,7 @@ class SkuFetchComponent extends PureComponent {
     // 搜索
     e.preventDefault();
     const { dispatch, form } = this.props;
+    const { queryData } = this.state;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
       dispatch({
@@ -135,6 +153,7 @@ class SkuFetchComponent extends PureComponent {
           Content: {
             SearchText: '',
             SearchKey: 'Name',
+            ...queryData.Content,
             ...fieldsValue,
           },
           page: 1,
@@ -150,12 +169,31 @@ class SkuFetchComponent extends PureComponent {
     const {
       form: { getFieldDecorator },
     } = this.props;
+    const {
+      queryData: {
+        Content: { BrandName, Category },
+      },
+    } = this.state;
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={5} sm={24}>
             <FormItem>
               {getFieldDecorator('SearchText')(<Input placeholder="请输入关键字" />)}
+            </FormItem>
+          </Col>
+          <Col md={5} sm={24}>
+            <FormItem key="BrandName" label="品牌">
+              {getFieldDecorator('BrandName', { initialValue: BrandName })(
+                <Input placeholder="请输入品牌" />
+              )}
+            </FormItem>
+          </Col>
+          <Col md={5} sm={24}>
+            <FormItem key="Category" label="分类">
+              {getFieldDecorator('Category', { initialValue: Category })(
+                <Input placeholder="请输入分类" />
+              )}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>

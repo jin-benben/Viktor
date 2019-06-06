@@ -33,6 +33,7 @@ import MDMCommonality from '@/components/Select';
 import NeedAskPrice from '../components/needAskPrice';
 import CompanySelect from '@/components/Company/index';
 import OrderSource from '@/components/Select/OrderSource';
+import HSCode from '@/components/HSCode';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import { getName } from '@/utils/utils';
 
@@ -112,6 +113,14 @@ class InquiryEdit extends React.Component {
       align: 'center',
     },
     {
+      title: '外文名称',
+      dataIndex: 'EnglishName',
+      inputType: 'textArea',
+      width: 150,
+      editable: true,
+      align: 'center',
+    },
+    {
       title: '型号',
       width: 150,
       dataIndex: 'ManufactureNO',
@@ -142,6 +151,36 @@ class InquiryEdit extends React.Component {
       dataIndex: 'Unit',
       editable: true,
       align: 'center',
+    },
+    {
+      title: '产地',
+      width: 80,
+      inputType: 'text',
+      dataIndex: 'ManLocation',
+      editable: true,
+      align: 'center',
+    },
+    {
+      title: 'HS编码',
+      width: 150,
+      inputType: 'text',
+      dataIndex: 'HSCode',
+      render: (text, record, index) => {
+        const {
+          inquiryEdit: { hscodeList },
+        } = this.props;
+        return record.lastIndex ? (
+          ''
+        ) : (
+          <HSCode
+            initialValue={text}
+            data={hscodeList}
+            onChange={select => {
+              this.codeChange(select, record, index);
+            }}
+          />
+        );
+      },
     },
     {
       title: '备注',
@@ -379,12 +418,17 @@ class InquiryEdit extends React.Component {
     const {
       dispatch,
       global: { currentUser, CustomerList, BrandList },
-      inquiryEdit: { inquiryDetail },
+      inquiryEdit: { inquiryDetail, hscodeList },
     } = this.props;
     const { CompanyCode, Owner, DefaultWhsCode, UserCode } = currentUser;
     if (!CustomerList.length) {
       dispatch({
         type: 'global/getCustomer',
+      });
+    }
+    if (!hscodeList.length) {
+      dispatch({
+        type: 'inquiryEdit/gethscode',
       });
     }
     if (!BrandList.length) {
@@ -491,6 +535,12 @@ class InquiryEdit extends React.Component {
         },
       });
     }
+  };
+
+  // 海关编码change
+  codeChange = (select, record, index) => {
+    const { Code, U_VatRate } = select;
+    Object.assign(record, {});
   };
 
   //  行内容改变
@@ -1080,7 +1130,7 @@ class InquiryEdit extends React.Component {
             <EditableFormTable
               rowChange={this.rowChange}
               rowKey="LineID"
-              scroll={{ x: 3000, y: 600 }}
+              scroll={{ x: 3300, y: 600 }}
               columns={this.skuColumns}
               data={newdata}
             />

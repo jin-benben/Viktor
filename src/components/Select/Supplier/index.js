@@ -74,9 +74,7 @@ class SupplierSelect extends PureComponent {
     const { data } = this.state;
     const { onChange } = this.props;
     if (onChange) {
-      const select = data.find(item => {
-        return item.Code === value.key;
-      });
+      const select = data.find(item => item.Code === value.key);
       onChange(select);
     }
   };

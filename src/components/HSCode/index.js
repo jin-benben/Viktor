@@ -5,7 +5,7 @@ import debounce from 'lodash/debounce';
 
 const { Option } = Select;
 
-class Brand extends PureComponent {
+class HSCode extends PureComponent {
   constructor(props) {
     super(props);
     this.lastFetchId = 0;
@@ -90,4 +90,4 @@ class Brand extends PureComponent {
   }
 }
 
-export default Brand;
+export default HSCode;

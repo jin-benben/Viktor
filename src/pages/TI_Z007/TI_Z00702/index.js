@@ -93,17 +93,30 @@ class supplierSearch extends PureComponent {
     },
   ];
 
+  state = {
+    queryData: {
+      Content: {
+        SearchText: '',
+        BrandName: '',
+        IsCheck: 'N',
+        SearchKey: 'Name',
+      },
+      page: 1,
+      rows: 30,
+      sidx: 'Code',
+      sord: 'Desc',
+    },
+  };
+
   componentDidMount() {
     const {
       dispatch,
-      supplierSearch: { queryData },
+      location: { query },
     } = this.props;
-    dispatch({
-      type: 'supplierSearch/fetch',
-      payload: {
-        ...queryData,
-      },
-    });
+    const { BrandName } = query;
+    const { queryData } = this.state;
+    Object.assign(queryData.Content, { BrandName: BrandName || '' });
+    this.setState({ queryData: { ...queryData } });
     dispatch({
       type: 'global/getMDMCommonality',
       payload: {
@@ -115,10 +128,8 @@ class supplierSearch extends PureComponent {
   }
 
   handleStandardTableChange = pagination => {
-    const {
-      dispatch,
-      supplierSearch: { queryData },
-    } = this.props;
+    const { dispatch } = this.props;
+    const { queryData } = this.state;
     dispatch({
       type: 'supplierSearch/fetch',
       payload: {
@@ -132,14 +143,14 @@ class supplierSearch extends PureComponent {
   handleSearch = e => {
     e.preventDefault();
     const { dispatch, form } = this.props;
+    const { queryData } = this.state;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
       dispatch({
         type: 'supplierSearch/fetch',
         payload: {
           Content: {
-            SearchText: '',
-            SearchKey: 'Name',
+            ...queryData.Content,
             ...fieldsValue,
             IsCheck: fieldsValue.IsCheck ? 'Y' : 'N',
           },
@@ -156,6 +167,11 @@ class supplierSearch extends PureComponent {
     const {
       form: { getFieldDecorator },
     } = this.props;
+    const {
+      queryData: {
+        Content: { BrandName },
+      },
+    } = this.state;
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
@@ -165,7 +181,11 @@ class supplierSearch extends PureComponent {
             </FormItem>
           </Col>
           <Col md={5} sm={24}>
-            <FormItem>{getFieldDecorator('BrandName')(<Input placeholder="品牌" />)}</FormItem>
+            <FormItem key="BrandName" label="品牌">
+              {getFieldDecorator('BrandName', { initialValue: BrandName })(
+                <Input placeholder="请输入品牌名称" />
+              )}
+            </FormItem>
           </Col>
           <Col md={3} sm={24}>
             <FormItem>

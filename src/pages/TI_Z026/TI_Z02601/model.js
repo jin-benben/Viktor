@@ -1,5 +1,6 @@
 import {
   querySingleRule,
+  queryHSCodeRule,
   addRule,
   updateRule,
   cancelRule,
@@ -41,8 +42,19 @@ export default {
       TI_Z02602: [],
       TI_Z02603: [],
     },
+    pagination: {
+      Content: {
+        SearchText: '',
+        SearchKey: 'Name',
+      },
+      page: 1,
+      rows: 30,
+      sidx: 'Code',
+      sord: 'Desc',
+    },
     addList: [],
     linkmanList: [],
+    hscodeList: [],
   },
 
   effects: {
@@ -61,6 +73,29 @@ export default {
             Content: { Code: response.Content.CardCode },
           },
         });
+      }
+    },
+    *gethscode(_, { call, put, select }) {
+      const pagination = yield select(state => state.inquiryEdit.pagination);
+      const hsRes = yield call(queryHSCodeRule, pagination);
+
+      if (hsRes && hsRes.Status === 200) {
+        if (!hsRes.Content) {
+          yield put({
+            type: 'save',
+            payload: {
+              hscodeList: [],
+            },
+          });
+        } else {
+          const { rows } = hsRes.Content;
+          yield put({
+            type: 'save',
+            payload: {
+              hscodeList: rows,
+            },
+          });
+        }
       }
     },
     *add({ payload, callback }, { call }) {

@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Row, Col, Card, Form, Input, Modal, Button, message, Select } from 'antd';
+import { Row, Col, Card, Form, Input, Modal, Button, message, Divider, Select } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import Supplier from '@/components/Supplier';
 import Upload from '@/components/Upload';
@@ -229,11 +229,6 @@ class BrandList extends PureComponent {
       render: val => <img style={{ width: 50, height: 50 }} src={val} alt="主图" />,
     },
     {
-      title: '列表图',
-      dataIndex: 'Picture_List',
-      render: val => <img style={{ width: 50, height: 50 }} src={val} alt="主图" />,
-    },
-    {
       title: '采购员',
       dataIndex: 'Purchaser',
       render: text => {
@@ -261,6 +256,22 @@ class BrandList extends PureComponent {
       render: (text, record) => (
         <Fragment>
           <a onClick={() => this.handleUpdateModalVisible(true, record)}>修改</a>
+          <Divider type="vertical" />
+          <a
+            href={`/main/product/TI_Z009/TI_Z00902?BrandName=${record.Name}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            物料
+          </a>
+          <Divider type="vertical" />
+          <a
+            href={`/main/product/TI_Z007/search?BrandName=${record.Name}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            供应商
+          </a>
         </Fragment>
       ),
     },
