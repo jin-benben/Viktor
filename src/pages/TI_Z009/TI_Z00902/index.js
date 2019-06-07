@@ -46,6 +46,15 @@ class SkuFetchComponent extends PureComponent {
       ),
     },
     {
+      title: '外文名称',
+      dataIndex: 'EnglishName',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
+    },
+    {
       title: '品牌',
       dataIndex: 'BrandName',
     },
@@ -87,6 +96,10 @@ class SkuFetchComponent extends PureComponent {
     {
       title: '单位',
       dataIndex: 'Unit',
+    },
+    {
+      title: '产地',
+      dataIndex: 'ManLocation',
     },
     {
       title: '上架状态',

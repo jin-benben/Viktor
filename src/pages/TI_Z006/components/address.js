@@ -76,7 +76,10 @@ class AddressInfo extends PureComponent {
       form.validateFields((err, fieldsValue) => {
         if (err) return;
         form.resetFields();
-        handleSubmit({ ...formVals, ...fieldsValue, ...fieldsValue.address });
+        const { address } = fieldsValue;
+        // eslint-disable-next-line no-param-reassign
+        delete fieldsValue.address;
+        handleSubmit({ ...formVals, ...fieldsValue, ...address });
       });
     };
     return (
@@ -90,7 +93,7 @@ class AddressInfo extends PureComponent {
       >
         <Form {...formItemLayout}>
           <Row>
-            <FormItem key="AddressName" {...this.formLayout} label="收货人姓名">
+            <FormItem key="AddressName" {...this.formLayout} label="地址名称">
               {getFieldDecorator('AddressName', {
                 initialValue: formVals.AddressName,
               })(<Input placeholder="请输入地址描述" />)}

@@ -4,11 +4,14 @@ import { Row, Col, Card, Form, Input, Modal, Button, message } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import DescriptionList from 'ant-design-pro/lib/DescriptionList';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
-import ManLocation from '@/components/ManLocation';
+import MDMCommonality from '@/components/Select';
 
 const FormItem = Form.Item;
 const { Description } = DescriptionList;
 @Form.create()
+@connect(({ global }) => ({
+  global,
+}))
 class CreateForm extends React.Component {
   // static getDerivedStateFromProps(nextProps, preState) {
   //   if(nextProps.origin!==preState.origin){
@@ -21,13 +24,18 @@ class CreateForm extends React.Component {
   // }
 
   okHandle = () => {
-    const { handleSubmit } = this.props;
-    handleSubmit();
+    const { handleSubmit, form, origin } = this.props;
+    form.validateFields((err, fieldsValue) => {
+      if (err) return;
+      form.resetFields();
+      handleSubmit({ ...origin, ...fieldsValue });
+    });
   };
 
   render() {
     const {
       form: { getFieldDecorator },
+      global: { TI_Z042 },
       modalVisible,
       handleModalVisible,
       origin,
@@ -51,7 +59,7 @@ class CreateForm extends React.Component {
 
     return (
       <Modal
-        width={960}
+        width={640}
         destroyOnClose
         title="编辑"
         okText="保存"
@@ -63,7 +71,7 @@ class CreateForm extends React.Component {
           <FormItem key="U_Origin" {...formLayout} label="产地">
             {getFieldDecorator('U_Origin', {
               initialValue: origin.U_Origin,
-            })(<ManLocation initialValue={origin.U_Origin} />)}
+            })(<MDMCommonality initialValue={origin.U_Origin} data={TI_Z042} />)}
           </FormItem>
 
           <FormItem key="U_VatRateOther" {...formLayout} label="特殊税率">
@@ -78,9 +86,10 @@ class CreateForm extends React.Component {
   }
 }
 /* eslint react/no-multi-comp:0 */
-@connect(({ hscodeDetail, loading }) => ({
+@connect(({ hscodeDetail, loading, global }) => ({
   hscodeDetail,
-  addloading: loading.effects['hscodeDetail/add'],
+  global,
+  addloading: loading.effects['hscodeDetail/fetch'],
 }))
 @Form.create()
 class HSCode extends PureComponent {
@@ -131,9 +140,24 @@ class HSCode extends PureComponent {
   }
 
   componentDidMount() {
+    const {
+      dispatch,
+      global: { TI_Z042 },
+    } = this.props;
+    if (!TI_Z042.length) {
+      dispatch({
+        type: 'global/getMDMCommonality',
+        payload: {
+          Content: {
+            CodeList: ['TI_Z042'],
+          },
+        },
+      });
+    }
     this.getDetail();
   }
 
+  // 获取详情
   getDetail() {
     const {
       dispatch,
@@ -152,7 +176,29 @@ class HSCode extends PureComponent {
   }
 
   // 产地添加
-  handleSubmit = () => {};
+  handleSubmit = origin => {
+    const { dispatch } = this.props;
+    const { hsCodeInfo } = this.state;
+    const last = hsCodeInfo.TI_Z03602[hsCodeInfo.TI_Z03602.length - 1];
+    const lastid = last ? last.LineId + 1 : 1;
+    const LineId = origin.LineId ? origin.LineId : lastid;
+    Object.assign(origin, { LineId });
+    dispatch({
+      type: 'hscodeDetail/add',
+      payload: {
+        Content: {
+          ...origin,
+        },
+      },
+      callback: response => {
+        if (response && response.Status === 200) {
+          message.success('添加成功');
+          this.getDetail();
+          this.handleModalVisible(false);
+        }
+      },
+    });
+  };
 
   // 关闭弹窗
   handleModalVisible = flag => {
@@ -204,7 +250,7 @@ class HSCode extends PureComponent {
         />
         <FooterToolbar>
           <Button onClick={() => this.handleModalVisible(true)} type="primary">
-            编辑
+            添加产地
           </Button>
         </FooterToolbar>
       </Fragment>

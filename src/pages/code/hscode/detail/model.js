@@ -1,4 +1,4 @@
-import { querySingleRule, updateRule } from '../service';
+import { querySingleRule, updateRule, addOrignRule } from '../service';
 
 export default {
   namespace: 'hscodeDetail',
@@ -28,6 +28,14 @@ export default {
     },
     *update({ payload, callback }, { call, put }) {
       const response = yield call(updateRule, payload);
+      yield put({
+        type: 'save',
+        payload: response,
+      });
+      if (callback) callback(response);
+    },
+    *add({ payload, callback }, { call, put }) {
+      const response = yield call(addOrignRule, payload);
       yield put({
         type: 'save',
         payload: response,

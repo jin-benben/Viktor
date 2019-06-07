@@ -108,9 +108,20 @@ class CreateForm extends PureComponent {
         if (err) return;
         form.resetFields();
         delete fieldsValue.Picture;
+        fieldsValue.WebSite = fieldsValue.prefix + fieldsValue.WebSite;
+        delete fieldsValue.prefix;
         handleSubmit({ ...formVals, ...fieldsValue });
       });
     };
+    const prefixSelector = getFieldDecorator('prefix', {
+      initialValue: 'Http://',
+    })(
+      <Select style={{ width: 90 }}>
+        <Option value="Http://">Http://</Option>
+        <Option value="Https://">Https://</Option>
+      </Select>
+    );
+
     return (
       <Modal
         width={640}
@@ -146,7 +157,7 @@ class CreateForm extends PureComponent {
           <FormItem key="WebSite" {...this.formLayout} label="官网">
             {getFieldDecorator('WebSite', {
               initialValue: formVals.WebSite,
-            })(<Input placeholder="请输入官网！" />)}
+            })(<Input addonBefore={prefixSelector} placeholder="请输入官网！" />)}
           </FormItem>
           <FormItem key="Abbreviate" {...this.formLayout} label="简写">
             {getFieldDecorator('Abbreviate', {

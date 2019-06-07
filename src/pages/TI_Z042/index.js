@@ -122,7 +122,7 @@ class Staffs extends PureComponent {
 
     {
       title: '备注',
-      dataIndex: 'Commment',
+      dataIndex: 'Comment',
       align: 'center',
     },
 

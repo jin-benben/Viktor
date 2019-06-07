@@ -70,6 +70,28 @@ export default [
              
             ]
           },
+          {
+            name: 'HTML模板',
+            icon: 'iconxunjia',
+            path: '/base/TI_Z049',
+            routes:[
+              {
+                name: '添加',
+                path: '/base/TI_Z049/add',
+                component: './TI_Z049/TI_Z04901',
+              },
+              {
+                name: '查询',
+                path: '/base/TI_Z049/search',
+                component: './TI_Z049/TI_Z04902',
+              },
+              {
+                name: '详情',
+                path: '/base/TI_Z049/detail',
+                component: './TI_Z049/TI_Z04901',
+              },
+            ]
+          }
         ]
       },
       {
@@ -410,6 +432,7 @@ export default [
           }
         ]  
       },
+     
       {
         name: '消息管理',
         icon: 'smile',

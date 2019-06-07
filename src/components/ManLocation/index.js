@@ -2,9 +2,12 @@ import React, { PureComponent } from 'react';
 import request from '@/utils/request';
 import { Select, Spin, Empty } from 'antd';
 import debounce from 'lodash/debounce';
+import { connect } from 'dva';
 
 const { Option } = Select;
-
+@connect(({ global }) => ({
+  global,
+}))
 class ManLocation extends PureComponent {
   constructor(props) {
     super(props);
@@ -25,7 +28,7 @@ class ManLocation extends PureComponent {
     ) {
       return {
         value: nextProps.initialValue,
-        data: nextProps.data,
+        data: nextProps.global.ManLocationList,
       };
     }
     return null;

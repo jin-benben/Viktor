@@ -3,6 +3,7 @@ import { connect } from 'dva';
 import router from 'umi/router';
 import { Row, Col, Card, Form, Input, Button, Checkbox } from 'antd';
 import StandardTable from '@/components/StandardTable';
+import Brand from '@/components/Brand';
 import Link from 'umi/link';
 import { getName } from '@/utils/utils';
 
@@ -125,6 +126,15 @@ class supplierSearch extends PureComponent {
         },
       },
     });
+    dispatch({
+      type: 'global/getBrand',
+    });
+    dispatch({
+      type: 'supplierSearch/fetch',
+      payload: {
+        ...queryData,
+      },
+    });
   }
 
   handleStandardTableChange = pagination => {
@@ -183,7 +193,7 @@ class supplierSearch extends PureComponent {
           <Col md={5} sm={24}>
             <FormItem key="BrandName" label="品牌">
               {getFieldDecorator('BrandName', { initialValue: BrandName })(
-                <Input placeholder="请输入品牌名称" />
+                <Brand initialValue={BrandName} keyType="Name" placeholder="请输入品牌名称" />
               )}
             </FormItem>
           </Col>

@@ -16,12 +16,7 @@ export default class AddMessage extends Component {
 
     return (
       <div style={{ width: 800, textAlign: 50, marginLeft: 50 }}>
-        <UEditor
-          content={content}
-          onChange={this.handleChange}
-          editorHandle={this.editorHandle}
-          ue={this.ue}
-        />
+        <UEditor content={content} onChange={this.handleChange} />
       </div>
     );
   }

@@ -31,6 +31,7 @@ export default {
     CategoryTree: [], // 分类
     TI_Z004: [], // 员工列表
     TI_Z003: [], // 部门
+    TI_Z042: [], // 产地
   },
 
   effects: {

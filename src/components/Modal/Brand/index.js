@@ -39,6 +39,7 @@ class BrandModal extends PureComponent {
     {
       title: '品牌代码',
       dataIndex: 'Code',
+      width: 100,
     },
     {
       title: '品牌名称',

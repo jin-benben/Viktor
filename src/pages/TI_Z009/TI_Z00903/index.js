@@ -230,6 +230,22 @@ class SKUDetail extends Component {
     }
   };
 
+  // spu change
+  SPUCodeChange = select => {
+    const { Code, Cate1Name, Cate2Name, Cate3Name, Category1, Category2, Category3 } = select;
+    const { formVals } = this.state;
+    Object.assign(formVals, {
+      SPUCode: Code,
+      Cate1Name,
+      Cate2Name,
+      Cate3Name,
+      Category1,
+      Category2,
+      Category3,
+    });
+    this.setState({ formVals: { ...formVals } });
+  };
+
   handleListChange = info => {
     if (info.file.status === 'uploading') {
       return;
@@ -264,12 +280,7 @@ class SKUDetail extends Component {
         lg: { span: 6 },
       },
     };
-    const UploadButton = props => (
-      <div>
-        <Icon type="plus" />
-        <div className="ant-upload-text">{props.title}</div>
-      </div>
-    );
+
     const { tabIndex, formVals } = this.state;
 
     return (
@@ -352,14 +363,15 @@ class SKUDetail extends Component {
             </Col>
             <Col lg={12} md={12} sm={24}>
               <FormItem key="category" {...this.formLayout} label="分类">
-                {getFieldDecorator('category', {
+                {/* {getFieldDecorator('category', {
                   initialValue: [formVals.Category1, formVals.Category2, formVals.Category3],
                 })(
                   <Category
                     initialValue={[formVals.Category1, formVals.Category2, formVals.Category3]}
                     placeholder="请选择分类"
                   />
-                )}
+                )} */}
+                <span>{`${formVals.Cate1Name}/${formVals.Cate2Name}/${formVals.Cate3Name}`}</span>
               </FormItem>
             </Col>
           </Row>
@@ -407,7 +419,13 @@ class SKUDetail extends Component {
               <FormItem key="SPUCode" {...this.formLayout} label="SPU代码">
                 {getFieldDecorator('SPUCode', {
                   initialValue: formVals.SPUCode,
-                })(<SPUCode data={spuList} initialValue={formVals.SPUCode} />)}
+                })(
+                  <SPUCode
+                    onChange={this.SPUCodeChange}
+                    data={spuList}
+                    initialValue={formVals.SPUCode}
+                  />
+                )}
               </FormItem>
             </Col>
           </Row>
@@ -431,6 +449,15 @@ class SKUDetail extends Component {
                     ? moment(formVals.PutawayDateTime, 'YYYY-MM-DD')
                     : null,
                 })(<DatePicker style={{ width: '100%' }} />)}
+              </FormItem>
+            </Col>
+          </Row>
+          <Row gutter={8}>
+            <Col lg={12} md={12} sm={24}>
+              <FormItem key="EnglishName" {...this.formLayout} label="外文名称">
+                {getFieldDecorator('EnglishName', {
+                  initialValue: formVals.EnglishName,
+                })(<Input placeholder="请输入外文名称" />)}
               </FormItem>
             </Col>
           </Row>
