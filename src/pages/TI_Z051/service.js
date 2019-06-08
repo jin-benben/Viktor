@@ -1,7 +1,7 @@
 import request from '@/utils/request';
 
 export async function queryRule(params) {
-  return request(`/MDM/TI_Z044/TI_Z04402`, {
+  return request('/MDM/TI_Z051/TI_Z05102', {
     method: 'POST',
     data: {
       ...params,
@@ -10,7 +10,7 @@ export async function queryRule(params) {
 }
 
 export async function addRule(params) {
-  return request('/MDM/TI_Z044/TI_Z04401', {
+  return request('/MDM/TI_Z051/TI_Z05101', {
     method: 'POST',
     data: {
       ...params,
@@ -19,7 +19,7 @@ export async function addRule(params) {
 }
 
 export async function updateRule(params) {
-  return request('/MDM/TI_Z044/TI_Z04404', {
+  return request('/MDM/TI_Z051/TI_Z05104', {
     method: 'POST',
     data: {
       ...params,
@@ -28,7 +28,7 @@ export async function updateRule(params) {
 }
 
 export async function removeRule(params) {
-  return request('/MDM/TI_Z044/TI_Z04405', {
+  return request('/MDM/TI_Z051/TI_Z05105', {
     method: 'POST',
     data: {
       ...params,

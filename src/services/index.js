@@ -82,6 +82,22 @@ export async function brandRule() {
   });
 }
 
+export async function hscodeRule() {
+  return request('/MDM/TI_Z036/TI_Z03602', {
+    method: 'POST',
+    data: {
+      Content: {
+        SearchText: '',
+        SearchKey: 'Name',
+      },
+      page: 1,
+      rows: 30,
+      sidx: 'Code',
+      sord: 'Desc',
+    },
+  });
+}
+
 export async function categoryRule() {
   return request(`/MDM/TI_Z010/TI_Z01002`, {
     method: 'POST',

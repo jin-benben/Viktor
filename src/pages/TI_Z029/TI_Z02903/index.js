@@ -9,6 +9,7 @@ import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import DescriptionList from 'ant-design-pro/lib/DescriptionList';
 import MyTag from '@/components/Tag';
 import CancelOrder from '@/components/Modal/CancelOrder';
+import OrderPrint from '@/components/Modal/OrderPrint';
 import { getName } from '@/utils/utils';
 
 const { Description } = DescriptionList;
@@ -251,6 +252,24 @@ class InquiryEdit extends React.Component {
             />
           </Fragment>
         ),
+    },
+  ];
+
+  linkmanColumns = [
+    {
+      title: '用户ID',
+      align: 'center',
+      dataIndex: 'UserID',
+    },
+    {
+      title: '联系人',
+      align: 'center',
+      dataIndex: 'Contacts',
+    },
+    {
+      title: '手机号',
+      align: 'center',
+      dataIndex: 'CellphoneNO',
     },
   ];
 
@@ -557,6 +576,13 @@ class InquiryEdit extends React.Component {
               columns={this.attachmentColumns}
             />
           </TabPane>
+          <TabPane tab="其他推送人" key="5">
+            <StandardTable
+              data={{ list: formVals.TI_Z02905 }}
+              rowKey="UserID"
+              columns={this.linkmanColumns}
+            />
+          </TabPane>
         </Tabs>
 
         <Modal
@@ -587,6 +613,7 @@ class InquiryEdit extends React.Component {
           <Button onClick={this.toUpdate} type="primary">
             编辑
           </Button>
+          <OrderPrint BaseEntry={formVals.DocEntry} BaseType="TI_Z029" />
         </FooterToolbar>
       </Card>
     );

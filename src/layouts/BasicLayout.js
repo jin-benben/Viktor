@@ -210,6 +210,7 @@ export default connect(({ global, setting, menu }) => ({
   collapsed: global.collapsed,
   layout: setting.layout,
   menuData: menu.menuData,
+  global,
   breadcrumbNameMap: menu.breadcrumbNameMap,
   ...setting,
 }))(props => (

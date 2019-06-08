@@ -22,6 +22,20 @@ export const printOrderType = [
     Value: '交货单',
   },
 ];
+export const emailSendType = [
+  {
+    Key: 'TI_Z027',
+    Value: '供应商询价单',
+  },
+  {
+    Key: 'TI_Z029',
+    Value: '销售报价',
+  },
+  {
+    Key: 'TI_Z030',
+    Value: '销售合同',
+  },
+];
 export const templateType = [
   {
     Key: '1',
@@ -44,5 +58,15 @@ export const parameterType = [
   {
     Key: '2',
     Value: 'List',
+  },
+];
+export const orderSourceType = [
+  {
+    Key: '1',
+    Value: '销售下单',
+  },
+  {
+    Key: '2',
+    Value: '网站下单',
   },
 ];

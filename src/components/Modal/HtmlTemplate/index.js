@@ -1,19 +1,16 @@
 import React, { PureComponent } from 'react';
 
 import { Row, Col, Form, Input, Modal, Button, message } from 'antd';
-import { connect } from 'dva';
 import StandardTable from '@/components/StandardTable';
+
 import request from '@/utils/request';
 
 const FormItem = Form.Item;
 
 @Form.create()
-@connect(({ global }) => ({
-  global,
-}))
-class BrandModal extends PureComponent {
+class SKUModal extends PureComponent {
   state = {
-    brandList: [],
+    templateList: [],
     selectedRows: [],
     queryData: {
       Content: {
@@ -37,23 +34,19 @@ class BrandModal extends PureComponent {
 
   columns = [
     {
-      title: '品牌代码',
+      title: '代码',
       dataIndex: 'Code',
       width: 100,
     },
     {
-      title: '品牌名称',
+      title: '名称',
       dataIndex: 'Name',
     },
   ];
 
-  static getDerivedStateFromProps(nextProps, prevState) {
-    if (!prevState.brandList.length) {
-      return {
-        brandList: nextProps.global.BrandList,
-      };
-    }
-    return null;
+  componentDidMount() {
+    const { queryData } = this.state;
+    this.getTemplate(queryData);
   }
 
   okHandle = () => {
@@ -78,7 +71,7 @@ class BrandModal extends PureComponent {
       rows: pagination.pageSize,
     };
     this.setState({ queryData });
-    this.getBrand(queryData);
+    this.getTemplate(queryData);
   };
 
   handleSearch = e => {
@@ -97,12 +90,12 @@ class BrandModal extends PureComponent {
         sidx: 'Code',
         sord: 'Desc',
       };
-      this.getBrand(queryData);
+      this.getTemplate(queryData);
     });
   };
 
-  getBrand = async params => {
-    const response = await request('/MDM/TI_Z005/TI_Z00502', {
+  getTemplate = async params => {
+    const response = await request('/MDM/TI_Z049/TI_Z04902', {
       method: 'POST',
       data: {
         ...params,
@@ -113,7 +106,7 @@ class BrandModal extends PureComponent {
         const { rows, records, page } = response.Content;
         const { pagination } = this.state;
         this.setState({
-          brandList: [...rows],
+          templateList: [...rows],
           pagination: { ...pagination, total: records, current: page },
         });
       }
@@ -145,27 +138,27 @@ class BrandModal extends PureComponent {
   }
 
   render() {
-    const { loading, pagination, brandList } = this.state;
+    const { loading, pagination, templateList } = this.state;
     const { modalVisible, handleModalVisible } = this.props;
     return (
       <Modal
         width={960}
-        destroyOnClose
-        title="客户选择"
+        title="模板选择"
         visible={modalVisible}
         onOk={this.okHandle}
-        onCancel={() => handleModalVisible()}
+        onCancel={() => handleModalVisible(false)}
       >
         <div className="tableList">
           <div className="tableListForm">{this.renderSimpleForm()}</div>
           <StandardTable
             loading={loading}
-            data={{ list: brandList }}
+            data={{ list: templateList }}
             rowKey="Code"
-            scroll={{ y: 400 }}
             pagination={pagination}
+            scroll={{ y: 300 }}
             columns={this.columns}
             rowSelection={{
+              type: 'radio',
               onSelectRow: this.onSelectRow,
             }}
             onChange={this.handleStandardTableChange}
@@ -176,4 +169,4 @@ class BrandModal extends PureComponent {
   }
 }
 
-export default BrandModal;
+export default SKUModal;

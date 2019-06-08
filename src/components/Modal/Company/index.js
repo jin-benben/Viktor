@@ -39,6 +39,7 @@ class CompanyModal extends PureComponent {
   columns = [
     {
       title: '客户代码',
+      width: 100,
       dataIndex: 'Code',
     },
     {
@@ -162,6 +163,7 @@ class CompanyModal extends PureComponent {
             loading={loading}
             data={{ list: companyList }}
             rowKey="Code"
+            scroll={{ y: 400 }}
             pagination={pagination}
             columns={this.columns}
             rowSelection={{

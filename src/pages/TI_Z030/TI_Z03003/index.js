@@ -13,24 +13,6 @@ import { getName } from '@/utils/utils';
 
 const { Description } = DescriptionList;
 const { TabPane } = Tabs;
-const OrderSource = [
-  {
-    Code: '1',
-    Name: '线下',
-  },
-  {
-    Code: '2',
-    Name: '网站',
-  },
-  {
-    Code: '3',
-    Name: '电话',
-  },
-  {
-    Code: '4',
-    Name: '其他来源',
-  },
-];
 
 @connect(({ agreementPreview, loading, global }) => ({
   agreementPreview,
@@ -296,6 +278,24 @@ class InquiryEdit extends React.Component {
     },
   ];
 
+  linkmanColumns = [
+    {
+      title: '用户ID',
+      align: 'center',
+      dataIndex: 'UserID',
+    },
+    {
+      title: '联系人',
+      align: 'center',
+      dataIndex: 'Contacts',
+    },
+    {
+      title: '手机号',
+      align: 'center',
+      dataIndex: 'CellphoneNO',
+    },
+  ];
+
   attachmentColumns = [
     {
       title: '序号',
@@ -400,7 +400,6 @@ class InquiryEdit extends React.Component {
           City: '',
           AreaID: '',
           Area: '',
-
           Address: '',
           NumAtCard: '',
           Owner: '',
@@ -561,6 +560,13 @@ class InquiryEdit extends React.Component {
               data={{ list: formVals.TI_Z03003 }}
               rowKey="LineID"
               columns={this.attachmentColumns}
+            />
+          </TabPane>
+          <TabPane tab="其他推送人" key="5">
+            <StandardTable
+              data={{ list: formVals.TI_Z03005 }}
+              rowKey="UserID"
+              columns={this.linkmanColumns}
             />
           </TabPane>
         </Tabs>

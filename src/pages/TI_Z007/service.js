@@ -44,6 +44,14 @@ export async function addRule(params) {
     },
   });
 }
+export async function deletebrandRule(params) {
+  return request('/MDM/TI_Z007/TI_Z00707', {
+    method: 'POST',
+    data: {
+      ...params,
+    },
+  });
+}
 
 export async function updateRule(params) {
   return request('/MDM/TI_Z007/TI_Z00704', {

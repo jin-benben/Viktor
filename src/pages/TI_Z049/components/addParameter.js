@@ -4,12 +4,9 @@ import { Form, Input, Modal } from 'antd';
 const FormItem = Form.Item;
 
 @Form.create()
-class AddressInfo extends PureComponent {
+class AddParameter extends PureComponent {
   constructor(props) {
     super(props);
-    this.state = {
-      formVals: {},
-    };
     this.formLayout = {
       labelCol: { span: 7 },
       wrapperCol: { span: 16 },
@@ -24,7 +21,6 @@ class AddressInfo extends PureComponent {
       handleModalVisible,
       handleSubmit,
     } = this.props;
-    const { formVals } = this.state;
     const formItemLayout = {
       labelCol: {
         xs: { span: 24 },
@@ -40,7 +36,7 @@ class AddressInfo extends PureComponent {
     const okHandle = () => {
       form.validateFields((err, fieldsValue) => {
         if (err) return;
-        handleSubmit({ ...formVals, ...fieldsValue });
+        handleSubmit({ ...fieldsValue });
       });
     };
     return (
@@ -58,8 +54,8 @@ class AddressInfo extends PureComponent {
               rules: [{ required: true, message: '请输入参数代码' }],
             })(<Input placeholder="请输入参数代码" />)}
           </FormItem>
-          <FormItem key="ParameterType" {...this.ParameterName} label="参数名称">
-            {getFieldDecorator('ParameterType', {
+          <FormItem key="ParameterName" {...this.formLayout} label="参数名称">
+            {getFieldDecorator('ParameterName', {
               rules: [{ required: true, message: '请输入参数名称！' }],
             })(<Input placeholder="请输入参数名称" />)}
           </FormItem>
@@ -68,4 +64,4 @@ class AddressInfo extends PureComponent {
     );
   }
 }
-export default AddressInfo;
+export default AddParameter;

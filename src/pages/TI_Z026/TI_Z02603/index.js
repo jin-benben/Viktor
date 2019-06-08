@@ -101,6 +101,17 @@ class InquiryEdit extends PureComponent {
       ),
     },
     {
+      title: '外文名称',
+      dataIndex: 'ForeignName',
+      width: 100,
+      align: 'center',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
+    },
+    {
       title: '型号',
       width: 100,
       dataIndex: 'ManufactureNO',
@@ -128,11 +139,57 @@ class InquiryEdit extends PureComponent {
       dataIndex: 'Package',
       align: 'center',
     },
+    {
+      title: '产地',
+      width: 80,
+      dataIndex: 'ManLocation',
+      align: 'center',
+    },
+    {
+      title: 'HS编码',
+      width: 150,
+      dataIndex: 'HSCode',
+    },
+    {
+      title: '报关税率',
+      width: 80,
+      dataIndex: 'HSVatRate',
+      align: 'center',
+    },
+    {
+      title: '附加税率',
+      width: 80,
+      dataIndex: 'HSVatRateOther',
+      align: 'center',
+    },
+    {
+      title: '要求名称',
+      width: 80,
+      dataIndex: 'CustomerName',
+      align: 'center',
+    },
+    {
+      title: '重量',
+      width: 80,
+      dataIndex: 'Rweight',
+      align: 'center',
+    },
+    {
+      title: '国外运费',
+      width: 80,
+      dataIndex: 'ForeignFreight',
+      align: 'center',
+    },
+    {
+      title: '建议价格',
+      width: 80,
+      dataIndex: 'AdvisePrice',
+      align: 'center',
+    },
 
     {
-      title: '建议价',
+      title: '价格',
       width: 100,
-
       dataIndex: 'Price',
 
       align: 'center',
@@ -254,7 +311,6 @@ class InquiryEdit extends PureComponent {
       title: '操作',
       fixed: 'right',
       align: 'center',
-      width: 80,
       render: (text, record, index) =>
         record.lastIndex ? null : (
           <Fragment>
@@ -266,7 +322,7 @@ class InquiryEdit extends PureComponent {
                 style={{ color: '#08c', marginRight: 5 }}
               />
             ) : (
-              ''
+              <span />
             )}
           </Fragment>
         ),
@@ -318,6 +374,24 @@ class InquiryEdit extends PureComponent {
           </a>
         </Fragment>
       ),
+    },
+  ];
+
+  linkmanColumns = [
+    {
+      title: '用户ID',
+      align: 'center',
+      dataIndex: 'UserID',
+    },
+    {
+      title: '联系人',
+      align: 'center',
+      dataIndex: 'Contacts',
+    },
+    {
+      title: '手机号',
+      align: 'center',
+      dataIndex: 'CellphoneNO',
     },
   ];
 
@@ -430,8 +504,7 @@ class InquiryEdit extends PureComponent {
     const { formVals } = this.state;
     const selectedRows = formVals.TI_Z02602.filter(item => item.IsInquiry === 'N');
     if (selectedRows.length) {
-      this.setState({ selectedRows: [...selectedRows] });
-      this.handleModalVisible(true);
+      this.setState({ selectedRows: [...selectedRows], needmodalVisible: true });
     } else {
       message.warning('暂无需询价的行');
     }
@@ -481,7 +554,6 @@ class InquiryEdit extends PureComponent {
       handleSubmit: this.submitNeedLine,
       handleModalVisible: this.handleModalVisible,
     };
-
     return (
       <Card bordered={false}>
         <DescriptionList style={{ marginBottom: 24 }}>
@@ -534,7 +606,7 @@ class InquiryEdit extends PureComponent {
             <StandardTable
               data={{ list: newdata }}
               rowKey="LineID"
-              scroll={{ x: 2500, y: 600 }}
+              scroll={{ x: 3165, y: 600 }}
               columns={this.skuColumns}
             />
           </TabPane>
@@ -553,6 +625,13 @@ class InquiryEdit extends PureComponent {
               data={{ list: formVals.TI_Z02603 }}
               rowKey="LineID"
               columns={this.attachmentColumns}
+            />
+          </TabPane>
+          <TabPane tab="其他推送人" key="4">
+            <StandardTable
+              data={{ list: formVals.TI_Z02605 }}
+              rowKey="UserID"
+              columns={this.linkmanColumns}
             />
           </TabPane>
         </Tabs>

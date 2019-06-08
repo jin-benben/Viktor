@@ -1,5 +1,12 @@
 import { message } from 'antd';
-import { querySingleRule, addRule, updateRule, linkmanRule, addbrandRule } from '../service';
+import {
+  querySingleRule,
+  addRule,
+  updateRule,
+  linkmanRule,
+  addbrandRule,
+  deletebrandRule,
+} from '../service';
 
 export default {
   namespace: 'supplierEdit',
@@ -40,7 +47,14 @@ export default {
         });
       }
     },
-
+    *deletebrand({ payload, callback }, { call, put }) {
+      const response = yield call(deletebrandRule, payload);
+      yield put({
+        type: 'save',
+        payload: response,
+      });
+      if (callback) callback(response);
+    },
     *addbrand({ payload, callback }, { call, put }) {
       const response = yield call(addbrandRule, payload);
       yield put({

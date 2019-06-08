@@ -44,7 +44,7 @@ class CreateForm extends PureComponent {
   render() {
     const {
       form: { getFieldDecorator },
-      global: { Company, WhsCode },
+      global: { Company, WhsCode, TI_Z051 },
       formVals,
       modalVisible,
       handleModalVisible,
@@ -118,7 +118,7 @@ class CreateForm extends PureComponent {
                 {getFieldDecorator('Email', {
                   rules: [{ validator: this.validatorEmail }],
                   initialValue: formVals.Email,
-                })(<Input placeholder="请输入邮箱" />)}
+                })(<MDMCommonality initialValue={formVals.Email} data={TI_Z051} />)}
               </FormItem>
             </Col>
             <Col span={12}>
@@ -350,7 +350,7 @@ class Staffs extends PureComponent {
         type: 'global/getMDMCommonality',
         payload: {
           Content: {
-            CodeList: ['Company', 'WhsCode', 'TI_Z003'],
+            CodeList: ['Company', 'WhsCode', 'TI_Z003', 'TI_Z051'],
           },
         },
       });

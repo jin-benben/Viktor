@@ -1,20 +1,11 @@
-import { queryRule } from '../service';
+import { queryRule, removeRule, addRule, updateRule } from './service';
 
 export default {
-  namespace: 'printTemplateSearch',
+  namespace: 'email',
 
   state: {
-    printTemplateList: [],
-    queryData: {
-      Content: {
-        SearchText: '',
-        SearchKey: '',
-      },
-      page: 1,
-      rows: 30,
-      sidx: 'Code',
-      sord: 'Desc',
-    },
+    emailList: [],
+
     pagination: {
       showSizeChanger: true,
       showTotal: total => `共 ${total} 条`,
@@ -33,7 +24,7 @@ export default {
           yield put({
             type: 'save',
             payload: {
-              printTemplateList: [],
+              emailList: [],
             },
           });
         } else {
@@ -41,7 +32,7 @@ export default {
           yield put({
             type: 'save',
             payload: {
-              printTemplateList: rows,
+              emailList: rows,
               pagination: {
                 total: records,
                 pageSize: payload.rows,
@@ -52,12 +43,37 @@ export default {
         }
       }
     },
+    *add({ payload, callback }, { call, put }) {
+      const response = yield call(addRule, payload);
+      yield put({
+        type: 'save',
+        payload: response,
+      });
+      if (callback) callback(response);
+    },
+    *remove({ payload, callback }, { call, put }) {
+      const response = yield call(removeRule, payload);
+      yield put({
+        type: 'save',
+        payload: response,
+      });
+      if (callback) callback(response);
+    },
+    *update({ payload, callback }, { call, put }) {
+      const response = yield call(updateRule, payload);
+      yield put({
+        type: 'save',
+        payload: response,
+      });
+      if (callback) callback(response);
+    },
   },
+
   reducers: {
-    save(state, action) {
+    save(state, { payload }) {
       return {
         ...state,
-        ...action.payload,
+        ...payload,
       };
     },
   },

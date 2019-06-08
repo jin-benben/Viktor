@@ -1,7 +1,7 @@
-import { queryRule } from '../service';
+import { queryRule, addRule, updateRule } from './service';
 
 export default {
-  namespace: 'printTemplateSearch',
+  namespace: 'printTemplate',
 
   state: {
     printTemplateList: [],
@@ -51,6 +51,14 @@ export default {
           });
         }
       }
+    },
+    *add({ payload, callback }, { call }) {
+      const response = yield call(addRule, payload);
+      if (callback) callback(response);
+    },
+    *update({ payload, callback }, { call }) {
+      const response = yield call(updateRule, payload);
+      if (callback) callback(response);
     },
   },
   reducers: {

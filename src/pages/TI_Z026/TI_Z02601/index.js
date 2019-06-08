@@ -34,6 +34,7 @@ import NeedAskPrice from '../components/needAskPrice';
 import CompanySelect from '@/components/Company/index';
 import OrderSource from '@/components/Select/OrderSource';
 import HSCode from '@/components/HSCode';
+import PushLink from '@/components/PushLink';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import { getName } from '@/utils/utils';
 
@@ -114,7 +115,7 @@ class InquiryEdit extends React.Component {
     },
     {
       title: '外文名称',
-      dataIndex: 'EnglishName',
+      dataIndex: 'ForeignName',
       inputType: 'textArea',
       width: 150,
       editable: true,
@@ -155,10 +156,25 @@ class InquiryEdit extends React.Component {
     {
       title: '产地',
       width: 80,
-      inputType: 'text',
       dataIndex: 'ManLocation',
-      editable: true,
       align: 'center',
+      render: (text, record, index) => {
+        const {
+          global: { TI_Z042 },
+        } = this.props;
+        if (!record.lastIndex) {
+          return (
+            <MDMCommonality
+              onChange={value => {
+                this.rowSelectChange(value, record, index, 'ManLocation');
+              }}
+              initialValue={text}
+              data={TI_Z042}
+            />
+          );
+        }
+        return '';
+      },
     },
     {
       title: 'HS编码',
@@ -167,20 +183,62 @@ class InquiryEdit extends React.Component {
       dataIndex: 'HSCode',
       render: (text, record, index) => {
         const {
-          inquiryEdit: { hscodeList },
+          global: { HSCodeList },
         } = this.props;
         return record.lastIndex ? (
           ''
         ) : (
           <HSCode
             initialValue={text}
-            data={hscodeList}
+            data={HSCodeList}
             onChange={select => {
               this.codeChange(select, record, index);
             }}
           />
         );
       },
+    },
+    {
+      title: '报关税率',
+      width: 80,
+      dataIndex: 'HSVatRate',
+      align: 'center',
+    },
+    {
+      title: '附加税率',
+      width: 80,
+      dataIndex: 'HSVatRateOther',
+      align: 'center',
+    },
+    {
+      title: '要求名称',
+      width: 80,
+      inputType: 'text',
+      dataIndex: 'CustomerName',
+      editable: true,
+      align: 'center',
+    },
+    {
+      title: '重量',
+      width: 80,
+      dataIndex: 'Rweight',
+      editable: true,
+      inputType: 'text',
+      align: 'center',
+    },
+    {
+      title: '国外运费',
+      width: 80,
+      dataIndex: 'ForeignFreight',
+      align: 'center',
+    },
+    {
+      title: '价格',
+      width: 80,
+      inputType: 'text',
+      dataIndex: 'Price',
+      editable: true,
+      align: 'center',
     },
     {
       title: '备注',
@@ -199,11 +257,9 @@ class InquiryEdit extends React.Component {
       align: 'center',
     },
     {
-      title: '销售建议价',
+      title: '建议价格',
       width: 100,
-      inputType: 'text',
-      dataIndex: 'Price',
-      editable: true,
+      dataIndex: 'AdvisePrice',
       align: 'center',
     },
     {
@@ -335,6 +391,36 @@ class InquiryEdit extends React.Component {
     },
   ];
 
+  linkmanColumns = [
+    {
+      title: '用户ID',
+      align: 'center',
+      dataIndex: 'UserID',
+    },
+    {
+      title: '联系人',
+      align: 'center',
+      dataIndex: 'Contacts',
+    },
+    {
+      title: '手机号',
+      align: 'center',
+      dataIndex: 'CellphoneNO',
+    },
+    {
+      title: '操作',
+      align: 'center',
+      render: (text, record, index) => (
+        <Icon
+          title="删除行"
+          type="delete"
+          theme="twoTone"
+          onClick={() => this.deletePushLine(index)}
+        />
+      ),
+    },
+  ];
+
   attachmentColumns = [
     {
       title: '序号',
@@ -397,7 +483,8 @@ class InquiryEdit extends React.Component {
       uploadmodalVisible: false, // 上传Modal
       attachmentVisible: false, // 附件Modal
       skuModalVisible: false, // 物料选择 Modal
-      needmodalVisible: false,
+      needmodalVisible: false, // 确认需询价 Modal
+      pushModalVisible: false, // 其他推送人 Modal
       LineID: Number, // 当前选中行index
       linkmanList: [], // 联系人list
       addList: [], // 地址list
@@ -417,8 +504,8 @@ class InquiryEdit extends React.Component {
   componentDidMount() {
     const {
       dispatch,
-      global: { currentUser, CustomerList, BrandList },
-      inquiryEdit: { inquiryDetail, hscodeList },
+      global: { currentUser, CustomerList, BrandList, HSCodeList },
+      inquiryEdit: { inquiryDetail },
     } = this.props;
     const { CompanyCode, Owner, DefaultWhsCode, UserCode } = currentUser;
     if (!CustomerList.length) {
@@ -426,9 +513,9 @@ class InquiryEdit extends React.Component {
         type: 'global/getCustomer',
       });
     }
-    if (!hscodeList.length) {
+    if (!HSCodeList.length) {
       dispatch({
-        type: 'inquiryEdit/gethscode',
+        type: 'global/getHscode',
       });
     }
     if (!BrandList.length) {
@@ -452,7 +539,7 @@ class InquiryEdit extends React.Component {
       type: 'global/getMDMCommonality',
       payload: {
         Content: {
-          CodeList: ['Saler', 'Purchaser', 'WhsCode', 'Company'],
+          CodeList: ['Saler', 'Purchaser', 'TI_Z042', 'WhsCode', 'Company'],
         },
       },
     });
@@ -488,11 +575,11 @@ class InquiryEdit extends React.Component {
           City: '',
           AreaID: '',
           Area: '',
-
           Address: '',
           NumAtCard: '',
           Owner: '',
           IsInquiry: '',
+          TI_Z02605: [],
           TI_Z02602: [],
           TI_Z02603: [],
         },
@@ -537,10 +624,45 @@ class InquiryEdit extends React.Component {
     }
   };
 
+  // 删除 其他推送人
+  deletePushLine = index => {
+    const { formVals } = this.state;
+    formVals.TI_Z02605.splice(index, 1);
+    this.setState({ formVals: { ...formVals } });
+  };
+
+  // 添加推送人
+  submitPushLine = selectedRows => {
+    const { formVals } = this.state;
+    if (formVals.TI_Z02605.length) {
+      Object.assign(formVals, { TI_Z02605: [...formVals.TI_Z02605, ...selectedRows] });
+    } else {
+      Object.assign(formVals, { TI_Z02605: [...selectedRows] });
+    }
+    this.setState({ formVals: { ...formVals }, pushModalVisible: false });
+  };
+
+  // 添加推送人modal
+  addpush = () => {
+    const { linkmanList } = this.state;
+    if (!linkmanList.length) return;
+    if (linkmanList.length < 1) {
+      message.warning('该客户仅有一个联系人，暂无其他可添加');
+      return;
+    }
+    this.setState({
+      pushModalVisible: true,
+    });
+  };
+
   // 海关编码change
   codeChange = (select, record, index) => {
-    const { Code, U_VatRate } = select;
-    Object.assign(record, {});
+    const { Code, U_VatRate, U_VatRateOther } = select;
+    console.log(select);
+    const { formVals } = this.state;
+    Object.assign(record, { HSCode: Code, HSVatRate: U_VatRate, HSVatRateOther: U_VatRateOther });
+    formVals.TI_Z02602[index] = record;
+    this.setState({ formVals });
   };
 
   //  行内容改变
@@ -600,12 +722,25 @@ class InquiryEdit extends React.Component {
   // 物料弹出返回
   changeLineSKU = selection => {
     const [select] = selection;
-    const { BrandName, ManufactureNO, Name, Package, Parameters, ProductName, Unit, Code } = select;
+    const {
+      BrandName,
+      ManufactureNO,
+      Name,
+      Package,
+      Parameters,
+      ProductName,
+      Rweight,
+      Unit,
+      Code,
+      EnglishName,
+    } = select;
     const { thisLine, LineID, formVals } = this.state;
     formVals.TI_Z02602[LineID] = {
       ...thisLine,
       SKU: Code,
       SKUName: Name,
+      ForeignName: EnglishName,
+      Rweight,
       BrandName,
       ManufactureNO,
       Package,
@@ -721,6 +856,13 @@ class InquiryEdit extends React.Component {
         </Button>
       );
     }
+    if (tabIndex === '4') {
+      return (
+        <Button icon="plus" style={{ marginLeft: 8 }} type="primary" onClick={this.addpush}>
+          添加其他推送人
+        </Button>
+      );
+    }
     return null;
   };
 
@@ -806,6 +948,15 @@ class InquiryEdit extends React.Component {
       BrandName: '',
       ProductName: '',
       ManufactureNO: '',
+      ManLocation: '',
+      HSCode: '',
+      HSVatRate: '',
+      HSVatRateOther: '',
+      CustomerName: '',
+      Rweight: '',
+      ForeignFreight: '',
+      AdvisePrice: '',
+      ForeignName: '',
       Parameters: '',
       Package: '',
       Quantity: '',
@@ -983,6 +1134,7 @@ class InquiryEdit extends React.Component {
       skuModalVisible,
       needmodalVisible,
       attachmentVisible,
+      pushModalVisible,
       selectedRows,
     } = this.state;
     const formItemLayout = {
@@ -1009,6 +1161,10 @@ class InquiryEdit extends React.Component {
 
     const needParentMethods = {
       handleSubmit: this.submitNeedLine,
+      handleModalVisible: this.handleModalVisible,
+    };
+    const pushParentMethods = {
+      handleSubmit: this.submitPushLine,
       handleModalVisible: this.handleModalVisible,
     };
     const newdata = [...formVals.TI_Z02602];
@@ -1130,7 +1286,7 @@ class InquiryEdit extends React.Component {
             <EditableFormTable
               rowChange={this.rowChange}
               rowKey="LineID"
-              scroll={{ x: 3300, y: 600 }}
+              scroll={{ x: 3800, y: 600 }}
               columns={this.skuColumns}
               data={newdata}
             />
@@ -1233,6 +1389,13 @@ class InquiryEdit extends React.Component {
               columns={this.attachmentColumns}
             />
           </TabPane>
+          <TabPane tab="其他推送人" key="4">
+            <StandardTable
+              data={{ list: formVals.TI_Z02605 }}
+              rowKey="UserID"
+              columns={this.linkmanColumns}
+            />
+          </TabPane>
         </Tabs>
 
         <FooterToolbar>
@@ -1292,6 +1455,8 @@ class InquiryEdit extends React.Component {
           />
         </Modal>
         <NeedAskPrice data={selectedRows} {...needParentMethods} modalVisible={needmodalVisible} />
+        {/* 其他推送人 */}
+        <PushLink data={linkmanList} {...pushParentMethods} modalVisible={pushModalVisible} />
       </Card>
     );
   }

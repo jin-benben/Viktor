@@ -35,6 +35,7 @@ class StaffsModal extends PureComponent {
   columns = [
     {
       title: '员工ID',
+      width: 100,
       dataIndex: 'Code',
     },
     {
@@ -152,6 +153,7 @@ class StaffsModal extends PureComponent {
             loading={loading}
             data={{ list: staffsList }}
             rowKey="Code"
+            scroll={{ y: 400 }}
             pagination={pagination}
             columns={this.columns}
             rowSelection={{

@@ -4,6 +4,7 @@ import moment from 'moment';
 import groupBy from 'lodash/groupBy';
 import logo from '@/assets/log.jpg';
 import HeaderDropdown from '../HeaderDropdown';
+import { getName } from '@/utils/utils';
 import styles from './index.less';
 
 export default class GlobalHeaderRight extends PureComponent {
@@ -77,7 +78,7 @@ export default class GlobalHeaderRight extends PureComponent {
     }
     return (
       <div className={className}>
-        <span>秦皇岛维克托国际贸易有限公司</span>
+        <span>{getName(currentUser.Company || [], currentUser.CompanyCode)}</span>
         {currentUser.UserName ? (
           <HeaderDropdown overlay={menu}>
             <span className={`${styles.action} ${styles.account}`}>

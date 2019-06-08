@@ -5,6 +5,7 @@ import {
   brandRule,
   customerRule,
   supplierRule,
+  hscodeRule,
 } from '@/services';
 import { routerRedux } from 'dva/router';
 import { parse } from 'qs';
@@ -32,6 +33,7 @@ export default {
     TI_Z004: [], // 员工列表
     TI_Z003: [], // 部门
     TI_Z042: [], // 产地
+    HSCodeList: [], // hscode
   },
 
   effects: {
@@ -125,6 +127,28 @@ export default {
             type: 'save',
             payload: {
               BrandList: rows,
+            },
+          });
+        }
+      }
+    },
+    // 获取品牌下拉框初始值
+    *getHscode(_, { put, call }) {
+      const response = yield call(hscodeRule);
+      if (response && response.Status === 200) {
+        if (!response.Content) {
+          yield put({
+            type: 'save',
+            payload: {
+              HSCodeList: [],
+            },
+          });
+        } else {
+          const { rows } = response.Content;
+          yield put({
+            type: 'save',
+            payload: {
+              HSCodeList: rows,
             },
           });
         }

@@ -1,7 +1,7 @@
 /* eslint-disable no-script-url */
 import React, { Fragment } from 'react';
 import { connect } from 'dva';
-import { Row, Col, Form, Input, Card, Switch, Tabs, Button, message } from 'antd';
+import { Row, Col, Form, Input, Card, Switch, Tabs, Button, message, Popconfirm } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import BrandModal from '@/components/Modal/Brand';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
@@ -75,6 +75,14 @@ class CompanyEdit extends React.Component {
     {
       title: '品牌名称',
       dataIndex: 'BrandName',
+    },
+    {
+      title: '操作',
+      render: (text, record) => (
+        <Popconfirm title="确定要删除吗?" onConfirm={() => this.handleDelete(record.Brand)}>
+          <a href="javascript:;">删除</a>
+        </Popconfirm>
+      ),
     },
   ];
 
@@ -179,20 +187,50 @@ class CompanyEdit extends React.Component {
     }
   };
 
-  addBrandFetch = newbrand => {
+  addBrandFetch = selectedRows => {
     // 保存品牌
     const { formVals } = this.state;
-    const { Name, Code } = newbrand;
+
     const { dispatch } = this.props;
     const last = formVals.TI_Z00703List[formVals.TI_Z00703List.length - 1];
+    const TI_Z00703 = selectedRows.map(item => {
+      const { Code, Name } = item;
+      return {
+        Brand: Code,
+        BrandName: Name,
+        Code: formVals.Code,
+        LineID: last ? last.LineID + 1 : 1,
+      };
+    });
+
     dispatch({
       type: 'supplierEdit/addbrand',
       payload: {
         Content: {
-          Brand: Code,
-          BrandName: Name,
           Code: formVals.Code,
-          LineID: last ? last.LineID + 1 : 1,
+          TI_Z00703,
+        },
+      },
+      callback: response => {
+        if (response && response.Status === 200) {
+          message.success('添加成功');
+          this.handleModalVisible(false);
+          this.getDetail();
+        }
+      },
+    });
+  };
+
+  // 删除品牌
+  handleDelete = Brand => {
+    const { formVals } = this.state;
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'supplierEdit/deletebrand',
+      payload: {
+        Content: {
+          Code: formVals.Code,
+          Brand,
         },
       },
       callback: response => {
@@ -504,7 +542,7 @@ class CompanyEdit extends React.Component {
               <TabPane tab="品牌" key="2">
                 <StandardTable
                   data={{ list: formVals.TI_Z00703List }}
-                  rowKey="LineID"
+                  rowKey="Brand"
                   columns={this.brandColumns}
                 />
               </TabPane>

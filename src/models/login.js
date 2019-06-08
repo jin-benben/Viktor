@@ -1,5 +1,5 @@
 import { routerRedux } from 'dva/router';
-import { loginRule, loginOutRule } from '@/services';
+import { loginRule, loginOutRule, getMDMCommonalityRule } from '@/services';
 import { stringify } from 'qs';
 
 export default {
@@ -19,6 +19,12 @@ export default {
       const redirect = '';
       if (response && response.Status === 200) {
         const currentUser = response.Content;
+        const responsecom = yield call(getMDMCommonalityRule, {
+          Content: { CodeList: ['Company'] },
+        });
+        if (responsecom && responsecom.Status === 200) {
+          Object.assign(currentUser, { Company: responsecom.Content.DropdownData.Company });
+        }
         localStorage.setItem('currentUser', stringify(currentUser));
         yield put({
           type: 'global/save',

@@ -36,6 +36,8 @@ import MDMCommonality from '@/components/Select';
 import NeedAskPrice from '../components/needAskPrice';
 import SKUModal from '@/components/Modal/SKU';
 import CompanySelect from '@/components/Company/index';
+import HSCode from '@/components/HSCode';
+import PushLink from '@/components/PushLink';
 import { getName } from '@/utils/utils';
 
 const { TextArea } = Input;
@@ -148,6 +150,93 @@ class TI_Z029Component extends React.Component {
       width: 80,
       inputType: 'text',
       dataIndex: 'Unit',
+      editable: true,
+      align: 'center',
+    },
+    {
+      title: '产地',
+      width: 80,
+      dataIndex: 'ManLocation',
+      align: 'center',
+      render: (text, record, index) => {
+        const {
+          global: { TI_Z042 },
+        } = this.props;
+        if (!record.lastIndex) {
+          return (
+            <MDMCommonality
+              onChange={value => {
+                this.rowSelectChange(value, record, index, 'ManLocation');
+              }}
+              initialValue={text}
+              data={TI_Z042}
+            />
+          );
+        }
+        return '';
+      },
+    },
+    {
+      title: 'HS编码',
+      width: 150,
+      inputType: 'text',
+      dataIndex: 'HSCode',
+      render: (text, record, index) => {
+        const {
+          global: { HSCodeList },
+        } = this.props;
+        return record.lastIndex ? (
+          ''
+        ) : (
+          <HSCode
+            initialValue={text}
+            data={HSCodeList}
+            onChange={select => {
+              this.codeChange(select, record, index);
+            }}
+          />
+        );
+      },
+    },
+    {
+      title: '报关税率',
+      width: 80,
+      dataIndex: 'HSVatRate',
+      align: 'center',
+    },
+    {
+      title: '附加税率',
+      width: 80,
+      dataIndex: 'HSVatRateOther',
+      align: 'center',
+    },
+    {
+      title: '要求名称',
+      width: 80,
+      inputType: 'text',
+      dataIndex: 'CustomerName',
+      editable: true,
+      align: 'center',
+    },
+    {
+      title: '重量',
+      width: 80,
+      dataIndex: 'Rweight',
+      align: 'center',
+      editable: true,
+      inputType: 'text',
+    },
+    {
+      title: '国外运费',
+      width: 80,
+      dataIndex: 'ForeignFreight',
+      align: 'center',
+    },
+    {
+      title: '价格',
+      width: 80,
+      inputType: 'text',
+      dataIndex: 'Price',
       editable: true,
       align: 'center',
     },
@@ -311,6 +400,36 @@ class TI_Z029Component extends React.Component {
     },
   ];
 
+  linkmanColumns = [
+    {
+      title: '用户ID',
+      align: 'center',
+      dataIndex: 'UserID',
+    },
+    {
+      title: '联系人',
+      align: 'center',
+      dataIndex: 'Contacts',
+    },
+    {
+      title: '手机号',
+      align: 'center',
+      dataIndex: 'CellphoneNO',
+    },
+    {
+      title: '操作',
+      align: 'center',
+      render: (text, record, index) => (
+        <Icon
+          title="删除行"
+          type="delete"
+          theme="twoTone"
+          onClick={() => this.deletePushLine(index)}
+        />
+      ),
+    },
+  ];
+
   attachmentColumns = [
     {
       title: '序号',
@@ -399,6 +518,7 @@ class TI_Z029Component extends React.Component {
       uploadmodalVisible: false, // 上传Modal
       attachmentVisible: false, // 附件Modal
       orderModalVisible: false, // 物料选择 Modal
+      pushModalVisible: false, // 其他推送人modal
       skuModalVisible: false, //
       needmodalVisible: false,
       LineID: Number, // 当前选中行index
@@ -418,10 +538,15 @@ class TI_Z029Component extends React.Component {
   componentDidMount() {
     const {
       dispatch,
-      global: { currentUser, CustomerList, BrandList },
+      global: { currentUser, CustomerList, BrandList, HSCodeList },
       TI_Z029: { orderDetail },
     } = this.props;
     const { CompanyCode, Owner, UserCode } = currentUser;
+    if (!HSCodeList.length) {
+      dispatch({
+        type: 'global/getHscode',
+      });
+    }
     if (!CustomerList.length) {
       dispatch({
         type: 'global/getCustomer',
@@ -447,7 +572,7 @@ class TI_Z029Component extends React.Component {
       type: 'global/getMDMCommonality',
       payload: {
         Content: {
-          CodeList: ['Saler', 'Purchaser', 'WhsCode', 'Company'],
+          CodeList: ['Saler', 'Purchaser', 'TI_Z042', 'WhsCode', 'Company'],
         },
       },
     });
@@ -461,12 +586,8 @@ class TI_Z029Component extends React.Component {
       payload: {
         orderDetail: {
           Comment: '',
-          SDocStatus: '',
-          PDocStatus: '',
-          Closed: '',
-          ClosedBy: '',
-          SourceType: '',
-          OrderType: '',
+          SourceType: '1',
+          OrderType: '1',
           DocDate: new Date(),
           CreateDate: new Date(),
           CardCode: '',
@@ -486,13 +607,13 @@ class TI_Z029Component extends React.Component {
           City: '',
           AreaID: '',
           Area: '',
-
           Address: '',
           NumAtCard: '',
           Owner: '',
           IsInquiry: '',
           TI_Z02902: [],
           TI_Z02904: [],
+          TI_Z02905: [],
         },
       },
     });
@@ -606,12 +727,25 @@ class TI_Z029Component extends React.Component {
   // 物料弹出返回
   changeLineSKU = selection => {
     const [select] = selection;
-    const { BrandName, ManufactureNO, Name, Package, Parameters, ProductName, Unit, Code } = select;
+    const {
+      BrandName,
+      ManufactureNO,
+      Name,
+      Package,
+      Parameters,
+      ProductName,
+      Rweight,
+      Unit,
+      Code,
+      EnglishName,
+    } = select;
     const { thisLine, LineID, formVals } = this.state;
     formVals.TI_Z02902[LineID] = {
       ...thisLine,
       SKU: Code,
       SKUName: Name,
+      ForeignName: EnglishName,
+      Rweight,
       BrandName,
       ManufactureNO,
       Package,
@@ -771,17 +905,7 @@ class TI_Z029Component extends React.Component {
   handleAdreessChange = value => {
     const { addList, formVals } = this.state;
     const select = addList.find(item => item.AddressID === value);
-    const {
-      Province,
-      ProvinceID,
-      City,
-      CityID,
-      Area,
-      AreaID,
-
-      AddressID,
-      Address,
-    } = select;
+    const { Province, ProvinceID, City, CityID, Area, AreaID, AddressID, Address } = select;
     Object.assign(formVals, {
       Province,
       ProvinceID,
@@ -789,7 +913,6 @@ class TI_Z029Component extends React.Component {
       CityID,
       Area,
       AreaID,
-
       AddressID,
       Address,
     });
@@ -816,6 +939,14 @@ class TI_Z029Component extends React.Component {
         BrandName,
         ProductName,
         ManufactureNO,
+        ManLocation,
+        HSVatRate,
+        HSVatRateOther,
+        CustomerName,
+        Rweight,
+        ForeignFreight,
+        AdvisePrice,
+        ForeignName,
         Parameters,
         Package,
         Purchaser,
@@ -851,6 +982,15 @@ class TI_Z029Component extends React.Component {
         BrandName,
         ProductName,
         ManufactureNO,
+        ManLocation,
+        HSCode: item.HSCode || '',
+        HSVatRate,
+        HSVatRateOther,
+        CustomerName,
+        Rweight,
+        ForeignFreight,
+        AdvisePrice,
+        ForeignName,
         Parameters,
         Package,
         Purchaser,
@@ -876,14 +1016,50 @@ class TI_Z029Component extends React.Component {
         CreateUser: currentUser.UserCode,
         CreateDate: formVals.CreateDate || new Date(),
         LineID: newLineID,
-        ApproveSts: 'O',
-        LineStatus: 'O',
-        Closed: 'N',
-        ClosedBy: 'P001',
       });
     });
     this.setState({ formVals, orderModalVisible: false }, () => {
       this.getTotal();
+    });
+  };
+
+  // 海关编码change
+  codeChange = (select, record, index) => {
+    const { Code, U_VatRate, U_VatRateOther } = select;
+    const { formVals } = this.state;
+    Object.assign(record, { HSCode: Code, HSVatRate: U_VatRate, HSVatRateOther: U_VatRateOther });
+    formVals.TI_Z02902[index] = record;
+    this.setState({ formVals });
+  };
+
+  // 删除 其他推送人
+  deletePushLine = index => {
+    const { formVals } = this.state;
+    formVals.TI_Z02905.splice(index, 1);
+    this.setState({ formVals: { ...formVals } });
+  };
+
+  // 添加推送人
+  submitPushLine = selectedRows => {
+    const { formVals } = this.state;
+    if (formVals.TI_Z02905.length) {
+      Object.assign(formVals, { TI_Z02905: [...formVals.TI_Z02905, ...selectedRows] });
+    } else {
+      Object.assign(formVals, { TI_Z02905: [...selectedRows] });
+    }
+    this.setState({ formVals: { ...formVals }, pushModalVisible: false });
+  };
+
+  // 添加推送人modal
+  addpush = () => {
+    const { linkmanList } = this.state;
+    if (!linkmanList.length) return;
+    if (linkmanList.length < 1) {
+      message.warning('该客户仅有一个联系人，暂无其他可添加');
+      return;
+    }
+    this.setState({
+      pushModalVisible: true,
     });
   };
 
@@ -1063,6 +1239,7 @@ class TI_Z029Component extends React.Component {
       needmodalVisible,
       attachmentVisible,
       addList,
+      pushModalVisible,
     } = this.state;
     const formItemLayout = {
       labelCol: {
@@ -1093,6 +1270,11 @@ class TI_Z029Component extends React.Component {
 
     const needParentMethods = {
       handleSubmit: this.submitNeedLine,
+      handleModalVisible: this.handleModalVisible,
+    };
+
+    const pushParentMethods = {
+      handleSubmit: this.submitPushLine,
       handleModalVisible: this.handleModalVisible,
     };
 
@@ -1224,7 +1406,7 @@ class TI_Z029Component extends React.Component {
             <EditableFormTable
               rowChange={this.rowChange}
               rowKey="Key"
-              scroll={{ x: 3500, y: 600 }}
+              scroll={{ x: 4000, y: 600 }}
               columns={this.skuColumns}
               data={newdata}
             />
@@ -1324,6 +1506,13 @@ class TI_Z029Component extends React.Component {
               columns={this.attachmentColumns}
             />
           </TabPane>
+          <TabPane tab="其他推送人" key="5">
+            <StandardTable
+              data={{ list: formVals.TI_Z02905 }}
+              rowKey="UserID"
+              columns={this.linkmanColumns}
+            />
+          </TabPane>
         </Tabs>
 
         <FooterToolbar>
@@ -1389,6 +1578,8 @@ class TI_Z029Component extends React.Component {
           rowKey="LineID"
           modalVisible={needmodalVisible}
         />
+        {/* 其他推送人 */}
+        <PushLink data={linkmanList} {...pushParentMethods} modalVisible={pushModalVisible} />
       </Card>
     );
   }

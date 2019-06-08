@@ -16,6 +16,7 @@ export default {
     orderDetail: {
       Comment: '',
       OrderType: '1',
+      SourceType: '1',
       DocDate: moment().format('YYYY/MM/DD'),
       CardCode: '',
       CardName: '',
@@ -37,12 +38,12 @@ export default {
       City: '',
       AreaID: '',
       Area: '',
-
       Address: '',
       NumAtCard: '',
       Owner: '',
       TI_Z03002: [],
       TI_Z03004: [],
+      TI_Z03005: [],
     },
     linkmanList: [],
     addList: [],

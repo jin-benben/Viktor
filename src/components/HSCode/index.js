@@ -62,7 +62,9 @@ class HSCode extends PureComponent {
     });
     const { onChange } = this.props;
     if (onChange) {
-      onChange(value);
+      const { data } = this.state;
+      const select = data.find(item => item.Code === value);
+      onChange(select);
     }
   };
 
@@ -82,7 +84,7 @@ class HSCode extends PureComponent {
       >
         {data.map(option => (
           <Option key={option.Code} value={option.Code}>
-            {option.Name}
+            <span alt={option.Name}>{option.Name}</span>
           </Option>
         ))}
       </Select>

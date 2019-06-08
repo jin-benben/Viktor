@@ -14,8 +14,8 @@ export default {
   state: {
     orderDetail: {
       Comment: '',
-      SourceType: '',
       OrderType: '1',
+      SourceType: '1',
       DocDate: new Date(),
       CreateDate: new Date(),
       CardCode: '',
@@ -35,13 +35,11 @@ export default {
       City: '',
       AreaID: '',
       Area: '',
-
       Address: '',
       NumAtCard: '',
-      ClosedDate: '2019-05-25',
-      IsInquiry: '',
       TI_Z02902: [],
       TI_Z02904: [],
+      TI_Z02905: [],
     },
     linkmanList: [],
     addList: [],

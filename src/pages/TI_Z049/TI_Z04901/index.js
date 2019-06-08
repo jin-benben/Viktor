@@ -1,9 +1,11 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
-import { Row, Col, Card, Form, Input, Select, Button, message, Tabs, Modal } from 'antd';
+import { Row, Col, Card, Form, Input, Select, Button, message, Tabs } from 'antd';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
+import AddParameter from '../components/addParameter';
+import MyTabpane from '../components/myTabpane';
 import { templateType, parameterType } from '@/utils/publicData';
 import { getName } from '@/utils/utils';
 
@@ -59,10 +61,30 @@ class TemplateDetail extends PureComponent {
     this.getDetail();
   }
 
+  componentWillUnmount() {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'templateDetail/save',
+      payload: {
+        templatdetail: {
+          Code: '',
+          Name: '',
+          Type: '',
+          Comment: '',
+          CreateDate: new Date(),
+          HTML: '',
+          TI_Z04902: [],
+        },
+      },
+    });
+  }
+
   static getDerivedStateFromProps(nextProps, prevState) {
     if (nextProps.templateDetail.templatdetail !== prevState.templatdetail) {
+      const first = nextProps.templateDetail.templatdetail.TI_Z04902[0];
       return {
         templatdetail: nextProps.templateDetail.templatdetail,
+        activeKey: first ? first.ParameterCode : '',
       };
     }
     return null;
@@ -92,6 +114,22 @@ class TemplateDetail extends PureComponent {
     this.setState({ templatdetail });
   };
 
+  // tabChange
+  tabChange = allValue => {
+    const { activeKey, templatdetail } = this.state;
+    const newTab = templatdetail.TI_Z04902.map(item => {
+      if (item.ParameterCode === activeKey) {
+        return {
+          ...allValue,
+        };
+      }
+      return item;
+    });
+    Object.assign(templatdetail, { TI_Z04902: [...newTab] });
+    console.log(templatdetail);
+    this.setState({ templatdetail });
+  };
+
   // 保存主数据
   addHandle = () => {
     const { form, dispatch } = this.props;
@@ -110,7 +148,7 @@ class TemplateDetail extends PureComponent {
         callback: response => {
           if (response && response.Status === 200) {
             message.success('添加成功');
-            router.push(`/sellabout/TI_Z026/detail?DocEntry=${response.Content.DocEntry}`);
+            router.push(`/base/TI_Z049/detail?Code=${response.Content.Code}`);
           }
         },
       });
@@ -147,20 +185,20 @@ class TemplateDetail extends PureComponent {
   };
 
   // 添加参数
-  okHandle = () => {
-    const { form } = this.props;
+  addTabpane = fieldsValue => {
     const {
       templatdetail,
       templatdetail: { Code, TI_Z04902 },
     } = this.state;
     const last = TI_Z04902[TI_Z04902.length - 1];
     const OrderID = last === undefined ? 1 : last.OrderID + 1;
-    form.validateFields((err, fieldsValue) => {
-      if (err) return;
-      Object.assign(templatdetail, {
-        TI_Z04902: [...TI_Z04902, { OrderID, ...fieldsValue, Code }],
-      });
-      this.setState({ templatdetail: { ...templatdetail } });
+    Object.assign(templatdetail, {
+      TI_Z04902: [...TI_Z04902, { OrderID, ...fieldsValue, Code }],
+    });
+    this.setState({
+      templatdetail: { ...templatdetail },
+      modalVisible: false,
+      activeKey: fieldsValue.ParameterCode,
     });
   };
 
@@ -203,6 +241,11 @@ class TemplateDetail extends PureComponent {
     const TemplateformLayout = {
       labelCol: { span: 4 },
       wrapperCol: { span: 19 },
+    };
+
+    const addParentMethods = {
+      handleSubmit: this.addTabpane,
+      handleModalVisible: this.handleModalVisible,
     };
 
     return (
@@ -270,94 +313,30 @@ class TemplateDetail extends PureComponent {
           onEdit={this.onEdit}
         >
           {templatdetail.TI_Z04902.map(pane => (
-            <TabPane tab={pane.ParameterName} key={pane.ParameterType}>
-              <Form {...formItemLayout}>
-                <Row gutter={8}>
-                  <Col lg={10} md={12} sm={24}>
-                    <FormItem key="ParameterCode" {...formLayout} label="参数代码">
-                      {getFieldDecorator('ParameterCode', {
-                        initialValue: pane.ParameterCode,
-                        rules: [{ required: true, message: '请输入参数代码' }],
-                      })(<Input placeholder="请输入参数代码" />)}
-                    </FormItem>
-                  </Col>
-                  <Col lg={10} md={12} sm={24}>
-                    <FormItem key="ParameterName" {...formLayout} label="参数名称">
-                      {getFieldDecorator('ParameterName', {
-                        rules: [{ required: true, message: '请输入参数名称！' }],
-                        initialValue: pane.ParameterName,
-                      })(<Input placeholder="请输入参数名称" />)}
-                    </FormItem>
-                  </Col>
-                </Row>
-                <Row gutter={8}>
-                  <Col lg={10} md={12} sm={24}>
-                    <FormItem key="ParameterType" {...formLayout} label="参数类型">
-                      {getFieldDecorator('ParameterType', {
-                        rules: [{ required: true, message: '请选择参数类型！' }],
-                        initialValue: pane.ParameterType,
-                      })(
-                        <Select placeholder="请选择参数类型！" style={{ width: '100%' }}>
-                          {parameterType.map(option => (
-                            <Option key={option.Key} value={option.Key}>
-                              {option.Value}
-                            </Option>
-                          ))}
-                        </Select>
-                      )}
-                    </FormItem>
-                  </Col>
-                </Row>
-                <Row gutter={8}>
-                  <Col lg={20} md={20} sm={24}>
-                    <FormItem key="HTML" {...TemplateformLayout} label="HTML文本">
-                      {getFieldDecorator('HTML', {
-                        rules: [{ required: true, message: '请输入HTML文本！' }],
-                        initialValue: pane.HTML,
-                      })(<TextArea rows={4} placeholder="请输入HTML文本！" />)}
-                    </FormItem>
-                  </Col>
-                </Row>
-              </Form>
+            <TabPane tab={pane.ParameterName} key={pane.ParameterCode}>
+              <MyTabpane tabChange={this.tabChange} pane={pane} />
             </TabPane>
           ))}
         </Tabs>
 
+        <AddParameter {...addParentMethods} modalVisible={modalVisible} />
+
         <FooterToolbar>
           {templatdetail.Code ? (
-            <Button loading={updateloading} type="primary" onClick={this.updateHandle}>
-              更新
-            </Button>
+            <Fragment>
+              <Button loading={updateloading} type="primary" onClick={this.updateHandle}>
+                更新
+              </Button>
+              <Button type="primary" onClick={() => this.handleModalVisible(true)}>
+                添加参数
+              </Button>
+            </Fragment>
           ) : (
             <Button loading={addloading} type="primary" onClick={this.addHandle}>
               保存
             </Button>
           )}
-          <Button type="primary" onClick={this.addParameter}>
-            添加参数
-          </Button>
         </FooterToolbar>
-        <Modal
-          width={640}
-          destroyOnClose
-          title="添加参数"
-          visible={modalVisible}
-          onOk={this.okHandle}
-          onCancel={() => this.handleModalVisible(false)}
-        >
-          <Form {...formItemLayout}>
-            <FormItem key="ParameterCode" {...this.formLayout} label="参数代码">
-              {getFieldDecorator('ParameterCode', {
-                rules: [{ required: true, message: '请输入参数代码' }],
-              })(<Input placeholder="请输入参数代码" />)}
-            </FormItem>
-            <FormItem key="ParameterType" {...this.ParameterName} label="参数名称">
-              {getFieldDecorator('ParameterType', {
-                rules: [{ required: true, message: '请输入参数名称！' }],
-              })(<Input placeholder="请输入参数名称" />)}
-            </FormItem>
-          </Form>
-        </Modal>
       </Card>
     );
   }

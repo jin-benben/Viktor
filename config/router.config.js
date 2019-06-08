@@ -29,16 +29,34 @@ export default [
         path: '/base',
         routes:[
           {
+            name: '组织架构',
+            icon: 'iconapartment',
+            path: '/base/TI_Z003',
+            component: './TI_Z003',
+          },
+          {
             name: '员工管理',
             icon: 'iconyuangong',
             path: '/base/TI_Z004',
             component: './TI_Z004',
           },
           {
-            name: '组织架构',
-            icon: 'iconapartment',
-            path: '/base/TI_Z003',
-            component: './TI_Z003',
+            name: '邮箱管理',
+            icon: 'iconyuangong',
+            path: '/base/TI_Z051',
+            component: './TI_Z051',
+          },
+          {
+            name: '转移分类',
+            icon: 'iconyuangong',
+            path: '/base/TI_Z050',
+            component: './TI_Z050',
+          },
+          {
+            name: '打印记录',
+            icon: 'iconyuangong',
+            path: '/base/print',
+            component: './print/history',
           },
           {
             name: '权限定义',
@@ -91,7 +109,17 @@ export default [
                 component: './TI_Z049/TI_Z04901',
               },
             ]
-          }
+          },
+          {
+            name: '单据打印模板',
+            path: '/base/TI_Z044',
+            component: './TI_Z044',
+          },
+          {
+            name: '邮件发送模板',
+            path: '/base/TI_Z046',
+            component: './TI_Z046',
+          },
         ]
       },
       {

@@ -36,6 +36,8 @@ import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import NeedAskPrice from '../components/needAskPrice';
 import SKUModal from '@/components/Modal/SKU';
 import CompanySelect from '@/components/Company/index';
+import HSCode from '@/components/HSCode';
+import PushLink from '@/components/PushLink';
 import { getName } from '@/utils/utils';
 
 const { TextArea } = Input;
@@ -148,6 +150,93 @@ class AgreementEdit extends React.Component {
       width: 80,
       inputType: 'text',
       dataIndex: 'Unit',
+      editable: true,
+      align: 'center',
+    },
+    {
+      title: '产地',
+      width: 80,
+      dataIndex: 'ManLocation',
+      align: 'center',
+      render: (text, record, index) => {
+        const {
+          global: { TI_Z042 },
+        } = this.props;
+        if (!record.lastIndex) {
+          return (
+            <MDMCommonality
+              onChange={value => {
+                this.rowSelectChange(value, record, index, 'ManLocation');
+              }}
+              initialValue={text}
+              data={TI_Z042}
+            />
+          );
+        }
+        return '';
+      },
+    },
+    {
+      title: 'HS编码',
+      width: 150,
+      inputType: 'text',
+      dataIndex: 'HSCode',
+      render: (text, record, index) => {
+        const {
+          global: { HSCodeList },
+        } = this.props;
+        return record.lastIndex ? (
+          ''
+        ) : (
+          <HSCode
+            initialValue={text}
+            data={HSCodeList}
+            onChange={select => {
+              this.codeChange(select, record, index);
+            }}
+          />
+        );
+      },
+    },
+    {
+      title: '报关税率',
+      width: 80,
+      dataIndex: 'HSVatRate',
+      align: 'center',
+    },
+    {
+      title: '附加税率',
+      width: 80,
+      dataIndex: 'HSVatRateOther',
+      align: 'center',
+    },
+    {
+      title: '要求名称',
+      width: 80,
+      inputType: 'text',
+      dataIndex: 'CustomerName',
+      editable: true,
+      align: 'center',
+    },
+    {
+      title: '重量',
+      width: 80,
+      dataIndex: 'Rweight',
+      align: 'center',
+      editable: true,
+      inputType: 'text',
+    },
+    {
+      title: '国外运费',
+      width: 80,
+      dataIndex: 'ForeignFreight',
+      align: 'center',
+    },
+    {
+      title: '价格',
+      width: 80,
+      inputType: 'text',
+      dataIndex: 'Price',
       editable: true,
       align: 'center',
     },
@@ -322,6 +411,36 @@ class AgreementEdit extends React.Component {
     },
   ];
 
+  linkmanColumns = [
+    {
+      title: '用户ID',
+      align: 'center',
+      dataIndex: 'UserID',
+    },
+    {
+      title: '联系人',
+      align: 'center',
+      dataIndex: 'Contacts',
+    },
+    {
+      title: '手机号',
+      align: 'center',
+      dataIndex: 'CellphoneNO',
+    },
+    {
+      title: '操作',
+      align: 'center',
+      render: (text, record, index) => (
+        <Icon
+          title="删除行"
+          type="delete"
+          theme="twoTone"
+          onClick={() => this.deletePushLine(index)}
+        />
+      ),
+    },
+  ];
+
   attachmentColumns = [
     {
       title: '序号',
@@ -410,6 +529,7 @@ class AgreementEdit extends React.Component {
       orderModalVisible: false, // 物料选择 Modal
       skuModalVisible: false, //
       needmodalVisible: false,
+      pushModalVisible: false, // 其他推送人modal
       LineID: Number, // 当前选中行index
       linkmanList: [], // 联系人list,
       addList: [],
@@ -427,9 +547,14 @@ class AgreementEdit extends React.Component {
   componentDidMount() {
     const {
       dispatch,
-      global: { currentUser, CustomerList, BrandList, Curr },
+      global: { currentUser, CustomerList, BrandList, Curr, HSCodeList },
       agreementEdit: { orderDetail },
     } = this.props;
+    if (!HSCodeList.length) {
+      dispatch({
+        type: 'global/getHscode',
+      });
+    }
     if (!CustomerList.length) {
       dispatch({
         type: 'global/getCustomer',
@@ -445,7 +570,7 @@ class AgreementEdit extends React.Component {
         type: 'global/getMDMCommonality',
         payload: {
           Content: {
-            CodeList: ['Saler', 'Purchaser', 'WhsCode', 'Company'],
+            CodeList: ['Saler', 'Purchaser', 'TI_Z042', 'WhsCode', 'Company'],
           },
         },
       });
@@ -474,12 +599,7 @@ class AgreementEdit extends React.Component {
       payload: {
         orderDetail: {
           Comment: '',
-          SDocStatus: '',
-          PDocStatus: '',
-          Closed: '',
-          ClosedBy: '',
-          SourceType: '',
-          OrderType: '',
+          OrderType: '1',
           DocDate: null,
           CreateDate: null,
           CardCode: '',
@@ -499,13 +619,14 @@ class AgreementEdit extends React.Component {
           City: '',
           AreaID: '',
           Area: '',
-
+          SourceType: '1',
           Address: '',
           NumAtCard: '',
           Owner: '',
           IsInquiry: '',
           TI_Z03002: [],
           TI_Z03004: [],
+          TI_Z03005: [],
         },
       },
     });
@@ -616,12 +737,25 @@ class AgreementEdit extends React.Component {
   // 物料弹出返回
   changeLineSKU = selection => {
     const [select] = selection;
-    const { BrandName, ManufactureNO, Name, Package, Parameters, ProductName, Unit, Code } = select;
+    const {
+      BrandName,
+      ManufactureNO,
+      Name,
+      Package,
+      Parameters,
+      ProductName,
+      Rweight,
+      Unit,
+      Code,
+      EnglishName,
+    } = select;
     const { thisLine, LineID, formVals } = this.state;
     formVals.TI_Z03002[LineID] = {
       ...thisLine,
       SKU: Code,
       SKUName: Name,
+      ForeignName: EnglishName,
+      Rweight,
       BrandName,
       ManufactureNO,
       Package,
@@ -826,6 +960,14 @@ class AgreementEdit extends React.Component {
         BrandName,
         ProductName,
         ManufactureNO,
+        ManLocation,
+        HSVatRate,
+        HSVatRateOther,
+        CustomerName,
+        Rweight,
+        ForeignFreight,
+        AdvisePrice,
+        ForeignName,
         Parameters,
         Package,
         Purchaser,
@@ -858,13 +1000,22 @@ class AgreementEdit extends React.Component {
         QuotationLineID: LineID,
         BaseEntry,
         BaseLineID,
-        LineComment,
         SourceType,
+        LineComment,
         SKU,
         SKUName,
         BrandName,
         ProductName,
         ManufactureNO,
+        ManLocation,
+        HSCode: item.HSCode || '',
+        HSVatRate,
+        HSVatRateOther,
+        CustomerName,
+        Rweight,
+        ForeignFreight,
+        AdvisePrice,
+        ForeignName,
         Parameters,
         Package,
         Purchaser,
@@ -890,14 +1041,50 @@ class AgreementEdit extends React.Component {
         CreateUser: currentUser.UserCode,
         CreateDate: formVals.CreateDate || new Date(),
         LineID: newLineID,
-        ApproveSts: 'O',
-        LineStatus: 'O',
-        Closed: 'N',
-        ClosedBy: 'P001',
       });
     });
     this.setState({ formVals, orderModalVisible: false }, () => {
       this.getTotal();
+    });
+  };
+
+  // 海关编码change
+  codeChange = (select, record, index) => {
+    const { Code, U_VatRate, U_VatRateOther } = select;
+    const { formVals } = this.state;
+    Object.assign(record, { HSCode: Code, HSVatRate: U_VatRate, HSVatRateOther: U_VatRateOther });
+    formVals.TI_Z03002[index] = record;
+    this.setState({ formVals });
+  };
+
+  // 删除 其他推送人
+  deletePushLine = index => {
+    const { formVals } = this.state;
+    formVals.TI_Z03005.splice(index, 1);
+    this.setState({ formVals: { ...formVals } });
+  };
+
+  // 添加推送人
+  submitPushLine = selectedRows => {
+    const { formVals } = this.state;
+    if (formVals.TI_Z03005.length) {
+      Object.assign(formVals, { TI_Z03005: [...formVals.TI_Z03005, ...selectedRows] });
+    } else {
+      Object.assign(formVals, { TI_Z03005: [...selectedRows] });
+    }
+    this.setState({ formVals: { ...formVals }, pushModalVisible: false });
+  };
+
+  // 添加推送人modal
+  addpush = () => {
+    const { linkmanList } = this.state;
+    if (!linkmanList.length) return;
+    if (linkmanList.length < 1) {
+      message.warning('该客户仅有一个联系人，暂无其他可添加');
+      return;
+    }
+    this.setState({
+      pushModalVisible: true,
     });
   };
 
@@ -1077,6 +1264,7 @@ class AgreementEdit extends React.Component {
       skuModalVisible,
       needmodalVisible,
       attachmentVisible,
+      pushModalVisible,
     } = this.state;
     const formItemLayout = {
       labelCol: {
@@ -1109,6 +1297,11 @@ class AgreementEdit extends React.Component {
       handleSubmit: this.submitNeedLine,
       handleModalVisible: this.handleModalVisible,
     };
+    const pushParentMethods = {
+      handleSubmit: this.submitPushLine,
+      handleModalVisible: this.handleModalVisible,
+    };
+
     const newdata = [...formVals.TI_Z03002];
     if (newdata.length > 0) {
       newdata.push({
@@ -1236,7 +1429,7 @@ class AgreementEdit extends React.Component {
             <EditableFormTable
               rowChange={this.rowChange}
               rowKey="Key"
-              scroll={{ x: 2900, y: 600 }}
+              scroll={{ x: 3400, y: 600 }}
               columns={this.skuColumns}
               data={newdata}
             />
@@ -1320,6 +1513,7 @@ class AgreementEdit extends React.Component {
                   })(<MDMCommonality initialValue={formVals.CompanyCode} data={Company} />)}
                 </FormItem>
               </Col>
+
               <Col lg={8} md={12} sm={24}>
                 <FormItem key="ToDate" {...this.formLayout} label="有效期至">
                   {getFieldDecorator('ToDate', {
@@ -1341,6 +1535,13 @@ class AgreementEdit extends React.Component {
               data={{ list: formVals.TI_Z02603 }}
               rowKey="LineID"
               columns={this.attachmentColumns}
+            />
+          </TabPane>
+          <TabPane tab="其他推送人" key="5">
+            <StandardTable
+              data={{ list: formVals.TI_Z03005 }}
+              rowKey="UserID"
+              columns={this.linkmanColumns}
             />
           </TabPane>
         </Tabs>
@@ -1407,6 +1608,8 @@ class AgreementEdit extends React.Component {
           {...needParentMethods}
           modalVisible={needmodalVisible}
         />
+        {/* 其他推送人 */}
+        <PushLink data={linkmanList} {...pushParentMethods} modalVisible={pushModalVisible} />
       </Card>
     );
   }

@@ -9,6 +9,7 @@ export default {
       Name: '',
       Type: '',
       Comment: '',
+      CreateDate: new Date(),
       HTML: '',
       TI_Z04902: [],
     },

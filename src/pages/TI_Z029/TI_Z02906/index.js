@@ -213,11 +213,6 @@ class SalesQuotation extends PureComponent {
     });
   };
 
-  handleOnRow = record => ({
-    // 详情or修改
-    onClick: () => router.push(`/sellabout/TI_Z029/detail?DocEntry=${record.DocEntry}`),
-  });
-
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
@@ -363,7 +358,6 @@ class SalesQuotation extends PureComponent {
               rowKey="DocEntry"
               scroll={{ x: tableWidth }}
               columns={this.columns}
-              onRow={this.handleOnRow}
               onChange={this.handleStandardTableChange}
             />
           </div>

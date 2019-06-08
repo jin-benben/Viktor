@@ -26,6 +26,9 @@ export function requestUrl(url) {
   if (url.indexOf('/Login') !== -1) {
     return url.replace(/\/Login/i, 'http://47.104.65.49:8083');
   }
+  if (url.indexOf('/Print') !== -1) {
+    return url.replace(/\/Print/i, 'http://47.104.65.49:8086');
+  }
   return url;
 }
 
