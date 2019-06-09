@@ -1,10 +1,10 @@
 import { queryRule, querySingleRule } from './service';
 
 export default {
-  namespace: 'print',
+  namespace: 'sendEmail',
 
   state: {
-    printList: [],
+    sendEmailList: [],
     queryData: {
       Content: {
         SearchText: '',
@@ -23,7 +23,7 @@ export default {
       pageSize: 30,
       current: 1,
     },
-    printDetail: {},
+    sendDetail: {},
   },
 
   effects: {
@@ -34,7 +34,7 @@ export default {
           yield put({
             type: 'save',
             payload: {
-              printList: [],
+              sendEmailList: [],
             },
           });
         } else {
@@ -42,7 +42,7 @@ export default {
           yield put({
             type: 'save',
             payload: {
-              printList: rows,
+              sendEmailList: rows,
               pagination: {
                 total: records,
                 pageSize: payload.rows,
@@ -59,7 +59,7 @@ export default {
         yield put({
           type: 'save',
           payload: {
-            printDetail: response.Content,
+            sendDetail: response.Content,
           },
         });
       }

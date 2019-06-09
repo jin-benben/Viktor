@@ -10,6 +10,7 @@ import DescriptionList from 'ant-design-pro/lib/DescriptionList';
 import MyTag from '@/components/Tag';
 import CancelOrder from '@/components/Modal/CancelOrder';
 import OrderPrint from '@/components/Modal/OrderPrint';
+import Emails from '@/components/Modal/Email';
 import { getName } from '@/utils/utils';
 
 const { Description } = DescriptionList;
@@ -557,9 +558,9 @@ class InquiryEdit extends React.Component {
               <Description term="手机号码">{formVals.CellphoneNO}</Description>
               <Description term="联系人电话">{formVals.PhoneNO}</Description>
               <Description term="联系人邮箱">{formVals.Email}</Description>
-              <Description term="地址">{`${formVals.Province}${formVals.City}${formVals.Area}${
-                formVals.Address
-              }`}</Description>
+              <Description term="地址">
+                {`${formVals.Province}${formVals.City}${formVals.Area}${formVals.Address}`}
+              </Description>
             </DescriptionList>
           </TabPane>
           <TabPane tab="其余成本" key="3">
@@ -614,6 +615,7 @@ class InquiryEdit extends React.Component {
             编辑
           </Button>
           <OrderPrint BaseEntry={formVals.DocEntry} BaseType="TI_Z029" />
+          <Emails BaseEntry={formVals.DocEntry} BaseType="TI_Z029" />
         </FooterToolbar>
       </Card>
     );

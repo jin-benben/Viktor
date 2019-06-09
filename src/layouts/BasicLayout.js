@@ -154,6 +154,7 @@ class BasicLayout extends React.PureComponent {
     const breadcrumbObj = conversionBreadcrumbList({
       ...this.props,
     });
+    console.log(breadcrumbObj.routes);
     const isbreadcrumb = breadcrumbObj.routes.length > 1;
     const contentStyle = !fixedHeader ? { paddingTop: 0 } : {};
     const layout = (

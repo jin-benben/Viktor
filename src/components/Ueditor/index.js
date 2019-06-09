@@ -17,6 +17,7 @@ class UEditor extends Component {
         initialFrameHeight: 300,
         toolbars: [
           [
+            'source', // html
             'undo', // 撤销
             'redo', // 重做
             'bold', // 加粗
@@ -45,7 +46,7 @@ class UEditor extends Component {
             'customstyle', // 自定义标题
 
             'inserttable', // 插入表格
-
+            'print', // 打印
             'fontsize', // 字号
             'insertorderedlist', // 有序列表
             'insertunorderedlist', // 无序列表

@@ -49,15 +49,6 @@ class TemplateSearch extends PureComponent {
       width: 100,
       dataIndex: 'Comment',
     },
-    {
-      title: '模板内容',
-      dataIndex: 'HTML',
-      render: text => (
-        <Ellipsis tooltip lines={5}>
-          {text}
-        </Ellipsis>
-      ),
-    },
   ];
 
   componentDidMount() {

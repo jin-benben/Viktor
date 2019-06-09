@@ -1,18 +1,31 @@
-import React, { PureComponent, Fragment } from 'react';
+/* eslint-disable no-script-url */
+import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
-import { Row, Col, Card, Form, Input, Select, Button, message, Tabs } from 'antd';
+import {
+  Row,
+  Col,
+  Card,
+  Form,
+  Input,
+  Select,
+  Button,
+  message,
+  Table,
+  Divider,
+  Popconfirm,
+  Tabs,
+} from 'antd';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import AddParameter from '../components/addParameter';
-import MyTabpane from '../components/myTabpane';
 import { templateType, parameterType } from '@/utils/publicData';
 import { getName } from '@/utils/utils';
 
 const FormItem = Form.Item;
-const { TabPane } = Tabs;
 const { TextArea } = Input;
 const { Option } = Select;
+const { TabPane } = Tabs;
 
 @connect(({ templateDetail, loading, global }) => ({
   templateDetail,
@@ -22,7 +35,7 @@ const { Option } = Select;
   updateloading: loading.effects['templateDetail/update'],
 }))
 @Form.create()
-class TemplateDetail extends PureComponent {
+class TemplateDetail extends Component {
   columns = [
     {
       title: '序号',
@@ -30,13 +43,18 @@ class TemplateDetail extends PureComponent {
       dataIndex: 'OrderID',
     },
     {
-      title: '名称',
+      title: '参数代码',
       width: 100,
-      dataIndex: 'Name',
+      dataIndex: 'ParameterCode',
+    },
+    {
+      title: '参数名称',
+      width: 100,
+      dataIndex: 'ParameterName',
     },
     {
       title: '参数类型',
-      dataIndex: 'PrintType',
+      dataIndex: 'ParameterType',
       width: 100,
       render: text => <span>{getName(parameterType, text)}</span>,
     },
@@ -49,12 +67,30 @@ class TemplateDetail extends PureComponent {
         </Ellipsis>
       ),
     },
+    {
+      title: '操作',
+      render: (text, record, index) => (
+        <Fragment>
+          <a onClick={() => this.changeParameter(record)}>修改</a>
+          <Divider type="vertical" />
+          <Popconfirm title="确定要删除吗?" onConfirm={() => this.handleDelete(index)}>
+            <a href="javascript:;">删除</a>
+          </Popconfirm>
+        </Fragment>
+      ),
+    },
   ];
 
   state = {
     templatdetail: {},
     modalVisible: false,
-    activeKey: '1',
+    isAdd: true,
+    pane: {
+      ParameterCode: '',
+      ParameterName: '',
+      ParameterType: '',
+      HTML: '',
+    },
   };
 
   componentDidMount() {
@@ -108,26 +144,39 @@ class TemplateDetail extends PureComponent {
     }
   };
 
-  handleChange = content => {
+  // 修改参数
+  changeParameter = record => {
+    this.setState({
+      pane: {
+        ...record,
+      },
+      modalVisible: true,
+      isAdd: false,
+    });
+  };
+
+  // 删除参数
+  handleDelete = index => {
     const { templatdetail } = this.state;
-    Object.assign(templatdetail, { HtmlTemplateCode: content });
+    const newArr = [...templatdetail.TI_Z04902];
+    newArr.splice(index, 1);
+    Object.assign(templatdetail, { TI_Z04902: [...newArr] });
+    console.log(templatdetail);
     this.setState({ templatdetail });
   };
 
-  // tabChange
-  tabChange = allValue => {
-    const { activeKey, templatdetail } = this.state;
-    const newTab = templatdetail.TI_Z04902.map(item => {
-      if (item.ParameterCode === activeKey) {
-        return {
-          ...allValue,
-        };
-      }
-      return item;
+  // 添加参数
+  addNewParams = () => {
+    this.setState({
+      modalVisible: true,
+      isAdd: true,
+      pane: {
+        ParameterCode: '',
+        ParameterName: '',
+        ParameterType: '',
+        HTML: '',
+      },
     });
-    Object.assign(templatdetail, { TI_Z04902: [...newTab] });
-    console.log(templatdetail);
-    this.setState({ templatdetail });
   };
 
   // 保存主数据
@@ -188,17 +237,33 @@ class TemplateDetail extends PureComponent {
   addTabpane = fieldsValue => {
     const {
       templatdetail,
+      isAdd,
       templatdetail: { Code, TI_Z04902 },
     } = this.state;
     const last = TI_Z04902[TI_Z04902.length - 1];
     const OrderID = last === undefined ? 1 : last.OrderID + 1;
-    Object.assign(templatdetail, {
-      TI_Z04902: [...TI_Z04902, { OrderID, ...fieldsValue, Code }],
-    });
+    if (!isAdd) {
+      const newsParams = TI_Z04902.map(item => {
+        if (item.ParameterCode === fieldsValue.ParameterCode) {
+          return {
+            ...fieldsValue,
+            OrderID: item.OrderID,
+          };
+        }
+        return item;
+      });
+      Object.assign(templatdetail, {
+        TI_Z04902: [...newsParams],
+      });
+    } else {
+      Object.assign(templatdetail, {
+        TI_Z04902: [...TI_Z04902, { OrderID, ...fieldsValue, Code }],
+      });
+    }
+
     this.setState({
       templatdetail: { ...templatdetail },
       modalVisible: false,
-      activeKey: fieldsValue.ParameterCode,
     });
   };
 
@@ -221,7 +286,7 @@ class TemplateDetail extends PureComponent {
       addloading,
       updateloading,
     } = this.props;
-    const { templatdetail, modalVisible, activeKey } = this.state;
+    const { templatdetail, modalVisible, pane } = this.state;
     const formItemLayout = {
       labelCol: {
         xs: { span: 24 },
@@ -237,10 +302,6 @@ class TemplateDetail extends PureComponent {
     const formLayout = {
       labelCol: { span: 8 },
       wrapperCol: { span: 14 },
-    };
-    const TemplateformLayout = {
-      labelCol: { span: 4 },
-      wrapperCol: { span: 19 },
     };
 
     const addParentMethods = {
@@ -295,39 +356,43 @@ class TemplateDetail extends PureComponent {
             </Col>
           </Row>
           <Row gutter={8}>
-            <Col lg={20} md={20} sm={24}>
-              <FormItem key="HTML" {...TemplateformLayout} label="模板内容">
-                {getFieldDecorator('HTML', {
-                  initialValue: templatdetail.HTML,
-                  rules: [{ required: true, message: '请输入模板内容' }],
-                })(<TextArea rows={8} placeholder="请输入模板内容" />)}
+            <Col lg={10} md={12} sm={24}>
+              <FormItem key="PaperHTML" {...formLayout} label="打印纸张HTML">
+                {getFieldDecorator('PaperHTML', {
+                  initialValue: templatdetail.PaperHTML,
+                })(<TextArea rows={2} placeholder="请输入打印纸张HTML" />)}
               </FormItem>
             </Col>
           </Row>
         </Form>
-        <Tabs
-          hideAdd
-          onChange={this.onChange}
-          activeKey={activeKey}
-          type="editable-card"
-          onEdit={this.onEdit}
-        >
-          {templatdetail.TI_Z04902.map(pane => (
-            <TabPane tab={pane.ParameterName} key={pane.ParameterCode}>
-              <MyTabpane tabChange={this.tabChange} pane={pane} />
-            </TabPane>
-          ))}
+        <Tabs defaultActiveKey="1">
+          <TabPane tab="模板内容" key="1">
+            <FormItem key="HTML">
+              {getFieldDecorator('HTML', {
+                initialValue: templatdetail.HTML,
+                rules: [{ required: true, message: '请输入模板内容' }],
+              })(<TextArea rows={8} placeholder="请输入模板内容" />)}
+            </FormItem>
+          </TabPane>
+          <TabPane tab="参数列表" key="2">
+            <Table
+              bordered
+              dataSource={templatdetail.TI_Z04902}
+              rowKey="OrderID"
+              pagination={false}
+              columns={this.columns}
+            />
+          </TabPane>
         </Tabs>
-
-        <AddParameter {...addParentMethods} modalVisible={modalVisible} />
-
+        ,
+        <AddParameter pane={pane} {...addParentMethods} modalVisible={modalVisible} />
         <FooterToolbar>
           {templatdetail.Code ? (
             <Fragment>
               <Button loading={updateloading} type="primary" onClick={this.updateHandle}>
                 更新
               </Button>
-              <Button type="primary" onClick={() => this.handleModalVisible(true)}>
+              <Button type="primary" onClick={this.addNewParams}>
                 添加参数
               </Button>
             </Fragment>

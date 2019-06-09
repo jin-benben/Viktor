@@ -61,7 +61,7 @@ const filterMenuData = menuData => {
     return [];
   }
   return menuData
-    .filter(item => item.name && !item.hideInMenu)
+    .filter(item => item.name)
     .map(item => check(item.authority, getSubMenu(item)))
     .filter(item => item);
 };

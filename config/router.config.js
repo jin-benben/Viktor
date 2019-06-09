@@ -42,7 +42,7 @@ export default [
           },
           {
             name: '邮箱管理',
-            icon: 'iconyuangong',
+            icon: 'iconEmailHili',
             path: '/base/TI_Z051',
             component: './TI_Z051',
           },
@@ -53,10 +53,44 @@ export default [
             component: './TI_Z050',
           },
           {
-            name: '打印记录',
+            name: '打印',
             icon: 'iconyuangong',
             path: '/base/print',
+            hideInMenu:true,
+            component: './print',
+          },
+          {
+            name: '邮件发送',
+            icon: 'iconyuangong',
+            path: '/base/sendEmail',
+            hideInMenu:true,
+            component: './email',
+          },
+          {
+            name: '打印记录',
+            icon: 'icondayin',
+            path: '/base/print/history',
             component: './print/history',
+          },
+          {
+            name: '打印记录详情',
+            icon: 'iconyuangong',
+            hideInMenu:true,
+            path: '/base/print/detail',
+            component: './print/detail',
+          },
+          {
+            name: '邮件发送记录',
+            icon: 'iconEmailHili',
+            path: '/base/sendEmail/history',
+            component: './email/history',
+          },
+          {
+            name: '邮件发送记录详情',
+            icon: 'iconyuangong',
+            hideInMenu:true,
+            path: '/base/sendEmail/detail',
+            component: './email/detail',
           },
           {
             name: '权限定义',
@@ -113,11 +147,13 @@ export default [
           {
             name: '单据打印模板',
             path: '/base/TI_Z044',
+            icon:"icontemplate",
             component: './TI_Z044',
           },
           {
             name: '邮件发送模板',
             path: '/base/TI_Z046',
+            icon:"iconemail",
             component: './TI_Z046',
           },
         ]

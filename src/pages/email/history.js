@@ -4,8 +4,10 @@ import moment from 'moment';
 import { Row, Col, Card, Form, Input, Button, Select, DatePicker } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import Link from 'umi/link';
+
 import DocEntryFrom from '@/components/DocEntryFrom';
-import { printOrderType } from '@/utils/publicData';
+import Ellipsis from 'ant-design-pro/lib/Ellipsis';
+import { emailSendType } from '@/utils/publicData';
 import { getName } from '@/utils/utils';
 
 const { RangePicker } = DatePicker;
@@ -14,10 +16,10 @@ const FormItem = Form.Item;
 const { Option } = Select;
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ print, loading, global }) => ({
-  print,
+@connect(({ sendEmail, loading, global }) => ({
+  sendEmail,
   global,
-  loading: loading.models.print,
+  loading: loading.models.sendEmail,
 }))
 @Form.create()
 class PrintHistory extends PureComponent {
@@ -28,7 +30,7 @@ class PrintHistory extends PureComponent {
       fixed: 'left',
       dataIndex: 'DocEntry',
       render: text => (
-        <Link target="_blank" to={`/base/print/detail?DocEntry=${text}`}>
+        <Link target="_blank" to={`/base/sendEmail/detail?DocEntry=${text}`}>
           {text}
         </Link>
       ),
@@ -46,45 +48,61 @@ class PrintHistory extends PureComponent {
       render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
     {
-      title: '内容模板',
-      dataIndex: 'HtmlTemplateCode',
+      title: '主题',
+      dataIndex: 'Body',
+      render: text => (
+        <Ellipsis tooltip lines={2}>
+          {text}
+        </Ellipsis>
+      ),
+    },
+    {
+      title: '发送人',
+      dataIndex: 'From',
+    },
+    {
+      title: '收件人',
+      dataIndex: 'ToList',
+    },
+    {
+      title: '抄送人',
+      dataIndex: 'CCList',
+    },
+    {
+      title: '主题',
+      dataIndex: 'Title',
     },
     {
       title: '来源类型',
-      width: 100,
+      width: 80,
       dataIndex: 'BaseType',
-      render: text => <span>{getName(printOrderType, text)}</span>,
+      render: text => <span>{getName(emailSendType, text)}</span>,
     },
-    {
-      title: '输出类别',
-      width: 200,
-      dataIndex: 'OutType',
-    },
+
     {
       title: '来源单号',
-      width: 200,
+      width: 80,
       dataIndex: 'BaseEntry',
     },
     {
       title: '模板代码',
-      width: 200,
-      dataIndex: 'PrintTemplateCode',
+      width: 80,
+      dataIndex: 'EmailTemplateCode',
     },
     {
       title: '模板名称',
-      width: 200,
-      dataIndex: 'PrintTemplateName',
+      width: 100,
+      dataIndex: 'EmailTemplateName',
     },
   ];
 
   componentDidMount() {
     const {
       dispatch,
-      print: { queryData },
+      sendEmail: { queryData },
     } = this.props;
-    console.log(queryData);
     dispatch({
-      type: 'print/fetch',
+      type: 'sendEmail/fetch',
       payload: {
         ...queryData,
       },
@@ -94,10 +112,10 @@ class PrintHistory extends PureComponent {
   handleStandardTableChange = pagination => {
     const {
       dispatch,
-      print: { queryData },
+      sendEmail: { queryData },
     } = this.props;
     dispatch({
-      type: 'print/fetch',
+      type: 'sendEmail/fetch',
       payload: {
         ...queryData,
         page: pagination.current,
@@ -110,7 +128,6 @@ class PrintHistory extends PureComponent {
     // 搜索
     e.preventDefault();
     const { dispatch, form } = this.props;
-
     form.validateFields((err, fieldsValue) => {
       if (err) return;
       let DocDateFrom;
@@ -126,7 +143,7 @@ class PrintHistory extends PureComponent {
         ...fieldsValue.orderNo,
       };
       dispatch({
-        type: 'print/fetch',
+        type: 'sendEmail/fetch',
         payload: {
           Content: {
             SearchText: '',
@@ -182,7 +199,7 @@ class PrintHistory extends PureComponent {
             <FormItem key="BaseType" {...formLayout} label="单据类型">
               {getFieldDecorator('BaseType')(
                 <Select placeholder="请选择单据类型！" style={{ width: '100%' }}>
-                  {printOrderType.map(option => (
+                  {emailSendType.map(option => (
                     <Option key={option.Key} value={option.Key}>
                       {option.Value}
                     </Option>
@@ -214,7 +231,7 @@ class PrintHistory extends PureComponent {
 
   render() {
     const {
-      print: { printList, pagination },
+      sendEmail: { sendEmailList, pagination },
       loading,
     } = this.props;
     return (
@@ -224,7 +241,7 @@ class PrintHistory extends PureComponent {
             <div className="tableListForm">{this.renderSimpleForm()}</div>
             <StandardTable
               loading={loading}
-              data={{ list: printList }}
+              data={{ list: sendEmailList }}
               pagination={pagination}
               rowKey="DocEntry"
               scroll={{ y: 600 }}

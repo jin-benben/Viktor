@@ -113,6 +113,7 @@ export const conversionBreadcrumbList = props => {
   // 根据 location 生成 面包屑
   // Generate breadcrumbs based on location
   if (routerLocation && routerLocation.pathname) {
+    console.log(routerLocation, breadcrumbNameMap, props);
     return {
       routes: conversionFromLocation(routerLocation, breadcrumbNameMap, props),
       itemRender,

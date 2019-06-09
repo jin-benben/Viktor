@@ -9,6 +9,8 @@ import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import CancelOrder from '@/components/Modal/CancelOrder';
 import MyTag from '@/components/Tag';
 import DescriptionList from 'ant-design-pro/lib/DescriptionList';
+import OrderPrint from '@/components/Modal/OrderPrint';
+import Emails from '@/components/Modal/Email';
 import { getName } from '@/utils/utils';
 
 const { Description } = DescriptionList;
@@ -605,6 +607,8 @@ class InquiryEdit extends React.Component {
           >
             新建
           </Button>
+          <OrderPrint BaseEntry={formVals.DocEntry} BaseType="TI_Z030" />
+          <Emails BaseEntry={formVals.DocEntry} BaseType="TI_Z030" />
         </FooterToolbar>
       </Card>
     );

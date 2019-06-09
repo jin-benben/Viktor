@@ -15,7 +15,7 @@ const FormItem = Form.Item;
 @connect(({ global }) => ({
   global,
 }))
-class OrderPrint extends PureComponent {
+class EmailModal extends PureComponent {
   state = {
     templateList: [],
     selectedRows: [],
@@ -171,7 +171,7 @@ class OrderPrint extends PureComponent {
 
   getPrintData = async params => {
     this.setState({ loading: true });
-    const response = await request('/Print/TI_Z045/TI_Z045Print01', {
+    const response = await request('/Print/TI_Z047/TI_Z047Email01', {
       method: 'POST',
       data: {
         Content: {
@@ -183,32 +183,37 @@ class OrderPrint extends PureComponent {
     if (!response || response.Status !== 200) return;
     // 添加打印记录
     this.setState({ loading: true });
+
     const {
       BaseEntry,
       BaseType,
       HtmlString,
       HtmlTemplateCode,
-      PrintType,
-      PaperHTMLString,
+      From,
+      ToList,
+      CCList,
+      Title,
     } = response.Content;
-    const response2 = await request('/Print/TI_Z045/TI_Z04501', {
+    const response2 = await request('/Print/TI_Z047/TI_Z04701', {
       method: 'POST',
       data: {
         Content: {
           BaseType,
           BaseEntry,
-          PrintTemplateCode: params.Code,
-          PrintTemplateName: params.Name,
-          OutType: PrintType,
+          From,
+          ToList,
+          CCList,
+          Title,
+          EmailTemplateCode: params.Code,
+          EmailTemplateName: params.Name,
           HtmlTemplateCode,
-          Content: HtmlString,
-          PaperHTMLString,
+          Body: HtmlString,
         },
       },
     });
     this.setState({ loading: false });
     if (response2 && response2.Status === 200) {
-      router.push(`/base/print?DocEntry=${response2.Content.DocEntry}`);
+      router.push(`/base/email?DocEntry=${response2.Content.DocEntry}`);
     }
   };
 
@@ -245,7 +250,7 @@ class OrderPrint extends PureComponent {
     return (
       <Fragment>
         <Button onClick={() => this.handleModalVisible(true)} type="primary">
-          提交打印
+          提交邮件
         </Button>
         <Modal
           width={960}
@@ -278,4 +283,4 @@ class OrderPrint extends PureComponent {
   }
 }
 
-export default OrderPrint;
+export default EmailModal;
