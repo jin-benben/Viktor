@@ -19,7 +19,6 @@ class OrderPrint extends PureComponent {
   state = {
     templateList: [],
     selectedRows: [],
-    loading: false,
     queryData: {
       Content: {
         BaseType: '',
@@ -104,13 +103,11 @@ class OrderPrint extends PureComponent {
     const { selectedRows } = this.state;
     const { BaseEntry, BaseType } = this.props;
     if (selectedRows.length) {
-      const params = {
-        Code: selectedRows[0].Code,
-        Name: selectedRows[0].Name,
-        BaseType,
-        BaseEntry,
-      };
-      this.getPrintData(params);
+      const { Code, Name } = selectedRows[0];
+
+      router.push(
+        `/base/print?BaseEntry=${BaseEntry}&BaseType=${BaseType}&Code=${Code}&Name=${Name}`
+      );
     } else {
       message.warning('请先选择');
     }
@@ -169,49 +166,6 @@ class OrderPrint extends PureComponent {
     }
   };
 
-  getPrintData = async params => {
-    this.setState({ loading: true });
-    const response = await request('/Print/TI_Z045/TI_Z045Print01', {
-      method: 'POST',
-      data: {
-        Content: {
-          ...params,
-        },
-      },
-    });
-    this.setState({ loading: false });
-    if (!response || response.Status !== 200) return;
-    // 添加打印记录
-    this.setState({ loading: true });
-    const {
-      BaseEntry,
-      BaseType,
-      HtmlString,
-      HtmlTemplateCode,
-      PrintType,
-      PaperHTMLString,
-    } = response.Content;
-    const response2 = await request('/Print/TI_Z045/TI_Z04501', {
-      method: 'POST',
-      data: {
-        Content: {
-          BaseType,
-          BaseEntry,
-          PrintTemplateCode: params.Code,
-          PrintTemplateName: params.Name,
-          OutType: PrintType,
-          HtmlTemplateCode,
-          Content: HtmlString,
-          PaperHTMLString,
-        },
-      },
-    });
-    this.setState({ loading: false });
-    if (response2 && response2.Status === 200) {
-      router.push(`/base/print?DocEntry=${response2.Content.DocEntry}`);
-    }
-  };
-
   handleModalVisible = flag => {
     this.setState({ modalVisible: !!flag });
   };
@@ -250,7 +204,6 @@ class OrderPrint extends PureComponent {
         <Modal
           width={960}
           destroyOnClose
-          confirmLoading={loading}
           title="模板选择"
           visible={modalVisible}
           onOk={this.okHandle}

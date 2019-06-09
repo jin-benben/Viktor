@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 import { Card, Button } from 'antd';
 import { connect } from 'dva';
 import UEditor from '@/components/Ueditor';
@@ -8,11 +8,11 @@ import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
   print,
   loading,
 }))
-class PrintPage extends PureComponent {
+class PrintPage extends Component {
   state = {
     printDetail: {
       OutType: '',
-      isEdit: false,
+      isEdit: true,
     },
   };
 
@@ -21,12 +21,12 @@ class PrintPage extends PureComponent {
       location: { query },
       dispatch,
     } = this.props;
-    if (query.DocEntry) {
+    if (query.BaseEntry && query.Code) {
       dispatch({
-        type: 'print/singlefetch',
+        type: 'print/getPrint',
         payload: {
           Content: {
-            DocEntry: query.DocEntry,
+            ...query,
           },
         },
       });
@@ -42,6 +42,43 @@ class PrintPage extends PureComponent {
     return null;
   }
 
+  // 保存打印数据
+  savePrintFun = () => {
+    const {
+      dispatch,
+      print: { printDetail },
+      location: { query },
+    } = this.props;
+    const {
+      BaseEntry,
+      BaseType,
+      HtmlString,
+      HtmlTemplateCode,
+      PrintType,
+      PaperHTMLString,
+    } = printDetail;
+    dispatch({
+      type: 'print/savePrint',
+      payload: {
+        Content: {
+          BaseType,
+          BaseEntry,
+          PrintTemplateCode: query.Code,
+          PrintTemplateName: query.Name,
+          OutType: PrintType,
+          HtmlTemplateCode,
+          Content: HtmlString,
+          PaperHTMLString,
+        },
+      },
+      callback: response => {
+        if (response && response.Status === 200) {
+          this.pintFun();
+        }
+      },
+    });
+  };
+
   pintFun = () => {
     window.document.body.innerHTML = window.document.getElementById('contentDetails').innerHTML;
     window.print();
@@ -50,12 +87,13 @@ class PrintPage extends PureComponent {
 
   handleChange = content => {
     const { printDetail } = this.state;
-    Object.assign(printDetail, { Content: `${printDetail.PaperHTMLString + content}</div>` });
+    Object.assign(printDetail, { HtmlString: `${printDetail.PaperHTMLString + content}</div>` });
     this.setState({ printDetail });
   };
 
   render() {
     const { printDetail, isEdit } = this.state;
+    console.log(printDetail.HtmlString);
     return (
       <Card bordered={false}>
         <div
@@ -66,21 +104,21 @@ class PrintPage extends PureComponent {
             marginLeft: 50,
           }}
         >
-          <UEditor content={printDetail.Content} onChange={this.handleChange} />
+          <UEditor content={printDetail.HtmlString} onChange={this.handleChange} />
         </div>
         <div
           style={{ overflow: 'auto', display: isEdit ? 'none' : 'block' }}
           id="contentDetails"
-          dangerouslySetInnerHTML={{ __html: printDetail.Content }}
+          dangerouslySetInnerHTML={{ __html: printDetail.HtmlString }}
         />
         <FooterToolbar>
-          {printDetail.OutType === '1' ? (
+          {printDetail.PrintType === '1' ? (
             <Button onClick={() => this.setState({ isEdit: true })} type="primary">
               编辑
             </Button>
           ) : null}
-          <Button onClick={this.pintFun} type="primary">
-            打印
+          <Button onClick={this.savePrintFun} type="primary">
+            保存并打印
           </Button>
         </FooterToolbar>
       </Card>

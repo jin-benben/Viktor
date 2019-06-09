@@ -5,7 +5,7 @@ import { connect } from 'dva';
 import StandardTable from '@/components/StandardTable';
 import request from '@/utils/request';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
-import { printType, printOrderType } from '@/utils/publicData';
+import { emailSendType } from '@/utils/publicData';
 import { getName } from '@/utils/utils';
 import router from 'umi/router';
 
@@ -53,16 +53,10 @@ class EmailModal extends PureComponent {
       dataIndex: 'Name',
     },
     {
-      title: '打印类型',
-      dataIndex: 'PrintType',
-      width: 100,
-      render: text => <span>{getName(printType, text)}</span>,
-    },
-    {
       title: '单据类型',
       dataIndex: 'BaseType',
       width: 100,
-      render: text => <span>{getName(printOrderType, text)}</span>,
+      render: text => <span>{getName(emailSendType, text)}</span>,
     },
     {
       title: '内容模板',
@@ -151,7 +145,7 @@ class EmailModal extends PureComponent {
   };
 
   getTemplate = async params => {
-    const response = await request('/MDM/TI_Z044/TI_Z04402', {
+    const response = await request('/MDM/TI_Z046/TI_Z04602', {
       method: 'POST',
       data: {
         ...params,

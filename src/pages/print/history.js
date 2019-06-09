@@ -47,6 +47,7 @@ class PrintHistory extends PureComponent {
     },
     {
       title: '内容模板',
+      width: 100,
       dataIndex: 'HtmlTemplateCode',
     },
     {
@@ -57,22 +58,21 @@ class PrintHistory extends PureComponent {
     },
     {
       title: '输出类别',
-      width: 200,
+      width: 100,
       dataIndex: 'OutType',
     },
     {
       title: '来源单号',
-      width: 200,
+      width: 100,
       dataIndex: 'BaseEntry',
     },
     {
       title: '模板代码',
-      width: 200,
+      width: 100,
       dataIndex: 'PrintTemplateCode',
     },
     {
       title: '模板名称',
-      width: 200,
       dataIndex: 'PrintTemplateName',
     },
   ];
