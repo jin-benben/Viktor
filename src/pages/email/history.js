@@ -4,7 +4,7 @@ import moment from 'moment';
 import { Row, Col, Card, Form, Input, Button, Select, DatePicker } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import Link from 'umi/link';
-
+import MyTag from '@/components/Tag';
 import DocEntryFrom from '@/components/DocEntryFrom';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import { emailSendType } from '@/utils/publicData';
@@ -48,33 +48,49 @@ class PrintHistory extends PureComponent {
       render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
     {
-      title: '主题',
-      dataIndex: 'Body',
+      title: '状态',
+      dataIndex: 'SendStatus',
+      width: 80,
+      render: text => <MyTag type="成功" value={text} />,
+    },
+    {
+      title: '发送人',
+      width: 300,
+      dataIndex: 'From',
       render: text => (
-        <Ellipsis tooltip lines={2}>
+        <Ellipsis tooltip lines={1}>
           {text}
         </Ellipsis>
       ),
     },
     {
-      title: '发送人',
-      dataIndex: 'From',
-    },
-    {
       title: '收件人',
+      width: 300,
       dataIndex: 'ToList',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '抄送人',
+      width: 300,
       dataIndex: 'CCList',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '主题',
+      width: 200,
       dataIndex: 'Title',
     },
     {
       title: '来源类型',
-      width: 80,
+      width: 100,
       dataIndex: 'BaseType',
       render: text => <span>{getName(emailSendType, text)}</span>,
     },
@@ -91,7 +107,7 @@ class PrintHistory extends PureComponent {
     },
     {
       title: '模板名称',
-      width: 100,
+      width: 150,
       dataIndex: 'EmailTemplateName',
     },
   ];
@@ -244,7 +260,7 @@ class PrintHistory extends PureComponent {
               data={{ list: sendEmailList }}
               pagination={pagination}
               rowKey="DocEntry"
-              scroll={{ y: 600 }}
+              scroll={{ x: 1800, y: 600 }}
               columns={this.columns}
               onRow={this.handleOnRow}
               onChange={this.handleStandardTableChange}

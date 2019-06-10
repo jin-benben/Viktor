@@ -283,7 +283,7 @@ class AgreementEdit extends React.Component {
       title: '销售建议价',
       width: 100,
       inputType: 'text',
-      dataIndex: 'Price',
+      dataIndex: 'AdvisePrice',
       editable: true,
       align: 'center',
     },
@@ -1452,7 +1452,7 @@ class AgreementEdit extends React.Component {
             </Row>
           </TabPane>
           <TabPane tab="常规" key="2">
-            <Row gutter={8}>
+            <Row gutter={8} className="rowFlex">
               <Col lg={8} md={12} sm={24}>
                 <FormItem key="CellphoneNO" {...this.formLayout} label="手机号码">
                   {getFieldDecorator('CellphoneNO', {

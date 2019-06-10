@@ -98,13 +98,10 @@ class EmailModal extends PureComponent {
     const { selectedRows } = this.state;
     const { BaseEntry, BaseType } = this.props;
     if (selectedRows.length) {
-      const params = {
-        Code: selectedRows[0].Code,
-        Name: selectedRows[0].Name,
-        BaseType,
-        BaseEntry,
-      };
-      this.getPrintData(params);
+      const { Code, Name } = selectedRows[0];
+      router.push(
+        `/base/sendEmail?BaseEntry=${BaseEntry}&BaseType=${BaseType}&Code=${Code}&Name=${Name}`
+      );
     } else {
       message.warning('请先选择');
     }
@@ -160,54 +157,6 @@ class EmailModal extends PureComponent {
           pagination: { ...pagination, total: records, current: page },
         });
       }
-    }
-  };
-
-  getPrintData = async params => {
-    this.setState({ loading: true });
-    const response = await request('/Print/TI_Z047/TI_Z047Email01', {
-      method: 'POST',
-      data: {
-        Content: {
-          ...params,
-        },
-      },
-    });
-    this.setState({ loading: false });
-    if (!response || response.Status !== 200) return;
-    // 添加打印记录
-    this.setState({ loading: true });
-
-    const {
-      BaseEntry,
-      BaseType,
-      HtmlString,
-      HtmlTemplateCode,
-      From,
-      ToList,
-      CCList,
-      Title,
-    } = response.Content;
-    const response2 = await request('/Print/TI_Z047/TI_Z04701', {
-      method: 'POST',
-      data: {
-        Content: {
-          BaseType,
-          BaseEntry,
-          From,
-          ToList,
-          CCList,
-          Title,
-          EmailTemplateCode: params.Code,
-          EmailTemplateName: params.Name,
-          HtmlTemplateCode,
-          Body: HtmlString,
-        },
-      },
-    });
-    this.setState({ loading: false });
-    if (response2 && response2.Status === 200) {
-      router.push(`/base/email?DocEntry=${response2.Content.DocEntry}`);
     }
   };
 

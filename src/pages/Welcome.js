@@ -1,23 +1,7 @@
-import React, { Component } from 'react';
-import UEditor from '@/components/Ueditor';
+import React, { PureComponent } from 'react';
 
-export default class AddMessage extends Component {
-  state = {
-    content: '',
-  };
-
-  handleChange = content => {
-    this.state.content = content;
-    console.log(content);
-  };
-
+export default class AddMessage extends PureComponent {
   render() {
-    const { content } = this.state;
-
-    return (
-      <div style={{ width: 800, textAlign: 50, marginLeft: 50 }}>
-        <UEditor content={content} onChange={this.handleChange} />
-      </div>
-    );
+    return <div style={{ width: 800, textAlign: 50, marginLeft: 50 }}>首页</div>;
   }
 }

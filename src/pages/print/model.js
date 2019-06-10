@@ -24,6 +24,7 @@ export default {
       current: 1,
     },
     printDetail: {},
+    printHistoryDetail: {},
   },
 
   effects: {
@@ -59,7 +60,7 @@ export default {
         yield put({
           type: 'save',
           payload: {
-            printDetail: response.Content,
+            printHistoryDetail: response.Content,
           },
         });
       }

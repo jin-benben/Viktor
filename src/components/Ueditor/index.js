@@ -1,6 +1,10 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 
-class UEditor extends Component {
+class UEditor extends PureComponent {
+  state = {
+    editor: {},
+  };
+
   componentDidMount() {
     let script = document.createElement('script');
     script.setAttribute('src', '/ueditor/ueditor.config.js');
@@ -60,31 +64,44 @@ class UEditor extends Component {
         ],
       });
 
-      this.editor = ue;
-      const { onChange } = this.props;
+      this.setState({ editor: ue });
+
+      const { onChange, initialValue } = this.props;
       ue.addListener('contentChange', () => {
         onChange(ue.getContent());
+      });
+      ue.addListener('ready', () => {
+        ue.setContent(initialValue);
       });
     };
   }
 
-  componentWillUnmount() {
-    this.editor.destroy();
+  componentWillReceiveProps(nextProps) {
+    const { initialValue } = nextProps;
+    const { editor } = this.state;
+    if (initialValue && editor.addListener) {
+      editor.addListener('ready', () => {
+        editor.setContent(initialValue);
+      });
+    }
+  }
 
+  componentWillUnmount() {
+    const { editor } = this.state;
+    if (editor.destroy) editor.destroy();
     const child = document.getElementById('edui_fixedlayer');
     child.parentNode.removeChild(child);
   }
 
   render() {
-    const { content } = this.props;
+    const { initialValue } = this.props;
     return (
       <div>
         <textarea
           id="container"
+          defaultValue={initialValue}
           name="blog"
           type="text/plain"
-          onChange={() => {}}
-          value={content}
           style={{ margin: '15px 0' }}
         />
       </div>

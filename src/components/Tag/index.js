@@ -19,7 +19,10 @@ const MyTag = props => {
         whichTag = value === 'C' ? <Tag color="gold">已确认</Tag> : <Tag color="green">未确认</Tag>;
         break;
       case '通过':
-        whichTag = value === 'Y' ? <Tag color="gold">已通过</Tag> : <Tag color="green">未通过</Tag>;
+        whichTag = value === 'Y' ? <Tag color="green">已通过</Tag> : <Tag color="gold">已通过</Tag>;
+        break;
+      case '成功':
+        whichTag = value === 'Y' ? <Tag color="green">成功</Tag> : <Tag color="gold">失败</Tag>;
         break;
       case 'IsInquiry':
         whichTag =

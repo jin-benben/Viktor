@@ -79,12 +79,15 @@ class PrintPage extends Component {
     });
   };
 
+  //  打印
   pintFun = () => {
-    window.document.body.innerHTML = window.document.getElementById('contentDetails').innerHTML;
-    window.print();
-    window.location.reload();
+    const win = window.open('', 'printwindow');
+    win.document.write(window.document.getElementById('contentDetails').innerHTML);
+    win.print();
+    win.close();
   };
 
+  // 编辑器内容改变时赋值
   handleChange = content => {
     const { printDetail } = this.state;
     Object.assign(printDetail, { HtmlString: `${printDetail.PaperHTMLString + content}</div>` });
@@ -93,24 +96,31 @@ class PrintPage extends Component {
 
   render() {
     const { printDetail, isEdit } = this.state;
-    console.log(printDetail.HtmlString);
     return (
       <Card bordered={false}>
-        <div
-          style={{
-            display: isEdit ? 'block' : 'none',
-            overflow: 'auto',
-            textAlign: 50,
-            marginLeft: 50,
-          }}
-        >
-          <UEditor content={printDetail.HtmlString} onChange={this.handleChange} />
-        </div>
+        {isEdit ? (
+          <div
+            style={{
+              // display: isEdit ? 'block' : 'none',
+              // 设置成显示隐藏，如果用display，编辑器初始化内容渲染不出来
+              width: 1000,
+              margin: '0 auto',
+              overflow: 'auto',
+              textAlign: 50,
+              marginLeft: 50,
+            }}
+          >
+            <UEditor initialValue={printDetail.HtmlString} onChange={this.handleChange} />
+          </div>
+        ) : (
+          ''
+        )}
         <div
           style={{ overflow: 'auto', display: isEdit ? 'none' : 'block' }}
           id="contentDetails"
           dangerouslySetInnerHTML={{ __html: printDetail.HtmlString }}
         />
+
         <FooterToolbar>
           {printDetail.PrintType === '1' ? (
             <Button onClick={() => this.setState({ isEdit: true })} type="primary">

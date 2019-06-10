@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Card, Button, Form, Row, Input } from 'antd';
+import { Card, Button, Form, Row, Input, message } from 'antd';
 import { connect } from 'dva';
 import UEditor from '@/components/Ueditor';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
@@ -13,7 +13,10 @@ const FormItem = Form.Item;
 @Form.create()
 class PrintPage extends PureComponent {
   state = {
-    sendDetail: {},
+    sendDetail: {}, // 发送内容
+    isEdit: false, // 是否可编辑
+    isAgain: false, // 是否再次发送
+    DocEntry: 0, // 发送失败后单号
   };
 
   componentDidMount() {
@@ -21,12 +24,12 @@ class PrintPage extends PureComponent {
       location: { query },
       dispatch,
     } = this.props;
-    if (query.DocEntry) {
+    if (query.BaseEntry && query.Code) {
       dispatch({
-        type: 'sendEmail/singlefetch',
+        type: 'sendEmail/getEmail',
         payload: {
           Content: {
-            DocEntry: query.DocEntry,
+            ...query,
           },
         },
       });
@@ -42,10 +45,66 @@ class PrintPage extends PureComponent {
     return null;
   }
 
-  sendEmailHandle = () => {};
+  sendEmailHandle = () => {
+    const {
+      dispatch,
+      location: { query },
+      form,
+    } = this.props;
+    const { sendDetail, isAgain, DocEntry } = this.state;
+    const { Code, Name } = query;
+    const { BaseEntry, BaseType, HtmlTemplateCode, PaperHTMLString } = sendDetail;
+
+    form.validateFields((err, fieldsValue) => {
+      const { HtmlString, Title, ToList, CCList, From } = fieldsValue;
+      if (err) return;
+      const sendData = {
+        Content: {
+          BaseEntry,
+          BaseType,
+          Body: `${PaperHTMLString + HtmlString}</div>`,
+          HtmlTemplateCode,
+          From,
+          ToList,
+          Title,
+          CCList,
+          EmailTemplateCode: Code,
+          EmailTemplateName: Name,
+        },
+      };
+      if (isAgain) {
+        dispatch({
+          type: 'sendEmail/saveSend',
+          payload: {
+            ...sendData,
+          },
+          callback: response => {
+            if (response && response.Status === 200) {
+              message.success('发送成功');
+            } else if (response) {
+              this.setState({ DocEntry: response.Content.DocEntry });
+            }
+          },
+        });
+      } else {
+        dispatch({
+          type: 'sendEmail/saveAgainSend',
+          payload: {
+            ...sendData,
+            DocEntry,
+          },
+          callback: response => {
+            if (response && response.Status === 200) {
+              message.success('发送成功');
+            }
+          },
+        });
+      }
+    });
+  };
 
   render() {
-    const { sendDetail } = this.state;
+    const { sendDetail, isEdit } = this.state;
     const {
       form: { getFieldDecorator },
     } = this.props;
@@ -68,6 +127,14 @@ class PrintPage extends PureComponent {
     return (
       <Card bordered={false}>
         <Form {...formItemLayout}>
+          <Row gutter={8}>
+            <FormItem key="From" {...formLayout} label="发件人">
+              {getFieldDecorator('From', {
+                initialValue: sendDetail.From,
+                rules: [{ required: true, message: '请输入发件人' }],
+              })(<Input placeholder="请输入发件人" />)}
+            </FormItem>
+          </Row>
           <Row gutter={8}>
             <FormItem key="ToList" {...formLayout} label="收件人">
               {getFieldDecorator('ToList', {
@@ -93,17 +160,33 @@ class PrintPage extends PureComponent {
             </FormItem>
           </Row>
           <Row>
-            <FormItem key="Body" {...formLayout} label="内容">
-              {getFieldDecorator('Body', {
-                rules: [{ required: true, message: '请输入内容！' }],
-                initialValue: sendDetail.Body,
-              })(<UEditor content={sendDetail.Body} />)}
-            </FormItem>
+            <div style={{ display: isEdit ? 'block' : 'none' }}>
+              <FormItem key="HtmlString" {...formLayout} label="内容">
+                {getFieldDecorator('HtmlString', {
+                  rules: [{ required: true, message: '请输入内容！' }],
+                })(<UEditor initialValue={sendDetail.HtmlString} />)}
+              </FormItem>
+            </div>
+            <div style={{ display: !isEdit ? 'block' : 'none' }}>
+              <FormItem key="HtmlString" {...formLayout} label="内容">
+                <div dangerouslySetInnerHTML={{ __html: sendDetail.HtmlString }} />
+              </FormItem>
+            </div>
           </Row>
         </Form>
         <FooterToolbar>
+          {!isEdit ? (
+            <Button onClick={() => this.setState({ isEdit: true })} type="primary">
+              编辑内容
+            </Button>
+          ) : (
+            <Button onClick={() => this.setState({ isEdit: false })} type="primary">
+              完成
+            </Button>
+          )}
+
           <Button onClick={this.sendEmailHandle} type="primary">
-            发送
+            保存并发送
           </Button>
         </FooterToolbar>
       </Card>

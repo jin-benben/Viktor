@@ -104,7 +104,6 @@ class OrderPrint extends PureComponent {
     const { BaseEntry, BaseType } = this.props;
     if (selectedRows.length) {
       const { Code, Name } = selectedRows[0];
-
       router.push(
         `/base/print?BaseEntry=${BaseEntry}&BaseType=${BaseType}&Code=${Code}&Name=${Name}`
       );

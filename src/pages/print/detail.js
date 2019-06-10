@@ -13,10 +13,7 @@ const { Description } = DescriptionList;
 }))
 class PrintDetailPage extends PureComponent {
   state = {
-    printDetail: {
-      OutType: '',
-      isEdit: false,
-    },
+    printDetail: {},
   };
 
   componentDidMount() {
@@ -37,16 +34,16 @@ class PrintDetailPage extends PureComponent {
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    if (nextProps.print.printDetail !== prevState.printDetail) {
+    if (nextProps.print.printHistoryDetail !== prevState.printDetail) {
       return {
-        printDetail: nextProps.print.printDetail,
+        printDetail: nextProps.print.printHistoryDetail,
       };
     }
     return null;
   }
 
   render() {
-    const { printDetail, isEdit } = this.state;
+    const { printDetail } = this.state;
     return (
       <Card bordered={false}>
         <DescriptionList style={{ marginBottom: 24 }}>
@@ -59,7 +56,7 @@ class PrintDetailPage extends PureComponent {
           <Description term="内容模板">{printDetail.HtmlTemplateCode}</Description>
         </DescriptionList>
         <div
-          style={{ overflow: 'auto', display: isEdit ? 'none' : 'block' }}
+          style={{ overflow: 'auto' }}
           id="contentDetails"
           dangerouslySetInnerHTML={{ __html: printDetail.Content }}
         />

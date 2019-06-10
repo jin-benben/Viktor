@@ -1,4 +1,4 @@
-import { queryRule, querySingleRule } from './service';
+import { queryRule, querySingleRule, getSendRule, saveSendRule, sendEmailRule } from './service';
 
 export default {
   namespace: 'sendEmail',
@@ -24,6 +24,7 @@ export default {
       current: 1,
     },
     sendDetail: {},
+    sendHistoryDetail: {},
   },
 
   effects: {
@@ -59,10 +60,31 @@ export default {
         yield put({
           type: 'save',
           payload: {
-            sendDetail: response.Content,
+            sendHistoryDetail: response.Content,
           },
         });
       }
+    },
+    *getEmail({ payload }, { call, put }) {
+      const response = yield call(getSendRule, payload);
+      if (response && response.Status === 200) {
+        yield put({
+          type: 'save',
+          payload: {
+            sendDetail: {
+              ...response.Content,
+            },
+          },
+        });
+      }
+    },
+    *saveSend({ payload, callback }, { call }) {
+      const response = yield call(saveSendRule, payload);
+      if (callback) callback(response);
+    },
+    *saveAgainSend({ payload, callback }, { call }) {
+      const response = yield call(sendEmailRule, payload);
+      if (callback) callback(response);
     },
   },
 

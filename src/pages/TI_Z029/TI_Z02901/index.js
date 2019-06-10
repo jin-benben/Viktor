@@ -283,7 +283,7 @@ class TI_Z029Component extends React.Component {
       title: '销建议价',
       width: 120,
       inputType: 'text',
-      dataIndex: 'Price',
+      dataIndex: 'AdvisePrice',
       editable: true,
       align: 'center',
     },
@@ -1429,7 +1429,7 @@ class TI_Z029Component extends React.Component {
             </Row>
           </TabPane>
           <TabPane tab="常规" key="2">
-            <Row gutter={8}>
+            <Row gutter={8} className="rowFlex">
               <Col lg={8} md={12} sm={24}>
                 <FormItem key="CellphoneNO" {...this.formLayout} label="手机号码">
                   <span>{formVals.CellphoneNO}</span>
@@ -1451,7 +1451,6 @@ class TI_Z029Component extends React.Component {
                     initialValue: formVals.AddressID,
                   })(
                     <Select
-                      value={formVals}
                       placeholder="请选择地址"
                       onSelect={this.handleAdreessChange}
                       style={{ width: '100%' }}
