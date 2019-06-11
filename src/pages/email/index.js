@@ -3,6 +3,7 @@ import { Card, Button, Form, Row, Input, message } from 'antd';
 import { connect } from 'dva';
 import UEditor from '@/components/Ueditor';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
+import router from 'umi/router';
 
 const FormItem = Form.Item;
 
@@ -59,30 +60,31 @@ class PrintPage extends PureComponent {
       const { HtmlString, Title, ToList, CCList, From } = fieldsValue;
       if (err) return;
       const sendData = {
-        Content: {
-          BaseEntry,
-          BaseType,
-          Body: `${PaperHTMLString + HtmlString}</div>`,
-          HtmlTemplateCode,
-          From,
-          ToList,
-          Title,
-          CCList,
-          EmailTemplateCode: Code,
-          EmailTemplateName: Name,
-        },
+        BaseEntry,
+        BaseType,
+        Body: `${PaperHTMLString + HtmlString}</div>`,
+        HtmlTemplateCode,
+        From,
+        ToList,
+        Title,
+        CCList,
+        EmailTemplateCode: Code,
+        EmailTemplateName: Name,
       };
-      if (isAgain) {
+      if (!isAgain) {
         dispatch({
           type: 'sendEmail/saveSend',
           payload: {
-            ...sendData,
+            Content: {
+              ...sendData,
+            },
           },
           callback: response => {
             if (response && response.Status === 200) {
               message.success('发送成功');
+              router.push(`/base/sendEmail/detail?DocEntry=${response.Content.DocEntry}`);
             } else if (response) {
-              this.setState({ DocEntry: response.Content.DocEntry });
+              this.setState({ DocEntry: response.Content.DocEntry, isAgain: true });
             }
           },
         });
@@ -90,12 +92,15 @@ class PrintPage extends PureComponent {
         dispatch({
           type: 'sendEmail/saveAgainSend',
           payload: {
-            ...sendData,
-            DocEntry,
+            Content: {
+              ...sendData,
+              DocEntry,
+            },
           },
           callback: response => {
             if (response && response.Status === 200) {
               message.success('发送成功');
+              router.push(`/base/sendEmail/detail?DocEntry=${response.Content.DocEntry}`);
             }
           },
         });

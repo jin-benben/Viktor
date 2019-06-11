@@ -499,24 +499,45 @@ export default [
      
       {
         name: '消息管理',
-        icon: 'smile',
-        hideInMenu: true,
+        icon: 'iconxiaoxi-control',
         path: '/message',
         routes: [
           {
             path: '/message/dd',
             name: '钉钉消息',
+            icon: 'icondingding',
             component: './message/dd',
+          },
+          {
+            path: '/message/dd/detail',
+            name: '钉钉消息详情',
+            hideInMenu: true,
+            component: './message/dd/detail',
           },
           {
             path: '/message/wx',
             name: '微信消息',
+            icon: 'iconwx',
             component: './message/wx',
           },
           {
-            path: '/message/log',
+            path: '/message/wx/detail',
+            name: '微信消息详情',
+            hideInMenu: true,
+            component: './message/wx/detail',
+          },
+          {
+            path: '/message/pushlog',
             name: '推送日志',
+            icon: 'iconpush',
             component: './message/pushlog',
+          },
+          {
+            path: '/message/pushlog/detail',
+            name: '推送日志详情',
+            icon: 'iconpush',
+            hideInMenu: true,
+            component: './message/pushlog/detail',
           },
           {
             path: '/message/approve',

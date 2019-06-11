@@ -1,4 +1,4 @@
-import { queryRule, removeRule, addRule, updateRule } from './service';
+import { queryRule, addRule, updateRule } from './service';
 
 export default {
   namespace: 'brands',
@@ -54,14 +54,6 @@ export default {
     },
     *add({ payload, callback }, { call, put }) {
       const response = yield call(addRule, payload);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
-      if (callback) callback(response);
-    },
-    *remove({ payload, callback }, { call, put }) {
-      const response = yield call(removeRule, payload);
       yield put({
         type: 'save',
         payload: response,

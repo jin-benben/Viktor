@@ -1,5 +1,4 @@
 import React, { PureComponent } from 'react';
-
 import { Row, Col, Form, Input, Modal, Button, message } from 'antd';
 import StandardTable from '@/components/StandardTable';
 
@@ -120,10 +119,12 @@ class StaffsModal extends PureComponent {
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8 }}>
-          <Col className="submitButtons">
-            <FormItem label="员工姓名">
-              {getFieldDecorator('SearchText')(<Input placeholder="请输入" />)}
+          <Col>
+            <FormItem>
+              {getFieldDecorator('SearchText')(<Input placeholder="请输入关键字" />)}
             </FormItem>
+          </Col>
+          <Col>
             <FormItem>
               <Button type="primary" htmlType="submit">
                 查询

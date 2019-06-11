@@ -168,7 +168,7 @@ class PrintHistory extends PureComponent {
           },
           page: 1,
           rows: 30,
-          sidx: 'Code',
+          sidx: 'DocEntry',
           sord: 'Desc',
         },
       });
@@ -183,18 +183,6 @@ class PrintHistory extends PureComponent {
     const formLayout = {
       labelCol: { span: 8 },
       wrapperCol: { span: 16 },
-    };
-    const searchFormItemLayout = {
-      wrapperCol: {
-        xs: {
-          span: 24,
-          offset: 0,
-        },
-        sm: {
-          span: 16,
-          offset: 8,
-        },
-      },
     };
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
@@ -231,8 +219,8 @@ class PrintHistory extends PureComponent {
               })(<DocEntryFrom />)}
             </FormItem>
           </Col>
-          <Col md={4} sm={24}>
-            <FormItem key="searchBtn" {...searchFormItemLayout}>
+          <Col md={2} sm={24}>
+            <FormItem key="searchBtn">
               <span className="submitButtons">
                 <Button type="primary" htmlType="submit">
                   查询

@@ -4,13 +4,14 @@ import router from 'umi/router';
 import moment from 'moment';
 import { Row, Col, Card, Form, Input, Button, Icon } from 'antd';
 import StandardTable from '@/components/StandardTable';
+import Link from 'umi/link';
+import { formItemLayout } from '@/utils/publicData';
 
 const FormItem = Form.Item;
 
-/* eslint react/no-multi-comp:0 */
 @connect(({ authorityGroup, loading }) => ({
   authorityGroup,
-  loading: loading.models.rule,
+  loading: loading.models.authorityGroup,
 }))
 @Form.create()
 class inquiryList extends PureComponent {
@@ -30,16 +31,9 @@ class inquiryList extends PureComponent {
       align: 'center',
       dataIndex: 'set',
       render: (text, record) => (
-        // eslint-disable-next-line no-script-url
-        <a
-          onClick={e => {
-            e.preventDefault();
-            router.push(`/base/TI_Z014/set?Code=${record.Code}`);
-          }}
-          href="javascript:;"
-        >
+        <Link to={`/base/TI_Z014/set?Code=${record.Code}`}>
           <Icon type="setting" theme="twoTone" />
-        </a>
+        </Link>
       ),
     },
     {
@@ -47,16 +41,9 @@ class inquiryList extends PureComponent {
       align: 'center',
       dataIndex: 'change',
       render: (text, record) => (
-        // eslint-disable-next-line no-script-url
-        <a
-          onClick={e => {
-            e.preventDefault();
-            router.push(`/base/TI_Z014/edit?Code=${record.Code}`);
-          }}
-          href="javascript:;"
-        >
+        <Link to={`/base/TI_Z014/edit?Code=${record.Code}`}>
           <Icon type="edit" theme="twoTone" />
-        </a>
+        </Link>
       ),
     },
   ];
@@ -130,21 +117,6 @@ class inquiryList extends PureComponent {
     const {
       form: { getFieldDecorator },
     } = this.props;
-    const formLayout = {
-      labelCol: { span: 8 },
-      wrapperCol: { span: 16 },
-    };
-    const formItemLayout = {
-      labelCol: {
-        xs: { span: 24 },
-        sm: { span: 10 },
-      },
-      wrapperCol: {
-        xs: { span: 24 },
-        sm: { span: 14 },
-        md: { span: 10 },
-      },
-    };
     return (
       <Form onSubmit={this.handleSearch} {...formItemLayout} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>

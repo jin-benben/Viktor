@@ -70,3 +70,20 @@ export const orderSourceType = [
     Value: '网站下单',
   },
 ];
+
+export const formItemLayout = {
+  labelCol: {
+    xs: { span: 24 },
+    sm: { span: 7 },
+  },
+  wrapperCol: {
+    xs: { span: 24 },
+    sm: { span: 16 },
+    md: { span: 10 },
+  },
+};
+
+export const formLayout = {
+  labelCol: { span: 7 },
+  wrapperCol: { span: 13 },
+};

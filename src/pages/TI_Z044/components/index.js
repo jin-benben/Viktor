@@ -80,7 +80,7 @@ class PrintTemplateDetail extends PureComponent {
     };
     return (
       <Modal
-        width={640}
+        width={960}
         destroyOnClose
         title="编辑模板"
         visible={modalVisible}

@@ -3,6 +3,7 @@ import React, { PureComponent } from 'react';
 class UEditor extends PureComponent {
   state = {
     editor: {},
+    isContent: true,
   };
 
   componentDidMount() {
@@ -17,7 +18,7 @@ class UEditor extends PureComponent {
       const { UE } = window;
       const ue = UE.getEditor('container', {
         UEDITOR_HOME_URL: '/ueditor/',
-        serverUrl: '/ueditor',
+        serverUrl: 'http://47.104.65.49:8089/controller.ashx',
         initialFrameHeight: 300,
         toolbars: [
           [
@@ -70,17 +71,20 @@ class UEditor extends PureComponent {
       ue.addListener('contentChange', () => {
         onChange(ue.getContent());
       });
-      ue.addListener('ready', () => {
-        ue.setContent(initialValue);
-      });
+      if (initialValue) {
+        ue.ready(() => {
+          ue.setContent(initialValue);
+        });
+      }
     };
   }
 
   componentWillReceiveProps(nextProps) {
     const { initialValue } = nextProps;
-    const { editor } = this.state;
-    if (initialValue && editor.addListener) {
-      editor.addListener('ready', () => {
+    const { editor, isContent } = this.state;
+    if (initialValue && editor.ready && isContent) {
+      this.setState({ isContent: false });
+      editor.ready(() => {
         editor.setContent(initialValue);
       });
     }

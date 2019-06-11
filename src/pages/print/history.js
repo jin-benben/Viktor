@@ -5,7 +5,7 @@ import { Row, Col, Card, Form, Input, Button, Select, DatePicker } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import Link from 'umi/link';
 import DocEntryFrom from '@/components/DocEntryFrom';
-import { printOrderType } from '@/utils/publicData';
+import { printOrderType, printType } from '@/utils/publicData';
 import { getName } from '@/utils/utils';
 
 const { RangePicker } = DatePicker;
@@ -52,7 +52,7 @@ class PrintHistory extends PureComponent {
     },
     {
       title: '来源类型',
-      width: 100,
+      width: 150,
       dataIndex: 'BaseType',
       render: text => <span>{getName(printOrderType, text)}</span>,
     },
@@ -60,6 +60,7 @@ class PrintHistory extends PureComponent {
       title: '输出类别',
       width: 100,
       dataIndex: 'OutType',
+      render: text => <span>{getName(printType, text)}</span>,
     },
     {
       title: '来源单号',
@@ -135,7 +136,7 @@ class PrintHistory extends PureComponent {
           },
           page: 1,
           rows: 30,
-          sidx: 'Code',
+          sidx: 'DocEntry',
           sord: 'Desc',
         },
       });
@@ -151,18 +152,7 @@ class PrintHistory extends PureComponent {
       labelCol: { span: 8 },
       wrapperCol: { span: 16 },
     };
-    const searchFormItemLayout = {
-      wrapperCol: {
-        xs: {
-          span: 24,
-          offset: 0,
-        },
-        sm: {
-          span: 16,
-          offset: 8,
-        },
-      },
-    };
+
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
@@ -198,8 +188,8 @@ class PrintHistory extends PureComponent {
               })(<DocEntryFrom />)}
             </FormItem>
           </Col>
-          <Col md={4} sm={24}>
-            <FormItem key="searchBtn" {...searchFormItemLayout}>
+          <Col md={2} sm={24}>
+            <FormItem key="searchBtn">
               <span className="submitButtons">
                 <Button type="primary" htmlType="submit">
                   查询

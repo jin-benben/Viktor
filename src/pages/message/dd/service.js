@@ -1,37 +1,19 @@
 import request from '@/utils/request';
 
 export async function queryRule(params) {
-  return request(`/api/table-list`, {
-    params,
-  });
-}
-
-export async function removeRule(params) {
-  return request('/api/table-list', {
+  return request('/MDM/TI_Z023/TI_Z02302', {
     method: 'POST',
     data: {
       ...params,
-      method: 'delete',
     },
   });
 }
 
-export async function addRule(params) {
-  return request('/api/table-list', {
+export async function querySingleRule(params) {
+  return request('/MDM/TI_Z023/TI_Z02303', {
     method: 'POST',
     data: {
       ...params,
-      method: 'post',
-    },
-  });
-}
-
-export async function updateRule(params) {
-  return request('/api/table-list', {
-    method: 'POST',
-    data: {
-      ...params,
-      method: 'update',
     },
   });
 }

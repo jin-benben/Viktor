@@ -1,8 +1,9 @@
 /* eslint-disable no-script-url */
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Card, Tree, Row, Col, Form, Input, message, Modal, Select, Popover, Divider } from 'antd';
+import { Card, Tree, Form, Input, message, Modal, Select, Popover, Divider } from 'antd';
 import router from 'umi/router';
+import { formLayout, formItemLayout } from '@/utils/publicData';
 
 const FormItem = Form.Item;
 const { TreeNode } = Tree;
@@ -18,21 +19,6 @@ const CreateForm = Form.create()(props => {
     handleModalVisible,
     handleSubmit,
   } = props;
-  const formLayout = {
-    labelCol: { span: 7 },
-    wrapperCol: { span: 13 },
-  };
-  const formItemLayout = {
-    labelCol: {
-      xs: { span: 24 },
-      sm: { span: 7 },
-    },
-    wrapperCol: {
-      xs: { span: 24 },
-      sm: { span: 16 },
-      md: { span: 10 },
-    },
-  };
   const okHandle = () => {
     form.validateFields((err, fieldsValue) => {
       if (err) return;
@@ -197,7 +183,6 @@ class Organization extends PureComponent {
 
   updateOrg = tree => {
     const { dispatch } = this.props;
-
     dispatch({
       type: 'organization/single',
       payload: {
@@ -260,21 +245,12 @@ class Organization extends PureComponent {
     return (
       <div>
         <Card bordered={false}>
-          {/* <Button
-            icon="plus"
-            style={{ marginLeft: 8, marginBottom: 28, marginTop: 28 }}
-            type="primary"
-            onClick={() => this.handleModalVisible(true)}
-          >
-            新建根节点
-          </Button> */}
-
-          <Row>
-            <Col lg={12} md={12} sm={24}>
-              <Tree className="trees">{this.renderTreeNodes(treeData)}</Tree>
-            </Col>
-          </Row>
-          {<CreateForm {...parentMethods} formVals={singleInfo} modalVisible={modalVisible} />}
+          {treeData.length ? (
+            <Tree defaultExpandAll className="trees">
+              {this.renderTreeNodes(treeData)}
+            </Tree>
+          ) : null}
+          <CreateForm {...parentMethods} formVals={singleInfo} modalVisible={modalVisible} />
         </Card>
       </div>
     );

@@ -5,8 +5,8 @@ import { Row, Col, Card, Form, Input, Modal, Button, DatePicker, message, Select
 import StandardTable from '@/components/StandardTable';
 import Organization from '@/components/Organization';
 import MDMCommonality from '@/components/Select';
-
-import { checkPhone, chechEmail, getName } from '@/utils/utils';
+import { validatorEmail, validatorPhone, getName } from '@/utils/utils';
+import { formLayout, formItemLayout } from '@/utils/publicData';
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -16,62 +16,32 @@ const { TextArea } = Input;
 }))
 @Form.create()
 class CreateForm extends PureComponent {
-  validatorPhone = (rule, value, callback) => {
-    if (value && !checkPhone(value)) {
-      callback(new Error('手机号格式不正确'));
-    } else {
-      callback();
-    }
-  };
-
-  validatorEmail = (rule, value, callback) => {
-    if (value && !chechEmail(value)) {
-      callback(new Error('邮箱格式不正确'));
-    } else {
-      callback();
-    }
-  };
-
-  okHandle = () => {
-    const { form, formVals, handleSubmit } = this.props;
-    form.validateFields((err, fieldsValue) => {
-      if (err) return;
-      form.resetFields();
-      handleSubmit({ ...formVals, ...fieldsValue });
-    });
-  };
-
   render() {
     const {
       form: { getFieldDecorator },
+      form,
+      method,
       global: { Company, WhsCode, TI_Z051 },
       formVals,
       modalVisible,
       handleModalVisible,
+      handleSubmit,
     } = this.props;
-    const formLayout = {
-      labelCol: { span: 7 },
-      wrapperCol: { span: 16 },
-    };
-    const formItemLayout = {
-      labelCol: {
-        xs: { span: 24 },
-        sm: { span: 7 },
-      },
-      wrapperCol: {
-        xs: { span: 24 },
-        sm: { span: 16 },
-        md: { span: 10 },
-      },
+    const okHandle = () => {
+      form.validateFields((err, fieldsValue) => {
+        if (err) return;
+        form.resetFields();
+        handleSubmit({ ...formVals, ...fieldsValue });
+      });
     };
     return (
       <Modal
-        width={640}
+        width={960}
         destroyOnClose
         title="员工编辑"
         okText="保存"
         visible={modalVisible}
-        onOk={this.okHandle}
+        onOk={okHandle}
         onCancel={() => handleModalVisible()}
       >
         <Form {...formItemLayout}>
@@ -81,7 +51,7 @@ class CreateForm extends PureComponent {
                 {getFieldDecorator('Code', {
                   rules: [{ required: true, message: '请输入代码！' }],
                   initialValue: formVals.Code,
-                })(<Input placeholder="请输入代码" />)}
+                })(<Input disabled={method !== 'A'} placeholder="请输入代码" />)}
               </FormItem>
             </Col>
             <Col span={12}>
@@ -106,7 +76,7 @@ class CreateForm extends PureComponent {
                   rules: [
                     { required: true, message: '请输入手机号！' },
                     {
-                      validator: this.validatorPhone,
+                      validator: validatorPhone,
                     },
                   ],
                   initialValue: formVals.Mobile,
@@ -116,7 +86,7 @@ class CreateForm extends PureComponent {
             <Col span={12}>
               <FormItem key="Email" {...formLayout} label="邮箱">
                 {getFieldDecorator('Email', {
-                  rules: [{ validator: this.validatorEmail }],
+                  rules: [{ validator: validatorEmail }],
                   initialValue: formVals.Email,
                 })(<MDMCommonality initialValue={formVals.Email} data={TI_Z051} />)}
               </FormItem>
@@ -483,10 +453,10 @@ class Staffs extends PureComponent {
             </FormItem>
           </Col>
           <Col md={5} sm={24}>
-            <FormItem key="Department" label="部门">
-              {getFieldDecorator('Department', { initialValue: Department })(
-                <Input placeholder="请输入部门代码" />
-              )}
+            <FormItem key="Department" {...formLayout} label="部门">
+              {getFieldDecorator('Department', {
+                initialValue: Department,
+              })(<Organization initialValue={Department} />)}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
@@ -514,7 +484,7 @@ class Staffs extends PureComponent {
       staffs: { staffsList, pagination },
       loading,
     } = this.props;
-    const { modalVisible, formValues } = this.state;
+    const { modalVisible, formValues, method } = this.state;
     const parentMethods = {
       handleSubmit: this.handleSubmit,
       handleModalVisible: this.handleModalVisible,
@@ -534,7 +504,12 @@ class Staffs extends PureComponent {
             />
           </div>
         </Card>
-        <CreateForm {...parentMethods} formVals={formValues} modalVisible={modalVisible} />
+        <CreateForm
+          {...parentMethods}
+          formVals={formValues}
+          method={method}
+          modalVisible={modalVisible}
+        />
       </Fragment>
     );
   }

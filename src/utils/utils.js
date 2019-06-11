@@ -49,3 +49,19 @@ export function getName(arr, code) {
   });
   return name;
 }
+
+export function validatorPhone(rule, value, callback) {
+  if (value && !checkPhone(value)) {
+    callback(new Error('手机号格式不正确'));
+  } else {
+    callback();
+  }
+}
+
+export function validatorEmail(rule, value, callback) {
+  if (value && !checkPhone(value)) {
+    callback(new Error('手机号格式不正确'));
+  } else {
+    callback();
+  }
+}

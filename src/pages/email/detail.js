@@ -1,8 +1,9 @@
 import React, { PureComponent, Fragment } from 'react';
-import { Card } from 'antd';
+import { Card, Button, message } from 'antd';
 import { connect } from 'dva';
 import DescriptionList from 'ant-design-pro/lib/DescriptionList';
 import PageLoading from '@/components/PageLoading';
+import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import MyTag from '@/components/Tag';
 import { emailSendType } from '@/utils/publicData';
 import { getName } from '@/utils/utils';
@@ -19,6 +20,10 @@ class PrintDetailPage extends PureComponent {
   };
 
   componentDidMount() {
+    this.getDetail();
+  }
+
+  getDetail() {
     const {
       location: { query },
       dispatch,
@@ -44,9 +49,27 @@ class PrintDetailPage extends PureComponent {
     return null;
   }
 
+  sendAgain = () => {
+    const { dispatch } = this.props;
+    const { sendDetail } = this.state;
+    dispatch({
+      type: 'sendEmail/saveAgainSend',
+      payload: {
+        Content: {
+          ...sendDetail,
+        },
+      },
+      callback: response => {
+        if (response && response.Status === 200) {
+          message.success('发送成功');
+          this.getDetail();
+        }
+      },
+    });
+  };
+
   render() {
     const { sendDetail } = this.state;
-    console.log(sendDetail);
     return (
       <Card bordered={false}>
         {sendDetail.DocEntry ? (
@@ -73,6 +96,15 @@ class PrintDetailPage extends PureComponent {
               id="contentDetails"
               dangerouslySetInnerHTML={{ __html: sendDetail.Body }}
             />
+            {sendDetail.SendStatus !== 'Y' ? (
+              <FooterToolbar>
+                <Button type="primary" onClick={this.sendAgain}>
+                  再次发送
+                </Button>
+              </FooterToolbar>
+            ) : (
+              ''
+            )}
           </Fragment>
         ) : (
           <PageLoading />

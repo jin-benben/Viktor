@@ -10,7 +10,7 @@ class Organization extends PureComponent {
   };
 
   componentDidMount() {
-    this.getCategory();
+    this.getTreeData();
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
@@ -23,7 +23,7 @@ class Organization extends PureComponent {
   }
 
   // eslint-disable-next-line consistent-return
-  getCategory = async () => {
+  getTreeData = async () => {
     const response = await request('/MDM/TI_Z003/TI_Z00302', {
       method: 'POST',
       data: {
@@ -58,11 +58,11 @@ class Organization extends PureComponent {
 
   render() {
     const { treeData, value } = this.state;
-    console.log(value);
     return (
       <TreeSelect
         style={{ width: '100%' }}
         value={value}
+        allowClear
         dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
         placeholder="请选择部门"
         treeDefaultExpandAll

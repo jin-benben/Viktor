@@ -15,6 +15,7 @@ import {
   Popover,
   Divider,
 } from 'antd';
+import { formLayout, formItemLayout } from '@/utils/publicData';
 
 const FormItem = Form.Item;
 const { TextArea } = Input;
@@ -34,10 +35,6 @@ class CreateForm extends PureComponent {
         Action: '',
         Method: '',
       },
-    };
-    this.formLayout = {
-      labelCol: { span: 7 },
-      wrapperCol: { span: 13 },
     };
   }
 
@@ -72,17 +69,6 @@ class CreateForm extends PureComponent {
       handleSubmit,
     } = this.props;
     const { formVals } = this.state;
-    const formItemLayout = {
-      labelCol: {
-        xs: { span: 24 },
-        sm: { span: 7 },
-      },
-      wrapperCol: {
-        xs: { span: 24 },
-        sm: { span: 16 },
-        md: { span: 10 },
-      },
-    };
     const okHandle = () => {
       form.validateFields((err, fieldsValue) => {
         if (err) return;
@@ -101,28 +87,28 @@ class CreateForm extends PureComponent {
         onCancel={() => handleModalVisible()}
       >
         <Form {...formItemLayout}>
-          <FormItem key="PCode" {...this.formLayout} label="父级代码">
+          <FormItem key="PCode" {...formLayout} label="父级代码">
             {getFieldDecorator('PCode', {
               initialValue: formVals.PCode,
             })(<Input disabled />)}
           </FormItem>
-          <FormItem key="Level" {...this.formLayout} label="级别">
+          <FormItem key="Level" {...formLayout} label="级别">
             {getFieldDecorator('Level', {
               initialValue: formVals.Level,
             })(<Input disabled />)}
           </FormItem>
-          <FormItem key="Code" {...this.formLayout} label="权限ID">
+          <FormItem key="Code" {...formLayout} label="权限ID">
             {getFieldDecorator('Code', {
               initialValue: formVals.Code,
             })(<Input disabled={method === 'U'} />)}
           </FormItem>
-          <FormItem key="Name" {...this.formLayout} label="权限名称">
+          <FormItem key="Name" {...formLayout} label="权限名称">
             {getFieldDecorator('Name', {
               rules: [{ required: true, message: '请输入权限名称！' }],
               initialValue: formVals.Name,
             })(<Input placeholder="请输入权限名称！" />)}
           </FormItem>
-          <FormItem key="Type" {...this.formLayout} label="权限类型">
+          <FormItem key="Type" {...formLayout} label="权限类型">
             {getFieldDecorator('Type', {
               initialValue: formVals.Type,
             })(
@@ -133,7 +119,7 @@ class CreateForm extends PureComponent {
               </Select>
             )}
           </FormItem>
-          <FormItem key="Method" {...this.formLayout} label="方法">
+          <FormItem key="Method" {...formLayout} label="方法">
             {getFieldDecorator('Method', {
               initialValue: formVals.Method,
             })(
@@ -146,7 +132,7 @@ class CreateForm extends PureComponent {
               </Select>
             )}
           </FormItem>
-          <FormItem key="Action" {...this.formLayout} label="Action">
+          <FormItem key="Action" {...formLayout} label="Action">
             {getFieldDecorator('Action', {
               initialValue: formVals.Action,
             })(<TextArea placeholder="请输入Action" />)}

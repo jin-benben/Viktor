@@ -1,17 +1,19 @@
 /* eslint-disable array-callback-return */
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Row, Col, Card, Form, Input, Button, Divider, Icon, message } from 'antd';
+import { Row, Col, Card, Form, Input, Button, Icon, message } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import StaffsModal from '@/components/Modal/Staffs';
+import { formLayout, formItemLayout } from '@/utils/publicData';
 
 const FormItem = Form.Item;
 
 /* eslint react/no-multi-comp:0 */
 @connect(({ authorityGroupAdd, loading }) => ({
   authorityGroupAdd,
-  loading: loading.models.rule,
+  addloading: loading.effects['authorityGroupAdd/add'],
+  updateloading: loading.effects['authorityGroupAdd/update'],
 }))
 @Form.create()
 class authorityGroup extends PureComponent {
@@ -172,18 +174,9 @@ class authorityGroup extends PureComponent {
     const { authorityGroupDetail, employeeList, modalVisible, method } = this.state;
     const {
       form: { getFieldDecorator },
+      addloading,
+      updateloading,
     } = this.props;
-    const formItemLayout = {
-      labelCol: {
-        xs: { span: 24 },
-        sm: { span: 10 },
-      },
-      wrapperCol: {
-        xs: { span: 24 },
-        sm: { span: 14 },
-        md: { span: 10 },
-      },
-    };
     const parentMethods = {
       handleSubmit: this.addEmployee,
       handleModalVisible: this.handleModalVisible,
@@ -191,9 +184,9 @@ class authorityGroup extends PureComponent {
     return (
       <Card bordered={false}>
         <Form {...formItemLayout}>
-          <Row gutter={8}>
+          <Row gutter={8} style={{ marginBottom: 20 }}>
             <Col lg={6} md={12} sm={24}>
-              <FormItem key="Code" {...this.formLayout} label="角色ID">
+              <FormItem key="Code" {...formLayout} label="角色ID">
                 {getFieldDecorator('Code', {
                   rules: [{ required: true, message: '请输入角色ID！' }],
                   initialValue: authorityGroupDetail.Code,
@@ -201,23 +194,11 @@ class authorityGroup extends PureComponent {
               </FormItem>
             </Col>
             <Col lg={6} md={12} sm={24}>
-              <FormItem key="Name" {...this.formLayout} label="角色名称">
+              <FormItem key="Name" {...formLayout} label="角色名称">
                 {getFieldDecorator('Name', {
                   rules: [{ required: true, message: '请输入角色名称！' }],
                   initialValue: authorityGroupDetail.Name,
                 })(<Input placeholder="请输入角色名称" />)}
-              </FormItem>
-            </Col>
-            <Col lg={6} md={12} sm={24}>
-              <FormItem key="Name" {...this.formLayout}>
-                <Button
-                  icon="plus"
-                  style={{ marginBottom: 20 }}
-                  type="primary"
-                  onClick={() => this.handleModalVisible(true)}
-                >
-                  添加成员
-                </Button>
               </FormItem>
             </Col>
           </Row>
@@ -226,14 +207,17 @@ class authorityGroup extends PureComponent {
         <StandardTable data={{ list: employeeList }} rowKey="EmployeeCode" columns={this.columns} />
         <FooterToolbar>
           {method === 'U' ? (
-            <Button onClick={this.updateHandle} type="primary">
+            <Button loading={updateloading} onClick={this.updateHandle} type="primary">
               更新
             </Button>
           ) : (
-            <Button onClick={this.saveHandle} type="primary">
+            <Button loading={addloading} onClick={this.saveHandle} type="primary">
               保存
             </Button>
           )}
+          <Button icon="plus" type="primary" onClick={() => this.handleModalVisible(true)}>
+            添加成员
+          </Button>
         </FooterToolbar>
         <StaffsModal {...parentMethods} modalVisible={modalVisible} />
       </Card>

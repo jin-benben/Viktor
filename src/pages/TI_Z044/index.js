@@ -45,7 +45,7 @@ class PrintTemplate extends PureComponent {
     },
     {
       title: '名称',
-      width: 100,
+      width: 200,
       dataIndex: 'Name',
     },
     {
@@ -57,12 +57,12 @@ class PrintTemplate extends PureComponent {
     {
       title: '单据类型',
       dataIndex: 'BaseType',
-      width: 100,
+      width: 200,
       render: text => <span>{getName(printOrderType, text)}</span>,
     },
     {
       title: '内容模板',
-      width: 100,
+      width: 200,
       dataIndex: 'HtmlTemplateCode',
       render: text => (
         <Ellipsis tooltip lines={5}>
@@ -72,7 +72,7 @@ class PrintTemplate extends PureComponent {
     },
     {
       title: '备注',
-      width: 100,
+      width: 200,
       dataIndex: 'Comment',
     },
   ];
