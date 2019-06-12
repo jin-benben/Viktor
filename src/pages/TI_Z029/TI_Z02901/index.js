@@ -78,20 +78,20 @@ class TI_Z029Component extends React.Component {
           />
         ),
     },
-    {
-      title: '产品描述',
-      dataIndex: 'SKUName',
-      width: 200,
-      align: 'center',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
+    // {
+    //   title: '产品描述',
+    //   dataIndex: 'SKUName',
+    //   width: 200,
+    //   align: 'center',
+    //   render: text => (
+    //     <Ellipsis tooltip lines={1}>
+    //       {text}
+    //     </Ellipsis>
+    //   ),
+    // },
     {
       title: '品牌',
-      width: 200,
+      width: 100,
       align: 'center',
       dataIndex: 'BrandName',
       render: (text, record, index) =>
@@ -321,7 +321,7 @@ class TI_Z029Component extends React.Component {
       align: 'center',
     },
     {
-      title: '最终交期',
+      title: '询价交期',
       width: 100,
       dataIndex: 'InquiryDueDate',
       align: 'center',
@@ -1472,15 +1472,14 @@ class TI_Z029Component extends React.Component {
               <FormItem key="NumAtCard" {...this.formLayout} label="客户参考号">
                 {getFieldDecorator('NumAtCard', {
                   initialValue: formVals.NumAtCard,
-                  rules: [{ required: true, message: '请输入客户参考号' }],
                 })(<Input placeholder="请输入客户参考号" />)}
               </FormItem>
             </Col>
             <Col lg={10} md={12} sm={24}>
-              <FormItem key="DueDate" {...this.formLayout} label="要求交期">
-                {getFieldDecorator('DueDate', {
-                  initialValue: formVals.DueDate ? moment(formVals.DueDate, 'YYYY-MM-DD') : null,
-                  rules: [{ required: true, message: '请选择要求交期！' }],
+              <FormItem key="ToDate" {...this.formLayout} label="有效期至">
+                {getFieldDecorator('ToDate', {
+                  initialValue: formVals.ToDate ? moment(formVals.ToDate, 'YYYY-MM-DD') : null,
+                  rules: [{ required: true, message: '请选择有效期！' }],
                 })(<DatePicker style={{ width: '100%' }} />)}
               </FormItem>
             </Col>
@@ -1491,16 +1490,16 @@ class TI_Z029Component extends React.Component {
             <EditableFormTable
               rowChange={this.rowChange}
               rowKey="Key"
-              scroll={{ x: 4150, y: 600 }}
+              scroll={{ x: 3950, y: 600 }}
               columns={this.skuColumns}
               data={newdata}
             />
             <Row style={{ marginTop: 20 }} gutter={8}>
               <Col lg={10} md={12} sm={24}>
-                <FormItem key="Owner" {...this.formLayout} label="所有者">
+                <FormItem key="Owner" {...this.formLayout} label="销售员">
                   {getFieldDecorator('Owner', {
                     initialValue: formVals.Owner,
-                    rules: [{ required: true, message: '请选择所有者！' }],
+                    rules: [{ required: true, message: '请选择销售员！' }],
                   })(<MDMCommonality initialValue={formVals.Owner} data={Saler} />)}
                 </FormItem>
               </Col>
@@ -1517,17 +1516,25 @@ class TI_Z029Component extends React.Component {
             <Row gutter={8} className="rowFlex">
               <Col lg={8} md={12} sm={24}>
                 <FormItem key="CellphoneNO" {...this.formLayout} label="手机号码">
-                  <span>{formVals.CellphoneNO}</span>
+                  {getFieldDecorator('CellphoneNO', {
+                    initialValue: formVals.CellphoneNO,
+                    rules: [{ required: true, message: '请输入手机号码！' }],
+                  })(<Input disabled placeholder="手机号码" />)}
                 </FormItem>
               </Col>
               <Col lg={8} md={12} sm={24}>
                 <FormItem key="PhoneNO" {...this.formLayout} label="联系人电话">
-                  <span>{formVals.PhoneNO}</span>
+                  {getFieldDecorator('PhoneNO', {
+                    initialValue: formVals.PhoneNO,
+                  })(<Input disabled placeholder="电话号码" />)}
                 </FormItem>
               </Col>
               <Col lg={8} md={12} sm={24}>
                 <FormItem key="Email " {...this.formLayout} label="联系人邮箱">
-                  <span>{formVals.Email}</span>
+                  {getFieldDecorator('Email', {
+                    rules: [{ validator: this.validatorEmail }],
+                    initialValue: formVals.Email,
+                  })(<Input disabled placeholder="请输入邮箱" />)}
                 </FormItem>
               </Col>
               <Col lg={8} md={12} sm={24}>
@@ -1565,12 +1572,11 @@ class TI_Z029Component extends React.Component {
                   })(<MDMCommonality initialValue={formVals.CompanyCode} data={Company} />)}
                 </FormItem>
               </Col>
-
               <Col lg={8} md={12} sm={24}>
-                <FormItem key="ToDate" {...this.formLayout} label="有效期至">
-                  {getFieldDecorator('ToDate', {
-                    initialValue: formVals.ToDate ? moment(formVals.ToDate, 'YYYY-MM-DD') : null,
-                    rules: [{ required: true, message: '请选择有效期！' }],
+                <FormItem key="DueDate" {...this.formLayout} label="要求交期">
+                  {getFieldDecorator('DueDate', {
+                    initialValue: formVals.DueDate ? moment(formVals.DueDate, 'YYYY-MM-DD') : null,
+                    rules: [{ required: true, message: '请选择要求交期！' }],
                   })(<DatePicker style={{ width: '100%' }} />)}
                 </FormItem>
               </Col>

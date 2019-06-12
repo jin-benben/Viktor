@@ -34,6 +34,7 @@ class supplierQuotation extends PureComponent {
       title: '单号',
       width: 80,
       dataIndex: 'DocEntry',
+      fixed: 'left',
       render: text => (
         <Link target="_blank" to={`/purchase/TI_Z027/detail?DocEntry=${text}`}>
           {text}
@@ -55,7 +56,7 @@ class supplierQuotation extends PureComponent {
     {
       title: '单据状态',
       dataIndex: 'Status',
-      width: 80,
+      width: 100,
       render: (text, record) => (
         <Fragment>
           {record.Closed === 'Y' ? (
@@ -87,6 +88,11 @@ class supplierQuotation extends PureComponent {
       ),
     },
     {
+      title: '联系人',
+      width: 100,
+      dataIndex: 'Contacts',
+    },
+    {
       title: '联系方式',
       dataIndex: 'contact',
       width: 150,
@@ -95,6 +101,8 @@ class supplierQuotation extends PureComponent {
           {record.CellphoneNO}
           {record.CellphoneNO ? <Divider type="vertical" /> : null}
           {record.PhoneNO}
+          {record.Email ? <Divider type="vertical" /> : null}
+          {record.Email}
         </Ellipsis>
       ),
     },
@@ -102,6 +110,11 @@ class supplierQuotation extends PureComponent {
       title: '备注',
       width: 100,
       dataIndex: 'Comment',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '采购员',
@@ -115,6 +128,17 @@ class supplierQuotation extends PureComponent {
       },
     },
     {
+      title: '币种',
+      width: 80,
+      dataIndex: 'Currency',
+      render: text => {
+        const {
+          global: { Curr },
+        } = this.props;
+        return <span>{getName(Curr, text)}</span>;
+      },
+    },
+    {
       title: '询价总计',
       width: 100,
       dataIndex: 'InquiryDocTotal',
@@ -123,6 +147,12 @@ class supplierQuotation extends PureComponent {
       title: '本币总计',
       width: 100,
       dataIndex: 'InquiryDocTotalLocal',
+    },
+    {
+      title: '有效日期',
+      width: 100,
+      dataIndex: 'ToDate',
+      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
   ];
 
@@ -141,7 +171,7 @@ class supplierQuotation extends PureComponent {
       type: 'global/getMDMCommonality',
       payload: {
         Content: {
-          CodeList: ['Purchaser'],
+          CodeList: ['Purchaser', 'Curr'],
         },
       },
     });
@@ -319,6 +349,13 @@ class supplierQuotation extends PureComponent {
       supplierQuotation: { supplierQuotationList, pagination },
       loading,
     } = this.props;
+    // let tabwidth=0;
+    // this.columns.map(item=>{
+    //   if(item.width){
+    //     tabwidth+=item.width
+    //   }
+    // })
+    // console.log(tabwidth)
     return (
       <Fragment>
         <Card bordered={false}>
@@ -328,7 +365,7 @@ class supplierQuotation extends PureComponent {
               loading={loading}
               data={{ list: supplierQuotationList }}
               pagination={pagination}
-              scroll={{ x: 800, y: 600 }}
+              scroll={{ x: 1550, y: 600 }}
               rowKey="DocEntry"
               columns={this.columns}
               onChange={this.handleStandardTableChange}

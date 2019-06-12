@@ -99,7 +99,7 @@ class orderLine extends PureComponent {
     {
       title: '联系人',
       width: 100,
-      dataIndex: 'Contacts',
+      dataIndex: 'KHContacts',
     },
     {
       title: '联系方式',

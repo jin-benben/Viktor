@@ -5,7 +5,7 @@ import MDMCommonality from '@/components/Select';
 import moment from 'moment';
 import Link from 'umi/link';
 import { connect } from 'dva';
-import { getName } from '@/utils/utils';
+
 import styles from '../style.less';
 
 const FormItem = Form.Item;
@@ -32,32 +32,6 @@ class OrderPreview extends Component {
       ),
     },
     {
-      title: '单据日期',
-      dataIndex: 'DocDate',
-      width: 120,
-      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
-    },
-    {
-      title: '创建日期',
-      width: 120,
-      dataIndex: 'CreateDate',
-      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
-    },
-    {
-      title: '销售员',
-      width: 100,
-      dataIndex: 'Saler',
-      render: text => {
-        const { Saler } = this.props;
-        return <span>{getName(Saler, text)}</span>;
-      },
-    },
-    {
-      title: '客户参考号',
-      width: 120,
-      dataIndex: 'NumAtCard',
-    },
-    {
       title: 'SKU',
       width: 80,
       dataIndex: 'SKU',
@@ -81,16 +55,6 @@ class OrderPreview extends Component {
       title: '名称',
       width: 100,
       dataIndex: 'ProductName',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
-    {
-      title: '外文名称',
-      width: 100,
-      dataIndex: 'ForeignName',
       render: text => (
         <Ellipsis tooltip lines={1}>
           {text}
@@ -128,18 +92,14 @@ class OrderPreview extends Component {
       ),
     },
     {
-      title: '采购员',
-      width: 80,
-      dataIndex: 'Purchaser',
-      render: text => {
-        const { Purchaser } = this.props;
-        return <span>{getName(Purchaser, text)}</span>;
-      },
-    },
-    {
       title: '数量',
       width: 80,
       dataIndex: 'Quantity',
+    },
+    {
+      title: '价格',
+      width: 80,
+      dataIndex: 'Price',
     },
     {
       title: '单位',
@@ -150,6 +110,11 @@ class OrderPreview extends Component {
       title: '行备注',
       width: 100,
       dataIndex: 'SLineComment',
+    },
+    {
+      title: '运费',
+      width: 80,
+      dataIndex: 'ForeignFreight',
     },
     {
       title: '要求交期',
@@ -221,7 +186,17 @@ class OrderPreview extends Component {
                   交期：<span>{moment(item.InquiryDueDate).format('YYYY-MM-DD')}</span>
                 </li>
                 <li>
-                  询价日期：<span>{moment(item.CreateDate).format('YYYY-MM-DD')}</span>
+                  询价返回时间：<span>{moment(item.PriceRDateTime).format('YYYY-MM-DD')}</span>
+                </li>
+                <li>
+                  询价单号：
+                  <Link
+                    target="_blank"
+                    style={{ marginLeft: 10 }}
+                    to={`/purchase/TI_Z027/update?DocEntry=${item.PInquiryEntry}`}
+                  >
+                    {item.PInquiryEntry}
+                  </Link>
                 </li>
                 <li>
                   最优：
@@ -337,9 +312,10 @@ class OrderPreview extends Component {
             <Table
               bordered
               pagination={false}
+              size="middle"
               dataSource={orderLineList}
               rowKey="LineID"
-              scroll={{ x: 2500 }}
+              scroll={{ x: 1600 }}
               rowSelection={{
                 onChange: this.onSelectRow,
                 selectedRowKeys,

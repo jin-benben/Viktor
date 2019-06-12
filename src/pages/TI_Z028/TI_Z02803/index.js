@@ -223,6 +223,7 @@ class TI_Z02803 extends PureComponent {
               loading={loading}
               data={{ list: orderList }}
               pagination={pagination}
+              size="middle"
               rowKey="DocEntry"
               columns={this.columns}
               onChange={this.handleStandardTableChange}

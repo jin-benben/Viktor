@@ -95,22 +95,20 @@ class SelectionLine extends Component {
       title: '联系人',
       width: 150,
       dataIndex: 'ContactsID',
-      render: (text, record, index) => {
-        return (
-          <Select
-            placeholder="请选择联系人"
-            value={text}
-            onSelect={LineID => this.linkmanChange(LineID, record, index)}
-            style={{ width: '100%' }}
-          >
-            {record.linkmanList.map(option => (
-              <Option key={option.LineID} value={option.LineID}>
-                {option.Name}
-              </Option>
-            ))}
-          </Select>
-        );
-      },
+      render: (text, record, index) => (
+        <Select
+          placeholder="请选择联系人"
+          value={text}
+          onSelect={LineID => this.linkmanChange(LineID, record, index)}
+          style={{ width: '100%' }}
+        >
+          {record.linkmanList.map(option => (
+            <Option key={option.LineID} value={option.LineID}>
+              {option.Name}
+            </Option>
+          ))}
+        </Select>
+      ),
     },
     {
       title: '备注',
@@ -209,6 +207,16 @@ class SelectionLine extends Component {
         title: '名称',
         width: 100,
         dataIndex: 'ProductName',
+        render: text => (
+          <Ellipsis tooltip lines={1}>
+            {text}
+          </Ellipsis>
+        ),
+      },
+      {
+        title: '外文名称',
+        dataIndex: 'ForeignName',
+        width: 100,
         render: text => (
           <Ellipsis tooltip lines={1}>
             {text}

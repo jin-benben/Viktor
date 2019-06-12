@@ -1465,14 +1465,14 @@ class AgreementEdit extends React.Component {
                   {getFieldDecorator('CellphoneNO', {
                     initialValue: formVals.CellphoneNO,
                     rules: [{ required: true, message: '请输入手机号码！' }],
-                  })(<Input placeholder="手机号码" />)}
+                  })(<Input disabled placeholder="手机号码" />)}
                 </FormItem>
               </Col>
               <Col lg={8} md={12} sm={24}>
                 <FormItem key="PhoneNO" {...this.formLayout} label="联系人电话">
                   {getFieldDecorator('PhoneNO', {
                     initialValue: formVals.PhoneNO,
-                  })(<Input placeholder="电话号码" />)}
+                  })(<Input disabled placeholder="电话号码" />)}
                 </FormItem>
               </Col>
               <Col lg={8} md={12} sm={24}>
@@ -1480,7 +1480,7 @@ class AgreementEdit extends React.Component {
                   {getFieldDecorator('Email', {
                     rules: [{ validator: this.validatorEmail }],
                     initialValue: formVals.Email,
-                  })(<Input placeholder="请输入邮箱" />)}
+                  })(<Input disabled placeholder="请输入邮箱" />)}
                 </FormItem>
               </Col>
               <Col lg={8} md={12} sm={24}>

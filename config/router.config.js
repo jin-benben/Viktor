@@ -256,20 +256,20 @@ export default [
             {
               name: '供应商管理',
               icon: 'icongongyingshang',
-              path: '/main/product/TI_Z007',
+              path: '/main/TI_Z007',
               routes: [
                 {
-                  path: '/main/product/TI_Z007/add',
+                  path: '/main/TI_Z007/add',
                   name: '供应商添加',
                   component: './TI_Z007/TI_Z00701',
                 },
                 {
-                  path: '/main/product/TI_Z007/search',
+                  path: '/main/TI_Z007/search',
                   name: '供应商查询',
                   component: './TI_Z007/TI_Z00702',
                 },
                 {
-                  path: '/main/product/TI_Z007/detail',
+                  path: '/main/TI_Z007/detail',
                   name: '供应商详情',
                   hideInMenu: true,
                   component: './TI_Z007/TI_Z00701',

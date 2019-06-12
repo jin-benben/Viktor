@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 /* eslint-disable no-param-reassign */
 /* eslint-disable array-callback-return */
 import React, { Component, Fragment } from 'react';
@@ -75,6 +76,7 @@ class SupplierAsk extends Component {
   }
 
   getDocRate = async lineList => {
+    let isCan = true;
     await Promise.all(
       lineList.map(async item => {
         const newItem = item;
@@ -105,6 +107,11 @@ class SupplierAsk extends Component {
             },
           });
           if (responseSupplier && responseSupplier.Status === 200) {
+            if (responseSupplier.Content.TI_Z00702List.length) {
+              message.warning(`供应商${responseSupplier.Content.Name}下没有维护联系人`);
+              isCan = false;
+              return false;
+            }
             const {
               CellphoneNO,
               Email,
@@ -133,6 +140,7 @@ class SupplierAsk extends Component {
               PhoneNO,
               Contacts: Name,
               ContactsID: LineID,
+              CompanyCode: responseSupplier.Content.CompanyCode,
               linkmanList: [...responseSupplier.Content.TI_Z00702List],
             });
           }
@@ -140,12 +148,14 @@ class SupplierAsk extends Component {
         return newItem;
       })
     );
-    this.setState({
-      confimSelectedRows: [...lineList],
-      lastConfrimList: [...lineList],
-      current: 1,
-      modalVisible: false,
-    });
+    if (isCan) {
+      this.setState({
+        confimSelectedRows: [...lineList],
+        lastConfrimList: [...lineList],
+        current: 1,
+        modalVisible: false,
+      });
+    }
   };
 
   submitSelect = select => {

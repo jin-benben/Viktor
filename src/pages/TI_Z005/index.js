@@ -277,7 +277,7 @@ class BrandList extends PureComponent {
           </a>
           <Divider type="vertical" />
           <a
-            href={`/main/product/TI_Z007/search?BrandName=${record.Name}`}
+            href={`/main/TI_Z007/search?BrandName=${record.Name}`}
             target="_blank"
             rel="noopener noreferrer"
           >

@@ -38,32 +38,11 @@ class TI_Z02801 extends PureComponent {
     },
     {
       title: '单据日期',
-      dataIndex: 'DocDate',
+      dataIndex: 'PriceRDateTime',
       width: 100,
       render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
-    {
-      title: '创建日期',
-      width: 100,
-      dataIndex: 'CreateDate',
-      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
-    },
-    {
-      title: '销售员',
-      width: 80,
-      dataIndex: 'Saler',
-      render: text => {
-        const {
-          global: { Saler },
-        } = this.props;
-        return <span>{getName(Saler, text)}</span>;
-      },
-    },
-    {
-      title: '客户参考号',
-      width: 100,
-      dataIndex: 'NumAtCard',
-    },
+
     {
       title: 'SKU',
       width: 80,
@@ -93,16 +72,6 @@ class TI_Z02801 extends PureComponent {
       title: '名称',
       width: 100,
       dataIndex: 'ProductName',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
-    {
-      title: '外文名称',
-      width: 100,
-      dataIndex: 'ForeignName',
       render: text => (
         <Ellipsis tooltip lines={1}>
           {text}
@@ -140,17 +109,6 @@ class TI_Z02801 extends PureComponent {
       ),
     },
     {
-      title: '采购员',
-      width: 80,
-      dataIndex: 'Purchaser',
-      render: text => {
-        const {
-          global: { Purchaser },
-        } = this.props;
-        return <span>{getName(Purchaser, text)}</span>;
-      },
-    },
-    {
       title: '数量',
       width: 80,
       dataIndex: 'Quantity',
@@ -164,6 +122,16 @@ class TI_Z02801 extends PureComponent {
       title: '行备注',
       width: 100,
       dataIndex: 'SLineComment',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
+    },
+    {
+      title: '运费',
+      width: 80,
+      dataIndex: 'ForeignFreight',
     },
     {
       title: '要求交期',
@@ -188,8 +156,50 @@ class TI_Z02801 extends PureComponent {
     },
     {
       title: '供应商',
-
       dataIndex: 'CardName',
+    },
+    {
+      title: '外文名称',
+      width: 100,
+      dataIndex: 'ForeignName',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
+    },
+    {
+      title: '创建日期',
+      width: 100,
+      dataIndex: 'CreateDate',
+      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
+    },
+    {
+      title: '销售员',
+      width: 80,
+      dataIndex: 'Saler',
+      render: text => {
+        const {
+          global: { Saler },
+        } = this.props;
+        return <span>{getName(Saler, text)}</span>;
+      },
+    },
+    {
+      title: '采购员',
+      width: 80,
+      dataIndex: 'Purchaser',
+      render: text => {
+        const {
+          global: { Purchaser },
+        } = this.props;
+        return <span>{getName(Purchaser, text)}</span>;
+      },
+    },
+    {
+      title: '客户参考号',
+      width: 100,
+      dataIndex: 'NumAtCard',
     },
   ];
 
@@ -198,47 +208,6 @@ class TI_Z02801 extends PureComponent {
     orderLineList: [],
     modalVisible: false,
   };
-
-  childColumns = [
-    {
-      title: '询价日期',
-      width: 100,
-      dataIndex: 'CreateDate',
-      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
-    },
-    {
-      title: '供应商',
-      width: 80,
-      dataIndex: 'CardName',
-    },
-    {
-      title: '价格',
-      width: 100,
-      dataIndex: 'Price',
-    },
-    {
-      title: '型号',
-      width: 100,
-      dataIndex: 'ManufactureNO',
-    },
-    {
-      title: '交期',
-      width: 100,
-      dataIndex: 'InquiryDueDate',
-      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
-    },
-    {
-      title: '备注',
-      width: 100,
-      dataIndex: 'LineComment',
-    },
-    {
-      title: '最优',
-      width: 80,
-      dataIndex: 'IsSelect',
-      render: val => <span>{val === 'Y' ? '是' : '否'}</span>,
-    },
-  ];
 
   componentDidMount() {
     const {
@@ -271,7 +240,7 @@ class TI_Z02801 extends PureComponent {
   }
 
   expandedRowRender = (record, index) => (
-    <Radio.Group onChange={item => this.childChange(item, record, index)}>
+    <Radio.Group onChange={item => this.childChange(item, record, index)} value={record}>
       <List
         itemLayout="horizontal"
         style={{ marginLeft: 60 }}
@@ -280,7 +249,11 @@ class TI_Z02801 extends PureComponent {
         renderItem={item => (
           <List.Item>
             <List.Item.Meta
-              title={`${item.CardName}(${item.CardCode})`}
+              title={
+                <Link target="_blank" to={`/main/TI_Z007/detail?Code=${item.CardCode}`}>
+                  <span style={{ color: '#1890FF' }}> {`${item.CardName}(${item.CardCode})`}</span>
+                </Link>
+              }
               avatar={<Radio value={item} />}
               description={
                 <ul className={styles.itemInfo}>
@@ -307,10 +280,30 @@ class TI_Z02801 extends PureComponent {
                     </Link>
                   </li>
                   <li>
+                    运费：<span>{item.ForeignFreight}</span>
+                    <Link
+                      target="_blank"
+                      style={{ marginLeft: 10 }}
+                      to={`/purchase/TI_Z027/update?DocEntry=${item.PInquiryEntry}`}
+                    >
+                      修改
+                    </Link>
+                  </li>
+                  <li>
                     交期：<span>{moment(item.InquiryDueDate).format('YYYY-MM-DD')}</span>
                   </li>
                   <li>
-                    询价日期：<span>{moment(item.CreateDate).format('YYYY-MM-DD')}</span>
+                    询价返回时间：<span>{moment(item.PriceRDateTime).format('YYYY-MM-DD')}</span>
+                  </li>
+                  <li>
+                    询价单号：
+                    <Link
+                      target="_blank"
+                      style={{ marginLeft: 10 }}
+                      to={`/purchase/TI_Z027/update?DocEntry=${item.PInquiryEntry}`}
+                    >
+                      {item.PInquiryEntry}
+                    </Link>
                   </li>
                   <li>
                     最优：
@@ -438,7 +431,7 @@ class TI_Z02801 extends PureComponent {
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
-      global: { Purchaser },
+      global: { Purchaser, currentUser },
     } = this.props;
 
     const formLayout = {
@@ -474,7 +467,9 @@ class TI_Z02801 extends PureComponent {
           </Col>
           <Col md={6} sm={24}>
             <FormItem key="Owner" {...formLayout} label="采购员">
-              {getFieldDecorator('Owner')(<MDMCommonality data={Purchaser} />)}
+              {getFieldDecorator('Owner', { initialValue: currentUser.Owner })(
+                <MDMCommonality initialValue={currentUser.Owner} data={Purchaser} />
+              )}
             </FormItem>
           </Col>
           <Col md={1} sm={24}>
@@ -519,7 +514,7 @@ class TI_Z02801 extends PureComponent {
               data={{ list: orderLineList }}
               pagination={pagination}
               rowKey="LineID"
-              scroll={{ x: 2250, y: 800 }}
+              scroll={{ x: 2350, y: 800 }}
               rowSelection={{
                 onSelectRow: this.onSelectRow,
               }}
@@ -535,7 +530,6 @@ class TI_Z02801 extends PureComponent {
               Saler={Saler}
               {...parentMethods}
               modalVisible={modalVisible}
-              childColumns={this.childColumns}
             />
           </div>
         </Card>

@@ -24,7 +24,7 @@ class supplierSearch extends PureComponent {
       title: '供应商ID',
       dataIndex: 'Code',
       render: text => (
-        <Link target="_blank" to={`/main/product/TI_Z007/detail?Code=${text}`}>
+        <Link target="_blank" to={`/main/TI_Z007/detail?Code=${text}`}>
           {text}
         </Link>
       ),
@@ -217,7 +217,7 @@ class supplierSearch extends PureComponent {
                 icon="plus"
                 style={{ marginLeft: 8 }}
                 type="primary"
-                onClick={() => router.push('/main/product/TI_Z007/add')}
+                onClick={() => router.push('/main/TI_Z007/add')}
               >
                 新建
               </Button>

@@ -4,6 +4,7 @@ import { getName } from '@/utils/utils';
 import moment from 'moment';
 import { Row, Col, Form, Input, Button, DatePicker, Modal, message } from 'antd';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
+import Link from 'umi/link';
 import request from '@/utils/request';
 import StandardTable from '@/components/StandardTable';
 import DocEntryFrom from '@/components/DocEntryFrom';
@@ -49,14 +50,14 @@ class orderLine extends PureComponent {
   columns = [
     {
       title: '单号',
-      width: 50,
+      width: 100,
       fixed: 'left',
       dataIndex: 'DocEntry',
-    },
-    {
-      title: '行号',
-      width: 50,
-      dataIndex: 'LineID',
+      render: (text, recond) => (
+        <Link target="_blank" to={`/sellabout/TI_Z026/detail?DocEntry=${text}`}>
+          {`${text}-${recond.LineID}`}
+        </Link>
+      ),
     },
     {
       title: '单据日期',
@@ -65,18 +66,11 @@ class orderLine extends PureComponent {
       render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
     {
-      title: '创建日期',
-      width: 100,
-      dataIndex: 'CreateDate',
-      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
-    },
-    {
       title: '客户',
       dataIndex: 'CardName',
       render: text => (
         <Ellipsis tooltip lines={1}>
-          {' '}
-          {text}{' '}
+          {text}
         </Ellipsis>
       ),
     },
@@ -238,22 +232,22 @@ class orderLine extends PureComponent {
         DocDateFrom = moment(fieldsValue.dateArr[0]).format('YYYY-MM-DD');
         DocDateTo = moment(fieldsValue.dateArr[1]).format('YYYY-MM-DD');
       }
-      const queryData = {
-        ...fieldsValue,
-        DocDateFrom,
-        DocDateTo,
-        ...fieldsValue.orderNo,
-      };
-      this.fetchOrder({
+      let { queryData } = this.setState;
+      queryData = {
         Content: {
-          ...this.state.queryData.Content,
-          ...queryData,
+          ...queryData.Content,
+          ...fieldsValue,
+          DocDateFrom,
+          DocDateTo,
+          ...fieldsValue.orderNo,
         },
         page: 1,
         rows: 30,
         sidx: 'DocEntry',
         sord: 'Desc',
-      });
+      };
+      this.setState({ queryData: { ...queryData } });
+      this.fetchOrder(queryData);
     });
   };
 

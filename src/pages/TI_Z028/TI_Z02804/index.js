@@ -303,7 +303,7 @@ class TI_Z02804 extends PureComponent {
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
-      global: { Purchaser },
+      global: { Purchaser, currentUser },
     } = this.props;
 
     const formLayout = {
@@ -326,9 +326,9 @@ class TI_Z02804 extends PureComponent {
             </FormItem>
           </Col>
           <Col md={4} sm={24}>
-            <FormItem key="Owner" {...formLayout} label="所有者">
-              {getFieldDecorator('Owner', { rules: [{ required: true, message: '请选择所有者' }] })(
-                <MDMCommonality data={Purchaser} />
+            <FormItem key="Purchaser" {...formLayout} label="采购员">
+              {getFieldDecorator('Purchaser', { initialValue: currentUser.Owner })(
+                <MDMCommonality initialValue={currentUser.Owner} data={Purchaser} />
               )}
             </FormItem>
           </Col>
@@ -353,8 +353,9 @@ class TI_Z02804 extends PureComponent {
       loading,
     } = this.props;
     const columns = this.columns.map(item => {
-      item.align = 'center';
-      return item;
+      const newItem = item;
+      newItem.align = 'center';
+      return newItem;
     });
 
     return (

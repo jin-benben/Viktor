@@ -3,6 +3,7 @@ import moment from 'moment';
 import { connect } from 'dva';
 import { Form, Modal, Table, message } from 'antd';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
+import Link from 'umi/link';
 import { getName } from '@/utils/utils';
 
 @connect(({ global }) => ({
@@ -19,21 +20,37 @@ class OrderLine extends PureComponent {
   skuColumns = [
     {
       title: '单号',
-      width: 80,
-      fixed: 'left',
+      width: 100,
       dataIndex: 'DocEntry',
-    },
-    {
-      title: '行号',
-      dataIndex: 'LineID',
-      width: 80,
-      align: 'center',
+      render: (val, record) => (
+        <Link target="_blank" to={`/sellabout/TI_Z026/detail?DocEntry=${val}`}>
+          {`${val}-${record.LineID}`}
+        </Link>
+      ),
     },
     {
       title: 'SKU',
       dataIndex: 'SKU',
       align: 'center',
       width: 100,
+    },
+    {
+      title: '名称',
+      dataIndex: 'ProductName',
+      width: 150,
+      align: 'center',
+    },
+    {
+      title: '数量',
+      width: 100,
+      dataIndex: 'Quantity',
+      align: 'center',
+    },
+    {
+      title: '单位',
+      width: 80,
+      dataIndex: 'Unit',
+      align: 'center',
     },
     {
       title: '产品描述',
@@ -52,12 +69,7 @@ class OrderLine extends PureComponent {
       align: 'center',
       dataIndex: 'BrandName',
     },
-    {
-      title: '名称',
-      dataIndex: 'ProductName',
-      width: 150,
-      align: 'center',
-    },
+
     {
       title: '型号',
       width: 150,
@@ -90,18 +102,7 @@ class OrderLine extends PureComponent {
         return <span>{getName(Purchaser, text)}</span>;
       },
     },
-    {
-      title: '数量',
-      width: 100,
-      dataIndex: 'Quantity',
-      align: 'center',
-    },
-    {
-      title: '单位',
-      width: 80,
-      dataIndex: 'Unit',
-      align: 'center',
-    },
+
     {
       title: '要求交期',
       width: 150,

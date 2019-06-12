@@ -1,8 +1,9 @@
+/* eslint-disable consistent-return */
 /* eslint-disable no-param-reassign */
 import React, { Fragment } from 'react';
 
 import moment from 'moment';
-import { Row, Col, Form, Input, Table, Button, DatePicker, Checkbox, message } from 'antd';
+import { Row, Col, Form, Input, Table, Button, DatePicker, Checkbox, message, Icon } from 'antd';
 import { connect } from 'dva';
 import Link from 'umi/link';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
@@ -24,6 +25,7 @@ class NeedTabl extends React.Component {
   state = {
     selectedRowKeys: [],
     orderLineList: [],
+    expandForm: false,
     queryData: {
       Content: {
         SearchText: '',
@@ -67,9 +69,9 @@ class NeedTabl extends React.Component {
       width: 100,
       dataIndex: 'DocEntry',
       render: (val, record) => (
-        <Link target="_blank" to={`/sellabout/TI_Z026/detail?DocEntry=${val}`}>{`${val}-${
-          record.LineID
-        }`}</Link>
+        <Link target="_blank" to={`/sellabout/TI_Z026/detail?DocEntry=${val}`}>
+          {`${val}-${record.LineID}`}
+        </Link>
       ),
     },
     {
@@ -85,26 +87,29 @@ class NeedTabl extends React.Component {
       render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
     {
-      title: '客户',
-      dataIndex: 'CardName',
-      width: 200,
+      title: 'SKU',
+      width: 80,
+      dataIndex: 'SKU',
+    },
+    {
+      title: '名称',
+      width: 100,
+      dataIndex: 'ProductName',
       render: text => (
         <Ellipsis tooltip lines={1}>
-          {' '}
           {text}
         </Ellipsis>
       ),
     },
     {
-      title: '销售员',
+      title: '数量',
       width: 80,
-      dataIndex: 'Owner',
-      render: text => {
-        const {
-          global: { Saler },
-        } = this.props;
-        return <span>{getName(Saler, text)}</span>;
-      },
+      dataIndex: 'Quantity',
+    },
+    {
+      title: '单位',
+      width: 80,
+      dataIndex: 'Unit',
     },
     {
       title: '客户参考号',
@@ -116,11 +121,7 @@ class NeedTabl extends React.Component {
         </Ellipsis>
       ),
     },
-    {
-      title: 'SKU',
-      width: 80,
-      dataIndex: 'SKU',
-    },
+
     {
       title: '产品描述',
       dataIndex: 'SKUName',
@@ -135,10 +136,11 @@ class NeedTabl extends React.Component {
       width: 80,
       dataIndex: 'BrandName',
     },
+
     {
-      title: '名称',
+      title: '外文名称',
+      dataIndex: 'ForeignName',
       width: 100,
-      dataIndex: 'ProductName',
       render: text => (
         <Ellipsis tooltip lines={1}>
           {text}
@@ -176,6 +178,17 @@ class NeedTabl extends React.Component {
       ),
     },
     {
+      title: '销售员',
+      width: 80,
+      dataIndex: 'Owner',
+      render: text => {
+        const {
+          global: { Saler },
+        } = this.props;
+        return <span>{getName(Saler, text)}</span>;
+      },
+    },
+    {
       title: '采购员',
       width: 80,
       dataIndex: 'Purchaser',
@@ -186,16 +199,7 @@ class NeedTabl extends React.Component {
         return <span>{getName(Purchaser, text)}</span>;
       },
     },
-    {
-      title: '数量',
-      width: 80,
-      dataIndex: 'Quantity',
-    },
-    {
-      title: '单位',
-      width: 80,
-      dataIndex: 'Unit',
-    },
+
     {
       title: '仓库',
       width: 120,
@@ -229,15 +233,6 @@ class NeedTabl extends React.Component {
       dataIndex: 'LineTotal',
     },
   ];
-
-  // static getDerivedStateFromProps(nextProps, prevState) {
-  //   if (nextProps.orderLineList !== prevState.orderLineList) {
-  //     return {
-  //       orderLineList: nextProps.orderLineList,
-  //     };
-  //   }
-  //   return null;
-  // }
 
   componentDidMount() {
     const { queryData } = this.state;
@@ -296,6 +291,14 @@ class NeedTabl extends React.Component {
     });
   };
 
+  toggleForm = () => {
+    // 是否展开
+    const { expandForm } = this.state;
+    this.setState({
+      expandForm: !expandForm,
+    });
+  };
+
   // change 客户
   changeSupplier = (supplier, record, index) => {
     const { Code, Currency, CompanyCode } = supplier;
@@ -305,7 +308,6 @@ class NeedTabl extends React.Component {
       return false;
     }
     const { CellphoneNO, Email, PhoneNO, Name, LineID } = supplier.TI_Z00702List[0];
-
     record.SupplierCode = Code;
     record.SupplierName = supplier.Name;
     Object.assign(record, {
@@ -383,12 +385,13 @@ class NeedTabl extends React.Component {
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
-      global: { Saler },
+      global: { Saler, Purchaser },
     } = this.props;
     const formLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 18 },
     };
+    const { expandForm } = this.state;
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
@@ -404,12 +407,12 @@ class NeedTabl extends React.Component {
               )}
             </FormItem>
           </Col>
-
           <Col md={5} sm={24}>
             <FormItem label="销售员" {...formLayout}>
               {getFieldDecorator('Owner')(<MDMCommonality data={Saler} />)}
             </FormItem>
           </Col>
+
           <Col md={3} sm={24}>
             <FormItem>
               {getFieldDecorator('InquiryStatus', {
@@ -418,12 +421,32 @@ class NeedTabl extends React.Component {
               })(<Checkbox>已询价</Checkbox>)}
             </FormItem>
           </Col>
+          {expandForm ? (
+            <Fragment>
+              <Col md={5} sm={24}>
+                <FormItem label="采购员" {...formLayout}>
+                  {getFieldDecorator('Owner')(<MDMCommonality data={Purchaser} />)}
+                </FormItem>
+              </Col>
+            </Fragment>
+          ) : null}
           <Col md={3} sm={24}>
             <FormItem key="searchBtn">
               <span className="submitButtons">
                 <Button type="primary" htmlType="submit">
                   查询
                 </Button>
+                <a style={{ marginLeft: 8 }} onClick={this.toggleForm}>
+                  {expandForm ? (
+                    <span>
+                      收起 <Icon type="up" />
+                    </span>
+                  ) : (
+                    <span>
+                      展开 <Icon type="down" />
+                    </span>
+                  )}
+                </a>
               </span>
             </FormItem>
           </Col>
