@@ -1,9 +1,10 @@
 import React, { PureComponent } from 'react';
 
-import { Icon, Form, Input, Modal, Upload } from 'antd';
+import { Icon, Form, Input, Modal, Select, Upload } from 'antd';
 
 const { TextArea } = Input;
 const FormItem = Form.Item;
+const { Option } = Select;
 
 @Form.create()
 class UpdateLoad extends PureComponent {
@@ -83,6 +84,14 @@ class UpdateLoad extends PureComponent {
         onCancel={() => handleModalVisible()}
       >
         <Form {...formItemLayout}>
+          <FormItem key="QueryType" {...this.formLayout} label="附件类型">
+            {getFieldDecorator('QueryType')(
+              <Select placeholder="请选择">
+                <Option value="1">单据附件</Option>
+                <Option value="2">物料明细附件</Option>
+              </Select>
+            )}
+          </FormItem>
           <FormItem key="AttachmentName" {...this.formLayout} label="附件描述">
             {getFieldDecorator('AttachmentName')(<TextArea placeholder="请输入附件描" />)}
           </FormItem>

@@ -36,6 +36,7 @@ import OrderSource from '@/components/Select/OrderSource';
 import HSCode from '@/components/HSCode';
 import PushLink from '@/components/PushLink';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
+import Attachment from '@/components/Attachment';
 import { getName } from '@/utils/utils';
 
 const { TabPane } = Tabs;
@@ -46,6 +47,7 @@ const { Option } = Select;
   global,
   addloading: loading.effects['inquiryEdit/add'],
   updateloading: loading.effects['inquiryEdit/update'],
+  detailLoading: loading.effects['inquiryEdit/fetch'],
 }))
 @Form.create()
 class InquiryEdit extends React.Component {
@@ -75,26 +77,26 @@ class InquiryEdit extends React.Component {
           />
         ),
     },
-    {
-      title: '产品描述',
-      dataIndex: 'SKUName',
-      width: 200,
-      align: 'center',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {' '}
-          {text}
-        </Ellipsis>
-      ),
-    },
+    // {
+    //   title: '产品描述',
+    //   dataIndex: 'SKUName',
+    //   width: 200,
+    //   align: 'center',
+    //   render: text => (
+    //     <Ellipsis tooltip lines={1}>
+    //       {' '}
+    //       {text}
+    //     </Ellipsis>
+    //   ),
+    // },
     {
       title: '品牌',
-      width: 100,
+      width: 120,
       align: 'center',
       dataIndex: 'BrandName',
       render: (text, record, index) =>
         record.lastIndex ? null : (
-          <div style={{ width: 90 }}>
+          <div style={{ width: 110 }}>
             <Brand
               initialValue={record.BrandName}
               keyType="Name"
@@ -125,7 +127,7 @@ class InquiryEdit extends React.Component {
       title: '型号',
       width: 150,
       dataIndex: 'ManufactureNO',
-      inputType: 'text',
+      inputType: 'textArea',
       editable: true,
       align: 'center',
     },
@@ -133,7 +135,7 @@ class InquiryEdit extends React.Component {
       title: '参数',
       width: 150,
       dataIndex: 'Parameters',
-      inputType: 'text',
+      inputType: 'textArea',
       editable: true,
       align: 'center',
     },
@@ -141,7 +143,7 @@ class InquiryEdit extends React.Component {
       title: '包装',
       width: 150,
       dataIndex: 'Package',
-      inputType: 'text',
+      inputType: 'textArea',
       editable: true,
       align: 'center',
     },
@@ -212,8 +214,8 @@ class InquiryEdit extends React.Component {
     },
     {
       title: '要求名称',
-      width: 80,
-      inputType: 'text',
+      width: 150,
+      inputType: 'textArea',
       dataIndex: 'CustomerName',
       editable: true,
       align: 'center',
@@ -263,8 +265,8 @@ class InquiryEdit extends React.Component {
       align: 'center',
     },
     {
-      title: '销售行总计',
-      width: 120,
+      title: '行总计',
+      width: 100,
       align: 'center',
       dataIndex: 'LineTotal',
       render: (text, record) =>
@@ -272,7 +274,7 @@ class InquiryEdit extends React.Component {
     },
     {
       title: '要求交期',
-      width: 150,
+      width: 120,
       inputType: 'date',
       dataIndex: 'DueDate',
       editable: true,
@@ -304,7 +306,7 @@ class InquiryEdit extends React.Component {
 
     {
       title: '询价最终价',
-      width: 120,
+      width: 100,
       dataIndex: 'InquiryPrice',
       align: 'center',
     },
@@ -323,7 +325,7 @@ class InquiryEdit extends React.Component {
     },
     {
       title: '最终交期',
-      width: 150,
+      width: 100,
       dataIndex: 'InquiryDueDate',
       align: 'center',
     },
@@ -342,18 +344,23 @@ class InquiryEdit extends React.Component {
     {
       title: '询价备注',
       dataIndex: 'InquiryComment',
-      width: 150,
+      width: 100,
       align: 'center',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
-      title: '询价行总计',
-      width: 120,
+      title: '询行总计',
+      width: 100,
       align: 'center',
       dataIndex: 'InquiryLineTotal',
     },
     {
-      title: '询价行总计(本币)',
-      width: 150,
+      title: '询行本总计',
+      width: 120,
       align: 'center',
       dataIndex: 'InquiryLineTotalLocal',
     },
@@ -417,60 +424,6 @@ class InquiryEdit extends React.Component {
           theme="twoTone"
           onClick={() => this.deletePushLine(index)}
         />
-      ),
-    },
-  ];
-
-  attachmentColumns = [
-    {
-      title: '序号',
-      width: 80,
-      align: 'center',
-      dataIndex: 'LineID',
-    },
-    {
-      title: '来源类型',
-      align: 'center',
-      dataIndex: 'BaseType',
-      render: text => <span>{text === '1' ? '正常订单' : '未知'}</span>,
-    },
-    {
-      title: '来源单号',
-      align: 'center',
-      dataIndex: 'BaseEntry',
-    },
-    {
-      title: '附件代码',
-      align: 'center',
-      dataIndex: 'AttachmentCode',
-    },
-    {
-      title: '附件描述',
-      align: 'center',
-      dataIndex: 'AttachmentName',
-    },
-    {
-      title: '附件路径',
-      align: 'center',
-      dataIndex: 'AttachmentPath',
-      render: text => <div style={{ wordWrap: 'break-word', wordBreak: 'break-all' }}>{text}</div>,
-    },
-
-    {
-      title: '操作',
-      align: 'center',
-      render: (text, record, index) => (
-        <Fragment>
-          <a target="_blnk" href={record.AttachmentPath}>
-            <Icon title="预览" type="eye" style={{ color: '#08c', marginRight: 5 }} />
-          </a>
-          <Icon
-            title="删除行"
-            type="delete"
-            theme="twoTone"
-            onClick={() => this.deleteLine(record, index)}
-          />
-        </Fragment>
       ),
     },
   ];
@@ -658,7 +611,6 @@ class InquiryEdit extends React.Component {
   // 海关编码change
   codeChange = (select, record, index) => {
     const { Code, U_VatRate, U_VatRateOther } = select;
-    console.log(select);
     const { formVals } = this.state;
     Object.assign(record, { HSCode: Code, HSVatRate: U_VatRate, HSVatRateOther: U_VatRateOther });
     formVals.TI_Z02602[index] = record;
@@ -796,7 +748,7 @@ class InquiryEdit extends React.Component {
         formVals.TI_Z02602[LineID].TI_Z02604.push({
           LineID: ID,
           BaseType: formVals.OrderType,
-          BaseEntry: formVals.BaseEntry ? formVals.BaseEntry : 1,
+          BaseEntry: formVals.DocEntry ? formVals.DocEntry : 1,
           BaseLineID: last ? last.BaseLineID + 1 : 1,
           AttachmentPath,
           AttachmentCode,
@@ -806,7 +758,7 @@ class InquiryEdit extends React.Component {
         formVals.TI_Z02603.push({
           LineID: lastsku ? lastsku.LineID + 1 : 1,
           BaseType: formVals.OrderType,
-          BaseEntry: formVals.BaseEntry ? formVals.BaseEntry : 1,
+          BaseEntry: formVals.DocEntry ? formVals.DocEntry : 1,
           BaseLineID: lastsku ? lastsku.BaseLineID + 1 : 1,
           AttachmentPath,
           AttachmentCode,
@@ -1058,36 +1010,22 @@ class InquiryEdit extends React.Component {
   };
 
   // 发送需询价
-  submitNeedLine = select => {
-    const { dispatch } = this.props;
-    const loItemList = select.map(item => ({
-      DocEntry: item.DocEntry,
-      LineID: item.LineID,
-    }));
-    dispatch({
-      type: 'inquiryEdit/confirm',
-      payload: {
-        Content: {
-          loItemList,
-        },
-      },
-      callback: response => {
-        if (response && response.Status === 200) {
-          message.success('提交成功');
-
-          this.setState({ needmodalVisible: false });
-        }
-      },
-    });
+  submitNeedLine = () => {
+    message.success('提交成功');
+    this.setState({ needmodalVisible: false });
+    this.getDetail();
   };
 
   // 确认需要采购询价
   selectNeed = () => {
     const { formVals } = this.state;
-    const selectedRows = formVals.TI_Z02602.filter(item => item.IsInquiry === 'N');
+    const selectedRows = formVals.TI_Z02602.filter((item, index) => {
+      const newItem = item;
+      newItem.Key = index;
+      return newItem.IsInquiry === 'N';
+    });
     if (selectedRows.length) {
-      this.setState({ selectedRows: [...selectedRows] });
-      this.handleModalVisible(true);
+      this.setState({ selectedRows: [...selectedRows], needmodalVisible: true });
     } else {
       message.warning('暂无需询价的行');
     }
@@ -1123,6 +1061,7 @@ class InquiryEdit extends React.Component {
       addloading,
       updateloading,
       global: { Saler, Company, currentUser },
+      detailLoading,
     } = this.props;
     const {
       formVals,
@@ -1177,9 +1116,9 @@ class InquiryEdit extends React.Component {
         LineTotal: formVals.DocTotal,
       });
     }
-
+    console.log(formVals);
     return (
-      <Card bordered={false}>
+      <Card bordered={false} loading={detailLoading}>
         <Form {...formItemLayout}>
           <Row gutter={8}>
             <Col lg={10} md={12} sm={24}>
@@ -1266,7 +1205,6 @@ class InquiryEdit extends React.Component {
             <Col lg={10} md={12} sm={24}>
               <FormItem key="NumAtCard" {...this.formLayout} label="客户参考号">
                 {getFieldDecorator('NumAtCard', {
-                  rules: [{ required: true, message: '请输入客户参考号' }],
                   initialValue: formVals.NumAtCard,
                 })(<Input placeholder="请输入客户参考号" />)}
               </FormItem>
@@ -1286,16 +1224,16 @@ class InquiryEdit extends React.Component {
             <EditableFormTable
               rowChange={this.rowChange}
               rowKey="LineID"
-              scroll={{ x: 3800, y: 600 }}
+              scroll={{ x: 3500, y: 600 }}
               columns={this.skuColumns}
               data={newdata}
             />
             <Row style={{ marginTop: 20 }} gutter={8}>
               <Col lg={10} md={12} sm={24}>
-                <FormItem key="Owner" {...this.formLayout} label="所有者">
+                <FormItem key="Owner" {...this.formLayout} label="销售员">
                   {getFieldDecorator('Owner', {
                     initialValue: formVals.Owner,
-                    rules: [{ required: true, message: '请选择所有者！' }],
+                    rules: [{ required: true, message: '请选择销售员！' }],
                   })(<MDMCommonality initialValue={formVals.Owner} data={Saler} />)}
                 </FormItem>
               </Col>
@@ -1310,17 +1248,24 @@ class InquiryEdit extends React.Component {
             <Row className="rowFlex" gutter={8}>
               <Col lg={8} md={12} sm={24}>
                 <FormItem key="CellphoneNO" {...this.formLayout} label="手机号码">
-                  <span>{formVals.CellphoneNO}</span>
+                  {getFieldDecorator('CellphoneNO', {
+                    initialValue: formVals.CellphoneNO,
+                  })(<Input disabled placeholder="手机号码" />)}
                 </FormItem>
               </Col>
               <Col lg={8} md={12} sm={24}>
                 <FormItem key="PhoneNO" {...this.formLayout} label="联系人电话">
-                  <span>{formVals.PhoneNO}</span>
+                  {getFieldDecorator('PhoneNO', {
+                    initialValue: formVals.PhoneNO,
+                  })(<Input disabled placeholder="电话号码" />)}
                 </FormItem>
               </Col>
               <Col lg={8} md={12} sm={24}>
                 <FormItem key="Email " {...this.formLayout} label="联系人邮箱">
-                  <span>{formVals.Email}</span>
+                  {getFieldDecorator('Email', {
+                    rules: [{ validator: this.validatorEmail }],
+                    initialValue: formVals.Email,
+                  })(<Input disabled placeholder="请输入邮箱" />)}
                 </FormItem>
               </Col>
               <Col lg={8} md={12} sm={24}>
@@ -1383,11 +1328,7 @@ class InquiryEdit extends React.Component {
             </Row>
           </TabPane>
           <TabPane tab="附件" key="3">
-            <StandardTable
-              data={{ list: formVals.TI_Z02603 }}
-              rowKey="LineID"
-              columns={this.attachmentColumns}
-            />
+            <Attachment dataSource={formVals.TI_Z02603} deleteLineFun={this.deleteLine} />
           </TabPane>
           <TabPane tab="其他推送人" key="4">
             <StandardTable
@@ -1410,16 +1351,17 @@ class InquiryEdit extends React.Component {
               >
                 新建
               </Button>
-              <Button
-                style={{ marginLeft: 10, marginRight: 10 }}
-                onClick={this.updateHandle}
-                type="primary"
-                loading={updateloading}
-              >
+              <Button onClick={this.updateHandle} type="primary" loading={updateloading}>
                 更新
               </Button>
               <Button onClick={this.selectNeed} type="primary">
                 确认需采购询价
+              </Button>
+              <Button
+                type="primary"
+                onClick={() => router.push(`/sellabout/TI_Z029/add?BaseEntry=${formVals.DocEntry}`)}
+              >
+                复制到销售报价单
               </Button>
             </Fragment>
           ) : (
@@ -1433,7 +1375,7 @@ class InquiryEdit extends React.Component {
             onChange={this.uploadChange}
             data={{ UserCode: currentUser.UserCode, Tonken: currentUser.Token }}
           >
-            <Button style={{ marginLeft: 20 }} type="primary">
+            <Button style={{ marginLeft: 8 }} type="primary">
               上传物料
             </Button>
           </Upload>
@@ -1441,18 +1383,14 @@ class InquiryEdit extends React.Component {
         <UpdateLoad {...uploadmodalMethods} modalVisible={uploadmodalVisible} />
         <SKUModal {...parentMethods} modalVisible={skuModalVisible} />
         <Modal
-          width={640}
+          width={960}
           destroyOnClose
           title="物料行附件"
           visible={attachmentVisible}
           onOk={() => this.handleModalVisible(false)}
           onCancel={() => this.handleModalVisible(false)}
         >
-          <StandardTable
-            data={{ list: thisLine.TI_Z02604 }}
-            rowKey="LineID"
-            columns={this.attachmentColumns}
-          />
+          <Attachment dataSource={thisLine.TI_Z02604} deleteLineFun={this.deleteLine} />
         </Modal>
         <NeedAskPrice data={selectedRows} {...needParentMethods} modalVisible={needmodalVisible} />
         {/* 其他推送人 */}

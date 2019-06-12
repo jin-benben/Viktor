@@ -19,7 +19,7 @@ import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import StandardTable from '@/components/StandardTable';
 import DocEntryFrom from '@/components/DocEntryFrom';
 import MyTag from '@/components/Tag';
-import NeedAskPrice from './components';
+import NeedAskPrice from '../components/needAskPrice';
 import MDMCommonality from '@/components/Select';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import Link from 'umi/link';
@@ -42,6 +42,7 @@ class orderLine extends PureComponent {
     expandForm: false,
     modalVisible: false,
     selectedRows: [],
+    needAsk: [],
   };
 
   columns = [
@@ -51,9 +52,9 @@ class orderLine extends PureComponent {
       fixed: 'left',
       dataIndex: 'DocEntry',
       render: (text, recond) => (
-        <Link target="_blank" to={`/sellabout/TI_Z026/detail?DocEntry=${text}`}>{`${text}-${
-          recond.LineID
-        }`}</Link>
+        <Link target="_blank" to={`/sellabout/TI_Z026/detail?DocEntry=${text}`}>
+          {`${text}-${recond.LineID}`}
+        </Link>
       ),
     },
     {
@@ -147,6 +148,16 @@ class orderLine extends PureComponent {
       title: '名称',
       width: 100,
       dataIndex: 'ProductName',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
+    },
+    {
+      title: '外文名称',
+      width: 100,
+      dataIndex: 'ForeignName',
       render: text => (
         <Ellipsis tooltip lines={1}>
           {text}
@@ -300,7 +311,7 @@ class orderLine extends PureComponent {
         DocDateFrom,
         DocDateTo,
         ...fieldsValue.orderNo,
-        IsInquiry: fieldsValue.IsInquiry && fieldsValue.IsInquiry ? 'N' : 'Y',
+        IsInquiry: fieldsValue.IsInquiry ? 'N' : 'Y',
       };
       dispatch({
         type: 'orderLine/fetch',
@@ -332,46 +343,22 @@ class orderLine extends PureComponent {
     this.setState({ selectedRows: [...selectedRows] });
   };
 
-  // 发送需询价
-  submitNeedLine = select => {
-    const {
-      dispatch,
-      orderLine: { queryData },
-    } = this.props;
-    const loItemList = select.map(item => ({
-      DocEntry: item.DocEntry,
-      LineID: item.LineID,
-    }));
-    dispatch({
-      type: 'orderLine/need',
-      payload: {
-        Content: {
-          loItemList,
-        },
-      },
-      callback: response => {
-        if (response && response.Status === 200) {
-          message.success('提交成功');
-          dispatch({
-            type: 'orderLine/fetch',
-            payload: {
-              ...queryData,
-            },
-          });
-          this.setState({ modalVisible: false, selectedRows: [] });
-        }
-      },
-    });
+  // 发送需询价success回调
+  submitNeedLine = () => {
+    message.success('提交成功');
+    this.setState({ modalVisible: false });
+    this.getDetail();
   };
 
   // 确认需要采购询价
   selectNeed = () => {
     const { selectedRows } = this.state;
-
+    let { needAsk } = this.state;
+    needAsk = selectedRows.filter(item => item.IsInquiry === 'N');
     if (selectedRows.length) {
-      this.handleModalVisible(true);
+      this.setState({ needAsk: [...needAsk], modalVisible: true });
     } else {
-      message.warning('请先选择');
+      message.warning('暂无需询价的行');
     }
   };
 
@@ -492,7 +479,7 @@ class orderLine extends PureComponent {
       orderLine: { orderLineList, pagination },
       loading,
     } = this.props;
-    const { selectedRows, modalVisible } = this.state;
+    const { needAsk, modalVisible } = this.state;
 
     const columns = this.columns.map(item => {
       // eslint-disable-next-line no-param-reassign
@@ -504,6 +491,8 @@ class orderLine extends PureComponent {
       handleSubmit: this.submitNeedLine,
       handleModalVisible: this.handleModalVisible,
     };
+
+    console.log(needAsk);
 
     return (
       <Fragment>
@@ -522,7 +511,7 @@ class orderLine extends PureComponent {
               }}
               onChange={this.handleStandardTableChange}
             />
-            <NeedAskPrice data={selectedRows} {...parentMethods} modalVisible={modalVisible} />
+            <NeedAskPrice data={needAsk} {...parentMethods} modalVisible={modalVisible} />
           </div>
         </Card>
         <FooterToolbar>

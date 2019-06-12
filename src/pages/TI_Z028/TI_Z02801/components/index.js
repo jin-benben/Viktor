@@ -26,9 +26,9 @@ class OrderPreview extends Component {
       width: 100,
       dataIndex: 'BaseEntry',
       render: (text, recond) => (
-        <Link target="_blank" to={`/sellabout/TI_Z026/detail?DocEntry=${text}`}>{`${text}-${
-          recond.BaseLineID
-        }`}</Link>
+        <Link target="_blank" to={`/sellabout/TI_Z026/detail?DocEntry=${text}`}>
+          {`${text}-${recond.BaseLineID}`}
+        </Link>
       ),
     },
     {
@@ -81,6 +81,16 @@ class OrderPreview extends Component {
       title: '名称',
       width: 100,
       dataIndex: 'ProductName',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
+    },
+    {
+      title: '外文名称',
+      width: 100,
+      dataIndex: 'ForeignName',
       render: text => (
         <Ellipsis tooltip lines={1}>
           {text}

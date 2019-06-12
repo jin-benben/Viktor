@@ -78,3 +78,12 @@ export async function companyRule(params) {
     },
   });
 }
+
+export async function queryBaseEntryleRule(params) {
+  return request('/OMS/TI_Z026/TI_Z02602', {
+    method: 'POST',
+    data: {
+      ...params,
+    },
+  });
+}

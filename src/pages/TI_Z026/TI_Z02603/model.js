@@ -1,4 +1,4 @@
-import { querySingleRule, cancelRule, confirmRule } from '../service';
+import { querySingleRule, cancelRule } from '../service';
 
 export default {
   namespace: 'inquiryPreview',
@@ -44,10 +44,6 @@ export default {
           },
         });
       }
-    },
-    *confirm({ payload, callback }, { call }) {
-      const response = yield call(confirmRule, payload);
-      if (callback) callback(response);
     },
     *cancel({ payload, callback }, { call }) {
       const response = yield call(cancelRule, payload);

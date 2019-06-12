@@ -100,6 +100,16 @@ class TI_Z02801 extends PureComponent {
       ),
     },
     {
+      title: '外文名称',
+      width: 100,
+      dataIndex: 'ForeignName',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
+    },
+    {
       title: '型号',
       width: 100,
       dataIndex: 'ManufactureNO',

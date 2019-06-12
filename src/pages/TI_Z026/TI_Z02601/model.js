@@ -1,12 +1,4 @@
-import {
-  querySingleRule,
-  queryHSCodeRule,
-  addRule,
-  updateRule,
-  cancelRule,
-  confirmRule,
-  companyRule,
-} from '../service';
+import { querySingleRule, addRule, updateRule, cancelRule, companyRule } from '../service';
 
 export default {
   namespace: 'inquiryEdit',
@@ -97,10 +89,6 @@ export default {
     },
     *cancel({ payload, callback }, { call }) {
       const response = yield call(cancelRule, payload);
-      if (callback) callback(response);
-    },
-    *confirm({ payload, callback }, { call }) {
-      const response = yield call(confirmRule, payload);
       if (callback) callback(response);
     },
   },

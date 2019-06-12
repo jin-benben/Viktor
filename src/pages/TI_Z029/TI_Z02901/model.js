@@ -6,6 +6,7 @@ import {
   confirmRule,
   costCheckRule,
   companyRule,
+  queryBaseEntryleRule,
 } from '../service';
 
 export default {
@@ -63,6 +64,11 @@ export default {
         });
       }
     },
+    *getBaseEntry({ payload, callback }, { call }) {
+      const response = yield call(queryBaseEntryleRule, payload);
+      if (callback) callback(response);
+    },
+
     *add({ payload, callback }, { call }) {
       const response = yield call(addRule, payload);
       if (callback) callback(response);

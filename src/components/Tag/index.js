@@ -7,16 +7,16 @@ const MyTag = props => {
   const tagsfun = () => {
     switch (type) {
       case '报价':
-        whichTag = value === 'C' ? <Tag color="gold">未报价</Tag> : <Tag color="green">已报价</Tag>;
+        whichTag = value === 'O' ? <Tag color="gold">未报价</Tag> : <Tag color="green">已报价</Tag>;
         break;
       case '询价':
-        whichTag = value === 'C' ? <Tag color="gold">未询价</Tag> : <Tag color="green">已询价</Tag>;
+        whichTag = value === 'O' ? <Tag color="gold">未询价</Tag> : <Tag color="green">已询价</Tag>;
         break;
       case '关闭':
         whichTag = value === 'Y' ? <Tag color="red">已关闭</Tag> : <Tag color="green">未关闭</Tag>;
         break;
       case '确认':
-        whichTag = value === 'C' ? <Tag color="gold">已确认</Tag> : <Tag color="green">未确认</Tag>;
+        whichTag = value === 'C' ? <Tag color="green">已确认</Tag> : <Tag color="gold">未确认</Tag>;
         break;
       case '通过':
         whichTag = value === 'Y' ? <Tag color="green">已通过</Tag> : <Tag color="gold">已通过</Tag>;

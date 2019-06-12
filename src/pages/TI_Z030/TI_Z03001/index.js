@@ -114,6 +114,14 @@ class AgreementEdit extends React.Component {
       align: 'center',
     },
     {
+      title: '外文名称',
+      dataIndex: 'ForeignName',
+      inputType: 'textArea',
+      width: 150,
+      editable: true,
+      align: 'center',
+    },
+    {
       title: '型号',
       width: 150,
       dataIndex: 'ManufactureNO',
@@ -213,7 +221,7 @@ class AgreementEdit extends React.Component {
     {
       title: '要求名称',
       width: 80,
-      inputType: 'text',
+      inputType: 'textArea',
       dataIndex: 'CustomerName',
       editable: true,
       align: 'center',
@@ -325,11 +333,11 @@ class AgreementEdit extends React.Component {
       width: 80,
       dataIndex: 'Purchaser',
       align: 'center',
-      render: text => {
+      render: (text, record) => {
         const {
           global: { Purchaser },
         } = this.props;
-        return <span>{getName(Purchaser, text)}</span>;
+        return record.lastIndex ? '' : <span>{getName(Purchaser, text)}</span>;
       },
     },
     {
@@ -1394,10 +1402,9 @@ class AgreementEdit extends React.Component {
               </FormItem>
             </Col>
             <Col lg={10} md={12} sm={24}>
-              <FormItem key="DueDate" {...this.formLayout} label="要求交期">
-                {getFieldDecorator('DueDate', {
-                  initialValue: formVals.DueDate ? moment(formVals.DueDate, 'YYYY-MM-DD') : null,
-                  rules: [{ required: true, message: '请选择要求交期！' }],
+              <FormItem key="ToDate" {...this.formLayout} label="有效期至">
+                {getFieldDecorator('ToDate', {
+                  initialValue: formVals.ToDate ? moment(formVals.ToDate, 'YYYY-MM-DD') : null,
                 })(<DatePicker style={{ width: '100%' }} />)}
               </FormItem>
             </Col>
@@ -1429,7 +1436,7 @@ class AgreementEdit extends React.Component {
             <EditableFormTable
               rowChange={this.rowChange}
               rowKey="Key"
-              scroll={{ x: 3400, y: 600 }}
+              scroll={{ x: 3550, y: 600 }}
               columns={this.skuColumns}
               data={newdata}
             />
@@ -1513,11 +1520,11 @@ class AgreementEdit extends React.Component {
                   })(<MDMCommonality initialValue={formVals.CompanyCode} data={Company} />)}
                 </FormItem>
               </Col>
-
               <Col lg={8} md={12} sm={24}>
-                <FormItem key="ToDate" {...this.formLayout} label="有效期至">
-                  {getFieldDecorator('ToDate', {
-                    initialValue: formVals.ToDate ? moment(formVals.ToDate, 'YYYY-MM-DD') : null,
+                <FormItem key="DueDate" {...this.formLayout} label="要求交期">
+                  {getFieldDecorator('DueDate', {
+                    initialValue: formVals.DueDate ? moment(formVals.DueDate, 'YYYY-MM-DD') : null,
+                    rules: [{ required: true, message: '请选择要求交期！' }],
                   })(<DatePicker style={{ width: '100%' }} />)}
                 </FormItem>
               </Col>

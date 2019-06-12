@@ -235,7 +235,8 @@ class InquiryEdit extends React.Component {
       title: '确认状态',
       dataIndex: 'LineStatus',
       width: 80,
-      render: (text, record) => <MyTag type="确认" value={record.LineStatus} />,
+      render: (text, record) =>
+        record.lastIndex ? '' : <MyTag type="确认" value={record.LineStatus} />,
     },
     {
       title: '操作',

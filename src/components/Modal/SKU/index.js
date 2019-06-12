@@ -106,11 +106,6 @@ class SKUModal extends PureComponent {
     },
   ];
 
-  componentDidMount() {
-    const { queryData } = this.state;
-    this.getSKU(queryData);
-  }
-
   okHandle = () => {
     const { selectedRows } = this.state;
     const { handleSubmit } = this.props;

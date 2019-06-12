@@ -1,22 +1,32 @@
-import React, { PureComponent } from 'react';
+/* eslint-disable array-callback-return */
+import React from 'react';
 import moment from 'moment';
 import { connect } from 'dva';
-import { Form, Modal, message } from 'antd';
-import StandardTable from '@/components/StandardTable';
+import { Form, Modal, message, Table } from 'antd';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
+import MDMCommonality from '@/components/Select';
+import { purchaserRule, confirmRule } from '../service';
 import { getName } from '@/utils/utils';
 
 @connect(({ global }) => ({
   global,
 }))
 @Form.create()
-class OrderLine extends PureComponent {
+class OrderLine extends React.Component {
   state = {
     data: [],
     selectedRows: [],
+    isCan: false, // 是否要去拉去最新的采购员
   };
 
   skuColumns = [
+    {
+      title: '单号',
+      dataIndex: 'DocEntry',
+      fixed: 'left',
+      width: 50,
+      align: 'center',
+    },
     {
       title: '行号',
       dataIndex: 'LineID',
@@ -50,6 +60,17 @@ class OrderLine extends PureComponent {
     {
       title: '名称',
       dataIndex: 'ProductName',
+      width: 150,
+      align: 'center',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
+    },
+    {
+      title: '外文名称',
+      dataIndex: 'ForeignName',
       width: 150,
       align: 'center',
       render: text => (
@@ -99,6 +120,26 @@ class OrderLine extends PureComponent {
       align: 'center',
     },
     {
+      title: '采购员',
+      width: 100,
+      dataIndex: 'Purchaser',
+      align: 'center',
+      render: (text, record, index) => {
+        const {
+          global: { Purchaser },
+        } = this.props;
+        return (
+          <MDMCommonality
+            onChange={value => {
+              this.rowSelectChange(value, record, index);
+            }}
+            initialValue={text}
+            data={Purchaser}
+          />
+        );
+      },
+    },
+    {
       title: '要求交期',
       width: 100,
       dataIndex: 'DueDate',
@@ -118,14 +159,14 @@ class OrderLine extends PureComponent {
       },
     },
     {
-      title: '建议价',
+      title: '价格',
       width: 100,
       dataIndex: 'Price',
       align: 'center',
     },
     {
       title: '行总计',
-      width: 100,
+
       align: 'center',
       dataIndex: 'LineTotal',
     },
@@ -133,31 +174,84 @@ class OrderLine extends PureComponent {
 
   static getDerivedStateFromProps(nextProps, prevState) {
     if (nextProps.data !== prevState.data) {
+      const selectedRowKeys = nextProps.data.map(item => item.Key);
       return {
         data: nextProps.data,
         selectedRows: nextProps.data,
+        selectedRowKeys,
       };
     }
     return null;
   }
 
-  okHandle = () => {
+  shouldComponentUpdate(nextProps, nextState) {
+    if (nextProps.data.length && nextState.data.length) {
+      return true;
+    }
+    return false;
+  }
+
+  componentDidUpdate() {
+    const { data, isCan } = this.state;
+    if (isCan && data.length) {
+      this.getPurchaser(data);
+    }
+  }
+
+  getPurchaser = async data => {
+    // eslint-disable-next-line consistent-return
+    const loItemList = data.map(item => {
+      if (item.IsInquiry === 'N') {
+        return {
+          DocEntry: item.DocEntry,
+          LineID: item.LineID,
+        };
+      }
+    });
+    const response = await purchaserRule({ Content: { loItemList } });
+    this.setState({ isCan: false });
+    if (response && response.Status === 200) {
+      const { ItemList } = response.Content;
+      const newData = data.map((row, index) => {
+        Object.assign(row, ItemList[index], { Key: index });
+        return row;
+      });
+      this.setState({ data: [...newData] });
+    }
+  };
+
+  rowSelectChange = (value, record, index) => {
+    const { selectedRows } = this.state;
+    Object.assign(record, { Purchaser: value });
+    selectedRows[index] = record;
+    this.setState({ selectedRows: [...selectedRows] });
+  };
+
+  okHandle = async () => {
     const { selectedRows } = this.state;
     const { handleSubmit } = this.props;
     if (selectedRows.length) {
-      handleSubmit(selectedRows);
+      const loItemList = selectedRows.map(item => ({
+        DocEntry: item.DocEntry,
+        LineID: item.LineID,
+      }));
+      const response = await confirmRule({ Content: { loItemList } });
+      if (response && response.Status === 200) {
+        handleSubmit(selectedRows);
+      }
     } else {
       message.warning('请先选择');
     }
   };
 
-  onSelectRow = selectedRows => {
-    this.setState({ selectedRows: [...selectedRows] });
+  onSelectRow = (selectedRowKeys, selectedRows) => {
+    this.setState({ selectedRows: [...selectedRows], selectedRowKeys: [...selectedRowKeys] });
   };
 
   render() {
     const { modalVisible, handleModalVisible } = this.props;
-    const { data, selectedRows } = this.state;
+    const { data, selectedRowKeys } = this.state;
+    console.log(selectedRowKeys);
     return (
       <Modal
         width={1200}
@@ -168,17 +262,18 @@ class OrderLine extends PureComponent {
         onCancel={() => handleModalVisible()}
       >
         <div className="tableList">
-          <StandardTable
-            data={{ list: data }}
+          <Table
+            bordered
+            dataSource={data}
+            size="middle"
+            pagination={false}
             rowKey="Key"
-            columns={this.skuColumns}
-            scroll={{ x: 1500 }}
+            scroll={{ x: 1750, y: 500 }}
             rowSelection={{
-              onSelectRow: this.onSelectRow,
+              onChange: this.onSelectRow,
+              selectedRowKeys,
             }}
-            isAll
-            selectedRows={selectedRows}
-            onChange={this.handleStandardTableChange}
+            columns={this.skuColumns}
           />
         </div>
       </Modal>

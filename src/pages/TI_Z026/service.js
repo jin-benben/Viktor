@@ -63,6 +63,15 @@ export async function confirmRule(params) {
   });
 }
 
+export async function purchaserRule(params) {
+  return request('/OMS/TI_Z026/TI_Z02610', {
+    method: 'POST',
+    data: {
+      ...params,
+    },
+  });
+}
+
 export async function companyRule(params) {
   return request('/MDM/TI_Z006/TI_Z00603', {
     method: 'POST',

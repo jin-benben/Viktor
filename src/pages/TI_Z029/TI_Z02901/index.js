@@ -108,7 +108,15 @@ class TI_Z029Component extends React.Component {
     {
       title: '名称',
       dataIndex: 'ProductName',
-      inputType: 'text',
+      inputType: 'textArea',
+      width: 150,
+      editable: true,
+      align: 'center',
+    },
+    {
+      title: '外文名称',
+      dataIndex: 'ForeignName',
+      inputType: 'textArea',
       width: 150,
       editable: true,
       align: 'center',
@@ -117,7 +125,7 @@ class TI_Z029Component extends React.Component {
       title: '型号',
       width: 150,
       dataIndex: 'ManufactureNO',
-      inputType: 'text',
+      inputType: 'textArea',
       editable: true,
       align: 'center',
     },
@@ -125,7 +133,7 @@ class TI_Z029Component extends React.Component {
       title: '参数',
       width: 150,
       dataIndex: 'Parameters',
-      inputType: 'text',
+      inputType: 'textArea',
       editable: true,
       align: 'center',
     },
@@ -133,7 +141,7 @@ class TI_Z029Component extends React.Component {
       title: '包装',
       width: 150,
       dataIndex: 'Package',
-      inputType: 'text',
+      inputType: 'textArea',
       editable: true,
       align: 'center',
     },
@@ -281,15 +289,13 @@ class TI_Z029Component extends React.Component {
     },
     {
       title: '销建议价',
-      width: 120,
-      inputType: 'text',
+      width: 100,
       dataIndex: 'AdvisePrice',
-      editable: true,
       align: 'center',
     },
     {
       title: '销行总计',
-      width: 120,
+      width: 100,
       align: 'center',
       dataIndex: 'LineTotal',
       render: (text, record) =>
@@ -297,7 +303,7 @@ class TI_Z029Component extends React.Component {
     },
     {
       title: '询价最终价',
-      width: 120,
+      width: 100,
       dataIndex: 'InquiryPrice',
       align: 'center',
     },
@@ -309,27 +315,29 @@ class TI_Z029Component extends React.Component {
     },
     {
       title: '单据汇率',
-      width: 100,
+      width: 80,
       inputType: 'text',
       dataIndex: 'DocRate',
       align: 'center',
     },
     {
       title: '最终交期',
-      width: 150,
+      width: 100,
       dataIndex: 'InquiryDueDate',
       align: 'center',
+      render: (val, record) =>
+        record.lastIndex ? '' : <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
     {
       title: '采购员',
       width: 100,
       dataIndex: 'Purchaser',
       align: 'center',
-      render: text => {
+      render: (val, record) => {
         const {
           global: { Purchaser },
         } = this.props;
-        return <span>{getName(Purchaser, text)}</span>;
+        return record.lastIndex ? '' : <span>{getName(Purchaser, val)}</span>;
       },
     },
     {
@@ -577,6 +585,7 @@ class TI_Z029Component extends React.Component {
       },
     });
     this.getDetail();
+    this.getBaseEntry();
   }
 
   componentWillUnmount() {
@@ -626,7 +635,9 @@ class TI_Z029Component extends React.Component {
       nextProps.TI_Z029.linkmanList !== prevState.linkmanList
     ) {
       return {
-        formVals: nextProps.TI_Z029.orderDetail,
+        formVals: nextProps.TI_Z029.orderDetail.DocEntry
+          ? nextProps.TI_Z029.orderDetail
+          : prevState.formVals,
         addList: nextProps.TI_Z029.addList.length ? nextProps.TI_Z029.addList : prevState.addList,
         linkmanList: nextProps.TI_Z029.linkmanList.length
           ? nextProps.TI_Z029.linkmanList
@@ -635,6 +646,88 @@ class TI_Z029Component extends React.Component {
     }
     return null;
   }
+
+  getBaseEntry = () => {
+    const {
+      dispatch,
+      location: { query },
+    } = this.props;
+    if (query.BaseEntry) {
+      dispatch({
+        type: 'TI_Z029/getBaseEntry',
+        payload: {
+          Content: {
+            DocEntry: query.BaseEntry,
+          },
+        },
+        callback: response => {
+          if (response && response.Status === 200) {
+            dispatch({
+              type: 'TI_Z029/company',
+              payload: {
+                Content: {
+                  Code: response.Content.CardCode,
+                },
+              },
+            });
+            const {
+              Address,
+              AddressID,
+              Area,
+              AreaID,
+              CardCode,
+              CardName,
+              CellphoneNO,
+              City,
+              CityID,
+              Comment,
+              CompanyCode,
+              Contacts,
+              Email,
+              NumAtCard,
+              OrderType,
+              Owner,
+              PhoneNO,
+              Province,
+              ProvinceID,
+              UserID,
+              DueDate,
+              ToDate,
+            } = response.Content;
+            this.setState({
+              formVals: {
+                Address,
+                AddressID,
+                Area,
+                AreaID,
+                CardCode,
+                CardName,
+                CellphoneNO,
+                City,
+                CityID,
+                Comment,
+                CompanyCode,
+                Contacts,
+                Email,
+                NumAtCard,
+                OrderType,
+                Owner,
+                PhoneNO,
+                Province,
+                ProvinceID,
+                DueDate,
+                ToDate,
+                DocDate: new Date(),
+                CreateDate: new Date(),
+                UserID,
+                TI_Z02902: [],
+              },
+            });
+          }
+        },
+      });
+    }
+  };
 
   getDetail = () => {
     const {
@@ -1296,19 +1389,15 @@ class TI_Z029Component extends React.Component {
           <Row gutter={8}>
             <Col lg={10} md={12} sm={24}>
               <FormItem key="CardCode" {...this.formLayout} label="客户ID">
-                {formVals.DocEntry ? (
-                  <Input disabled value={formVals.CardCode} placeholder="单号" />
-                ) : (
-                  getFieldDecorator('CardCode', {
-                    rules: [{ required: true, message: '请选择客户！' }],
-                    initialValue: { key: formVals.CardName, label: formVals.CardCode },
-                  })(
-                    <CompanySelect
-                      initialValue={{ key: formVals.CardName, label: formVals.CardCode }}
-                      onChange={this.changeCompany}
-                      keyType="Code"
-                    />
-                  )
+                {getFieldDecorator('CardCode', {
+                  rules: [{ required: true, message: '请选择客户！' }],
+                  initialValue: { key: formVals.CardName, label: formVals.CardCode },
+                })(
+                  <CompanySelect
+                    initialValue={{ key: formVals.CardName, label: formVals.CardCode }}
+                    onChange={this.changeCompany}
+                    keyType="Code"
+                  />
                 )}
               </FormItem>
             </Col>
@@ -1323,19 +1412,15 @@ class TI_Z029Component extends React.Component {
           <Row gutter={8}>
             <Col lg={10} md={12} sm={24}>
               <FormItem key="CardName" {...this.formLayout} label="客户名称">
-                {formVals.DocEntry ? (
-                  <Input disabled value={formVals.CardName} placeholder="单号" />
-                ) : (
-                  getFieldDecorator('CardName', {
-                    rules: [{ required: true, message: '请输入客户名称！' }],
-                    initialValue: { key: formVals.CardCode, label: formVals.CardName },
-                  })(
-                    <CompanySelect
-                      initialValue={{ key: formVals.CardCode, label: formVals.CardName }}
-                      onChange={this.changeCompany}
-                      keyType="Name"
-                    />
-                  )
+                {getFieldDecorator('CardName', {
+                  rules: [{ required: true, message: '请输入客户名称！' }],
+                  initialValue: { key: formVals.CardCode, label: formVals.CardName },
+                })(
+                  <CompanySelect
+                    initialValue={{ key: formVals.CardCode, label: formVals.CardName }}
+                    onChange={this.changeCompany}
+                    keyType="Name"
+                  />
                 )}
               </FormItem>
             </Col>
@@ -1406,7 +1491,7 @@ class TI_Z029Component extends React.Component {
             <EditableFormTable
               rowChange={this.rowChange}
               rowKey="Key"
-              scroll={{ x: 4000, y: 600 }}
+              scroll={{ x: 4150, y: 600 }}
               columns={this.skuColumns}
               data={newdata}
             />

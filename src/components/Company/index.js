@@ -20,7 +20,7 @@ class CompanySelect extends PureComponent {
 
   state = {
     data: [],
-    value: { key: '' },
+    value: { key: '', label: '' },
     companyModal: false,
     fetching: false,
   };
@@ -31,7 +31,7 @@ class CompanySelect extends PureComponent {
         data: nextProps.global.CustomerList,
       };
     }
-    if (nextProps.initialValue !== prevState.value) {
+    if (nextProps.initialValue.key !== undefined && nextProps.initialValue !== prevState.value) {
       return {
         value: nextProps.initialValue,
       };
@@ -99,7 +99,6 @@ class CompanySelect extends PureComponent {
       handleSubmit: this.changeCompany,
       handleModalVisible: this.handleModalVisible,
     };
-
     return (
       <Fragment>
         <Select

@@ -8,7 +8,6 @@ import Brand from '@/components/Brand';
 import HSCode from '@/components/HSCode';
 import FHSCode from '@/components/FHSCode';
 import SPUCode from '@/components/SPUCode';
-import Category from '@/components/Category';
 import { connect } from 'dva';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import AskPriceFetch from '@/pages/TI_Z030/components/askPriceFetch';
@@ -147,7 +146,7 @@ class AddSKU extends Component {
       width: 200,
       dataIndex: 'category',
       render: (text, record) => (
-        <span>{`${record.Cate1Name}${record.Cate2Name}${record.Cate3Name}`}</span>
+        <span>{`${record.Cate1Name}/${record.Cate2Name}/${record.Cate3Name}`}</span>
       ),
     },
     {

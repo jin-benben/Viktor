@@ -1,7 +1,7 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
-import { Row, Col, Card, Form, Input, Button, Checkbox } from 'antd';
+import { Row, Col, Card, Form, Input, Button } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import Brand from '@/components/Brand';
 import Link from 'umi/link';
@@ -99,7 +99,6 @@ class supplierSearch extends PureComponent {
       Content: {
         SearchText: '',
         BrandName: '',
-        IsCheck: 'N',
         SearchKey: 'Name',
       },
       page: 1,
@@ -156,20 +155,32 @@ class supplierSearch extends PureComponent {
     const { queryData } = this.state;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
-      dispatch({
-        type: 'supplierSearch/fetch',
-        payload: {
-          Content: {
-            ...queryData.Content,
-            ...fieldsValue,
-            IsCheck: fieldsValue.IsCheck ? 'Y' : 'N',
-          },
-          page: 1,
-          rows: 30,
-          sidx: 'Code',
-          sord: 'Desc',
+      const newobj = {
+        Content: {
+          ...queryData.Content,
+          ...fieldsValue,
+          IsCheck: fieldsValue.BrandName ? 'Y' : 'N',
         },
-      });
+        page: 1,
+        rows: 30,
+        sidx: 'Code',
+        sord: 'Desc',
+      };
+      this.setState(
+        {
+          queryData: {
+            ...newobj,
+          },
+        },
+        () => {
+          dispatch({
+            type: 'supplierSearch/fetch',
+            payload: {
+              ...newobj,
+            },
+          });
+        }
+      );
     });
   };
 
@@ -194,13 +205,6 @@ class supplierSearch extends PureComponent {
             <FormItem key="BrandName" label="品牌">
               {getFieldDecorator('BrandName', { initialValue: BrandName })(
                 <Brand initialValue={BrandName} keyType="Name" placeholder="请输入品牌名称" />
-              )}
-            </FormItem>
-          </Col>
-          <Col md={3} sm={24}>
-            <FormItem>
-              {getFieldDecorator('IsCheck', { valuePropName: 'checked', initialValue: true })(
-                <Checkbox>是否勾选</Checkbox>
               )}
             </FormItem>
           </Col>

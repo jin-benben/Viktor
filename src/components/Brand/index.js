@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import request from '@/utils/request';
 import { Select, Spin, Empty } from 'antd';
+import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import { connect } from 'dva';
 import debounce from 'lodash/debounce';
 
@@ -90,7 +91,9 @@ class Brands extends PureComponent {
       >
         {data.map(option => (
           <Option key={option.Code} value={option[attribute]}>
-            {option.Name}
+            <Ellipsis tooltip lines={1}>
+              {option.Name}
+            </Ellipsis>
           </Option>
         ))}
       </Select>

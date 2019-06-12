@@ -485,6 +485,7 @@ class InquiryEdit extends PureComponent {
       callback: response => {
         if (response && response.Status === 200) {
           message.success('取消成功');
+          this.getDetail();
         }
       },
     });
@@ -499,39 +500,26 @@ class InquiryEdit extends PureComponent {
     }
   };
 
+  // 发送需询价
+  submitNeedLine = () => {
+    message.success('提交成功');
+    this.setState({ needmodalVisible: false });
+    this.getDetail();
+  };
+
   // 确认需要采购询价
   selectNeed = () => {
     const { formVals } = this.state;
-    const selectedRows = formVals.TI_Z02602.filter(item => item.IsInquiry === 'N');
+    const selectedRows = formVals.TI_Z02602.filter((item, index) => {
+      const newItem = item;
+      newItem.Key = index;
+      return newItem.IsInquiry === 'N';
+    });
     if (selectedRows.length) {
       this.setState({ selectedRows: [...selectedRows], needmodalVisible: true });
     } else {
       message.warning('暂无需询价的行');
     }
-  };
-
-  // 发送需询价
-  submitNeedLine = select => {
-    const { dispatch } = this.props;
-    const loItemList = select.map(item => ({
-      DocEntry: item.DocEntry,
-      LineID: item.LineID,
-    }));
-    dispatch({
-      type: 'inquiryPreview/confirm',
-      payload: {
-        Content: {
-          loItemList,
-        },
-      },
-      callback: response => {
-        if (response && response.Status === 200) {
-          message.success('提交成功');
-
-          this.setState({ needmodalVisible: false });
-        }
-      },
-    });
   };
 
   render() {
@@ -673,6 +661,12 @@ class InquiryEdit extends PureComponent {
             onClick={() => router.push('/sellabout/TI_Z026/TI_Z02601')}
           >
             新建
+          </Button>
+          <Button
+            type="primary"
+            onClick={() => router.push(`/sellabout/TI_Z029/add?BaseEntry=${formVals.DocEntry}`)}
+          >
+            复制到销售报价单
           </Button>
           <NeedAskPrice
             data={selectedRows}
