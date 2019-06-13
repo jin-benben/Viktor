@@ -69,7 +69,6 @@ class supplierQuotation extends PureComponent {
     },
     {
       title: '供应商',
-      width: 150,
       dataIndex: 'CardName',
       render: text => (
         <Ellipsis tooltip lines={1}>

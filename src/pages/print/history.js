@@ -34,10 +34,15 @@ class PrintHistory extends PureComponent {
       ),
     },
     {
-      title: '单据日期',
-      dataIndex: 'DocDate',
+      title: '创建人',
+      dataIndex: 'CreateUser',
       width: 100,
-      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
+      render: val => {
+        const {
+          global: { TI_Z004 },
+        } = this.props;
+        return <span>{getName(TI_Z004, val)}</span>;
+      },
     },
     {
       title: '创建日期',
@@ -83,11 +88,19 @@ class PrintHistory extends PureComponent {
       dispatch,
       print: { queryData },
     } = this.props;
-    console.log(queryData);
+
     dispatch({
       type: 'print/fetch',
       payload: {
         ...queryData,
+      },
+    });
+    dispatch({
+      type: 'global/getMDMCommonality',
+      payload: {
+        Content: {
+          CodeList: ['TI_Z004'],
+        },
       },
     });
   }

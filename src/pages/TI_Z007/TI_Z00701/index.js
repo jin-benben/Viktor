@@ -2,13 +2,12 @@
 import React, { Fragment } from 'react';
 import { connect } from 'dva';
 import { Row, Col, Form, Input, Card, Switch, Tabs, Button, message, Popconfirm } from 'antd';
+import router from 'umi/router';
 import StandardTable from '@/components/StandardTable';
 import BrandModal from '@/components/Modal/Brand';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import LinkMan from '../components/linkman';
 import MDMCommonality from '@/components/Select';
-import router from 'umi/router';
-import { checkPhone, chechEmail } from '@/utils/utils';
 
 const { TabPane } = Tabs;
 
@@ -254,6 +253,13 @@ class CompanyEdit extends React.Component {
           Code: formVals.Code,
         },
       },
+      callback: response => {
+        if (response && response.Status === 200) {
+          message.success('保存成功');
+          this.handleModalVisible(false);
+          this.getDetail();
+        }
+      },
     });
   };
 
@@ -348,22 +354,6 @@ class CompanyEdit extends React.Component {
     return null;
   };
 
-  validatorPhone = (rule, value, callback) => {
-    if (value && !checkPhone(value)) {
-      callback(new Error('手机号格式不正确'));
-    } else {
-      callback();
-    }
-  };
-
-  validatorEmail = (rule, value, callback) => {
-    if (value && !chechEmail(value)) {
-      callback(new Error('邮箱格式不正确'));
-    } else {
-      callback();
-    }
-  };
-
   addLinkMan = () => {
     this.setState({
       LinkManmodalVisible: true,
@@ -409,16 +399,16 @@ class CompanyEdit extends React.Component {
         <Form {...formItemLayout}>
           <Row gutter={8}>
             <Col lg={8} md={12} sm={24}>
-              <FormItem key="Code" {...this.formLayout} label="客户ID">
+              <FormItem key="Code" {...this.formLayout} label="供应商ID">
                 <span>{formVals.Code}</span>
               </FormItem>
             </Col>
             <Col lg={8} md={12} sm={24}>
-              <FormItem key="Name" {...this.formLayout} label="客户名称">
+              <FormItem key="Name" {...this.formLayout} label="供应商名称">
                 {getFieldDecorator('Name', {
-                  rules: [{ required: true, message: '请输入客户名称！' }],
+                  rules: [{ required: true, message: '请输入供应商名称！' }],
                   initialValue: formVals.Name,
-                })(<Input placeholder="请输入客户名称" />)}
+                })(<Input placeholder="请输入供应商名称" />)}
               </FormItem>
             </Col>
             <Col lg={8} md={12} sm={24}>

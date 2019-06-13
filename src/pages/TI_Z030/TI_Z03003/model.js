@@ -1,4 +1,4 @@
-import { querySingleRule, cancelRule } from '../service';
+import { querySingleRule, cancelRule, confirmRule, costCheckRule } from '../service';
 
 export default {
   namespace: 'agreementPreview',
@@ -53,6 +53,14 @@ export default {
     },
     *cancel({ payload, callback }, { call }) {
       const response = yield call(cancelRule, payload);
+      if (callback) callback(response);
+    },
+    *confirm({ payload, callback }, { call }) {
+      const response = yield call(confirmRule, payload);
+      if (callback) callback(response);
+    },
+    *costCheck({ payload, callback }, { call }) {
+      const response = yield call(costCheckRule, payload);
       if (callback) callback(response);
     },
   },

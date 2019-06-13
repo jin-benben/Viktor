@@ -7,6 +7,7 @@ import {
   confirmRule,
   costCheckRule,
   companyRule,
+  queryBaseEntryleRule,
 } from '../service';
 
 export default {
@@ -17,6 +18,7 @@ export default {
       Comment: '',
       OrderType: '1',
       SourceType: '1',
+      Transport: 'Y',
       DocDate: moment().format('YYYY/MM/DD'),
       CardCode: '',
       CardName: '',
@@ -67,6 +69,10 @@ export default {
         });
       }
     },
+    *getBaseEntry({ payload, callback }, { call }) {
+      const response = yield call(queryBaseEntryleRule, payload);
+      if (callback) callback(response);
+    },
     *add({ payload, callback }, { call }) {
       const response = yield call(addRule, payload);
       if (callback) callback(response);
@@ -83,10 +89,7 @@ export default {
         });
       }
     },
-    *costCheck({ payload, callback }, { call }) {
-      const response = yield call(costCheckRule, payload);
-      if (callback) callback(response);
-    },
+
     *update({ payload, callback }, { call }) {
       const response = yield call(updateRule, payload);
       if (callback) callback(response);
@@ -97,6 +100,10 @@ export default {
     },
     *confirm({ payload, callback }, { call }) {
       const response = yield call(confirmRule, payload);
+      if (callback) callback(response);
+    },
+    *costCheck({ payload, callback }, { call }) {
+      const response = yield call(costCheckRule, payload);
       if (callback) callback(response);
     },
   },

@@ -157,7 +157,7 @@ class InquiryEdit extends React.Component {
     },
     {
       title: '产地',
-      width: 80,
+      width: 100,
       dataIndex: 'ManLocation',
       align: 'center',
       render: (text, record, index) => {
@@ -1116,7 +1116,6 @@ class InquiryEdit extends React.Component {
         LineTotal: formVals.DocTotal,
       });
     }
-    console.log(formVals);
     return (
       <Card bordered={false} loading={detailLoading}>
         <Form {...formItemLayout}>

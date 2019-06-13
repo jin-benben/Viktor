@@ -2,6 +2,7 @@ import React, { PureComponent } from 'react';
 import moment from 'moment';
 import { connect } from 'dva';
 import { Form, Modal, message, Table } from 'antd';
+import Link from 'umi/link';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import { getName } from '@/utils/utils';
 
@@ -19,16 +20,14 @@ class OrderLine extends PureComponent {
   skuColumns = [
     {
       title: '单号',
-      width: 80,
+      width: 100,
       fixed: 'left',
       dataIndex: 'DocEntry',
-    },
-    {
-      title: '行号',
-      dataIndex: 'LineID',
-      fixed: 'left',
-      width: 80,
-      align: 'center',
+      render: (text, recond) => (
+        <Link target="_blank" to={`/sellabout/TI_Z029/detail?DocEntry=${text}`}>
+          {`${text}-${recond.LineID}`}
+        </Link>
+      ),
     },
     {
       title: 'SKU',
@@ -39,7 +38,7 @@ class OrderLine extends PureComponent {
     {
       title: '产品描述',
       dataIndex: 'SKUName',
-      width: 200,
+      width: 100,
       align: 'center',
       render: text => (
         <Ellipsis tooltip lines={1}>
@@ -110,6 +109,12 @@ class OrderLine extends PureComponent {
       },
     },
     {
+      title: '价格',
+      width: 100,
+      dataIndex: 'Price',
+      align: 'center',
+    },
+    {
       title: '数量',
       width: 80,
       dataIndex: 'Quantity',
@@ -141,9 +146,9 @@ class OrderLine extends PureComponent {
       },
     },
     {
-      title: '销售建议价',
-      width: 120,
-      dataIndex: 'Price',
+      title: '建议价',
+      width: 100,
+      dataIndex: 'AdvisePrice',
       align: 'center',
     },
     {
@@ -206,6 +211,7 @@ class OrderLine extends PureComponent {
           <Table
             dataSource={data}
             bordered
+            size="middle"
             pagination={false}
             rowKey={rowKey || 'Key'}
             columns={this.skuColumns}

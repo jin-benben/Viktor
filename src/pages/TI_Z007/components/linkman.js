@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { Row, Col, Form, Input, Modal, Select } from 'antd';
-import { checkPhone, chechEmail } from '@/utils/utils';
+import { chechEmail } from '@/utils/utils';
 
 const FormItem = Form.Item;
 const { Option } = Select;

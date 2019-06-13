@@ -24,7 +24,7 @@ const FormItem = Form.Item;
   loading: loading.models.TI_Z02801,
 }))
 @Form.create()
-class TI_Z02801 extends PureComponent {
+class TI_Z02801 extends React.Component {
   columns = [
     {
       title: '客询价单',
@@ -240,7 +240,7 @@ class TI_Z02801 extends PureComponent {
   }
 
   expandedRowRender = (record, index) => (
-    <Radio.Group onChange={item => this.childChange(item, record, index)} value={record}>
+    <Radio.Group onChange={item => this.childChange(item, record, index)} value={record.CardCode}>
       <List
         itemLayout="horizontal"
         style={{ marginLeft: 60 }}
@@ -254,7 +254,7 @@ class TI_Z02801 extends PureComponent {
                   <span style={{ color: '#1890FF' }}> {`${item.CardName}(${item.CardCode})`}</span>
                 </Link>
               }
-              avatar={<Radio value={item} />}
+              avatar={<Radio value={item.CardCode} />}
               description={
                 <ul className={styles.itemInfo}>
                   <li>
@@ -271,23 +271,9 @@ class TI_Z02801 extends PureComponent {
                   </li>
                   <li>
                     价格：<span>{item.Price}</span>
-                    <Link
-                      target="_blank"
-                      style={{ marginLeft: 10 }}
-                      to={`/purchase/TI_Z027/update?DocEntry=${item.PInquiryEntry}`}
-                    >
-                      修改
-                    </Link>
                   </li>
                   <li>
                     运费：<span>{item.ForeignFreight}</span>
-                    <Link
-                      target="_blank"
-                      style={{ marginLeft: 10 }}
-                      to={`/purchase/TI_Z027/update?DocEntry=${item.PInquiryEntry}`}
-                    >
-                      修改
-                    </Link>
                   </li>
                   <li>
                     交期：<span>{moment(item.InquiryDueDate).format('YYYY-MM-DD')}</span>
@@ -324,13 +310,16 @@ class TI_Z02801 extends PureComponent {
     </Radio.Group>
   );
 
+  //  选择最优供应商radio
   childChange = (item, record, index) => {
+    const CardCode = item.target.value;
+    const targetLine = record.TI_Z02803.find(line => line.CardCode === CardCode);
     const { orderLineList } = this.state;
 
     const newrecord = orderLineList[index];
-    Object.assign(newrecord, item.target.value);
+    delete targetLine.LineID; //  删除Key,避免key重复
+    Object.assign(newrecord, targetLine);
     orderLineList[index] = newrecord;
-
     this.setState({ orderLineList: [...orderLineList] });
   };
 
@@ -438,18 +427,7 @@ class TI_Z02801 extends PureComponent {
       labelCol: { span: 8 },
       wrapperCol: { span: 16 },
     };
-    const searchFormItemLayout = {
-      wrapperCol: {
-        xs: {
-          span: 24,
-          offset: 0,
-        },
-        sm: {
-          span: 16,
-          offset: 8,
-        },
-      },
-    };
+
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
@@ -458,22 +436,22 @@ class TI_Z02801 extends PureComponent {
               {getFieldDecorator('SearchText')(<Input placeholder="请输入关键字" />)}
             </FormItem>
           </Col>
-          <Col md={6} sm={24}>
+          <Col md={8} lg={6} sm={24}>
             <FormItem label="日期" {...formLayout}>
               {getFieldDecorator('dateArr', { rules: [{ type: 'array' }] })(
                 <RangePicker style={{ width: '100%' }} />
               )}
             </FormItem>
           </Col>
-          <Col md={6} sm={24}>
+          <Col md={6} lg={4} sm={24}>
             <FormItem key="Owner" {...formLayout} label="采购员">
               {getFieldDecorator('Owner', { initialValue: currentUser.Owner })(
                 <MDMCommonality initialValue={currentUser.Owner} data={Purchaser} />
               )}
             </FormItem>
           </Col>
-          <Col md={1} sm={24}>
-            <FormItem key="searchBtn" {...searchFormItemLayout}>
+          <Col md={2} sm={24}>
+            <FormItem key="searchBtn">
               <span className="submitButtons">
                 <Button type="primary" htmlType="submit">
                   查询

@@ -172,7 +172,11 @@ class SalesQuotationSku extends PureComponent {
         </Ellipsis>
       ),
     },
-
+    {
+      title: '价格',
+      width: 80,
+      dataIndex: 'Price',
+    },
     {
       title: '数量',
       width: 80,
@@ -193,11 +197,6 @@ class SalesQuotationSku extends PureComponent {
       title: '询价价格',
       width: 80,
       dataIndex: 'InquiryPrice',
-    },
-    {
-      title: '价格',
-      width: 80,
-      dataIndex: 'Price',
     },
     {
       title: '其他成本',

@@ -1,4 +1,3 @@
-import { message } from 'antd';
 import {
   querySingleRule,
   addRule,
@@ -36,16 +35,9 @@ export default {
       if (callback) callback(response);
     },
 
-    *linkman({ payload, callback }, { call, put }) {
+    *linkman({ payload, callback }, { call }) {
       const response = yield call(linkmanRule, payload);
-      if (response && response.Status === 200) {
-        message.success('添加成功');
-        if (callback) callback();
-        yield put({
-          type: 'fetch',
-          payload,
-        });
-      }
+      if (callback) callback(response);
     },
     *deletebrand({ payload, callback }, { call, put }) {
       const response = yield call(deletebrandRule, payload);

@@ -1,9 +1,10 @@
 import React, { PureComponent, Fragment } from 'react';
 import request from '@/utils/request';
 import CompanyModal from '@/components/Modal/Company';
-import { Select, Spin, Icon, Empty } from 'antd';
+import { Select, Spin, Icon, Empty, Button } from 'antd';
 import debounce from 'lodash/debounce';
 import { connect } from 'dva';
+import styles from './style.less';
 
 const { Option } = Select;
 
@@ -74,9 +75,7 @@ class CompanySelect extends PureComponent {
     const { data } = this.state;
     const { onChange } = this.props;
     if (onChange) {
-      const select = data.find(item => {
-        return item.Code === value.key;
-      });
+      const select = data.find(item => item.Code === value.key);
       onChange(select);
     }
   };
@@ -95,37 +94,51 @@ class CompanySelect extends PureComponent {
 
   render() {
     const { fetching, data, companyModal, value } = this.state;
+    const { keyType } = this.props;
     const companyParentMethods = {
       handleSubmit: this.changeCompany,
       handleModalVisible: this.handleModalVisible,
     };
     return (
       <Fragment>
-        <Select
-          showSearch
-          value={value}
-          labelInValue
-          suffixIcon={
-            <Icon
-              onClick={() => {
-                this.handleModalVisible(true);
-              }}
-              type="ellipsis"
+        <div className={styles.company}>
+          <Select
+            showSearch
+            value={value}
+            labelInValue
+            suffixIcon={
+              <Icon
+                onClick={() => {
+                  this.handleModalVisible(true);
+                }}
+                type="ellipsis"
+              />
+            }
+            placeholder="输入内容"
+            notFoundContent={fetching ? <Spin size="small" /> : <Empty style={{ width: '100%' }} />}
+            filterOption={false}
+            onSearch={this.fetchCompany}
+            onChange={this.handleChange}
+            style={{ width: '100%' }}
+          >
+            {data.map(option => (
+              <Option key={option.Code} value={option.Code}>
+                {option.Name}
+              </Option>
+            ))}
+          </Select>
+          {value.key && keyType === 'Code' ? (
+            <Button
+              href={`/main/TI_Z006/detail?Code=${value.label}`}
+              target="_blank"
+              title="编辑客户"
+              className={styles.edit}
+              type="link"
+              shape="circle"
+              icon="edit"
             />
-          }
-          placeholder="输入内容"
-          notFoundContent={fetching ? <Spin size="small" /> : <Empty style={{ width: '100%' }} />}
-          filterOption={false}
-          onSearch={this.fetchCompany}
-          onChange={this.handleChange}
-          style={{ width: '100%' }}
-        >
-          {data.map(option => (
-            <Option key={option.Code} value={option.Code}>
-              {option.Name}
-            </Option>
-          ))}
-        </Select>
+          ) : null}
+        </div>
         <CompanyModal {...companyParentMethods} modalVisible={companyModal} />
       </Fragment>
     );

@@ -66,20 +66,6 @@ class orderLine extends PureComponent {
       render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
     {
-      title: '客户',
-      dataIndex: 'CardName',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
-    {
-      title: '客户参考号',
-      width: 100,
-      dataIndex: 'NumAtCard',
-    },
-    {
       title: 'SKU',
       width: 80,
       dataIndex: 'SKU',
@@ -120,17 +106,7 @@ class orderLine extends PureComponent {
       width: 100,
       dataIndex: 'Package',
     },
-    {
-      title: '采购员',
-      width: 80,
-      dataIndex: 'Purchaser',
-      render: text => {
-        const {
-          global: { Purchaser },
-        } = this.props;
-        return <span>{getName(Purchaser, text)}</span>;
-      },
-    },
+
     {
       title: '数量',
       width: 80,
@@ -153,12 +129,6 @@ class orderLine extends PureComponent {
       dataIndex: 'Price',
     },
     {
-      title: '询价交期',
-      width: 100,
-      dataIndex: 'InquiryDueDate',
-      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
-    },
-    {
       title: '行备注',
       width: 80,
       dataIndex: 'LineComment',
@@ -172,6 +142,28 @@ class orderLine extends PureComponent {
       title: '询价总计',
       width: 100,
       dataIndex: 'InquiryLineTotalLocal',
+    },
+    {
+      title: '询价交期',
+      width: 100,
+      dataIndex: 'InquiryDueDate',
+      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
+    },
+    {
+      title: '采购员',
+      width: 80,
+      dataIndex: 'Purchaser',
+      render: text => {
+        const {
+          global: { Purchaser },
+        } = this.props;
+        return <span>{getName(Purchaser, text)}</span>;
+      },
+    },
+    {
+      title: '客户参考号',
+      width: 100,
+      dataIndex: 'NumAtCard',
     },
     {
       title: '所有人',
@@ -232,7 +224,7 @@ class orderLine extends PureComponent {
         DocDateFrom = moment(fieldsValue.dateArr[0]).format('YYYY-MM-DD');
         DocDateTo = moment(fieldsValue.dateArr[1]).format('YYYY-MM-DD');
       }
-      let { queryData } = this.setState;
+      let { queryData } = this.state;
       queryData = {
         Content: {
           ...queryData.Content,
@@ -308,9 +300,9 @@ class orderLine extends PureComponent {
     };
     return (
       <Form onSubmit={this.handleSearch} {...formItemLayout}>
-        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={6} sm={24}>
-            <FormItem key="SearchText" {...formLayout}>
+        <Row gutter={{ md: 16 }}>
+          <Col md={4} sm={24}>
+            <FormItem key="SearchText" wrapperCol={{ span: 24 }}>
               {getFieldDecorator('SearchText', { initialValue: queryData.Content.SearchText })(
                 <Input placeholder="请输入关键字" />
               )}
@@ -323,8 +315,8 @@ class orderLine extends PureComponent {
               )}
             </FormItem>
           </Col>
-          <Col md={6} sm={24}>
-            <FormItem label="所有者" {...formLayout}>
+          <Col md={4} sm={24}>
+            <FormItem label="销售员" {...formLayout}>
               {getFieldDecorator('Owner')(<MDMCommonality data={Saler} />)}
             </FormItem>
           </Col>
@@ -335,7 +327,7 @@ class orderLine extends PureComponent {
               })(<DocEntryFrom />)}
             </FormItem>
           </Col>
-          <Col md={6} sm={24}>
+          <Col md={2} sm={24}>
             <FormItem key="searchBtn" {...searchFormItemLayout}>
               <span className="submitButtons">
                 <Button type="primary" htmlType="submit">
@@ -375,7 +367,7 @@ class orderLine extends PureComponent {
             data={{ list: orderLineList }}
             pagination={pagination}
             rowKey="Key"
-            scroll={{ x: 2300, y: 500 }}
+            scroll={{ x: 2000, y: 500 }}
             columns={columns}
             rowSelection={{
               onSelectRow: this.onSelectRow,

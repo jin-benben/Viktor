@@ -5,20 +5,10 @@ import { connect } from 'dva';
 import { Row, Col, Card, Form, Input, Modal, Button, message, Popconfirm } from 'antd';
 import StandardTable from '@/components/StandardTable';
 
-import { chechEmail } from '@/utils/utils';
-
 const FormItem = Form.Item;
 
 @Form.create()
 class CreateForm extends PureComponent {
-  validatorEmail = (rule, value, callback) => {
-    if (value && !chechEmail(value)) {
-      callback(new Error('邮箱格式不正确'));
-    } else {
-      callback();
-    }
-  };
-
   okHandle = () => {
     const { form, formVals, handleSubmit } = this.props;
     form.validateFields((err, fieldsValue) => {

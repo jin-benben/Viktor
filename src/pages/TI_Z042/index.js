@@ -1,3 +1,4 @@
+/* eslint-disable no-script-url */
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import { Row, Col, Card, Form, Input, Modal, Button, Divider, Popconfirm, message } from 'antd';

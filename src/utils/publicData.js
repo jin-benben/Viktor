@@ -69,6 +69,14 @@ export const orderSourceType = [
     Key: '2',
     Value: '网站下单',
   },
+  {
+    Key: '3',
+    Value: '电话',
+  },
+  {
+    Key: '4',
+    Value: '其他来源',
+  },
 ];
 
 export const formItemLayout = {

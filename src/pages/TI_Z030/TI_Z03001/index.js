@@ -37,6 +37,7 @@ import NeedAskPrice from '../components/needAskPrice';
 import SKUModal from '@/components/Modal/SKU';
 import CompanySelect from '@/components/Company/index';
 import HSCode from '@/components/HSCode';
+import OrderSource from '@/components/Select/OrderSource';
 import PushLink from '@/components/PushLink';
 import { getName } from '@/utils/utils';
 
@@ -78,17 +79,17 @@ class AgreementEdit extends React.Component {
           />
         ),
     },
-    {
-      title: '产品描述',
-      dataIndex: 'SKUName',
-      width: 100,
-      align: 'center',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
+    // {
+    //   title: '产品描述',
+    //   dataIndex: 'SKUName',
+    //   width: 100,
+    //   align: 'center',
+    //   render: text => (
+    //     <Ellipsis tooltip lines={1}>
+    //       {text}
+    //     </Ellipsis>
+    //   ),
+    // },
     {
       title: '品牌',
       width: 100,
@@ -288,7 +289,7 @@ class AgreementEdit extends React.Component {
       align: 'center',
     },
     {
-      title: '销售建议价',
+      title: '建议价',
       width: 100,
       inputType: 'text',
       dataIndex: 'AdvisePrice',
@@ -321,7 +322,7 @@ class AgreementEdit extends React.Component {
       align: 'center',
     },
     {
-      title: '最终交期',
+      title: '询价返回时间',
       width: 100,
       dataIndex: 'InquiryDueDate',
       align: 'center',
@@ -343,11 +344,20 @@ class AgreementEdit extends React.Component {
     {
       title: '询价备注',
       dataIndex: 'InquiryComment',
-      width: 150,
+      width: 100,
       align: 'center',
+      render: (text, record) =>
+        record.lastIndex ? (
+          ''
+        ) : (
+          <Ellipsis tooltip lines={1}>
+            {' '}
+            {text}{' '}
+          </Ellipsis>
+        ),
     },
     {
-      title: '询价行总计',
+      title: '询行总计',
       width: 100,
       align: 'center',
       dataIndex: 'InquiryLineTotal',
@@ -355,8 +365,8 @@ class AgreementEdit extends React.Component {
         record.lastIndex ? <span style={{ fontWeight: 'bolder' }}>{text}</span> : text,
     },
     {
-      title: '询价行总计(本币)',
-      width: 150,
+      title: '询行本总计',
+      width: 100,
       align: 'center',
       dataIndex: 'InquiryLineTotalLocal',
       render: (text, record) =>
@@ -379,7 +389,7 @@ class AgreementEdit extends React.Component {
         record.lastIndex ? <span style={{ fontWeight: 'bolder' }}>{text}</span> : text,
     },
     {
-      title: '销售行总计',
+      title: '行总计',
       width: 100,
       align: 'center',
       dataIndex: 'LineTotal',
@@ -578,7 +588,7 @@ class AgreementEdit extends React.Component {
         type: 'global/getMDMCommonality',
         payload: {
           Content: {
-            CodeList: ['Saler', 'Purchaser', 'TI_Z042', 'WhsCode', 'Company'],
+            CodeList: ['Saler', 'Curr', 'Purchaser', 'TI_Z042', 'WhsCode', 'Company'],
           },
         },
       });
@@ -596,7 +606,7 @@ class AgreementEdit extends React.Component {
         },
       },
     });
-
+    this.getBaseEntry();
     this.getDetail();
   }
 
@@ -658,6 +668,93 @@ class AgreementEdit extends React.Component {
     }
     return null;
   }
+
+  getBaseEntry = () => {
+    const {
+      dispatch,
+      agreementEdit: { orderDetail },
+      location: { query },
+    } = this.props;
+    if (query.BaseEntry) {
+      dispatch({
+        type: 'agreementEdit/getBaseEntry',
+        payload: {
+          Content: {
+            DocEntry: query.BaseEntry,
+          },
+        },
+        callback: response => {
+          if (response && response.Status === 200) {
+            dispatch({
+              type: 'agreementEdit/company',
+              payload: {
+                Content: {
+                  Code: response.Content.CardCode,
+                },
+              },
+            });
+            const {
+              Address,
+              AddressID,
+              Area,
+              AreaID,
+              CardCode,
+              CardName,
+              CellphoneNO,
+              City,
+              CityID,
+              Comment,
+              CompanyCode,
+              Contacts,
+              Email,
+              NumAtCard,
+              OrderType,
+              Owner,
+              PhoneNO,
+              Province,
+              ProvinceID,
+              UserID,
+              DueDate,
+              ToDate,
+              TI_Z02905,
+            } = response.Content;
+            this.addLineSKU(response.Content.TI_Z02902);
+            dispatch({
+              type: 'agreementEdit/save',
+              payload: {
+                orderDetail: {
+                  ...orderDetail,
+                  Address,
+                  AddressID,
+                  Area,
+                  AreaID,
+                  CardCode,
+                  CardName,
+                  CellphoneNO,
+                  City,
+                  CityID,
+                  Comment,
+                  CompanyCode,
+                  Contacts,
+                  Email,
+                  NumAtCard,
+                  OrderType,
+                  Owner,
+                  PhoneNO,
+                  Province,
+                  ProvinceID,
+                  DueDate,
+                  ToDate,
+                  UserID,
+                  TI_Z03005: TI_Z02905,
+                },
+              },
+            });
+          }
+        },
+      });
+    }
+  };
 
   getDetail = () => {
     const {
@@ -723,7 +820,7 @@ class AgreementEdit extends React.Component {
     formVals.InquiryDocTotalLocal = InquiryDocTotalLocal;
     formVals.InquiryDocTotal = InquiryDocTotal;
     formVals.DocTotal = DocTotal;
-    formVals.ProfitTotal = DocTotal - InquiryDocTotalLocal - OtherTotal;
+    formVals.ProfitTotal = round(DocTotal - InquiryDocTotalLocal - OtherTotal, 2);
     formVals.OtherTotal = OtherTotal;
     this.setState({ formVals });
   };
@@ -849,6 +946,7 @@ class AgreementEdit extends React.Component {
       orderModalVisible: !!flag,
       needmodalVisible: !!flag,
       skuModalVisible: !!flag,
+      pushModalVisible: !!flag,
       LineID: Number,
     });
   };
@@ -888,6 +986,13 @@ class AgreementEdit extends React.Component {
           }}
         >
           添加新附件
+        </Button>
+      );
+    }
+    if (tabIndex === '4') {
+      return (
+        <Button icon="plus" style={{ marginLeft: 8 }} type="primary" onClick={this.addpush}>
+          添加其他推送人
         </Button>
       );
     }
@@ -1121,7 +1226,6 @@ class AgreementEdit extends React.Component {
             ToDate: fieldsValue.ToDate ? fieldsValue.ToDate.format('YYYY-MM-DD') : '',
             DocDate: fieldsValue.DocDate ? fieldsValue.DocDate.format('YYYY-MM-DD') : '',
             CreateUser: currentUser.UserCode,
-            ClosedDate: new Date(),
           },
         },
         callback: response => {
@@ -1322,6 +1426,14 @@ class AgreementEdit extends React.Component {
         ProfitLineTotal: formVals.ProfitTotal,
       });
     }
+
+    let tablwidth = 0;
+    this.skuColumns.map(item => {
+      if (item.width) {
+        tablwidth += item.width;
+      }
+    });
+    console.log(tablwidth);
     return (
       <Card bordered={false}>
         <Form {...formItemLayout}>
@@ -1435,7 +1547,7 @@ class AgreementEdit extends React.Component {
           <TabPane tab="物料" key="1">
             <EditableFormTable
               rowChange={this.rowChange}
-              rowKey="Key"
+              rowKey="LineID"
               scroll={{ x: 3550, y: 600 }}
               columns={this.skuColumns}
               data={newdata}
@@ -1521,6 +1633,27 @@ class AgreementEdit extends React.Component {
                 </FormItem>
               </Col>
               <Col lg={8} md={12} sm={24}>
+                <FormItem key="Transport" {...this.formLayout} label="单独运输">
+                  {getFieldDecorator('Transport', {
+                    initialValue: formVals.Transport,
+                    rules: [{ required: true, message: '请选择运输方式' }],
+                  })(
+                    <Select style={{ width: '100%' }} placeholder="请选择">
+                      <Option value="Y">是</Option>
+                      <Option value="N">否</Option>
+                    </Select>
+                  )}
+                </FormItem>
+              </Col>
+              <Col lg={8} md={12} sm={24}>
+                <FormItem key="SourceType" {...this.formLayout} label="来源类型">
+                  {getFieldDecorator('SourceType', {
+                    initialValue: formVals.SourceType,
+                    rules: [{ required: true, message: '请选择来源类型！' }],
+                  })(<OrderSource initialValue={formVals.SourceType} />)}
+                </FormItem>
+              </Col>
+              <Col lg={8} md={12} sm={24}>
                 <FormItem key="DueDate" {...this.formLayout} label="要求交期">
                   {getFieldDecorator('DueDate', {
                     initialValue: formVals.DueDate ? moment(formVals.DueDate, 'YYYY-MM-DD') : null,
@@ -1568,6 +1701,9 @@ class AgreementEdit extends React.Component {
               <Button type="primary" onClick={this.costCheck}>
                 成本核算
               </Button>
+              <Button onClick={() => this.setState({ needmodalVisible: true })} type="primary">
+                确认销售合同
+              </Button>
               <Button
                 loading={updateloading}
                 style={{ marginLeft: 10 }}
@@ -1575,9 +1711,6 @@ class AgreementEdit extends React.Component {
                 type="primary"
               >
                 更新
-              </Button>
-              <Button onClick={() => this.setState({ needmodalVisible: true })} type="primary">
-                确认销售合同
               </Button>
             </Fragment>
           ) : (

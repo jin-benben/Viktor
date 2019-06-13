@@ -1,29 +1,10 @@
 import React, { PureComponent } from 'react';
-
 import { Select } from 'antd';
+import { orderSourceType } from '@/utils/publicData';
 
 const { Option } = Select;
 
 class OrderSource extends PureComponent {
-  data = [
-    {
-      Code: '1',
-      Name: '线下',
-    },
-    {
-      Code: '2',
-      Name: '网站',
-    },
-    {
-      Code: '3',
-      Name: '电话',
-    },
-    {
-      Code: '4',
-      Name: '其他来源',
-    },
-  ];
-
   state = {
     value: '',
   };
@@ -53,14 +34,14 @@ class OrderSource extends PureComponent {
       <Select
         showArrow={false}
         value={value}
-        placeholder="请选择仓库"
+        placeholder="请选择来源"
         filterOption={false}
         onChange={this.handleChange}
         style={{ width: '100%' }}
       >
-        {this.data.map(option => (
-          <Option key={option.Code} value={option.Code}>
-            {option.Name}
+        {orderSourceType.map(option => (
+          <Option key={option.Key} value={option.Key}>
+            {option.Value}
           </Option>
         ))}
       </Select>

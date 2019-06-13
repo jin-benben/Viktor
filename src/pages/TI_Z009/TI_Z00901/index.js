@@ -133,7 +133,20 @@ class AddSKU extends Component {
       title: '产地',
       width: 100,
       dataIndex: 'ManLocation',
-      editable: true,
+      render: (text, record, index) => {
+        const {
+          global: { TI_Z042 },
+        } = this.props;
+        return (
+          <MDMCommonality
+            onChange={value => {
+              this.codeChange(value, record, index, 'ManLocation');
+            }}
+            initialValue={text}
+            data={TI_Z042}
+          />
+        );
+      },
     },
     {
       title: '重量',
@@ -142,13 +155,25 @@ class AddSKU extends Component {
       editable: true,
     },
     {
-      title: '分类',
-      width: 200,
-      dataIndex: 'category',
-      render: (text, record) => (
-        <span>{`${record.Cate1Name}/${record.Cate2Name}/${record.Cate3Name}`}</span>
-      ),
+      title: 'SPU编码',
+      width: 150,
+      dataIndex: 'SPUCode',
+      render: (text, record, index) => {
+        const {
+          skuAdd: { spuList },
+        } = this.props;
+        return (
+          <SPUCode
+            initialValue={text}
+            data={spuList}
+            onChange={select => {
+              this.spuChange(select, record, index);
+            }}
+          />
+        );
+      },
     },
+
     {
       title: '开票名称',
       width: 150,
@@ -233,23 +258,12 @@ class AddSKU extends Component {
       },
     },
     {
-      title: 'SPU编码',
-      width: 150,
-      dataIndex: 'SPUCode',
-      render: (text, record, index) => {
-        const {
-          skuAdd: { spuList },
-        } = this.props;
-        return (
-          <SPUCode
-            initialValue={text}
-            data={spuList}
-            onChange={select => {
-              this.spuChange(select, record, index);
-            }}
-          />
-        );
-      },
+      title: '分类',
+      width: 200,
+      dataIndex: 'category',
+      render: (text, record) => (
+        <span>{`${record.Cate1Name}/${record.Cate2Name}/${record.Cate3Name}`}</span>
+      ),
     },
     {
       title: '操作',
@@ -279,7 +293,7 @@ class AddSKU extends Component {
         type: 'global/getMDMCommonality',
         payload: {
           Content: {
-            CodeList: ['Purchaser', 'WhsCode'],
+            CodeList: ['Purchaser', 'TI_Z042', 'WhsCode'],
           },
         },
       });

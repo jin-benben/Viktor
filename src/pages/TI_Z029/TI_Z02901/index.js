@@ -39,6 +39,7 @@ import CompanySelect from '@/components/Company/index';
 import HSCode from '@/components/HSCode';
 import PushLink from '@/components/PushLink';
 import { getName } from '@/utils/utils';
+import OrderSource from '@/components/Select/OrderSource';
 
 const { TextArea } = Input;
 const { TabPane } = Tabs;
@@ -66,7 +67,7 @@ class TI_Z029Component extends React.Component {
       title: 'SKU',
       dataIndex: 'SKU',
       align: 'center',
-      width: 150,
+      width: 100,
       render: (text, record, index) =>
         record.lastIndex ? null : (
           <Input
@@ -147,7 +148,7 @@ class TI_Z029Component extends React.Component {
     },
     {
       title: '数量',
-      width: 120,
+      width: 80,
       inputType: 'text',
       dataIndex: 'Quantity',
       editable: true,
@@ -162,8 +163,24 @@ class TI_Z029Component extends React.Component {
       align: 'center',
     },
     {
-      title: '产地',
+      title: '要求名称',
+      width: 100,
+      inputType: 'textArea',
+      dataIndex: 'CustomerName',
+      editable: true,
+      align: 'center',
+    },
+    {
+      title: '重量',
       width: 80,
+      dataIndex: 'Rweight',
+      align: 'center',
+      editable: true,
+      inputType: 'text',
+    },
+    {
+      title: '产地',
+      width: 100,
       dataIndex: 'ManLocation',
       align: 'center',
       render: (text, record, index) => {
@@ -205,40 +222,6 @@ class TI_Z029Component extends React.Component {
           />
         );
       },
-    },
-    {
-      title: '报关税率',
-      width: 80,
-      dataIndex: 'HSVatRate',
-      align: 'center',
-    },
-    {
-      title: '附加税率',
-      width: 80,
-      dataIndex: 'HSVatRateOther',
-      align: 'center',
-    },
-    {
-      title: '要求名称',
-      width: 80,
-      inputType: 'text',
-      dataIndex: 'CustomerName',
-      editable: true,
-      align: 'center',
-    },
-    {
-      title: '重量',
-      width: 80,
-      dataIndex: 'Rweight',
-      align: 'center',
-      editable: true,
-      inputType: 'text',
-    },
-    {
-      title: '国外运费',
-      width: 80,
-      dataIndex: 'ForeignFreight',
-      align: 'center',
     },
     {
       title: '价格',
@@ -288,7 +271,27 @@ class TI_Z029Component extends React.Component {
       align: 'center',
     },
     {
-      title: '销建议价',
+      title: '报关税率',
+      width: 80,
+      dataIndex: 'HSVatRate',
+      align: 'center',
+    },
+    {
+      title: '附加税率',
+      width: 80,
+      dataIndex: 'HSVatRateOther',
+      align: 'center',
+    },
+
+    {
+      title: '国外运费',
+      width: 80,
+      dataIndex: 'ForeignFreight',
+      align: 'center',
+    },
+
+    {
+      title: '建议价',
       width: 100,
       dataIndex: 'AdvisePrice',
       align: 'center',
@@ -330,7 +333,7 @@ class TI_Z029Component extends React.Component {
     },
     {
       title: '采购员',
-      width: 100,
+      width: 80,
       dataIndex: 'Purchaser',
       align: 'center',
       render: (val, record) => {
@@ -343,20 +346,25 @@ class TI_Z029Component extends React.Component {
     {
       title: '询价备注',
       dataIndex: 'InquiryComment',
-      width: 150,
+      width: 100,
       align: 'center',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
-      title: '询价行总计',
-      width: 120,
+      title: '询行总计',
+      width: 100,
       align: 'center',
       dataIndex: 'InquiryLineTotal',
       render: (text, record) =>
         record.lastIndex ? <span style={{ fontWeight: 'bolder' }}>{text}</span> : text,
     },
     {
-      title: '询价行总计(本币)',
-      width: 150,
+      title: '询行本总计',
+      width: 100,
       align: 'center',
       dataIndex: 'InquiryLineTotalLocal',
       render: (text, record) =>
@@ -364,13 +372,13 @@ class TI_Z029Component extends React.Component {
     },
     {
       title: '其他成本',
-      width: 120,
+      width: 100,
       align: 'center',
       dataIndex: 'OtherTotal',
     },
     {
       title: '行利润',
-      width: 150,
+      width: 100,
       align: 'center',
       dataIndex: 'ProfitLineTotal',
     },
@@ -546,8 +554,8 @@ class TI_Z029Component extends React.Component {
   componentDidMount() {
     const {
       dispatch,
-      global: { currentUser, CustomerList, BrandList, HSCodeList },
       TI_Z029: { orderDetail },
+      global: { currentUser, CustomerList, BrandList, HSCodeList },
     } = this.props;
     const { CompanyCode, Owner, UserCode } = currentUser;
     if (!HSCodeList.length) {
@@ -565,6 +573,7 @@ class TI_Z029Component extends React.Component {
         type: 'global/getBrand',
       });
     }
+
     dispatch({
       type: 'TI_Z029/save',
       payload: {
@@ -635,9 +644,10 @@ class TI_Z029Component extends React.Component {
       nextProps.TI_Z029.linkmanList !== prevState.linkmanList
     ) {
       return {
-        formVals: nextProps.TI_Z029.orderDetail.DocEntry
-          ? nextProps.TI_Z029.orderDetail
-          : prevState.formVals,
+        formVals: {
+          ...prevState.formVals,
+          ...nextProps.TI_Z029.orderDetail,
+        },
         addList: nextProps.TI_Z029.addList.length ? nextProps.TI_Z029.addList : prevState.addList,
         linkmanList: nextProps.TI_Z029.linkmanList.length
           ? nextProps.TI_Z029.linkmanList
@@ -650,6 +660,7 @@ class TI_Z029Component extends React.Component {
   getBaseEntry = () => {
     const {
       dispatch,
+      TI_Z029: { orderDetail },
       location: { query },
     } = this.props;
     if (query.BaseEntry) {
@@ -693,34 +704,40 @@ class TI_Z029Component extends React.Component {
               UserID,
               DueDate,
               ToDate,
+              SourceType,
+              TI_Z02605,
             } = response.Content;
-            this.setState({
-              formVals: {
-                Address,
-                AddressID,
-                Area,
-                AreaID,
-                CardCode,
-                CardName,
-                CellphoneNO,
-                City,
-                CityID,
-                Comment,
-                CompanyCode,
-                Contacts,
-                Email,
-                NumAtCard,
-                OrderType,
-                Owner,
-                PhoneNO,
-                Province,
-                ProvinceID,
-                DueDate,
-                ToDate,
-                DocDate: new Date(),
-                CreateDate: new Date(),
-                UserID,
-                TI_Z02902: [],
+            this.addLineSKU(response.Content.TI_Z02602, SourceType);
+            dispatch({
+              type: 'TI_Z029/save',
+              payload: {
+                orderDetail: {
+                  ...orderDetail,
+                  Address,
+                  AddressID,
+                  Area,
+                  AreaID,
+                  CardCode,
+                  CardName,
+                  CellphoneNO,
+                  City,
+                  CityID,
+                  Comment,
+                  CompanyCode,
+                  Contacts,
+                  Email,
+                  NumAtCard,
+                  OrderType,
+                  Owner,
+                  PhoneNO,
+                  Province,
+                  ProvinceID,
+                  UserID,
+                  DueDate,
+                  ToDate,
+                  SourceType,
+                  TI_Z02905: TI_Z02605,
+                },
               },
             });
           }
@@ -796,7 +813,7 @@ class TI_Z029Component extends React.Component {
     formVals.InquiryDocTotalLocal = InquiryDocTotalLocal;
     formVals.InquiryDocTotal = InquiryDocTotal;
     formVals.DocTotal = DocTotal;
-    formVals.ProfitTotal = DocTotal - InquiryDocTotalLocal - OtherTotal;
+    formVals.ProfitTotal = round(DocTotal - InquiryDocTotalLocal - OtherTotal, 2);
     this.setState({ formVals });
   };
 
@@ -924,6 +941,7 @@ class TI_Z029Component extends React.Component {
       orderModalVisible: !!flag,
       needmodalVisible: !!flag,
       skuModalVisible: !!flag,
+      pushModalVisible: !!flag,
       LineID: Number,
     });
   };
@@ -952,7 +970,7 @@ class TI_Z029Component extends React.Component {
         </Button>
       );
     }
-    if (tabIndex === '3') {
+    if (tabIndex === '4') {
       return (
         <Button
           icon="plus"
@@ -963,6 +981,13 @@ class TI_Z029Component extends React.Component {
           }}
         >
           添加新附件
+        </Button>
+      );
+    }
+    if (tabIndex === '5') {
+      return (
+        <Button icon="plus" style={{ marginLeft: 8 }} type="primary" onClick={this.addpush}>
+          添加其他推送人
         </Button>
       );
     }
@@ -1013,7 +1038,7 @@ class TI_Z029Component extends React.Component {
   };
 
   // 添加行
-  addLineSKU = selectedRows => {
+  addLineSKU = (selectedRows, SourceType) => {
     const {
       global: { currentUser },
     } = this.props;
@@ -1026,7 +1051,6 @@ class TI_Z029Component extends React.Component {
       newLineID += index;
       const {
         LineComment,
-        SourceType,
         SKU,
         SKUName,
         BrandName,
@@ -1069,7 +1093,7 @@ class TI_Z029Component extends React.Component {
         BaseEntry: DocEntry,
         BaseLineID: LineID,
         LineComment,
-        SourceType,
+        SourceType: item.SourceType || SourceType,
         SKU,
         SKUName,
         BrandName,
@@ -1382,7 +1406,13 @@ class TI_Z029Component extends React.Component {
         ProfitLineTotal: formVals.ProfitTotal,
       });
     }
-
+    // let tablwidth=0;
+    // this.skuColumns.map(item=>{
+    //   if(item.width){
+    //     tablwidth+=item.width
+    //   }
+    // })
+    // console.log(tablwidth)
     return (
       <Card bordered={false}>
         <Form {...formItemLayout}>
@@ -1489,8 +1519,8 @@ class TI_Z029Component extends React.Component {
           <TabPane tab="物料" key="1">
             <EditableFormTable
               rowChange={this.rowChange}
-              rowKey="Key"
-              scroll={{ x: 3950, y: 600 }}
+              rowKey="LineID"
+              scroll={{ x: 3600, y: 600 }}
               columns={this.skuColumns}
               data={newdata}
             />
@@ -1573,6 +1603,28 @@ class TI_Z029Component extends React.Component {
                 </FormItem>
               </Col>
               <Col lg={8} md={12} sm={24}>
+                <FormItem key="SourceType" {...this.formLayout} label="来源类型">
+                  {getFieldDecorator('SourceType', {
+                    initialValue: formVals.SourceType,
+                    rules: [{ required: true, message: '请选择来源类型！' }],
+                  })(<OrderSource initialValue={formVals.SourceType} />)}
+                </FormItem>
+              </Col>
+              <Col lg={8} md={12} sm={24}>
+                <FormItem key="Transport" {...this.formLayout} label="单独运输">
+                  {getFieldDecorator('Transport', {
+                    initialValue: formVals.Transport,
+                    rules: [{ required: true, message: '请选择运输方式' }],
+                  })(
+                    <Select style={{ width: '100%' }} placeholder="请选择">
+                      <Option value="Y">是</Option>
+                      <Option value="N">否</Option>
+                    </Select>
+                  )}
+                </FormItem>
+              </Col>
+
+              <Col lg={8} md={12} sm={24}>
                 <FormItem key="DueDate" {...this.formLayout} label="要求交期">
                   {getFieldDecorator('DueDate', {
                     initialValue: formVals.DueDate ? moment(formVals.DueDate, 'YYYY-MM-DD') : null,
@@ -1630,6 +1682,12 @@ class TI_Z029Component extends React.Component {
               </Button>
               <Button onClick={() => this.setState({ needmodalVisible: true })} type="primary">
                 确认销售报价
+              </Button>
+              <Button
+                type="primary"
+                onClick={() => router.push(`/sellabout/TI_Z030/add?BaseEntry=${formVals.DocEntry}`)}
+              >
+                复制到销售合同
               </Button>
             </Fragment>
           ) : (

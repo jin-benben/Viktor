@@ -38,14 +38,15 @@ class LoginPage extends PureComponent {
     });
   };
 
-  changeAutoLogin = e => {
-    this.setState({
-      autoLogin: e.target.checked,
-    });
-  };
+  // changeAutoLogin = e => {
+  //   this.setState({
+  //     autoLogin: e.target.checked,
+  //   });
+  // };
 
   render() {
-    const { type, notice, autoLogin } = this.state;
+    const { type, notice } = this.state;
+    const { submitting } = this.props;
     return (
       <div className={styles.loginWarp}>
         <Login defaultActiveKey={type} onTabChange={this.onTabChange} onSubmit={this.onSubmit}>
@@ -73,15 +74,7 @@ class LoginPage extends PureComponent {
                 },
               ]}
             />
-            {/* <div>
-              <Checkbox checked={autoLogin} onChange={this.changeAutoLogin}>
-                自动登录
-              </Checkbox>
-              <a style={{ float: 'right' }} href="">
-                忘记密码
-              </a>
-            </div> */}
-            <Submit>登录</Submit>
+            <Submit loading={submitting}>登录</Submit>
           </Tab>
           <Tab key="tab2" tab="扫码登录">
             <span>此功能还在开发当中</span>

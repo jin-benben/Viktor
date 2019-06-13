@@ -10,6 +10,7 @@ import DescriptionList from 'ant-design-pro/lib/DescriptionList';
 import MyTag from '@/components/Tag';
 import CancelOrder from '@/components/Modal/CancelOrder';
 import OrderPrint from '@/components/Modal/OrderPrint';
+import NeedAskPrice from '../components/needAskPrice';
 import Emails from '@/components/Modal/Email';
 import { getName } from '@/utils/utils';
 
@@ -133,20 +134,24 @@ class InquiryEdit extends React.Component {
       align: 'center',
     },
     {
-      title: '销售建议价',
+      title: '价格',
       width: 100,
-
       dataIndex: 'Price',
-
       align: 'center',
     },
     {
-      title: '销售行总计',
+      title: '行总计',
       width: 120,
       align: 'center',
       dataIndex: 'LineTotal',
       render: (text, record) =>
         record.lastIndex ? <span style={{ fontWeight: 'bolder' }}>{text}</span> : text,
+    },
+    {
+      title: '建议价',
+      width: 100,
+      dataIndex: 'AdvisePrice',
+      align: 'center',
     },
     {
       title: '要求交期',
@@ -351,6 +356,7 @@ class InquiryEdit extends React.Component {
     this.state = {
       formVals: {}, // 单据信息
       attachmentVisible: false,
+      needmodalVisible: false,
       prviewList: [],
     };
   }
@@ -432,7 +438,10 @@ class InquiryEdit extends React.Component {
   };
 
   handleModalVisible = flag => {
-    this.setState({ attachmentVisible: !!flag });
+    this.setState({
+      attachmentVisible: !!flag,
+      needmodalVisible: !!flag,
+    });
   };
 
   // 获取单据详情
@@ -486,11 +495,67 @@ class InquiryEdit extends React.Component {
     });
   };
 
+  // 发送需询价
+  submitNeedLine = select => {
+    const { dispatch } = this.props;
+    const { formVals } = this.state;
+    // eslint-disable-next-line camelcase
+    const TI_Z02908RequestItem = select.map(item => ({
+      DocEntry: item.DocEntry,
+      LineID: item.LineID,
+      UpdateTimestamp: formVals.UpdateTimestamp,
+    }));
+    dispatch({
+      type: 'SalesQuotationPreview/confirm',
+      payload: {
+        Content: {
+          TI_Z02908RequestItem,
+        },
+      },
+      callback: response => {
+        if (response && response.Status === 200) {
+          message.success('提交成功');
+
+          this.setState({ needmodalVisible: false });
+        }
+      },
+    });
+  };
+
+  // 成本核算
+  costCheck = () => {
+    const { dispatch } = this.props;
+    const {
+      formVals: { DocEntry, UpdateTimestamp },
+    } = this.state;
+    dispatch({
+      type: 'SalesQuotationPreview/costCheck',
+      payload: {
+        Content: {
+          DocEntry,
+          UpdateTimestamp,
+        },
+      },
+      callback: response => {
+        if (response && response.Status === 200) {
+          message.success('提交成功');
+
+          this.setState({ needmodalVisible: false });
+        }
+      },
+    });
+  };
+
   render() {
     const {
       global: { TI_Z004, Saler, Company },
     } = this.props;
-    const { formVals, attachmentVisible, prviewList } = this.state;
+    const { formVals, attachmentVisible, prviewList, needmodalVisible } = this.state;
+
+    const needParentMethods = {
+      handleSubmit: this.submitNeedLine,
+      handleModalVisible: this.handleModalVisible,
+    };
 
     const newdata = [...formVals.TI_Z02902];
     if (newdata.length > 0) {
@@ -614,6 +679,24 @@ class InquiryEdit extends React.Component {
           <Button onClick={this.toUpdate} type="primary">
             编辑
           </Button>
+          <Button type="primary" onClick={this.costCheck}>
+            成本核算
+          </Button>
+          <Button onClick={() => this.setState({ needmodalVisible: true })} type="primary">
+            确认销售报价
+          </Button>
+          <Button
+            type="primary"
+            onClick={() => router.push(`/sellabout/TI_Z030/add?BaseEntry=${formVals.DocEntry}`)}
+          >
+            复制到销售合同
+          </Button>
+          <NeedAskPrice
+            data={formVals.TI_Z02902}
+            {...needParentMethods}
+            rowKey="LineID"
+            modalVisible={needmodalVisible}
+          />
           <OrderPrint BaseEntry={formVals.DocEntry} BaseType="TI_Z029" />
           <Emails BaseEntry={formVals.DocEntry} BaseType="TI_Z029" />
         </FooterToolbar>
