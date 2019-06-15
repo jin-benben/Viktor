@@ -30,12 +30,12 @@ export default {
       City: '',
       AreaID: '',
       Area: '',
-
       Address: '',
       NumAtCard: '',
       IsInquiry: '',
       TI_Z03002: [],
       TI_Z03004: [],
+      TI_Z02603Fahter: [],
     },
   },
 

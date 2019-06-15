@@ -1,16 +1,14 @@
-import { queryRule, confirmRule, savePrintRule } from './service';
+import { queryRule, querySingleRule } from './service';
 
 export default {
-  namespace: 'salerConfrim',
+  namespace: 'express',
 
   state: {
-    orderLineList: [],
+    expressList: [],
     queryData: {
       Content: {
         SearchText: '',
-        DeliverSts: 'N',
-        SearchKey: '',
-        QueryType: '1',
+        SearchKey: 'Name',
       },
       page: 1,
       rows: 30,
@@ -25,6 +23,7 @@ export default {
       pageSize: 30,
       current: 1,
     },
+    expressDetail: {},
   },
 
   effects: {
@@ -35,7 +34,7 @@ export default {
           yield put({
             type: 'save',
             payload: {
-              orderLineList: [],
+              expressList: [],
             },
           });
         } else {
@@ -43,7 +42,7 @@ export default {
           yield put({
             type: 'save',
             payload: {
-              orderLineList: rows,
+              expressList: rows,
               pagination: {
                 total: records,
                 pageSize: payload.rows,
@@ -54,20 +53,24 @@ export default {
         }
       }
     },
-    *confirm({ payload, callback }, { call }) {
-      const response = yield call(confirmRule, payload);
-      if (callback) callback(response);
-    },
-    *print({ payload, callback }, { call }) {
-      const response = yield call(savePrintRule, payload);
-      if (callback) callback(response);
+    *singlefetch({ payload }, { call, put }) {
+      const response = yield call(querySingleRule, payload);
+      if (response && response.Status === 200) {
+        yield put({
+          type: 'save',
+          payload: {
+            expressDetail: response.Content,
+          },
+        });
+      }
     },
   },
+
   reducers: {
-    save(state, action) {
+    save(state, { payload }) {
       return {
         ...state,
-        ...action.payload,
+        ...payload,
       };
     },
   },

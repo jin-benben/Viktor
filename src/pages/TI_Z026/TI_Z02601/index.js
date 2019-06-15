@@ -18,6 +18,8 @@ import {
   message,
   DatePicker,
   Select,
+  Dropdown,
+  Menu,
 } from 'antd';
 import moment from 'moment';
 import round from 'lodash/round';
@@ -26,18 +28,19 @@ import CancelOrder from '@/components/Modal/CancelOrder';
 import StandardTable from '@/components/StandardTable';
 import EditableFormTable from '@/components/EditableFormTable';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
-import UpdateLoad from '../components/modal';
+import Link from 'umi/link';
+import OrderAttachUpload from '@/components/Modal/OrderAttachUpload';
 import SKUModal from '@/components/Modal/SKU';
 import Brand from '@/components/Brand';
 import MDMCommonality from '@/components/Select';
 import NeedAskPrice from '../components/needAskPrice';
 import CompanySelect from '@/components/Company/index';
-import OrderSource from '@/components/Select/OrderSource';
 import HSCode from '@/components/HSCode';
 import PushLink from '@/components/PushLink';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import Attachment from '@/components/Attachment';
 import { getName } from '@/utils/utils';
+import { orderSourceType } from '@/utils/publicData';
 
 const { TabPane } = Tabs;
 const FormItem = Form.Item;
@@ -328,17 +331,19 @@ class InquiryEdit extends React.Component {
       width: 100,
       dataIndex: 'InquiryDueDate',
       align: 'center',
+      render: (text, record) =>
+        record.lastIndex ? null : <span>{moment(text).format('YYYY-MM-DD')}</span>,
     },
     {
       title: '采购员',
       width: 100,
       dataIndex: 'Purchaser',
       align: 'center',
-      render: text => {
+      render: (text, record) => {
         const {
           global: { Purchaser },
         } = this.props;
-        return <span>{getName(Purchaser, text)}</span>;
+        return record.lastIndex ? null : <span>{getName(Purchaser, text)}</span>;
       },
     },
     {
@@ -346,11 +351,12 @@ class InquiryEdit extends React.Component {
       dataIndex: 'InquiryComment',
       width: 100,
       align: 'center',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
+      render: (text, record) =>
+        record.lastIndex ? null : (
+          <Ellipsis tooltip lines={1}>
+            {text}
+          </Ellipsis>
+        ),
     },
     {
       title: '询行总计',
@@ -370,8 +376,11 @@ class InquiryEdit extends React.Component {
       fixed: 'right',
       align: 'center',
       width: 80,
-      render: (text, record, index) =>
-        record.lastIndex ? null : (
+      render: (text, record, index) => {
+        const {
+          formVals: { DocEntry },
+        } = this.state;
+        return record.lastIndex ? null : (
           <Fragment>
             <Icon
               title="预览"
@@ -379,13 +388,17 @@ class InquiryEdit extends React.Component {
               onClick={() => this.lookLineAttachment(record, index)}
               style={{ color: '#08c', marginRight: 5 }}
             />
-            <Icon
-              title="上传附件"
-              className="icons"
-              style={{ color: '#08c', marginRight: 5, marginLeft: 5 }}
-              type="cloud-upload"
-              onClick={() => this.skuLineAttachment(record, index)}
-            />
+            {DocEntry ? (
+              <Icon
+                title="上传附件"
+                className="icons"
+                style={{ color: '#08c', marginRight: 5, marginLeft: 5 }}
+                type="cloud-upload"
+                onClick={() => this.skuLineAttachment(record, index)}
+              />
+            ) : (
+              ''
+            )}
             <Icon
               title="删除行"
               className="icons"
@@ -394,7 +407,8 @@ class InquiryEdit extends React.Component {
               onClick={() => this.deleteSKULine(record, index)}
             />
           </Fragment>
-        ),
+        );
+      },
     },
   ];
 
@@ -559,6 +573,42 @@ class InquiryEdit extends React.Component {
     return null;
   }
 
+  topMenu = () => {
+    const { formVals } = this.state;
+    const {
+      global: { currentUser },
+    } = this.props;
+    return (
+      <Menu>
+        <Menu.Item>
+          <Link target="_blank" to={`/sellabout/TI_Z029/add?BaseEntry=${formVals.DocEntry}`}>
+            复制到销售报价单
+          </Link>
+        </Menu.Item>
+        <Menu.Item>
+          <Link target="_blank" to="/sellabout/TI_Z026/TI_Z02601">
+            新建客户询价单
+          </Link>
+        </Menu.Item>
+        <Menu.Item>
+          <a href="javacript:void(0)" onClick={this.selectNeed}>
+            确认需采购询价
+          </a>
+        </Menu.Item>
+        <Menu.Item>
+          <Upload
+            action="http://47.104.65.49:8001/TI_Z026/TI_Z02609"
+            showUploadList={false}
+            onChange={this.uploadChange}
+            data={{ UserCode: currentUser.UserCode, Tonken: currentUser.Token }}
+          >
+            <span>上传物料</span>
+          </Upload>
+        </Menu.Item>
+      </Menu>
+    );
+  };
+
   // 获取单据详情
   getDetail = () => {
     const {
@@ -706,18 +756,39 @@ class InquiryEdit extends React.Component {
 
   // 删除附件
   deleteLine = (record, index) => {
-    const { formVals, LineID } = this.state;
+    const {
+      formVals,
+      formVals: { DocEntry },
+      LineID,
+    } = this.state;
+    let attch;
     if (LineID >= 0) {
       formVals.TI_Z02602[LineID].TI_Z02604.splice(index, 1);
+      attch = {
+        Content: {
+          Type: '2',
+          DocEntry,
+          ItemLine: record.LineID,
+          EnclosureList: [formVals.TI_Z02602[LineID].TI_Z02604],
+        },
+      };
     } else {
       formVals.TI_Z02603.splice(index, 1);
+      attch = {
+        Content: {
+          Type: '1',
+          DocEntry,
+          ItemLine: 0,
+          EnclosureList: [...formVals.TI_Z02603],
+        },
+      };
     }
-    this.setState({ formVals: { ...formVals } });
+    this.attachmentHandle(attch);
   };
 
   // 行物料附件弹窗显隐
   skuLineAttachment = (record, index) => {
-    this.setState({ LineID: index, uploadmodalVisible: true });
+    this.setState({ LineID: index, uploadmodalVisible: true, thisLine: record });
   };
 
   // 查看行物料
@@ -737,37 +808,86 @@ class InquiryEdit extends React.Component {
 
   // 获取上传成功附件，插入到对应数组
   handleSubmit = fieldsValue => {
-    const { AttachmentPath, AttachmentCode, AttachmentName } = fieldsValue;
-    const { formVals, LineID } = this.state;
+    const { AttachmentPath, AttachmentCode, AttachmentName, AttachmentExtension } = fieldsValue;
+    const {
+      formVals,
+      formVals: { DocEntry },
+      LineID,
+      thisLine,
+    } = this.state;
+
     const lastsku = formVals.TI_Z02603[formVals.TI_Z02603.length - 1];
     if (fieldsValue.AttachmentPath) {
+      let attch;
       if (LineID >= 0) {
-        const thisLine = formVals.TI_Z02602[LineID].TI_Z02604;
-        const last = thisLine[thisLine.length - 1];
-        const ID = last ? last.LineID + 1 : 1;
-        formVals.TI_Z02602[LineID].TI_Z02604.push({
-          LineID: ID,
-          BaseType: formVals.OrderType,
-          BaseEntry: formVals.DocEntry ? formVals.DocEntry : 1,
-          BaseLineID: last ? last.BaseLineID + 1 : 1,
-          AttachmentPath,
-          AttachmentCode,
-          AttachmentName,
-        });
+        const thisLineChild = formVals.TI_Z02602[LineID].TI_Z02604;
+        const last = thisLineChild[thisLineChild.length - 1];
+        const ID = last ? last.OrderID + 1 : 1;
+        attch = {
+          Content: {
+            Type: '2',
+            DocEntry,
+            ItemLine: thisLine.LineID,
+            EnclosureList: [
+              ...thisLineChild,
+              {
+                DocEntry,
+                OrderID: ID,
+                ItemLine: thisLine.LineID,
+                BaseType: 'TI_Z026',
+                BaseEntry: DocEntry,
+                BaseLineID: thisLine.LineID,
+                AttachmentCode,
+                AttachmentName,
+                AttachmentPath,
+                AttachmentExtension,
+              },
+            ],
+          },
+        };
       } else {
-        formVals.TI_Z02603.push({
-          LineID: lastsku ? lastsku.LineID + 1 : 1,
-          BaseType: formVals.OrderType,
-          BaseEntry: formVals.DocEntry ? formVals.DocEntry : 1,
-          BaseLineID: lastsku ? lastsku.BaseLineID + 1 : 1,
-          AttachmentPath,
-          AttachmentCode,
-          AttachmentName,
-        });
+        attch = {
+          Content: {
+            Type: '1',
+            DocEntry,
+            ItemLine: 0,
+            EnclosureList: [
+              ...formVals.TI_Z02603,
+              {
+                DocEntry,
+                OrderID: lastsku ? lastsku.OrderID + 1 : 1,
+                ItemLine: 0,
+                BaseType: 'TI_Z026',
+                BaseEntry: DocEntry,
+                BaseLineID: lastsku ? lastsku.BaseLineID + 1 : 1,
+                AttachmentCode,
+                AttachmentName,
+                AttachmentPath,
+                AttachmentExtension,
+              },
+            ],
+          },
+        };
       }
-      this.setState({ formVals: { ...formVals } });
+      this.attachmentHandle(attch);
     }
-    this.handleModalVisible(false);
+  };
+
+  attachmentHandle = params => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'inquiryEdit/upload',
+      payload: {
+        ...params,
+      },
+      callback: response => {
+        if (response && response.Status === 200) {
+          message.success('保存成功');
+          this.handleModalVisible(false);
+          this.getDetail();
+        }
+      },
+    });
   };
 
   // 弹窗隐藏
@@ -777,6 +897,7 @@ class InquiryEdit extends React.Component {
       attachmentVisible: !!flag,
       skuModalVisible: !!flag,
       needmodalVisible: !!flag,
+      pushModalVisible: !!flag,
       LineID: Number,
     });
   };
@@ -787,6 +908,9 @@ class InquiryEdit extends React.Component {
   };
 
   rightButton = tabIndex => {
+    const {
+      formVals: { DocEntry },
+    } = this.state;
     if (tabIndex === '1') {
       return (
         <Button icon="plus" style={{ marginLeft: 8 }} type="primary" onClick={this.addLineSku}>
@@ -794,7 +918,7 @@ class InquiryEdit extends React.Component {
         </Button>
       );
     }
-    if (tabIndex === '3') {
+    if (tabIndex === '3' && DocEntry) {
       return (
         <Button
           icon="plus"
@@ -825,11 +949,15 @@ class InquiryEdit extends React.Component {
     formVals.CardCode = company.Code;
     formVals.CardName = company.Name;
     this.setState({ formVals, linkmanList: TI_Z00602List || [], addList: TI_Z00603List }, () => {
-      if (TI_Z00603List[0]) {
+      if (TI_Z00603List.length) {
         this.handleAdreessChange(TI_Z00603List[0].AddressID);
+      } else {
+        message.warning('该客户下没有收货地址，请先维护收货地址');
       }
-      if (TI_Z00602List[0]) {
+      if (TI_Z00602List.length) {
         this.linkmanChange(TI_Z00602List[0].UserID);
+      } else {
+        message.warning('该客户下没有维护联系人，请先维护联系人');
       }
     });
   };
@@ -1060,7 +1188,7 @@ class InquiryEdit extends React.Component {
       form: { getFieldDecorator },
       addloading,
       updateloading,
-      global: { Saler, Company, currentUser },
+      global: { Saler, Company },
       detailLoading,
     } = this.props;
     const {
@@ -1307,7 +1435,7 @@ class InquiryEdit extends React.Component {
                   {getFieldDecorator('SourceType', {
                     initialValue: formVals.SourceType,
                     rules: [{ required: true, message: '请选择来源类型！' }],
-                  })(<OrderSource initialValue={formVals.SourceType} />)}
+                  })(<MDMCommonality initialValue={formVals.SourceType} data={orderSourceType} />)}
                 </FormItem>
               </Col>
               <Col lg={8} md={12} sm={24}>
@@ -1342,44 +1470,23 @@ class InquiryEdit extends React.Component {
           {formVals.DocEntry ? (
             <Fragment>
               <CancelOrder cancelSubmit={this.cancelSubmit} />
-              <Button
-                icon="plus"
-                style={{ marginLeft: 8 }}
-                type="primary"
-                onClick={() => router.push('/sellabout/TI_Z026/TI_Z02601')}
-              >
-                新建
-              </Button>
               <Button onClick={this.updateHandle} type="primary" loading={updateloading}>
                 更新
               </Button>
-              <Button onClick={this.selectNeed} type="primary">
-                确认需采购询价
-              </Button>
-              <Button
-                type="primary"
-                onClick={() => router.push(`/sellabout/TI_Z029/add?BaseEntry=${formVals.DocEntry}`)}
-              >
-                复制到销售报价单
-              </Button>
+              <Dropdown overlay={this.topMenu} placement="topCenter">
+                <Button type="primary">
+                  更多
+                  <Icon type="ellipsis" />
+                </Button>
+              </Dropdown>
             </Fragment>
           ) : (
             <Button loading={addloading} onClick={this.saveHandle} type="primary">
               保存
             </Button>
           )}
-          <Upload
-            action="http://47.104.65.49:8001/TI_Z026/TI_Z02609"
-            showUploadList={false}
-            onChange={this.uploadChange}
-            data={{ UserCode: currentUser.UserCode, Tonken: currentUser.Token }}
-          >
-            <Button style={{ marginLeft: 8 }} type="primary">
-              上传物料
-            </Button>
-          </Upload>
         </FooterToolbar>
-        <UpdateLoad {...uploadmodalMethods} modalVisible={uploadmodalVisible} />
+        <OrderAttachUpload {...uploadmodalMethods} modalVisible={uploadmodalVisible} />
         <SKUModal {...parentMethods} modalVisible={skuModalVisible} />
         <Modal
           width={960}

@@ -17,3 +17,12 @@ export async function confirmRule(params) {
     },
   });
 }
+
+export async function savePrintRule(params) {
+  return request('/MDM/TI_Z048/TI_Z04801', {
+    method: 'POST',
+    data: {
+      ...params,
+    },
+  });
+}

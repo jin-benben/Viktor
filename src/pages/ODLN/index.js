@@ -6,15 +6,14 @@ import {
   Col,
   Card,
   Form,
-  Input,
   Button,
   Divider,
-  Badge,
   Select,
   DatePicker,
-  Checkbox,
   Icon,
   message,
+  Tag,
+  Input,
 } from 'antd';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import StandardTable from '@/components/StandardTable';
@@ -22,7 +21,6 @@ import DocEntryFrom from '@/components/DocEntryFrom';
 import NeedAskPrice from './components';
 import MDMCommonality from '@/components/Select';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
-import Link from 'umi/link';
 import { getName } from '@/utils/utils';
 
 const { RangePicker } = DatePicker;
@@ -74,7 +72,7 @@ class salerConfrim extends PureComponent {
     },
     {
       title: '联系人',
-      width: 100,
+      width: 80,
       dataIndex: 'Contacts',
     },
     {
@@ -92,25 +90,27 @@ class salerConfrim extends PureComponent {
     },
     {
       title: '邮箱',
-      width: 100,
+      width: 200,
       dataIndex: 'Email',
     },
     {
       title: '交易公司',
-      width: 100,
+      width: 150,
       dataIndex: 'CompanyCode',
+      render: val => {
+        const {
+          global: { Company },
+        } = this.props;
+        return <span>{getName(Company, val)}</span>;
+      },
     },
     {
       title: '发货状态',
       dataIndex: 'DeliverSts',
-      width: 100,
+      width: 80,
       render: text => (
         <span>
-          {text === 'Y' ? (
-            <Badge color="green" text="已发货" />
-          ) : (
-            <Badge color="blue" text="未发货" />
-          )}
+          {text === 'Y' ? <Tag color="green">已发货</Tag> : <Tag color="blue">未发货</Tag>}
         </span>
       ),
     },
@@ -129,16 +129,37 @@ class salerConfrim extends PureComponent {
       title: '快递单号',
       width: 150,
       dataIndex: 'ExpressNumber',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
+      render: (text, record, index) => (
+        <Input onChange={e => this.rowChange(e.target.value, record, index, 'ExpressNumber')} />
       ),
     },
     {
+      title: '运输方式',
+      dataIndex: 'TrnspCode',
+      width: 100,
+      render: (text, record, index) => {
+        const {
+          global: { Trnsp },
+        } = this.props;
+        return (
+          <MDMCommonality
+            onChange={value => this.rowChange(value, record, index, 'TrnspCode')}
+            initialValue={text}
+            data={Trnsp}
+          />
+        );
+      },
+    },
+    {
       title: '销售员',
-      width: 80,
       dataIndex: 'SlpCode',
+      width: 80,
+      render: val => {
+        const {
+          global: { Saler },
+        } = this.props;
+        return <span>{getName(Saler, val)}</span>;
+      },
     },
     {
       title: '收货地址',
@@ -166,11 +187,32 @@ class salerConfrim extends PureComponent {
       type: 'global/getMDMCommonality',
       payload: {
         Content: {
-          CodeList: ['Saler', 'Purchaser'],
+          CodeList: ['Saler', 'Purchaser', 'Company', 'Trnsp'],
         },
       },
     });
   }
+
+  rowChange = (value, record, index, key) => {
+    const {
+      salerConfrim: { orderLineList },
+      dispatch,
+    } = this.props;
+    const newOrderLineList = orderLineList.map(item => {
+      if (item.DocEntry === record.DocEntry) {
+        // eslint-disable-next-line no-param-reassign
+        record[key] = value;
+        return record;
+      }
+      return item;
+    });
+    dispatch({
+      type: 'salerConfrim/save',
+      payload: {
+        orderLineList: [...newOrderLineList],
+      },
+    });
+  };
 
   handleStandardTableChange = pagination => {
     const {
@@ -262,6 +304,7 @@ class salerConfrim extends PureComponent {
     const loODLN01RequestItem = select.map(item => ({
       DocEntry: item.DocEntry,
       ExpressNumber: item.ExpressNumber,
+      TrnspCode: item.TrnspCode,
     }));
     dispatch({
       type: 'salerConfrim/confirm',
@@ -298,6 +341,49 @@ class salerConfrim extends PureComponent {
   // 需询价弹窗
   handleModalVisible = flag => {
     this.setState({ modalVisible: !!flag });
+  };
+
+  print = () => {
+    const {
+      dispatch,
+      global: { currentUser },
+    } = this.props;
+    const { selectedRows } = this.state;
+    if (!selectedRows.length) {
+      message.warning('请先选择要打印的单据');
+      return;
+    }
+    // eslint-disable-next-line camelcase
+    const TI_Z04801RequestItemList = selectedRows.map(item => {
+      const { TrnspCode, DocEntry, ShipToCode } = item;
+      return {
+        BaseType: '15',
+        BaseEntry: DocEntry,
+        TrnspCode,
+        ShipToCode,
+      };
+    });
+    dispatch({
+      type: 'salerConfrim/print',
+      payload: {
+        Content: {
+          TI_Z04801RequestItemList,
+        },
+      },
+      callback: response => {
+        if (response && response.Status === 200) {
+          message.success('提交成功');
+          const DocEntryList = response.Content.TI_Z04801ResponseItemList.map(
+            item => item.DocEntry
+          );
+          window.open(
+            `http://47.104.65.49:8086/PrintExample.aspx?BaseType=15&DocEntryList=${DocEntryList.join()}&UserCode=${
+              currentUser.UserCode
+            }`
+          );
+        }
+      },
+    });
   };
 
   renderSimpleForm() {
@@ -386,12 +472,16 @@ class salerConfrim extends PureComponent {
       loading,
     } = this.props;
     const { selectedRows, modalVisible } = this.state;
-
+    let tabwitdh = 0;
     const columns = this.columns.map(item => {
       // eslint-disable-next-line no-param-reassign
       item.align = 'Center';
+      if (item.width) {
+        tabwitdh += item.width;
+      }
       return item;
     });
+    console.log(tabwitdh);
 
     const parentMethods = {
       handleSubmit: this.submitNeedLine,
@@ -408,19 +498,27 @@ class salerConfrim extends PureComponent {
               data={{ list: orderLineList }}
               pagination={pagination}
               rowKey="Key"
-              scroll={{ x: 1500, y: 500 }}
+              scroll={{ x: 1700, y: 500 }}
               columns={columns}
               rowSelection={{
                 onSelectRow: this.onSelectRow,
               }}
               onChange={this.handleStandardTableChange}
             />
-            <NeedAskPrice data={selectedRows} {...parentMethods} modalVisible={modalVisible} />
+            <NeedAskPrice
+              columns={this.columns}
+              data={selectedRows}
+              {...parentMethods}
+              modalVisible={modalVisible}
+            />
           </div>
         </Card>
         <FooterToolbar>
           <Button style={{ marginTop: 20 }} onClick={this.selectNeed} type="primary">
             确认发货
+          </Button>
+          <Button style={{ marginTop: 20 }} onClick={this.print} type="primary">
+            打印
           </Button>
         </FooterToolbar>
       </Fragment>

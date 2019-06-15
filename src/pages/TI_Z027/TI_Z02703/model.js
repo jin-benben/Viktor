@@ -1,4 +1,4 @@
-import { querySingleRule } from '../service';
+import { querySingleRule, cancelRule } from '../service';
 
 export default {
   namespace: 'supplierAskPreview',
@@ -36,6 +36,7 @@ export default {
       IsInquiry: '',
       TI_Z02702: [],
       TI_Z02703: [],
+      TI_Z02603Fahter: [],
     },
   },
 
@@ -50,6 +51,10 @@ export default {
           },
         });
       }
+    },
+    *cancel({ payload, callback }, { call }) {
+      const response = yield call(cancelRule, payload);
+      if (callback) callback(response);
     },
   },
 

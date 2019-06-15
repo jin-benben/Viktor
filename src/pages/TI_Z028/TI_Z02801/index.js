@@ -1,5 +1,5 @@
 /* eslint-disable array-callback-return */
-import React, { PureComponent, Fragment } from 'react';
+import React, { Fragment } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
 import Link from 'umi/link';

@@ -1,4 +1,5 @@
-import { querySingleRule, addRule, updateRule, cancelRule, supplierRule } from '../service';
+import { querySingleRule, updateRule, cancelRule, supplierRule } from '../service';
+import { uploadRule } from '../../TI_Z026/service';
 
 export default {
   namespace: 'supplierAskDetail',
@@ -27,6 +28,7 @@ export default {
       IsInquiry: '',
       TI_Z02702: [],
       TI_Z02703: [],
+      TI_Z02603Fahter: [],
     },
     linkmanList: [],
   },
@@ -62,7 +64,10 @@ export default {
         });
       }
     },
-
+    *upload({ payload, callback }, { call }) {
+      const response = yield call(uploadRule, payload);
+      if (callback) callback(response);
+    },
     *update({ payload, callback }, { call }) {
       const response = yield call(updateRule, payload);
       if (callback) callback(response);

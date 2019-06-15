@@ -7,13 +7,13 @@ import { getName } from '@/utils/utils';
 
 const { Description } = DescriptionList;
 
-@connect(({ print, loading }) => ({
-  print,
+@connect(({ express, loading }) => ({
+  express,
   loading,
 }))
 class PrintDetailPage extends PureComponent {
   state = {
-    printDetail: {},
+    expressDetail: {},
   };
 
   componentDidMount() {
@@ -23,7 +23,7 @@ class PrintDetailPage extends PureComponent {
     } = this.props;
     if (query.DocEntry) {
       dispatch({
-        type: 'print/singlefetch',
+        type: 'express/singlefetch',
         payload: {
           Content: {
             DocEntry: query.DocEntry,
@@ -34,9 +34,9 @@ class PrintDetailPage extends PureComponent {
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    if (nextProps.print.printHistoryDetail !== prevState.printDetail) {
+    if (nextProps.print.expressDetail !== prevState.expressDetail) {
       return {
-        printDetail: nextProps.print.printHistoryDetail,
+        printDetail: nextProps.express.expressDetail,
       };
     }
     return null;

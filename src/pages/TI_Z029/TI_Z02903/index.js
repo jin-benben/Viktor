@@ -1,8 +1,9 @@
 import React, { Fragment } from 'react';
 import { connect } from 'dva';
-import { Card, Tabs, Modal, Button, Icon, message } from 'antd';
+import { Card, Tabs, Button, Icon, message, Dropdown, Menu, Collapse, Empty } from 'antd';
 import moment from 'moment';
 import router from 'umi/router';
+import Link from 'umi/link';
 import StandardTable from '@/components/StandardTable';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
@@ -12,33 +13,18 @@ import CancelOrder from '@/components/Modal/CancelOrder';
 import OrderPrint from '@/components/Modal/OrderPrint';
 import NeedAskPrice from '../components/needAskPrice';
 import Emails from '@/components/Modal/Email';
+import TargetLine from '@/components/TargetLine';
 import { getName } from '@/utils/utils';
+import { orderSourceType, linkmanColumns, otherCostCColumns, baseType } from '@/utils/publicData';
 
 const { Description } = DescriptionList;
 const { TabPane } = Tabs;
-const OrderSource = [
-  {
-    Code: '1',
-    Name: '线下',
-  },
-  {
-    Code: '2',
-    Name: '网站',
-  },
-  {
-    Code: '3',
-    Name: '电话',
-  },
-  {
-    Code: '4',
-    Name: '其他来源',
-  },
-];
+const { Panel } = Collapse;
 
 @connect(({ SalesQuotationPreview, loading, global }) => ({
   SalesQuotationPreview,
   global,
-  loading: loading.models.SalesQuotationPreview,
+  loading: loading.effects['SalesQuotationPreview/fetch'],
 }))
 class InquiryEdit extends React.Component {
   skuColumns = [
@@ -241,7 +227,17 @@ class InquiryEdit extends React.Component {
       render: (text, record) =>
         record.lastIndex ? <span style={{ fontWeight: 'bolder' }}>{text}</span> : text,
     },
-
+    {
+      title: '客询价单',
+      width: 80,
+      dataIndex: 'BaseEntry',
+      render: (val, record) =>
+        record.lastIndex ? null : (
+          <Link target="_blank" to={`/sellabout/TI_Z026/detail?DocEntry=${record.BaseEntry}`}>
+            {`${val}-${record.BaseLineID}`}
+          </Link>
+        ),
+    },
     {
       title: '操作',
       fixed: 'right',
@@ -261,103 +257,13 @@ class InquiryEdit extends React.Component {
     },
   ];
 
-  linkmanColumns = [
-    {
-      title: '用户ID',
-      align: 'center',
-      dataIndex: 'UserID',
-    },
-    {
-      title: '联系人',
-      align: 'center',
-      dataIndex: 'Contacts',
-    },
-    {
-      title: '手机号',
-      align: 'center',
-      dataIndex: 'CellphoneNO',
-    },
-  ];
-
-  otherCostCColumns = [
-    {
-      title: '序号',
-      width: 80,
-      align: 'center',
-      dataIndex: 'OrderId',
-    },
-    {
-      title: '费用项目',
-      align: 'center',
-      dataIndex: 'FeeName',
-    },
-    {
-      title: '总计',
-      align: 'center',
-      dataIndex: 'OtherTotal',
-    },
-    {
-      title: '行备注',
-      align: 'center',
-      dataIndex: 'LineComment',
-    },
-  ];
-
-  attachmentColumns = [
-    {
-      title: '序号',
-      width: 80,
-      align: 'center',
-      dataIndex: 'LineID',
-    },
-    {
-      title: '来源类型',
-      align: 'center',
-      dataIndex: 'BaseType',
-      render: text => <span>{text === '1' ? '正常订单' : '未知'}</span>,
-    },
-    {
-      title: '来源单号',
-      align: 'center',
-      dataIndex: 'BaseEntry',
-    },
-    {
-      title: '附件代码',
-      align: 'center',
-      dataIndex: 'AttachmentCode',
-    },
-    {
-      title: '附件描述',
-      align: 'center',
-      dataIndex: 'AttachmentName',
-    },
-    {
-      title: '附件路径',
-      align: 'center',
-      dataIndex: 'AttachmentPath',
-      render: text => <div style={{ wordWrap: 'break-word', wordBreak: 'break-all' }}>{text}</div>,
-    },
-
-    {
-      title: '操作',
-      align: 'center',
-      render: (text, record) => (
-        <Fragment>
-          <a target="_blnk" href={record.AttachmentPath}>
-            <Icon title="预览" type="eye" style={{ color: '#08c', marginRight: 5 }} />
-          </a>
-        </Fragment>
-      ),
-    },
-  ];
-
   constructor(props) {
     super(props);
     this.state = {
       formVals: {}, // 单据信息
       attachmentVisible: false,
       needmodalVisible: false,
-      prviewList: [],
+      targetLine: {},
     };
   }
 
@@ -412,13 +318,13 @@ class InquiryEdit extends React.Component {
           City: '',
           AreaID: '',
           Area: '',
-
           Address: '',
           NumAtCard: '',
           Owner: '',
           IsInquiry: '',
           TI_Z02902: [],
           TI_Z02903: [],
+          TI_Z02603Fahter: [],
         },
       },
     });
@@ -433,8 +339,42 @@ class InquiryEdit extends React.Component {
     return null;
   }
 
+  topMenu = () => {
+    const { formVals } = this.state;
+    return (
+      <Menu>
+        <Menu.Item>
+          <Link target="_blank" to={`/sellabout/TI_Z030/add?BaseEntry=${formVals.DocEntry}`}>
+            复制到销售合同
+          </Link>
+        </Menu.Item>
+        <Menu.Item>
+          <Link target="_blank" to="/sellabout/TI_Z029/add">
+            新建销售报价单
+          </Link>
+        </Menu.Item>
+        <Menu.Item>
+          <a href="javacript:void(0)" onClick={() => this.setState({ needmodalVisible: true })}>
+            确认销售报价
+          </a>
+        </Menu.Item>
+        <Menu.Item>
+          <a href="javacript:void(0)" onClick={this.costCheck}>
+            成本核算
+          </a>
+        </Menu.Item>
+        <Menu.Item>
+          <OrderPrint BaseEntry={formVals.DocEntry} BaseType="TI_Z029" />
+        </Menu.Item>
+        <Menu.Item>
+          <Emails BaseEntry={formVals.DocEntry} BaseType="TI_Z029" />
+        </Menu.Item>
+      </Menu>
+    );
+  };
+
   lookLineAttachment = record => {
-    this.setState({ attachmentVisible: true, prviewList: [...record.TI_Z02903] });
+    this.setState({ attachmentVisible: true, targetLine: record });
   };
 
   handleModalVisible = flag => {
@@ -549,8 +489,9 @@ class InquiryEdit extends React.Component {
   render() {
     const {
       global: { TI_Z004, Saler, Company },
+      loading,
     } = this.props;
-    const { formVals, attachmentVisible, prviewList, needmodalVisible } = this.state;
+    const { formVals, attachmentVisible, needmodalVisible, targetLine } = this.state;
 
     const needParentMethods = {
       handleSubmit: this.submitNeedLine,
@@ -568,7 +509,7 @@ class InquiryEdit extends React.Component {
       });
     }
     return (
-      <Card bordered={false}>
+      <Card bordered={false} loading={loading}>
         <DescriptionList style={{ marginBottom: 24 }}>
           <Description term="单号">{formVals.DocEntry}</Description>
           <Description term="客户ID">{formVals.CardCode}</Description>
@@ -592,7 +533,7 @@ class InquiryEdit extends React.Component {
           </Description>
           <Description term="订单类型">{formVals.OrderType === '1' ? '正常订单' : ''}</Description>
           <Description term="来源类型">
-            <span>{getName(OrderSource, formVals.OrderType)}</span>
+            <span>{getName(orderSourceType, formVals.OrderType)}</span>
           </Description>
           <Description term="客户参考号">{formVals.NumAtCard}</Description>
           <Description term="单据状态">
@@ -614,7 +555,7 @@ class InquiryEdit extends React.Component {
             <StandardTable
               data={{ list: newdata }}
               rowKey="LineID"
-              scroll={{ x: 2600, y: 600 }}
+              scroll={{ x: 2700, y: 600 }}
               columns={this.skuColumns}
             />
           </TabPane>
@@ -632,73 +573,86 @@ class InquiryEdit extends React.Component {
             <StandardTable
               data={{ list: formVals.TI_Z02904 }}
               rowKey="LineID"
-              columns={this.otherCostCColumns}
+              columns={otherCostCColumns}
             />
           </TabPane>
           <TabPane tab="附件" key="4">
-            <StandardTable
-              data={{ list: formVals.TI_Z02903 }}
-              rowKey="LineID"
-              columns={this.attachmentColumns}
-            />
+            {formVals.TI_Z02603Fahter.length ? (
+              <Collapse>
+                {formVals.TI_Z02603Fahter.map(item => {
+                  const header = (
+                    <div>
+                      单号：{' '}
+                      <Link
+                        target="_blank"
+                        to={`/sellabout/TI_Z026/detail?DocEntry=${item.DocEntry}`}
+                      >
+                        {item.DocEntry}
+                      </Link>
+                      ; 创建日期：{moment(item.FCreateDate).format('YYYY-MM-DD')}； 创建人
+                      <span>{getName(TI_Z004, item.FCreateUser)}</span>； 更新日期：
+                      {moment(item.FUpdateDate).format('YYYY-MM-DD')}； 更新人:
+                      <span>{getName(TI_Z004, item.FUpdateUser)}</span>
+                    </div>
+                  );
+                  return (
+                    <Panel header={header} key={item.DocEntry}>
+                      {item.TI_Z02603.map(line => (
+                        <ul key={line.OrderID}>
+                          <li>序号:{line.OrderID}</li>
+                          <li>
+                            来源类型:<span>{getName(baseType, line.BaseType)}</span>
+                          </li>
+                          <li>来源单号:{line.BaseEntry}</li>
+                          <li>附件代码:{line.AttachmentCode}</li>
+                          <li>附件描述:{line.AttachmentName}</li>
+                          <li>
+                            附件路径:
+                            <a href={line.AttachmentPath} target="_blank" rel="noopener noreferrer">
+                              {line.AttachmentPath}
+                            </a>
+                          </li>
+                        </ul>
+                      ))}
+                    </Panel>
+                  );
+                })}
+              </Collapse>
+            ) : (
+              <Empty />
+            )}
           </TabPane>
           <TabPane tab="其他推送人" key="5">
             <StandardTable
               data={{ list: formVals.TI_Z02905 }}
               rowKey="UserID"
-              columns={this.linkmanColumns}
+              columns={linkmanColumns}
             />
           </TabPane>
         </Tabs>
-
-        <Modal
-          width={640}
-          destroyOnClose
-          title="物料行附件"
-          visible={attachmentVisible}
-          onOk={() => this.handleModalVisible(false)}
-          onCancel={() => this.handleModalVisible(false)}
-        >
-          <StandardTable
-            data={{ list: prviewList }}
-            rowKey="LineID"
-            columns={this.attachmentColumns}
-          />
-        </Modal>
-
+        <TargetLine
+          attachmentVisible={attachmentVisible}
+          otherCostList={targetLine.TI_Z02903}
+          attachList={targetLine.TI_Z02604}
+          handleModalVisible={this.handleModalVisible}
+        />
         <FooterToolbar>
           <CancelOrder cancelSubmit={this.cancelSubmit} />
-          <Button
-            icon="plus"
-            style={{ marginLeft: 8 }}
-            type="primary"
-            onClick={() => router.push('/sellabout/TI_Z029/add')}
-          >
-            新建
-          </Button>
           <Button onClick={this.toUpdate} type="primary">
             编辑
           </Button>
-          <Button type="primary" onClick={this.costCheck}>
-            成本核算
-          </Button>
-          <Button onClick={() => this.setState({ needmodalVisible: true })} type="primary">
-            确认销售报价
-          </Button>
-          <Button
-            type="primary"
-            onClick={() => router.push(`/sellabout/TI_Z030/add?BaseEntry=${formVals.DocEntry}`)}
-          >
-            复制到销售合同
-          </Button>
+          <Dropdown overlay={this.topMenu} placement="topCenter">
+            <Button type="primary">
+              更多
+              <Icon type="ellipsis" />
+            </Button>
+          </Dropdown>
           <NeedAskPrice
             data={formVals.TI_Z02902}
             {...needParentMethods}
             rowKey="LineID"
             modalVisible={needmodalVisible}
           />
-          <OrderPrint BaseEntry={formVals.DocEntry} BaseType="TI_Z029" />
-          <Emails BaseEntry={formVals.DocEntry} BaseType="TI_Z029" />
         </FooterToolbar>
       </Card>
     );

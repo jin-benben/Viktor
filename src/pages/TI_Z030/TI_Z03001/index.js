@@ -16,19 +16,24 @@ import {
   Tabs,
   Button,
   Icon,
-  Modal,
   message,
   DatePicker,
+  Modal,
   Select,
+  Collapse,
+  Dropdown,
+  Empty,
+  Menu,
 } from 'antd';
 import moment from 'moment';
 import round from 'lodash/round';
 import router from 'umi/router';
+import Link from 'umi/link';
 import CancelOrder from '@/components/Modal/CancelOrder';
 import StandardTable from '@/components/StandardTable';
 import EditableFormTable from '@/components/EditableFormTable';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
-import UpdateLoad from '../components/modal';
+import OrderAttachUpload from '@/components/Modal/OrderAttachUpload';
 import AskPriceFetch from '../components/askPriceFetch';
 import Brand from '@/components/Brand';
 import MDMCommonality from '@/components/Select';
@@ -37,18 +42,21 @@ import NeedAskPrice from '../components/needAskPrice';
 import SKUModal from '@/components/Modal/SKU';
 import CompanySelect from '@/components/Company/index';
 import HSCode from '@/components/HSCode';
-import OrderSource from '@/components/Select/OrderSource';
 import PushLink from '@/components/PushLink';
+import Attachment from '@/components/Attachment';
 import { getName } from '@/utils/utils';
+import { otherCostCColumns, orderSourceType, baseType } from '@/utils/publicData';
 
 const { TextArea } = Input;
 const { TabPane } = Tabs;
 const FormItem = Form.Item;
 const { Option } = Select;
+const { Panel } = Collapse;
 @connect(({ agreementEdit, loading, global }) => ({
   agreementEdit,
   global,
   addloading: loading.effects['agreementEdit/add'],
+  detailloading: loading.effects['agreementEdit/fetch'],
   updateloading: loading.effects['agreementEdit/update'],
 }))
 @Form.create()
@@ -401,8 +409,11 @@ class AgreementEdit extends React.Component {
       fixed: 'right',
       align: 'center',
       width: 80,
-      render: (text, record, index) =>
-        record.lastIndex ? null : (
+      render: (text, record, index) => {
+        const {
+          formVals: { DocEntry },
+        } = this.state;
+        return record.lastIndex ? null : (
           <Fragment>
             <Icon
               title="预览"
@@ -410,13 +421,17 @@ class AgreementEdit extends React.Component {
               onClick={() => this.lookLineAttachment(record, index)}
               style={{ color: '#08c', marginRight: 5 }}
             />
-            <Icon
-              title="上传附件"
-              className="icons"
-              style={{ color: '#08c', marginRight: 5, marginLeft: 5 }}
-              type="cloud-upload"
-              onClick={() => this.skuLineAttachment(record, index)}
-            />
+            {DocEntry ? (
+              <Icon
+                title="上传附件"
+                className="icons"
+                style={{ color: '#08c', marginRight: 5, marginLeft: 5 }}
+                type="cloud-upload"
+                onClick={() => this.skuLineAttachment(record, index, true)}
+              />
+            ) : (
+              ''
+            )}
             <Icon
               title="删除行"
               className="icons"
@@ -425,7 +440,8 @@ class AgreementEdit extends React.Component {
               onClick={() => this.deleteSKULine(record, index)}
             />
           </Fragment>
-        ),
+        );
+      },
     },
   ];
 
@@ -459,88 +475,12 @@ class AgreementEdit extends React.Component {
     },
   ];
 
-  attachmentColumns = [
-    {
-      title: '序号',
-      width: 80,
-      align: 'center',
-      dataIndex: 'LineID',
-    },
-    {
-      title: '来源类型',
-      align: 'center',
-      dataIndex: 'BaseType',
-      render: text => <span>{text === '1' ? '正常订单' : '未知'}</span>,
-    },
-    {
-      title: '来源单号',
-      align: 'center',
-      dataIndex: 'BaseEntry',
-    },
-    {
-      title: '附件代码',
-      align: 'center',
-      dataIndex: 'AttachmentCode',
-    },
-    {
-      title: '附件描述',
-      align: 'center',
-      dataIndex: 'AttachmentName',
-    },
-    {
-      title: '附件路径',
-      align: 'center',
-      dataIndex: 'AttachmentPath',
-      render: text => <div style={{ wordWrap: 'break-word', wordBreak: 'break-all' }}>{text}</div>,
-    },
-
-    {
-      title: '操作',
-      align: 'center',
-      render: (text, record, index) => (
-        <Fragment>
-          <a target="_blnk" href={record.AttachmentPath}>
-            <Icon title="预览" type="eye" style={{ color: '#08c', marginRight: 5 }} />
-          </a>
-          <Icon
-            title="删除行"
-            type="delete"
-            theme="twoTone"
-            onClick={() => this.deleteLine(record, index)}
-          />
-        </Fragment>
-      ),
-    },
-  ];
-
-  otherCostCColumns = [
-    {
-      title: '序号',
-      width: 80,
-      align: 'center',
-      dataIndex: 'OrderId',
-    },
-    {
-      title: '费用项目',
-      align: 'center',
-      dataIndex: 'FeeName',
-    },
-    {
-      title: '总计',
-      align: 'center',
-      dataIndex: 'OtherTotal',
-    },
-    {
-      title: '行备注',
-      align: 'center',
-      dataIndex: 'LineComment',
-    },
-  ];
-
   constructor(props) {
     super(props);
     this.state = {
-      formVals: {}, // 单据信息
+      formVals: {
+        TI_Z02603Fahter: [],
+      }, // 单据信息
       tabIndex: '1', // tab
       uploadmodalVisible: false, // 上传Modal
       attachmentVisible: false, // 附件Modal
@@ -551,7 +491,8 @@ class AgreementEdit extends React.Component {
       LineID: Number, // 当前选中行index
       linkmanList: [], // 联系人list,
       addList: [],
-      thisLine: {
+      isLine: false,
+      targetLine: {
         // 当前行
         TI_Z02604: [],
       },
@@ -588,7 +529,7 @@ class AgreementEdit extends React.Component {
         type: 'global/getMDMCommonality',
         payload: {
           Content: {
-            CodeList: ['Saler', 'Curr', 'Purchaser', 'TI_Z042', 'WhsCode', 'Company'],
+            CodeList: ['Saler', 'Curr', 'Purchaser', 'TI_Z042', 'TI_Z004', 'WhsCode', 'Company'],
           },
         },
       });
@@ -618,6 +559,7 @@ class AgreementEdit extends React.Component {
         orderDetail: {
           Comment: '',
           OrderType: '1',
+          Transport: 'N',
           DocDate: null,
           CreateDate: null,
           CardCode: '',
@@ -645,6 +587,7 @@ class AgreementEdit extends React.Component {
           TI_Z03002: [],
           TI_Z03004: [],
           TI_Z03005: [],
+          TI_Z02603Fahter: [],
         },
       },
     });
@@ -836,7 +779,7 @@ class AgreementEdit extends React.Component {
 
   // sku输入框获取焦点
   focusLine = (record, LineID) => {
-    this.setState({ thisLine: { ...record }, LineID, skuModalVisible: true });
+    this.setState({ targetLine: { ...record }, LineID, skuModalVisible: true });
   };
 
   // 物料弹出返回
@@ -854,9 +797,9 @@ class AgreementEdit extends React.Component {
       Code,
       EnglishName,
     } = select;
-    const { thisLine, LineID, formVals } = this.state;
+    const { targetLine, LineID, formVals } = this.state;
     formVals.TI_Z03002[LineID] = {
-      ...thisLine,
+      ...targetLine,
       SKU: Code,
       SKUName: Name,
       ForeignName: EnglishName,
@@ -872,26 +815,15 @@ class AgreementEdit extends React.Component {
     this.handleModalVisible(false);
   };
 
-  // 删除附件
-  deleteLine = (record, index) => {
-    const { formVals, LineID } = this.state;
-    if (LineID >= 0) {
-      formVals.TI_Z03002[LineID].TI_Z02604.splice(index, 1);
-    } else {
-      formVals.TI_Z02603.splice(index, 1);
-    }
-    this.setState({ formVals: { ...formVals } });
-  };
-
   // 行物料附件弹窗显隐
-  skuLineAttachment = (record, index) => {
-    this.setState({ LineID: index, uploadmodalVisible: true });
+  skuLineAttachment = (record, index, isLine) => {
+    this.setState({ LineID: index, uploadmodalVisible: true, targetLine: record, isLine });
   };
 
   // 查看行物料
 
   lookLineAttachment = (record, index) => {
-    this.setState({ LineID: index, attachmentVisible: true, thisLine: { ...record } });
+    this.setState({ LineID: index, attachmentVisible: true, targetLine: { ...record } });
   };
 
   // 删除行物料
@@ -903,39 +835,115 @@ class AgreementEdit extends React.Component {
     });
   };
 
+  // 删除附件
+  deleteLine = (record, index, isLine) => {
+    const { targetLine } = this.state;
+    let attch;
+    if (isLine) {
+      targetLine.TI_Z02604.splice(index, 1);
+      attch = {
+        Content: {
+          Type: '2',
+          ItemLine: targetLine.BaseLineID,
+          DocEntry: targetLine.BaseEntry,
+          EnclosureList: [...targetLine.TI_Z02604],
+        },
+      };
+    } else {
+      record.TI_Z02603.splice(index, 1);
+      attch = {
+        Content: {
+          Type: '1',
+          DocEntry: record.DocEntry,
+          ItemLine: 0,
+          EnclosureList: [...record.TI_Z02603],
+        },
+      };
+    }
+    this.attachmentHandle(attch);
+  };
+
   // 获取上传成功附件，插入到对应数组
   handleSubmit = fieldsValue => {
-    const { AttachmentPath, AttachmentCode, AttachmentName } = fieldsValue;
-    const { formVals, LineID } = this.state;
-    const lastsku = formVals.TI_Z02603[formVals.TI_Z02603.length - 1];
+    const { AttachmentPath, AttachmentCode, AttachmentName, AttachmentExtension } = fieldsValue;
+    const {
+      formVals: { DocEntry },
+      targetLine,
+      isLine,
+    } = this.state;
+
     if (fieldsValue.AttachmentPath) {
-      if (LineID >= 0) {
-        const thisLine = formVals.TI_Z03002[LineID].TI_Z02604;
-        const last = thisLine[thisLine.length - 1];
-        const ID = last ? last.LineID + 1 : 1;
-        formVals.TI_Z03002[LineID].TI_Z02604.push({
-          LineID: ID,
-          BaseType: formVals.OrderType,
-          BaseEntry: formVals.BaseEntry ? formVals.BaseEntry : 1,
-          BaseLineID: last ? last.BaseLineID + 1 : 1,
-          AttachmentPath,
-          AttachmentCode,
-          AttachmentName,
-        });
+      let attch;
+      if (isLine) {
+        const thisLineChild = targetLine.TI_Z02604;
+        const last = thisLineChild[thisLineChild.length - 1];
+        const ID = last ? last.OrderID + 1 : 1;
+        attch = {
+          Content: {
+            Type: '2',
+            DocEntry: targetLine.BaseEntry,
+            ItemLine: targetLine.BaseLineID,
+            EnclosureList: [
+              ...thisLineChild,
+              {
+                DocEntry: targetLine.BaseEntry,
+                OrderID: ID,
+                ItemLine: targetLine.BaseLineID,
+                BaseType: 'TI_Z030',
+                BaseEntry: DocEntry,
+                BaseLineID: targetLine.LineID,
+                AttachmentCode,
+                AttachmentName,
+                AttachmentPath,
+                AttachmentExtension,
+              },
+            ],
+          },
+        };
       } else {
-        formVals.TI_Z02603.push({
-          LineID: lastsku ? lastsku.LineID + 1 : 1,
-          BaseType: formVals.OrderType,
-          BaseEntry: formVals.BaseEntry ? formVals.BaseEntry : 1,
-          BaseLineID: lastsku ? lastsku.BaseLineID + 1 : 1,
-          AttachmentPath,
-          AttachmentCode,
-          AttachmentName,
-        });
+        const lastsku = targetLine.TI_Z02603[targetLine.TI_Z02603.length - 1];
+        attch = {
+          Content: {
+            Type: '1',
+            DocEntry: targetLine.DocEntry,
+            ItemLine: 0,
+            EnclosureList: [
+              ...targetLine.TI_Z02603,
+              {
+                DocEntry: targetLine.DocEntry,
+                OrderID: lastsku ? lastsku.OrderID + 1 : 1,
+                ItemLine: 0,
+                BaseType: 'TI_Z030',
+                BaseEntry: DocEntry,
+                BaseLineID: lastsku ? lastsku.BaseLineID + 1 : 1,
+                AttachmentCode,
+                AttachmentName,
+                AttachmentPath,
+                AttachmentExtension,
+              },
+            ],
+          },
+        };
       }
-      this.setState({ formVals: { ...formVals } });
+      this.attachmentHandle(attch);
     }
-    this.handleModalVisible(false);
+  };
+
+  attachmentHandle = params => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'agreementEdit/upload',
+      payload: {
+        ...params,
+      },
+      callback: response => {
+        if (response && response.Status === 200) {
+          message.success('保存成功');
+          this.handleModalVisible(false);
+          this.getDetail();
+        }
+      },
+    });
   };
 
   // 弹窗隐藏
@@ -975,21 +983,7 @@ class AgreementEdit extends React.Component {
         </Button>
       );
     }
-    if (tabIndex === '4') {
-      return (
-        <Button
-          icon="plus"
-          style={{ marginLeft: 8 }}
-          type="primary"
-          onClick={() => {
-            this.setState({ uploadmodalVisible: true });
-          }}
-        >
-          添加新附件
-        </Button>
-      );
-    }
-    if (tabIndex === '4') {
+    if (tabIndex === '5') {
       return (
         <Button icon="plus" style={{ marginLeft: 8 }} type="primary" onClick={this.addpush}>
           添加其他推送人
@@ -1006,11 +1000,15 @@ class AgreementEdit extends React.Component {
     formVals.CardCode = company.Code;
     formVals.CardName = company.Name;
     this.setState({ formVals, linkmanList: TI_Z00602List || [], addList: TI_Z00603List }, () => {
-      if (TI_Z00603List[0]) {
+      if (TI_Z00603List.length) {
         this.handleAdreessChange(TI_Z00603List[0].AddressID);
+      } else {
+        message.warning('该客户下没有收货地址，请先维护收货地址');
       }
-      if (TI_Z00602List[0]) {
+      if (TI_Z00602List.length) {
         this.linkmanChange(TI_Z00602List[0].UserID);
+      } else {
+        message.warning('该客户下没有维护联系人，请先维护联系人');
       }
     });
   };
@@ -1064,6 +1062,7 @@ class AgreementEdit extends React.Component {
       newLineID = formVals.TI_Z03002[formVals.TI_Z03002.length - 1].LineID + 1;
     }
     selectedRows.map((item, index) => {
+      if (item.LineStatus !== 'O') return;
       newLineID += index;
       const {
         LineComment,
@@ -1358,17 +1357,38 @@ class AgreementEdit extends React.Component {
     });
   };
 
+  topMenu = () => (
+    <Menu>
+      <Menu.Item>
+        <Link target="_blank" to="/sellabout/TI_Z030/add">
+          新建销售合同
+        </Link>
+      </Menu.Item>
+      <Menu.Item>
+        <a href="javacript:void(0)" onClick={() => this.setState({ needmodalVisible: true })}>
+          确认销售合同
+        </a>
+      </Menu.Item>
+      <Menu.Item>
+        <a href="javacript:void(0)" onClick={this.costCheck}>
+          成本核算
+        </a>
+      </Menu.Item>
+    </Menu>
+  );
+
   render() {
     const {
       form: { getFieldDecorator },
-      global: { Saler, Company },
+      global: { Saler, Company, TI_Z004 },
       addloading,
       updateloading,
+      detailloading,
     } = this.props;
     const {
       formVals,
       tabIndex,
-      thisLine,
+      targetLine,
       linkmanList,
       addList,
       uploadmodalVisible,
@@ -1427,6 +1447,11 @@ class AgreementEdit extends React.Component {
       });
     }
 
+    const attachmentList = [];
+    formVals.TI_Z02603Fahter.map(item => {
+      attachmentList.push(...item.TI_Z02603);
+    });
+
     let tablwidth = 0;
     this.skuColumns.map(item => {
       if (item.width) {
@@ -1435,7 +1460,7 @@ class AgreementEdit extends React.Component {
     });
     console.log(tablwidth);
     return (
-      <Card bordered={false}>
+      <Card bordered={false} loading={detailloading}>
         <Form {...formItemLayout}>
           <Row gutter={8}>
             <Col lg={10} md={12} sm={24}>
@@ -1633,6 +1658,14 @@ class AgreementEdit extends React.Component {
                 </FormItem>
               </Col>
               <Col lg={8} md={12} sm={24}>
+                <FormItem key="SourceType" {...this.formLayout} label="来源类型">
+                  {getFieldDecorator('SourceType', {
+                    initialValue: formVals.SourceType,
+                    rules: [{ required: true, message: '请选择来源类型！' }],
+                  })(<MDMCommonality initialValue={formVals.SourceType} data={orderSourceType} />)}
+                </FormItem>
+              </Col>
+              <Col lg={8} md={12} sm={24}>
                 <FormItem key="Transport" {...this.formLayout} label="单独运输">
                   {getFieldDecorator('Transport', {
                     initialValue: formVals.Transport,
@@ -1643,14 +1676,6 @@ class AgreementEdit extends React.Component {
                       <Option value="N">否</Option>
                     </Select>
                   )}
-                </FormItem>
-              </Col>
-              <Col lg={8} md={12} sm={24}>
-                <FormItem key="SourceType" {...this.formLayout} label="来源类型">
-                  {getFieldDecorator('SourceType', {
-                    initialValue: formVals.SourceType,
-                    rules: [{ required: true, message: '请选择来源类型！' }],
-                  })(<OrderSource initialValue={formVals.SourceType} />)}
                 </FormItem>
               </Col>
               <Col lg={8} md={12} sm={24}>
@@ -1667,15 +1692,70 @@ class AgreementEdit extends React.Component {
             <StandardTable
               data={{ list: formVals.TI_Z03004 }}
               rowKey="LineID"
-              columns={this.otherCostCColumns}
+              columns={otherCostCColumns}
             />
           </TabPane>
           <TabPane tab="附件" key="4">
-            <StandardTable
-              data={{ list: formVals.TI_Z02603 }}
-              rowKey="LineID"
-              columns={this.attachmentColumns}
-            />
+            {formVals.TI_Z02603Fahter.length ? (
+              <Collapse>
+                {formVals.TI_Z02603Fahter.map(item => {
+                  const header = (
+                    <div>
+                      单号：{' '}
+                      <Link
+                        target="_blank"
+                        to={`/sellabout/TI_Z026/detail?DocEntry=${item.DocEntry}`}
+                      >
+                        {item.DocEntry}
+                      </Link>
+                      ; 创建日期：{moment(item.FCreateDate).format('YYYY-MM-DD')}； 创建人
+                      <span>{getName(TI_Z004, item.FCreateUser)}</span>； 更新日期：
+                      {moment(item.FUpdateDate).format('YYYY-MM-DD')}； 更新人:
+                      <span>{getName(TI_Z004, item.FUpdateUser)}</span>
+                      <Icon
+                        title="上传附件"
+                        className="icons"
+                        style={{ color: '#08c', marginRight: 5, marginLeft: 5 }}
+                        type="cloud-upload"
+                        onClick={() => this.skuLineAttachment(item, '', false)}
+                      />
+                    </div>
+                  );
+                  return (
+                    <Panel header={header} key={item.DocEntry}>
+                      {item.TI_Z02603.map((line, index) => (
+                        <ul key={line.OrderID}>
+                          <li>序号:{line.OrderID}</li>
+                          <li>
+                            来源类型:<span>{getName(baseType, line.BaseType)}</span>
+                          </li>
+                          <li>来源单号:{line.BaseEntry}</li>
+                          <li>附件代码:{line.AttachmentCode}</li>
+                          <li>附件描述:{line.AttachmentName}</li>
+                          <li>
+                            附件路径:
+                            <a href={line.AttachmentPath} target="_blank" rel="noopener noreferrer">
+                              {line.AttachmentPath}
+                            </a>
+                          </li>
+                          <li>
+                            操作:{' '}
+                            <Icon
+                              title="删除行"
+                              type="delete"
+                              theme="twoTone"
+                              onClick={() => this.deleteLine(item, index, false)}
+                            />
+                          </li>
+                        </ul>
+                      ))}
+                    </Panel>
+                  );
+                })}
+              </Collapse>
+            ) : (
+              <Empty />
+            )}
           </TabPane>
           <TabPane tab="其他推送人" key="5">
             <StandardTable
@@ -1690,20 +1770,7 @@ class AgreementEdit extends React.Component {
           {formVals.DocEntry ? (
             <Fragment>
               <CancelOrder cancelSubmit={this.cancelSubmit} />
-              <Button
-                icon="plus"
-                style={{ marginLeft: 8 }}
-                type="primary"
-                onClick={() => router.push('/sellabout/TI_Z030/add')}
-              >
-                新建
-              </Button>
-              <Button type="primary" onClick={this.costCheck}>
-                成本核算
-              </Button>
-              <Button onClick={() => this.setState({ needmodalVisible: true })} type="primary">
-                确认销售合同
-              </Button>
+
               <Button
                 loading={updateloading}
                 style={{ marginLeft: 10 }}
@@ -1712,6 +1779,12 @@ class AgreementEdit extends React.Component {
               >
                 更新
               </Button>
+              <Dropdown overlay={this.topMenu} placement="topCenter">
+                <Button type="primary">
+                  更多
+                  <Icon type="ellipsis" />
+                </Button>
+              </Dropdown>
             </Fragment>
           ) : (
             <Button loading={addloading} onClick={this.saveHandle} type="primary">
@@ -1719,7 +1792,7 @@ class AgreementEdit extends React.Component {
             </Button>
           )}
         </FooterToolbar>
-        <UpdateLoad {...uploadmodalMethods} modalVisible={uploadmodalVisible} />
+        <OrderAttachUpload {...uploadmodalMethods} modalVisible={uploadmodalVisible} />
         <AskPriceFetch
           onRef={c => {
             this.getAskPriceOrder = c;
@@ -1729,20 +1802,32 @@ class AgreementEdit extends React.Component {
           modalVisible={orderModalVisible}
         />
         <SKUModal {...parentMethods} modalVisible={skuModalVisible} />
+
         <Modal
-          width={640}
+          width={960}
           destroyOnClose
-          title="物料行附件"
+          title="行预览"
           visible={attachmentVisible}
           onOk={() => this.handleModalVisible(false)}
           onCancel={() => this.handleModalVisible(false)}
         >
-          <StandardTable
-            data={{ list: thisLine.TI_Z02604 }}
-            rowKey="LineID"
-            columns={this.attachmentColumns}
-          />
+          <Tabs>
+            <TabPane key="1" tab="行附件">
+              <Attachment
+                dataSource={targetLine.TI_Z02604}
+                deleteLineFun={(record, index) => this.deleteLine(record, index, true)}
+              />
+            </TabPane>
+            <TabPane key="2" tab="行成本核算">
+              <StandardTable
+                data={{ list: targetLine.TI_Z03003 }}
+                rowKey="LineID"
+                columns={otherCostCColumns}
+              />
+            </TabPane>
+          </Tabs>
         </Modal>
+
         <NeedAskPrice
           data={formVals.TI_Z03002}
           {...needParentMethods}

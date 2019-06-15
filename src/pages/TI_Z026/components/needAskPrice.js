@@ -16,7 +16,7 @@ class OrderLine extends React.Component {
   state = {
     data: [],
     selectedRows: [],
-    isCan: false, // 是否要去拉去最新的采购员
+    isCan: true, // 是否要去拉去最新的采购员
   };
 
   skuColumns = [
@@ -234,6 +234,7 @@ class OrderLine extends React.Component {
       const loItemList = selectedRows.map(item => ({
         DocEntry: item.DocEntry,
         LineID: item.LineID,
+        Purchaser: item.Purchaser,
       }));
       const response = await confirmRule({ Content: { loItemList } });
       if (response && response.Status === 200) {
@@ -251,7 +252,6 @@ class OrderLine extends React.Component {
   render() {
     const { modalVisible, handleModalVisible } = this.props;
     const { data, selectedRowKeys } = this.state;
-    console.log(selectedRowKeys);
     return (
       <Modal
         width={1200}

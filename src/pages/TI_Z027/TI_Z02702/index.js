@@ -17,25 +17,30 @@ import {
   message,
   DatePicker,
   Popconfirm,
+  Collapse,
   Select,
+  Empty,
 } from 'antd';
 import moment from 'moment';
 import round from 'lodash/round';
-import router from 'umi/router';
 import CancelOrder from '@/components/Modal/CancelOrder';
 import MDMCommonality from '@/components/Select';
-import StandardTable from '@/components/StandardTable';
+import Link from 'umi/link';
 import EditableFormTable from '@/components/EditableFormTable';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
-import UpdateLoad from '../../TI_Z026/components/modal';
+import OrderAttachUpload from '@/components/Modal/OrderAttachUpload';
 import SKUModal from '@/components/Modal/SKU';
 import Brand from '@/components/Brand';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
+import Attachment from '@/components/Attachment';
 import SupplierSelect from '@/components/Select/Supplier';
+import { getName } from '@/utils/utils';
+import { baseType } from '@/utils/publicData';
 
 const { TabPane } = Tabs;
 const FormItem = Form.Item;
 const { Option } = Select;
+const { Panel } = Collapse;
 @connect(({ supplierAskDetail, loading, global }) => ({
   supplierAskDetail,
   global,
@@ -189,15 +194,14 @@ class InquiryEdit extends React.Component {
     },
     {
       title: '客询价单',
-      width: 100,
-      align: 'center',
+      width: 80,
       dataIndex: 'BaseEntry',
-    },
-    {
-      title: '客询价行',
-      width: 100,
-      align: 'center',
-      dataIndex: 'BaseLineID',
+      render: (val, record) =>
+        record.lastIndex ? null : (
+          <Link target="_blank" to={`/sellabout/TI_Z026/detail?DocEntry=${record.BaseEntry}`}>
+            {`${val}-${record.BaseLineID}`}
+          </Link>
+        ),
     },
     {
       title: '操作',
@@ -218,7 +222,7 @@ class InquiryEdit extends React.Component {
               className="icons"
               style={{ color: '#08c', marginRight: 5, marginLeft: 5 }}
               type="cloud-upload"
-              onClick={() => this.skuLineAttachment(record, index)}
+              onClick={() => this.skuLineAttachment(record, index, true)}
             />
             <Popconfirm
               title="确定要删除吗？(更新后有效)"
@@ -297,9 +301,11 @@ class InquiryEdit extends React.Component {
       skuModalVisible: false, // 物料选择 Modal
       LineID: Number, // 当前选中行index
       linkmanList: [], // 联系人list
-      thisLine: {
+      isLine: false,
+      targetLine: {
         // 当前行
         TI_Z02704: [],
+        TI_Z02603Fahter: [],
       },
     };
     this.formLayout = {
@@ -327,7 +333,7 @@ class InquiryEdit extends React.Component {
       type: 'global/getMDMCommonality',
       payload: {
         Content: {
-          CodeList: ['Saler', 'Company', 'Purchaser', 'Curr', 'WhsCode'],
+          CodeList: ['Saler', 'Company', 'Purchaser', 'Curr', 'TI_Z004', 'WhsCode'],
         },
       },
     });
@@ -360,6 +366,7 @@ class InquiryEdit extends React.Component {
           IsInquiry: '',
           TI_Z02702: [],
           TI_Z02703: [],
+          TI_Z02603Fahter: [],
         },
       },
     });
@@ -425,16 +432,16 @@ class InquiryEdit extends React.Component {
 
   // sku输入框获取焦点
   focusLine = (record, LineID) => {
-    this.setState({ thisLine: { ...record }, LineID, skuModalVisible: true });
+    this.setState({ targetLine: { ...record }, LineID, skuModalVisible: true });
   };
 
   // 物料弹出返回
   changeLineSKU = selection => {
     const [select] = selection;
     const { BrandName, ManufactureNO, Name, Package, Parameters, ProductName, Unit, Code } = select;
-    const { thisLine, LineID, formVals } = this.state;
+    const { targetLine, LineID, formVals } = this.state;
     formVals.TI_Z02702[LineID] = {
-      ...thisLine,
+      ...targetLine,
       SKU: Code,
       SKUName: Name,
       BrandName,
@@ -449,25 +456,42 @@ class InquiryEdit extends React.Component {
   };
 
   // 删除附件
-  deleteLine = (record, index) => {
-    const { formVals, LineID } = this.state;
-    if (LineID >= 0) {
-      formVals.TI_Z02702[LineID].TI_Z02704.splice(index, 1);
+  deleteLine = (record, index, isLine) => {
+    const { targetLine } = this.state;
+    let attch;
+    if (isLine) {
+      targetLine.TI_Z02604.splice(index, 1);
+      attch = {
+        Content: {
+          Type: '2',
+          ItemLine: targetLine.BaseLineID,
+          DocEntry: targetLine.BaseEntry,
+          EnclosureList: [...targetLine.TI_Z02604],
+        },
+      };
     } else {
-      formVals.TI_Z02703.splice(index, 1);
+      record.TI_Z02603.splice(index, 1);
+      attch = {
+        Content: {
+          Type: '1',
+          DocEntry: record.DocEntry,
+          ItemLine: 0,
+          EnclosureList: [...record.TI_Z02603],
+        },
+      };
     }
-    this.setState({ formVals: { ...formVals } });
+    this.attachmentHandle(attch);
   };
 
   // 行物料附件弹窗显隐
-  skuLineAttachment = (record, index) => {
-    this.setState({ LineID: index, uploadmodalVisible: true });
+  skuLineAttachment = (record, index, isLine) => {
+    this.setState({ LineID: index, uploadmodalVisible: true, targetLine: record, isLine });
   };
 
   // 查看行物料
 
   lookLineAttachment = (record, index) => {
-    this.setState({ LineID: index, attachmentVisible: true, thisLine: { ...record } });
+    this.setState({ LineID: index, attachmentVisible: true, targetLine: { ...record } });
   };
 
   // 删除行物料
@@ -481,37 +505,85 @@ class InquiryEdit extends React.Component {
 
   // 获取上传成功附件，插入到对应数组
   handleSubmit = fieldsValue => {
-    const { AttachmentPath, AttachmentCode, AttachmentName } = fieldsValue;
-    const { formVals, LineID } = this.state;
-    const lastsku = formVals.TI_Z02703[formVals.TI_Z02703.length - 1];
+    const { AttachmentPath, AttachmentCode, AttachmentName, AttachmentExtension } = fieldsValue;
+    const {
+      formVals: { DocEntry },
+      targetLine,
+      isLine,
+    } = this.state;
+
     if (fieldsValue.AttachmentPath) {
-      if (LineID >= 0) {
-        const thisLine = formVals.TI_Z02702[LineID].TI_Z02704;
-        const last = thisLine[thisLine.length - 1];
-        const ID = last ? last.LineID + 1 : 1;
-        formVals.TI_Z02702[LineID].TI_Z02704.push({
-          LineID: ID,
-          BaseType: formVals.OrderType,
-          BaseEntry: formVals.BaseEntry ? formVals.BaseEntry : 1,
-          BaseLineID: last ? last.BaseLineID + 1 : 1,
-          AttachmentPath,
-          AttachmentCode,
-          AttachmentName,
-        });
+      let attch;
+      if (isLine) {
+        const thisLineChild = targetLine.TI_Z02604;
+        const last = thisLineChild[thisLineChild.length - 1];
+        const ID = last ? last.OrderID + 1 : 1;
+        attch = {
+          Content: {
+            Type: '2',
+            DocEntry: targetLine.BaseEntry,
+            ItemLine: targetLine.BaseLineID,
+            EnclosureList: [
+              ...thisLineChild,
+              {
+                DocEntry: targetLine.BaseEntry,
+                OrderID: ID,
+                ItemLine: targetLine.BaseLineID,
+                BaseType: 'TI_Z027',
+                BaseEntry: DocEntry,
+                BaseLineID: targetLine.LineID,
+                AttachmentCode,
+                AttachmentName,
+                AttachmentPath,
+                AttachmentExtension,
+              },
+            ],
+          },
+        };
       } else {
-        formVals.TI_Z02703.push({
-          LineID: lastsku ? lastsku.LineID + 1 : 1,
-          BaseType: formVals.OrderType,
-          BaseEntry: formVals.BaseEntry ? formVals.BaseEntry : 1,
-          BaseLineID: lastsku ? lastsku.BaseLineID + 1 : 1,
-          AttachmentPath,
-          AttachmentCode,
-          AttachmentName,
-        });
+        const lastsku = targetLine.TI_Z02603[targetLine.TI_Z02603.length - 1];
+        attch = {
+          Content: {
+            Type: '1',
+            DocEntry: targetLine.DocEntry,
+            ItemLine: 0,
+            EnclosureList: [
+              ...targetLine.TI_Z02603,
+              {
+                DocEntry: targetLine.DocEntry,
+                OrderID: lastsku ? lastsku.OrderID + 1 : 1,
+                ItemLine: 0,
+                BaseType: 'TI_Z027',
+                BaseEntry: DocEntry,
+                BaseLineID: lastsku ? lastsku.BaseLineID + 1 : 1,
+                AttachmentCode,
+                AttachmentName,
+                AttachmentPath,
+                AttachmentExtension,
+              },
+            ],
+          },
+        };
       }
-      this.setState({ formVals: { ...formVals } });
+      this.attachmentHandle(attch);
     }
-    this.handleModalVisible(false);
+  };
+
+  attachmentHandle = params => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'supplierAskDetail/upload',
+      payload: {
+        ...params,
+      },
+      callback: response => {
+        if (response && response.Status === 200) {
+          message.success('保存成功');
+          this.handleModalVisible(false);
+          this.getDetail();
+        }
+      },
+    });
   };
 
   // 弹窗隐藏
@@ -559,9 +631,7 @@ class InquiryEdit extends React.Component {
   // 联系人change
   linkmanChange = value => {
     const { formVals, linkmanList } = this.state;
-    const select = linkmanList.find(item => {
-      return item.LineID === value;
-    });
+    const select = linkmanList.find(item => item.LineID === value);
     const { CellphoneNO, Email, PhoneNO, UserID, Name } = select;
     Object.assign(formVals, { CellphoneNO, Email, PhoneNO, UserID, Contacts: Name });
     this.setState({ formVals });
@@ -620,6 +690,14 @@ class InquiryEdit extends React.Component {
       callback: response => {
         if (response && response.Status === 200) {
           message.success('取消成功');
+          dispatch({
+            type: 'supplierAskDetail/fetch',
+            payload: {
+              Content: {
+                DocEntry,
+              },
+            },
+          });
         }
       },
     });
@@ -655,12 +733,12 @@ class InquiryEdit extends React.Component {
   render() {
     const {
       form: { getFieldDecorator },
-      global: { Purchaser, Curr, Company },
+      global: { Purchaser, Curr, Company, TI_Z004 },
     } = this.props;
     const {
       formVals,
       tabIndex,
-      thisLine,
+      targetLine,
       linkmanList,
       uploadmodalVisible,
       skuModalVisible,
@@ -802,7 +880,7 @@ class InquiryEdit extends React.Component {
             <EditableFormTable
               rowChange={this.rowChange}
               rowKey="LineID"
-              scroll={{ x: 2100 }}
+              scroll={{ x: 1930 }}
               columns={this.skuColumns}
               data={newdata}
             />
@@ -871,24 +949,71 @@ class InquiryEdit extends React.Component {
             </Row>
           </TabPane>
           <TabPane tab="附件" key="3">
-            <StandardTable
-              data={{ list: formVals.TI_Z02703 }}
-              rowKey="LineID"
-              columns={this.attachmentColumns}
-            />
+            {formVals.TI_Z02603Fahter.length ? (
+              <Collapse>
+                {formVals.TI_Z02603Fahter.map(item => {
+                  const header = (
+                    <div>
+                      单号：{' '}
+                      <Link
+                        target="_blank"
+                        to={`/sellabout/TI_Z026/detail?DocEntry=${item.DocEntry}`}
+                      >
+                        {item.DocEntry}
+                      </Link>
+                      ; 创建日期：{moment(item.FCreateDate).format('YYYY-MM-DD')}； 创建人
+                      <span>{getName(TI_Z004, item.FCreateUser)}</span>； 更新日期：
+                      {moment(item.FUpdateDate).format('YYYY-MM-DD')}； 更新人:
+                      <span>{getName(TI_Z004, item.FUpdateUser)}</span>
+                      <Icon
+                        title="上传附件"
+                        className="icons"
+                        style={{ color: '#08c', marginRight: 5, marginLeft: 5 }}
+                        type="cloud-upload"
+                        onClick={() => this.skuLineAttachment(item, '', false)}
+                      />
+                    </div>
+                  );
+                  return (
+                    <Panel header={header} key={item.DocEntry}>
+                      {item.TI_Z02603.map((line, index) => (
+                        <ul key={line.OrderID}>
+                          <li>序号:{line.OrderID}</li>
+                          <li>
+                            来源类型:<span>{getName(baseType, line.BaseType)}</span>
+                          </li>
+                          <li>来源单号:{line.BaseEntry}</li>
+                          <li>附件代码:{line.AttachmentCode}</li>
+                          <li>附件描述:{line.AttachmentName}</li>
+                          <li>
+                            附件路径:
+                            <a href={line.AttachmentPath} target="_blank" rel="noopener noreferrer">
+                              {line.AttachmentPath}
+                            </a>
+                          </li>
+                          <li>
+                            操作:{' '}
+                            <Icon
+                              title="删除行"
+                              type="delete"
+                              theme="twoTone"
+                              onClick={() => this.deleteLine(item, index, false)}
+                            />
+                          </li>
+                        </ul>
+                      ))}
+                    </Panel>
+                  );
+                })}
+              </Collapse>
+            ) : (
+              <Empty />
+            )}
           </TabPane>
         </Tabs>
 
         <FooterToolbar>
           <CancelOrder cancelSubmit={this.cancelSubmit} />
-          <Button
-            icon="plus"
-            style={{ marginLeft: 8 }}
-            type="primary"
-            onClick={() => router.push('/purchase/TI_Z027/edit')}
-          >
-            新建
-          </Button>
           <Button
             style={{ marginLeft: 10, marginRight: 10 }}
             onClick={this.updateHandle}
@@ -896,21 +1021,23 @@ class InquiryEdit extends React.Component {
           >
             更新
           </Button>
+          <Button icon="plus" type="primary" href="/purchase/TI_Z027/edit" target="_blank">
+            新建
+          </Button>
         </FooterToolbar>
-        <UpdateLoad {...uploadmodalMethods} modalVisible={uploadmodalVisible} />
+        <OrderAttachUpload {...uploadmodalMethods} modalVisible={uploadmodalVisible} />
         <SKUModal {...parentMethods} modalVisible={skuModalVisible} />
         <Modal
-          width={640}
+          width={960}
           destroyOnClose
           title="物料行附件"
           visible={attachmentVisible}
           onOk={() => this.handleModalVisible(false)}
           onCancel={() => this.handleModalVisible(false)}
         >
-          <StandardTable
-            data={{ list: thisLine.TI_Z02704 }}
-            rowKey="LineID"
-            columns={this.attachmentColumns}
+          <Attachment
+            dataSource={targetLine.TI_Z02604}
+            deleteLineFun={(record, index) => this.deleteLine(record, index, true)}
           />
         </Modal>
       </Card>

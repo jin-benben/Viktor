@@ -9,7 +9,7 @@ import LinkMan from '../components/linkman';
 import CardSource from '@/components/Select/CardSource';
 import MDMCommonality from '@/components/Select';
 import router from 'umi/router';
-import { checkPhone, chechEmail, getName } from '@/utils/utils';
+import { getName } from '@/utils/utils';
 
 const { TabPane } = Tabs;
 
@@ -391,22 +391,6 @@ class CompanyEdit extends PureComponent {
       );
     }
     return null;
-  };
-
-  validatorPhone = (rule, value, callback) => {
-    if (value && !checkPhone(value)) {
-      callback(new Error('手机号格式不正确'));
-    } else {
-      callback();
-    }
-  };
-
-  validatorEmail = (rule, value, callback) => {
-    if (value && !chechEmail(value)) {
-      callback(new Error('邮箱格式不正确'));
-    } else {
-      callback();
-    }
   };
 
   addLinkMan = () => {

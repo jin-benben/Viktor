@@ -80,6 +80,19 @@ export default [
             component: './print/detail',
           },
           {
+            name: '电子面单查询',
+            icon: 'icondayin',
+            path: '/base/express/history',
+            component: './TI_Z048/history',
+          },
+          {
+            name: '电子面单详情',
+            icon: 'iconyuangong',
+            hideInMenu:true,
+            path: '/base/express/detail',
+            component: './TI_Z048/detail',
+          },
+          {
             name: '邮件发送记录',
             icon: 'iconEmailHili',
             path: '/base/sendEmail/history',
@@ -403,7 +416,7 @@ export default [
                 component: './TI_Z030/TI_Z03003',
               },
               {
-                name: '销售合同跟新',
+                name: '销售合同更新',
                 hideInMenu: true,
                 path: '/sellabout/TI_Z030/update',
                 component: './TI_Z030/TI_Z03001',

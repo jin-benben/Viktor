@@ -15,7 +15,6 @@ class LoginPage extends PureComponent {
   state = {
     notice: '',
     type: 'tab1',
-    autoLogin: true,
   };
 
   onSubmit = (err, values) => {

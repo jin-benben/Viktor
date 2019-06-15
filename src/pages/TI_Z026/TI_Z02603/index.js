@@ -1,8 +1,9 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Card, Tabs, Modal, Button, Icon, message } from 'antd';
+import { Card, Tabs, Modal, Button, Icon, message, Dropdown, Menu } from 'antd';
 import moment from 'moment';
 import router from 'umi/router';
+import Link from 'umi/link';
 import StandardTable from '@/components/StandardTable';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
@@ -10,33 +11,17 @@ import CancelOrder from '@/components/Modal/CancelOrder';
 import DescriptionList from 'ant-design-pro/lib/DescriptionList';
 import MyTag from '@/components/Tag';
 import NeedAskPrice from '../components/needAskPrice';
+import Attachment from '@/components/Attachment';
 import { getName } from '@/utils/utils';
+import { orderSourceType, linkmanColumns } from '@/utils/publicData';
 
 const { Description } = DescriptionList;
 const { TabPane } = Tabs;
-const OrderSource = [
-  {
-    Key: '1',
-    Value: '线下',
-  },
-  {
-    Key: '2',
-    Value: '网站',
-  },
-  {
-    Key: '3',
-    Value: '电话',
-  },
-  {
-    Key: '4',
-    Value: '其他来源',
-  },
-];
 
 @connect(({ inquiryPreview, loading, global }) => ({
   inquiryPreview,
   global,
-  loading: loading.models.inquiryPreview,
+  loading: loading.effects['inquiryPreview/fetch'],
 }))
 class InquiryEdit extends PureComponent {
   skuColumns = [
@@ -147,7 +132,7 @@ class InquiryEdit extends PureComponent {
     },
     {
       title: 'HS编码',
-      width: 150,
+      width: 100,
       dataIndex: 'HSCode',
     },
     {
@@ -329,72 +314,6 @@ class InquiryEdit extends PureComponent {
     },
   ];
 
-  attachmentColumns = [
-    {
-      title: '序号',
-      width: 80,
-      align: 'center',
-      dataIndex: 'LineID',
-    },
-    {
-      title: '来源类型',
-      align: 'center',
-      dataIndex: 'BaseType',
-      render: text => <span>{text === '1' ? '正常订单' : '未知'}</span>,
-    },
-    {
-      title: '来源单号',
-      align: 'center',
-      dataIndex: 'BaseEntry',
-    },
-    {
-      title: '附件代码',
-      align: 'center',
-      dataIndex: 'AttachmentCode',
-    },
-    {
-      title: '附件描述',
-      align: 'center',
-      dataIndex: 'AttachmentName',
-    },
-    {
-      title: '附件路径',
-      align: 'center',
-      dataIndex: 'AttachmentPath',
-      render: text => <div style={{ wordWrap: 'break-word', wordBreak: 'break-all' }}>{text}</div>,
-    },
-
-    {
-      title: '操作',
-      align: 'center',
-      render: (text, record) => (
-        <Fragment>
-          <a target="_blnk" href={record.AttachmentPath}>
-            <Icon title="预览" type="eye" style={{ color: '#08c', marginRight: 5 }} />
-          </a>
-        </Fragment>
-      ),
-    },
-  ];
-
-  linkmanColumns = [
-    {
-      title: '用户ID',
-      align: 'center',
-      dataIndex: 'UserID',
-    },
-    {
-      title: '联系人',
-      align: 'center',
-      dataIndex: 'Contacts',
-    },
-    {
-      title: '手机号',
-      align: 'center',
-      dataIndex: 'CellphoneNO',
-    },
-  ];
-
   constructor(props) {
     super(props);
     this.state = {
@@ -443,6 +362,29 @@ class InquiryEdit extends PureComponent {
     }
     return null;
   }
+
+  topMenu = () => {
+    const { formVals } = this.state;
+    return (
+      <Menu>
+        <Menu.Item>
+          <Link target="_blank" to={`/sellabout/TI_Z029/add?BaseEntry=${formVals.DocEntry}`}>
+            复制到销售报价单
+          </Link>
+        </Menu.Item>
+        <Menu.Item>
+          <Link target="_blank" to="/sellabout/TI_Z026/TI_Z02601">
+            新建客户询价单
+          </Link>
+        </Menu.Item>
+        <Menu.Item>
+          <a href="javacript:void(0)" onClick={this.selectNeed}>
+            确认需采购询价
+          </a>
+        </Menu.Item>
+      </Menu>
+    );
+  };
 
   lookLineAttachment = record => {
     this.setState({ attachmentVisible: true, prviewList: [...record.TI_Z02604] });
@@ -525,6 +467,7 @@ class InquiryEdit extends PureComponent {
   render() {
     const {
       global: { Saler, Company, TI_Z004 },
+      loading,
     } = this.props;
     const { formVals, attachmentVisible, prviewList, selectedRows, needmodalVisible } = this.state;
     const newdata = [...formVals.TI_Z02602];
@@ -537,13 +480,19 @@ class InquiryEdit extends PureComponent {
         LineTotal: formVals.DocTotal,
       });
     }
-
     const needParentMethods = {
       handleSubmit: this.submitNeedLine,
       handleModalVisible: this.handleModalVisible,
     };
+    //  let tablwidth=0;
+    // this.skuColumns.map(item=>{
+    //   if(item.width){
+    //     tablwidth+=item.width
+    //   }
+    // })
+    // console.log(tablwidth)
     return (
-      <Card bordered={false}>
+      <Card bordered={false} loading={loading}>
         <DescriptionList style={{ marginBottom: 24 }}>
           <Description term="单号">{formVals.DocEntry}</Description>
           <Description term="客户">{`${formVals.CardName}(${formVals.CardCode})`}</Description>
@@ -566,7 +515,7 @@ class InquiryEdit extends PureComponent {
           </Description>
           <Description term="订单类型">{formVals.OrderType === '1' ? '正常订单' : ''}</Description>
           <Description term="来源类型">
-            <span>{getName(OrderSource, formVals.OrderType)}</span>
+            <span>{getName(orderSourceType, formVals.OrderType)}</span>
           </Description>
           <Description term="客户参考号">{formVals.NumAtCard}</Description>
           <Description term="需询价">
@@ -594,7 +543,7 @@ class InquiryEdit extends PureComponent {
             <StandardTable
               data={{ list: newdata }}
               rowKey="LineID"
-              scroll={{ x: 3165, y: 600 }}
+              scroll={{ x: 3125, y: 600 }}
               columns={this.skuColumns}
             />
           </TabPane>
@@ -609,34 +558,26 @@ class InquiryEdit extends PureComponent {
             </DescriptionList>
           </TabPane>
           <TabPane tab="附件" key="3">
-            <StandardTable
-              data={{ list: formVals.TI_Z02603 }}
-              rowKey="LineID"
-              columns={this.attachmentColumns}
-            />
+            <Attachment dataSource={formVals.TI_Z02603} iscan />
           </TabPane>
           <TabPane tab="其他推送人" key="4">
             <StandardTable
               data={{ list: formVals.TI_Z02605 }}
               rowKey="UserID"
-              columns={this.linkmanColumns}
+              columns={linkmanColumns}
             />
           </TabPane>
         </Tabs>
 
         <Modal
-          width={640}
+          width={960}
           destroyOnClose
           title="物料行附件"
           visible={attachmentVisible}
           onOk={() => this.handleModalVisible(false)}
           onCancel={() => this.handleModalVisible(false)}
         >
-          <StandardTable
-            data={{ list: prviewList }}
-            rowKey="LineID"
-            columns={this.attachmentColumns}
-          />
+          <Attachment dataSource={prviewList} iscan={false} />
         </Modal>
         <FooterToolbar>
           {formVals.Closed === 'N' ? (
@@ -646,28 +587,16 @@ class InquiryEdit extends PureComponent {
               <Button onClick={this.toUpdate} type="primary">
                 编辑
               </Button>
-              <Button onClick={this.selectNeed} type="primary">
-                确认需采购询价
-              </Button>
+              <Dropdown overlay={this.topMenu} placement="topCenter">
+                <Button type="primary">
+                  更多
+                  <Icon type="ellipsis" />
+                </Button>
+              </Dropdown>
             </Fragment>
           ) : (
             ''
           )}
-
-          <Button
-            icon="plus"
-            style={{ marginLeft: 8 }}
-            type="primary"
-            onClick={() => router.push('/sellabout/TI_Z026/TI_Z02601')}
-          >
-            新建
-          </Button>
-          <Button
-            type="primary"
-            onClick={() => router.push(`/sellabout/TI_Z029/add?BaseEntry=${formVals.DocEntry}`)}
-          >
-            复制到销售报价单
-          </Button>
           <NeedAskPrice
             data={selectedRows}
             {...needParentMethods}

@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { Row, Col, Form, Input, Modal, Select } from 'antd';
 import MDMCommonality from '@/components/Select';
 import { connect } from 'dva';
-import { checkPhone, chechEmail } from '@/utils/utils';
+import { validatorEmail, validatorPhone } from '@/utils/utils';
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -30,22 +30,6 @@ class LinkManFrom extends PureComponent {
     }
     return null;
   }
-
-  validatorPhone = (rule, value, callback) => {
-    if (value && !checkPhone(value)) {
-      callback(new Error('手机号格式不正确'));
-    } else {
-      callback();
-    }
-  };
-
-  validatorEmail = (rule, value, callback) => {
-    if (value && !chechEmail(value)) {
-      callback(new Error('邮箱格式不正确'));
-    } else {
-      callback();
-    }
-  };
 
   render() {
     const {
@@ -108,7 +92,7 @@ class LinkManFrom extends PureComponent {
                   rules: [
                     { required: true, message: '请输入手机号！' },
                     {
-                      validator: this.validatorPhone,
+                      validator: validatorPhone,
                     },
                   ],
                   initialValue: formVals.CellphoneNO,
@@ -120,7 +104,7 @@ class LinkManFrom extends PureComponent {
             <Col span={12}>
               <FormItem key="Email" {...this.formLayout} label="邮箱">
                 {getFieldDecorator('Email', {
-                  rules: [{ validator: this.validatorEmail }],
+                  rules: [{ validator: validatorEmail }],
                   initialValue: formVals.Email,
                 })(<Input placeholder="请输入邮箱" />)}
               </FormItem>

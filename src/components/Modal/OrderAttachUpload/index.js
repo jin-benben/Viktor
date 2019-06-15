@@ -1,17 +1,21 @@
-import React, { PureComponent } from 'react';
+// 单据附件上传
 
-import { Icon, Form, Input, Modal, Upload } from 'antd';
+import React, { PureComponent } from 'react';
+import { Form, Input, Modal } from 'antd';
+import Upload from '@/components/Upload';
 
 const { TextArea } = Input;
 const FormItem = Form.Item;
 
 @Form.create()
-class UpdateLoad extends PureComponent {
+class OrderAttachUpload extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
       AttachmentPath: '',
       AttachmentCode: '',
+      AttachmentName: '',
+      AttachmentExtension: '',
     };
     this.formLayout = {
       labelCol: { span: 7 },
@@ -19,23 +23,13 @@ class UpdateLoad extends PureComponent {
     };
   }
 
-  handleChange = info => {
-    if (info.file.status === 'uploading') {
-      return;
-    }
-    if (info.file.response.Status === 200) {
-      const { FilePath, FileCode } = info.file.response;
-      this.setState({
-        AttachmentPath: FilePath,
-        AttachmentCode: FileCode,
-      });
-    }
-  };
-
-  clearState = () => {
+  // 文件上传成功后回调
+  uploadSuccess = ({ FilePath, FileCode, Extension, FileName }) => {
     this.setState({
-      AttachmentPath: '',
-      AttachmentCode: '',
+      AttachmentPath: FilePath,
+      AttachmentCode: FileCode,
+      AttachmentName: FileName,
+      AttachmentExtension: Extension,
     });
   };
 
@@ -43,6 +37,7 @@ class UpdateLoad extends PureComponent {
     const {
       form,
       form: { getFieldDecorator },
+      Folder,
       modalVisible,
       handleModalVisible,
       handleSubmit,
@@ -58,19 +53,12 @@ class UpdateLoad extends PureComponent {
         md: { span: 10 },
       },
     };
-    const { AttachmentCode, AttachmentPath } = this.state;
-    const uploadButton = (
-      <div>
-        <Icon type="plus" />
-        <div className="ant-upload-text">Upload</div>
-      </div>
-    );
+
     const okHandle = () => {
       form.validateFields((err, fieldsValue) => {
         if (err) return;
         form.resetFields();
         handleSubmit({ ...this.state, ...fieldsValue });
-        this.clearState();
       });
     };
     return (
@@ -87,23 +75,11 @@ class UpdateLoad extends PureComponent {
             {getFieldDecorator('AttachmentName')(<TextArea placeholder="请输入附件描" />)}
           </FormItem>
           <FormItem key="AttachmentPath" {...this.formLayout} label="上传附件">
-            <Upload
-              action="http://47.104.65.49:8001/OMSPicUpload/PictureUpLoad"
-              listType="picture-card"
-              data={{ UserCode: 'jinwentao', Folder: 'TI_Z026', Tonken: '22233' }}
-              showUploadList={false}
-              onChange={this.handleChange}
-            >
-              {AttachmentCode ? (
-                <img style={{ width: 80, height: 80 }} src={AttachmentPath} alt="avatar" />
-              ) : (
-                uploadButton
-              )}
-            </Upload>
+            <Upload onChange={this.uploadSuccess} Folder={Folder} />
           </FormItem>
         </Form>
       </Modal>
     );
   }
 }
-export default UpdateLoad;
+export default OrderAttachUpload;

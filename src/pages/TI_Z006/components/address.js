@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { Row, Form, Input, Modal, Select } from 'antd';
 import Address from '@/components/Address';
-import { checkPhone, chechEmail } from '@/utils/utils';
+import { validatorPhone } from '@/utils/utils';
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -27,22 +27,6 @@ class AddressInfo extends PureComponent {
     }
     return null;
   }
-
-  validatorPhone = (rule, value, callback) => {
-    if (value && !checkPhone(value)) {
-      callback(new Error('手机号格式不正确'));
-    } else {
-      callback();
-    }
-  };
-
-  validatorEmail = (rule, value, callback) => {
-    if (value && !chechEmail(value)) {
-      callback(new Error('邮箱格式不正确'));
-    } else {
-      callback();
-    }
-  };
 
   render() {
     const {
@@ -113,7 +97,7 @@ class AddressInfo extends PureComponent {
                 rules: [
                   { required: true, message: '请输入手机号！' },
                   {
-                    validator: this.validatorPhone,
+                    validator: validatorPhone,
                   },
                 ],
                 initialValue: formVals.ReceiverPhone,

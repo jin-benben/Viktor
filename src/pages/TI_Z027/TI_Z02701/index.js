@@ -107,7 +107,7 @@ class SupplierAsk extends Component {
             },
           });
           if (responseSupplier && responseSupplier.Status === 200) {
-            if (responseSupplier.Content.TI_Z00702List.length) {
+            if (!responseSupplier.Content.TI_Z00702List.length) {
               message.warning(`供应商${responseSupplier.Content.Name}下没有维护联系人`);
               isCan = false;
               return false;

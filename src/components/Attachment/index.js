@@ -1,5 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import { Table, Icon, Popconfirm } from 'antd';
+import { baseType } from '@/utils/publicData';
+import { getName } from '@/utils/utils';
 
 class Attachment extends Component {
   attachmentColumns = [
@@ -7,48 +9,69 @@ class Attachment extends Component {
       title: '序号',
       width: 80,
       align: 'center',
-      dataIndex: 'LineID',
+      dataIndex: 'OrderID',
     },
     {
       title: '来源类型',
       align: 'center',
+      width: 100,
       dataIndex: 'BaseType',
-      render: text => <span>{text === '1' ? '正常订单' : '未知'}</span>,
+      render: text => <span>{getName(baseType, text)}</span>,
     },
     {
       title: '来源单号',
       align: 'center',
+      width: 100,
       dataIndex: 'BaseEntry',
     },
     {
       title: '附件代码',
       align: 'center',
+      width: 300,
       dataIndex: 'AttachmentCode',
+      render: text => <div style={{ wordWrap: 'break-word', wordBreak: 'break-all' }}>{text}</div>,
     },
     {
       title: '附件描述',
+      width: 100,
       align: 'center',
       dataIndex: 'AttachmentName',
     },
     {
       title: '附件路径',
+      width: 300,
       align: 'center',
       dataIndex: 'AttachmentPath',
-      render: text => <div style={{ wordWrap: 'break-word', wordBreak: 'break-all' }}>{text}</div>,
+      render: text => (
+        <a
+          style={{ wordWrap: 'break-word', wordBreak: 'break-all' }}
+          href={text}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {text}
+        </a>
+      ),
     },
     {
       title: '操作',
       align: 'center',
-      render: (text, record, index) => (
-        <Fragment>
-          <a target="_blnk" href={record.AttachmentPath}>
-            <Icon title="预览" type="eye" style={{ color: '#08c', marginRight: 5 }} />
-          </a>
-          <Popconfirm title="确定要删除吗?" onConfirm={() => this.deleteLine(record, index)}>
-            <Icon title="删除行" type="delete" theme="twoTone" />
-          </Popconfirm>
-        </Fragment>
-      ),
+      width: 80,
+      render: (text, record, index) => {
+        const { iscan } = this.props;
+        console.log(iscan);
+        return (
+          <Fragment>
+            {iscan ? (
+              ''
+            ) : (
+              <Popconfirm title="确定要删除吗?" onConfirm={() => this.deleteLine(record, index)}>
+                <Icon title="删除行" type="delete" theme="twoTone" />
+              </Popconfirm>
+            )}
+          </Fragment>
+        );
+      },
     },
   ];
 
@@ -61,11 +84,12 @@ class Attachment extends Component {
 
   render() {
     const { dataSource } = this.props;
+
     return (
       <Table
         dataSource={dataSource}
         bordered
-        rowKey="LineID"
+        rowKey="OrderID"
         columns={this.attachmentColumns}
         pagination={false}
       />

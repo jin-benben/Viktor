@@ -197,9 +197,9 @@ class OrderPrint extends PureComponent {
     const { pagination, templateList, modalVisible, loading } = this.state;
     return (
       <Fragment>
-        <Button onClick={() => this.handleModalVisible(true)} type="primary">
+        <a href="javacript:void(0)" onClick={() => this.handleModalVisible(true)}>
           提交打印
-        </Button>
+        </a>
         <Modal
           width={960}
           destroyOnClose

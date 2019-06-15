@@ -1,9 +1,11 @@
 import React, { Fragment } from 'react';
 import { connect } from 'dva';
-import { Card, Tabs, Modal, Button, Icon, message } from 'antd';
+import { Card, Tabs, Modal, Button, Icon, message, Dropdown, Menu, Collapse, Empty } from 'antd';
 import moment from 'moment';
 import router from 'umi/router';
+import Link from 'umi/link';
 import StandardTable from '@/components/StandardTable';
+import CancelOrder from '@/components/Modal/CancelOrder';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import DescriptionList from 'ant-design-pro/lib/DescriptionList';
@@ -11,9 +13,11 @@ import MyTag from '@/components/Tag';
 import Emails from '@/components/Modal/Email';
 import OrderPrint from '@/components/Modal/OrderPrint';
 import { getName } from '@/utils/utils';
+import { baseType } from '@/utils/publicData';
 
 const { Description } = DescriptionList;
 const { TabPane } = Tabs;
+const { Panel } = Collapse;
 
 @connect(({ supplierAskPreview, loading, global }) => ({
   supplierAskPreview,
@@ -153,15 +157,14 @@ class InquiryEdit extends React.Component {
     },
     {
       title: '客询价单',
-      width: 100,
-      align: 'center',
+      width: 80,
       dataIndex: 'BaseEntry',
-    },
-    {
-      title: '客询价行',
-      width: 100,
-      align: 'center',
-      dataIndex: 'BaseLineID',
+      render: (val, record) =>
+        record.lastIndex ? null : (
+          <Link target="_blank" to={`/sellabout/TI_Z026/detail?DocEntry=${record.BaseEntry}`}>
+            {`${val}-${record.BaseLineID}`}
+          </Link>
+        ),
     },
     {
       title: '操作',
@@ -285,6 +288,7 @@ class InquiryEdit extends React.Component {
           IsInquiry: '',
           TI_Z02702: [],
           TI_Z02703: [],
+          TI_Z02603Fahter: [],
         },
       },
     });
@@ -298,6 +302,25 @@ class InquiryEdit extends React.Component {
     }
     return null;
   }
+
+  topMenu = () => {
+    const { formVals } = this.state;
+    return (
+      <Menu>
+        <Menu.Item>
+          <Link target="_blank" to="/purchase/TI_Z027/edit">
+            新建供应商询价单
+          </Link>
+        </Menu.Item>
+        <Menu.Item>
+          <OrderPrint BaseEntry={formVals.DocEntry} BaseType="TI_Z027" />
+        </Menu.Item>
+        <Menu.Item>
+          <Emails BaseEntry={formVals.DocEntry} BaseType="TI_Z027" />
+        </Menu.Item>
+      </Menu>
+    );
+  };
 
   lookLineAttachment = record => {
     this.setState({ attachmentVisible: true, prviewList: [...record.TI_Z02704] });
@@ -323,6 +346,29 @@ class InquiryEdit extends React.Component {
         },
       });
     }
+  };
+
+  // 取消单据
+
+  cancelSubmit = ClosedComment => {
+    const { dispatch } = this.props;
+    const {
+      formVals: { DocEntry },
+    } = this.state;
+    dispatch({
+      type: 'supplierAskPreview/cancel',
+      payload: {
+        Content: {
+          DocEntry,
+          ClosedComment,
+        },
+      },
+      callback: response => {
+        if (response && response.Status === 200) {
+          message.success('取消成功');
+        }
+      },
+    });
   };
 
   toUpdate = () => {
@@ -399,7 +445,7 @@ class InquiryEdit extends React.Component {
             <StandardTable
               data={{ list: newdata }}
               rowKey="LineID"
-              scroll={{ x: 1900 }}
+              scroll={{ x: 1750 }}
               columns={this.skuColumns}
             />
           </TabPane>
@@ -411,11 +457,50 @@ class InquiryEdit extends React.Component {
             </DescriptionList>
           </TabPane>
           <TabPane tab="附件" key="3">
-            <StandardTable
-              data={{ list: formVals.TI_Z02703 }}
-              rowKey="LineID"
-              columns={this.attachmentColumns}
-            />
+            {formVals.TI_Z02603Fahter.length ? (
+              <Collapse>
+                {formVals.TI_Z02603Fahter.map(item => {
+                  const header = (
+                    <div>
+                      单号：{' '}
+                      <Link
+                        target="_blank"
+                        to={`/sellabout/TI_Z026/detail?DocEntry=${item.DocEntry}`}
+                      >
+                        {item.DocEntry}
+                      </Link>
+                      ; 创建日期：{moment(item.FCreateDate).format('YYYY-MM-DD')}； 创建人
+                      <span>{getName(TI_Z004, item.FCreateUser)}</span>； 更新日期：
+                      {moment(item.FUpdateDate).format('YYYY-MM-DD')}； 更新人:
+                      <span>{getName(TI_Z004, item.FUpdateUser)}</span>
+                    </div>
+                  );
+                  return (
+                    <Panel header={header} key={item.DocEntry}>
+                      {item.TI_Z02603.map(line => (
+                        <ul key={line.OrderID}>
+                          <li>序号:{line.OrderID}</li>
+                          <li>
+                            来源类型:<span>{getName(baseType, line.BaseType)}</span>
+                          </li>
+                          <li>来源单号:{line.BaseEntry}</li>
+                          <li>附件代码:{line.AttachmentCode}</li>
+                          <li>附件描述:{line.AttachmentName}</li>
+                          <li>
+                            附件路径:
+                            <a href={line.AttachmentPath} target="_blank" rel="noopener noreferrer">
+                              {line.AttachmentPath}
+                            </a>
+                          </li>
+                        </ul>
+                      ))}
+                    </Panel>
+                  );
+                })}
+              </Collapse>
+            ) : (
+              <Empty />
+            )}
           </TabPane>
         </Tabs>
 
@@ -435,19 +520,16 @@ class InquiryEdit extends React.Component {
         </Modal>
 
         <FooterToolbar>
+          <CancelOrder cancelSubmit={this.cancelSubmit} />
           <Button onClick={this.toUpdate} type="primary">
             编辑
           </Button>
-          <Button
-            icon="plus"
-            style={{ marginLeft: 8 }}
-            type="primary"
-            onClick={() => router.push('/purchase/TI_Z027/edit')}
-          >
-            新建
-          </Button>
-          <Emails BaseEntry={formVals.DocEntry} BaseType="TI_Z027" />
-          <OrderPrint BaseEntry={formVals.DocEntry} BaseType="TI_Z027" />
+          <Dropdown overlay={this.topMenu} placement="topCenter">
+            <Button type="primary">
+              更多
+              <Icon type="ellipsis" />
+            </Button>
+          </Dropdown>
         </FooterToolbar>
       </Card>
     );

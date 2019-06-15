@@ -9,6 +9,7 @@ import {
   companyRule,
   queryBaseEntryleRule,
 } from '../service';
+import { uploadRule } from '../../TI_Z026/service';
 
 export default {
   namespace: 'agreementEdit',
@@ -18,8 +19,12 @@ export default {
       Comment: '',
       OrderType: '1',
       SourceType: '1',
-      Transport: 'Y',
+      Transport: 'N',
       DocDate: moment().format('YYYY/MM/DD'),
+      CreateDate: moment().format('YYYY/MM/DD'),
+      ToDate: moment()
+        .add('30', 'day')
+        .format('YYYY/MM/DD'),
       CardCode: '',
       CardName: '',
       UserID: '',
@@ -29,9 +34,6 @@ export default {
       Email: '',
       CompanyCode: '',
       DueDate: null,
-      ToDate: moment()
-        .add('30', 'day')
-        .format('YYYY/MM/DD'),
       InquiryDocTotal: '',
       DocTotal: '',
       ProvinceID: '',
@@ -46,6 +48,7 @@ export default {
       TI_Z03002: [],
       TI_Z03004: [],
       TI_Z03005: [],
+      TI_Z02603Fahter: [],
     },
     linkmanList: [],
     addList: [],
@@ -104,6 +107,10 @@ export default {
     },
     *costCheck({ payload, callback }, { call }) {
       const response = yield call(costCheckRule, payload);
+      if (callback) callback(response);
+    },
+    *upload({ payload, callback }, { call }) {
+      const response = yield call(uploadRule, payload);
       if (callback) callback(response);
     },
   },

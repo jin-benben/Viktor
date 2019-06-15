@@ -36,6 +36,7 @@ export default {
       IsInquiry: '',
       TI_Z02902: [],
       TI_Z02903: [],
+      TI_Z02603Fahter: [],
     },
   },
 

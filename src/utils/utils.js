@@ -59,8 +59,8 @@ export function validatorPhone(rule, value, callback) {
 }
 
 export function validatorEmail(rule, value, callback) {
-  if (value && !checkPhone(value)) {
-    callback(new Error('手机号格式不正确'));
+  if (value && !chechEmail(value)) {
+    callback(new Error('邮箱格式不正确'));
   } else {
     callback();
   }

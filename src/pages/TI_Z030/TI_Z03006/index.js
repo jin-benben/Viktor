@@ -342,7 +342,7 @@ class agreementOrder extends PureComponent {
               data={{ list: agreementOrderList }}
               pagination={pagination}
               rowKey="DocEntry"
-              scroll={{ x: tableWidth, y: 500 }}
+              scroll={{ x: tableWidth, y: 600 }}
               columns={this.columns}
               onChange={this.handleStandardTableChange}
             />

@@ -1,4 +1,11 @@
-import { querySingleRule, addRule, updateRule, cancelRule, companyRule } from '../service';
+import {
+  querySingleRule,
+  addRule,
+  updateRule,
+  cancelRule,
+  uploadRule,
+  companyRule,
+} from '../service';
 
 export default {
   namespace: 'inquiryEdit',
@@ -89,6 +96,10 @@ export default {
     },
     *cancel({ payload, callback }, { call }) {
       const response = yield call(cancelRule, payload);
+      if (callback) callback(response);
+    },
+    *upload({ payload, callback }, { call }) {
+      const response = yield call(uploadRule, payload);
       if (callback) callback(response);
     },
   },

@@ -8,6 +8,7 @@ import {
   companyRule,
   queryBaseEntryleRule,
 } from '../service';
+import { uploadRule } from '../../TI_Z026/service';
 
 export default {
   namespace: 'TI_Z029',
@@ -39,8 +40,10 @@ export default {
       Area: '',
       Address: '',
       NumAtCard: '',
+      TI_Z02902: [],
       TI_Z02904: [],
       TI_Z02905: [],
+      TI_Z02603Fahter: [],
     },
     linkmanList: [],
     addList: [],
@@ -99,6 +102,10 @@ export default {
     },
     *confirm({ payload, callback }, { call }) {
       const response = yield call(confirmRule, payload);
+      if (callback) callback(response);
+    },
+    *upload({ payload, callback }, { call }) {
+      const response = yield call(uploadRule, payload);
       if (callback) callback(response);
     },
   },
