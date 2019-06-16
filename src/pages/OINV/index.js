@@ -32,13 +32,13 @@ const FormItem = Form.Item;
 const { Option } = Select;
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ salerConfrim, loading, global }) => ({
-  salerConfrim,
+@connect(({ OINVConfrim, loading, global }) => ({
+  OINVConfrim,
   global,
-  loading: loading.models.salerConfrim,
+  loading: loading.models.OINVConfrim,
 }))
 @Form.create()
-class salerConfrim extends PureComponent {
+class OINVConfrim extends PureComponent {
   state = {
     expandForm: false,
     modalVisible: false,
@@ -99,6 +99,11 @@ class salerConfrim extends PureComponent {
       title: '邮箱',
       width: 200,
       dataIndex: 'Email',
+    },
+    {
+      title: '发票号',
+      width: 200,
+      dataIndex: 'NumAtCard',
     },
     {
       title: '交易公司',
@@ -234,10 +239,10 @@ class salerConfrim extends PureComponent {
   componentDidMount() {
     const {
       dispatch,
-      salerConfrim: { queryData },
+      OINVConfrim: { queryData },
     } = this.props;
     dispatch({
-      type: 'salerConfrim/fetch',
+      type: 'OINVConfrim/fetch',
       payload: {
         ...queryData,
       },
@@ -254,7 +259,7 @@ class salerConfrim extends PureComponent {
 
   rowChange = (value, record, index, key) => {
     const {
-      salerConfrim: { orderLineList },
+      OINVConfrim: { orderLineList },
       dispatch,
     } = this.props;
     const newOrderLineList = orderLineList.map(item => {
@@ -266,7 +271,7 @@ class salerConfrim extends PureComponent {
       return item;
     });
     dispatch({
-      type: 'salerConfrim/save',
+      type: 'OINVConfrim/save',
       payload: {
         orderLineList: [...newOrderLineList],
       },
@@ -276,10 +281,10 @@ class salerConfrim extends PureComponent {
   handleStandardTableChange = pagination => {
     const {
       dispatch,
-      salerConfrim: { queryData },
+      OINVConfrim: { queryData },
     } = this.props;
     dispatch({
-      type: 'salerConfrim/fetch',
+      type: 'OINVConfrim/fetch',
       payload: {
         ...queryData,
         page: pagination.current,
@@ -324,7 +329,7 @@ class salerConfrim extends PureComponent {
         ...orderNo,
       };
       dispatch({
-        type: 'salerConfrim/fetch',
+        type: 'OINVConfrim/fetch',
         payload: {
           Content: {
             DeliverSts: 'N',
@@ -361,25 +366,25 @@ class salerConfrim extends PureComponent {
   submitNeedLine = select => {
     const {
       dispatch,
-      salerConfrim: { queryData },
+      OINVConfrim: { queryData },
     } = this.props;
-    const loODLN01RequestItem = select.map(item => ({
+    const loOINV01RequestItem = select.map(item => ({
       DocEntry: item.DocEntry,
       ExpressNumber: item.ExpressNumber,
       TrnspCode: item.TrnspCode,
     }));
     dispatch({
-      type: 'salerConfrim/confirm',
+      type: 'OINVConfrim/confirm',
       payload: {
         Content: {
-          loODLN01RequestItem,
+          loOINV01RequestItem,
         },
       },
       callback: response => {
         if (response && response.Status === 200) {
           message.success('提交成功');
           dispatch({
-            type: 'salerConfrim/fetch',
+            type: 'OINVConfrim/fetch',
             payload: {
               ...queryData,
             },
@@ -416,14 +421,14 @@ class salerConfrim extends PureComponent {
     const TI_Z04801RequestItemList = selectedRows.map(item => {
       const { TrnspCode, DocEntry, ShipToCode } = item;
       return {
-        BaseType: '15',
+        BaseType: '13',
         BaseEntry: DocEntry,
         TrnspCode,
         ShipToCode,
       };
     });
     dispatch({
-      type: 'salerConfrim/print',
+      type: 'OINVConfrim/print',
       payload: {
         Content: {
           TI_Z04801RequestItemList,
@@ -449,7 +454,7 @@ class salerConfrim extends PureComponent {
     const DocEntryList = selectPrint.map(item => item.DocEntry);
     if (DocEntryList.length) {
       window.open(
-        `http://47.104.65.49:8086/PrintExample.aspx?BaseType=15&DocEntryList=${DocEntryList.join()}&UserCode=${
+        `http://47.104.65.49:8086/PrintExample.aspx?BaseType=13&DocEntryList=${DocEntryList.join()}&UserCode=${
           currentUser.UserCode
         }&IsPreview=${ischecked ? '1' : '0'}`
       );
@@ -546,7 +551,7 @@ class salerConfrim extends PureComponent {
 
   render() {
     const {
-      salerConfrim: { orderLineList, pagination },
+      OINVConfrim: { orderLineList, pagination },
       loading,
     } = this.props;
     const { selectedRows, modalVisible, responseData, modalVisible1, ischecked } = this.state;
@@ -573,7 +578,7 @@ class salerConfrim extends PureComponent {
               data={{ list: orderLineList }}
               pagination={pagination}
               rowKey="Key"
-              scroll={{ x: 1700, y: 500 }}
+              scroll={{ x: 1900, y: 500 }}
               columns={columns}
               rowSelection={{
                 onSelectRow: this.onSelectRow,
@@ -590,7 +595,7 @@ class salerConfrim extends PureComponent {
         </Card>
         <FooterToolbar>
           <Button style={{ marginTop: 20 }} onClick={this.selectNeed} type="primary">
-            确认发货
+            确认发票
           </Button>
           <Button style={{ marginTop: 20 }} onClick={this.print} type="primary">
             打印
@@ -624,4 +629,4 @@ class salerConfrim extends PureComponent {
   }
 }
 
-export default salerConfrim;
+export default OINVConfrim;

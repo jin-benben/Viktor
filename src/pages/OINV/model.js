@@ -1,7 +1,7 @@
 import { queryRule, confirmRule, savePrintRule } from './service';
 
 export default {
-  namespace: 'salerConfrim',
+  namespace: 'OINVConfrim',
 
   state: {
     orderLineList: [],

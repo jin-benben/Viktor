@@ -498,15 +498,21 @@ export default [
         ]
       }, 
       {
-        name: '交货及批次',
+        name: '交货及应收',
         icon: 'iconjiaohuo',
         path: '/confrmBatch',
         routes:[
           {
             name: '确认交货',
             icon: 'iconxunjia',
-            path: '/confrmBatch/TI_Z026',
+            path: '/confrmBatch/ODLN',
             component: './ODLN',
+          },
+          {
+            name: '应收发票',
+            icon: 'iconxunjia',
+            path: '/confrmBatch/OINV',
+            component: './OINV',
           }
         ]  
       },

@@ -575,9 +575,6 @@ class InquiryEdit extends React.Component {
 
   topMenu = () => {
     const { formVals } = this.state;
-    const {
-      global: { currentUser },
-    } = this.props;
     return (
       <Menu>
         <Menu.Item>
@@ -594,16 +591,6 @@ class InquiryEdit extends React.Component {
           <a href="javacript:void(0)" onClick={this.selectNeed}>
             确认需采购询价
           </a>
-        </Menu.Item>
-        <Menu.Item>
-          <Upload
-            action="http://47.104.65.49:8001/TI_Z026/TI_Z02609"
-            showUploadList={false}
-            onChange={this.uploadChange}
-            data={{ UserCode: currentUser.UserCode, Tonken: currentUser.Token }}
-          >
-            <span>上传物料</span>
-          </Upload>
         </Menu.Item>
       </Menu>
     );
@@ -1188,7 +1175,7 @@ class InquiryEdit extends React.Component {
       form: { getFieldDecorator },
       addloading,
       updateloading,
-      global: { Saler, Company },
+      global: { Saler, Company, currentUser },
       detailLoading,
     } = this.props;
     const {
@@ -1485,6 +1472,16 @@ class InquiryEdit extends React.Component {
               保存
             </Button>
           )}
+          <Upload
+            action="http://47.104.65.49:8001/TI_Z026/TI_Z02609"
+            showUploadList={false}
+            onChange={this.uploadChange}
+            data={{ UserCode: currentUser.UserCode, Tonken: currentUser.Token }}
+          >
+            <Button style={{ marginLeft: 8 }} type="primary">
+              上传物料
+            </Button>
+          </Upload>
         </FooterToolbar>
         <OrderAttachUpload {...uploadmodalMethods} modalVisible={uploadmodalVisible} />
         <SKUModal {...parentMethods} modalVisible={skuModalVisible} />
