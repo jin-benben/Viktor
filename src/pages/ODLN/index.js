@@ -45,6 +45,7 @@ class salerConfrim extends PureComponent {
     modalVisible1: false,
     ischecked: true,
     selectedRows: [],
+    selectedRowKeys: [],
     responseData: [],
     selectPrint: [],
   };
@@ -137,7 +138,10 @@ class salerConfrim extends PureComponent {
       width: 150,
       dataIndex: 'ExpressNumber',
       render: (text, record, index) => (
-        <Input onChange={e => this.rowChange(e.target.value, record, index, 'ExpressNumber')} />
+        <Input
+          value={text}
+          onChange={e => this.rowChange(e.target.value, record, index, 'ExpressNumber')}
+        />
       ),
     },
     {
@@ -180,29 +184,24 @@ class salerConfrim extends PureComponent {
   ];
 
   responseColums = [
-    // {
-    //   title: '行号',
-    //   width: 80,
-    //   dataIndex: 'Contacts',
-    // },
     {
       title: '基于类型',
-      width: 100,
+      width: 80,
       dataIndex: 'BaseType',
     },
     {
       title: '基于单号',
-      width: 100,
+      width: 80,
       dataIndex: 'BaseEntry',
     },
     {
       title: '快递面单单号',
-      width: 100,
+      width: 120,
       dataIndex: 'DocEntry',
     },
     {
       title: '状态',
-      width: 100,
+      width: 80,
       dataIndex: 'Status',
       render: text => (
         <span>{text === 'O' ? <Tag color="red">未成功</Tag> : <Tag color="blue">已成功</Tag>}</span>
@@ -221,12 +220,11 @@ class salerConfrim extends PureComponent {
     },
     {
       title: '快递单号',
-      width: 300,
+      width: 200,
       dataIndex: 'LogisticCode',
     },
     {
       title: '原因',
-      width: 300,
       dataIndex: 'Reason',
     },
   ];
@@ -353,7 +351,7 @@ class salerConfrim extends PureComponent {
     this.setState({ selectedRows: [...selectedRows] });
   };
 
-  onSelectPrintRow = selectedRows => {
+  onSelectPrintRow = (selectedRowKeys, selectedRows) => {
     this.setState({ selectPrint: [...selectedRows] });
   };
 
@@ -402,7 +400,7 @@ class salerConfrim extends PureComponent {
 
   // 需询价弹窗
   handleModalVisible = flag => {
-    this.setState({ modalVisible: !!flag });
+    this.setState({ modalVisible: !!flag, modalVisible1: !!flag });
   };
 
   print = () => {
@@ -432,8 +430,19 @@ class salerConfrim extends PureComponent {
       callback: response => {
         if (response && response.Status === 200) {
           message.success('提交成功');
+          const selectPrint = [];
+          const selectedRowKeys = [];
+          // eslint-disable-next-line array-callback-return
+          response.Content.TI_Z04801ResponseItemList.map(item => {
+            if (item.Status === 'C') {
+              selectPrint.push(item);
+              selectedRowKeys.push(item.DocEntry);
+            }
+          });
           this.setState({
             responseData: [...response.Content.TI_Z04801ResponseItemList],
+            selectPrint,
+            selectedRowKeys,
             modalVisible1: true,
           });
         }
@@ -446,7 +455,7 @@ class salerConfrim extends PureComponent {
       global: { currentUser },
     } = this.props;
     const { selectPrint, ischecked } = this.state;
-    const DocEntryList = selectPrint.map(item => item.DocEntry);
+    const DocEntryList = selectPrint.map(item => item.BaseEntry);
     if (DocEntryList.length) {
       window.open(
         `http://47.104.65.49:8086/PrintExample.aspx?BaseType=15&DocEntryList=${DocEntryList.join()}&UserCode=${
@@ -549,7 +558,14 @@ class salerConfrim extends PureComponent {
       salerConfrim: { orderLineList, pagination },
       loading,
     } = this.props;
-    const { selectedRows, modalVisible, responseData, modalVisible1, ischecked } = this.state;
+    const {
+      selectedRows,
+      modalVisible,
+      responseData,
+      modalVisible1,
+      ischecked,
+      selectedRowKeys,
+    } = this.state;
 
     const columns = this.columns.map(item => {
       // eslint-disable-next-line no-param-reassign
@@ -572,7 +588,7 @@ class salerConfrim extends PureComponent {
               loading={loading}
               data={{ list: orderLineList }}
               pagination={pagination}
-              rowKey="Key"
+              rowKey="DocEntry"
               scroll={{ x: 1700, y: 500 }}
               columns={columns}
               rowSelection={{
@@ -596,16 +612,25 @@ class salerConfrim extends PureComponent {
             打印
           </Button>
         </FooterToolbar>
-        <Modal width={1200} destroyOnClose title="确认选择" footer={null} visible={modalVisible1}>
+        <Modal
+          width={960}
+          destroyOnClose
+          title="确认选择"
+          onCancel={() => this.handleModalVisible(false)}
+          footer={null}
+          visible={modalVisible1}
+        >
           <div className="tableList">
             <Table
               bordered
               dataSource={responseData}
               pagination={false}
-              rowKey="Key"
+              size="middle"
+              rowKey="DocEntry"
               scroll={{ y: 500 }}
               rowSelection={{
                 onChange: this.onSelectPrintRow,
+                selectedRowKeys,
               }}
               columns={this.responseColums}
             />

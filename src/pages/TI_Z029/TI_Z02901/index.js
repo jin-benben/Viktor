@@ -45,7 +45,7 @@ import HSCode from '@/components/HSCode';
 import PushLink from '@/components/PushLink';
 import Attachment from '@/components/Attachment';
 import { getName } from '@/utils/utils';
-import { otherCostCColumns, orderSourceType, baseType } from '@/utils/publicData';
+import { otherCostCColumns, baseType } from '@/utils/publicData';
 
 const { TextArea } = Input;
 const { TabPane } = Tabs;
@@ -105,13 +105,15 @@ class TI_Z029Component extends React.Component {
       dataIndex: 'BrandName',
       render: (text, record, index) =>
         record.lastIndex ? null : (
-          <Brand
-            initialValue={record.BrandName}
-            keyType="Name"
-            onChange={value => {
-              this.rowSelectChange(value, record, index, 'BrandName');
-            }}
-          />
+          <div style={{ width: 90 }}>
+            <Brand
+              initialValue={record.BrandName}
+              keyType="Name"
+              onChange={value => {
+                this.rowSelectChange(value, record, index, 'BrandName');
+              }}
+            />
+          </div>
         ),
     },
     {
@@ -567,7 +569,6 @@ class TI_Z029Component extends React.Component {
       payload: {
         orderDetail: {
           Comment: '',
-          SourceType: '1',
           Transport: 'N',
           OrderType: '1',
           DocDate: new Date(),
@@ -694,10 +695,9 @@ class TI_Z029Component extends React.Component {
               UserID,
               DueDate,
               ToDate,
-              SourceType,
               TI_Z02605,
             } = response.Content;
-            this.addLineSKU(response.Content.TI_Z02602, SourceType);
+            this.addLineSKU(response.Content.TI_Z02602);
             dispatch({
               type: 'TI_Z029/save',
               payload: {
@@ -725,7 +725,6 @@ class TI_Z029Component extends React.Component {
                   UserID,
                   DueDate,
                   ToDate,
-                  SourceType,
                   TI_Z02905: TI_Z02605,
                 },
               },
@@ -1086,7 +1085,7 @@ class TI_Z029Component extends React.Component {
   };
 
   // 添加行
-  addLineSKU = (selectedRows, SourceType) => {
+  addLineSKU = selectedRows => {
     const {
       global: { currentUser },
     } = this.props;
@@ -1139,12 +1138,13 @@ class TI_Z029Component extends React.Component {
         WhsCode,
         LineID,
         DocEntry,
+        SourceType,
       } = item;
       formVals.TI_Z02902.push({
         BaseEntry: DocEntry,
         BaseLineID: LineID,
         LineComment,
-        SourceType: item.SourceType || SourceType,
+        SourceType,
         SKU,
         SKUName,
         BrandName,
@@ -1654,14 +1654,6 @@ class TI_Z029Component extends React.Component {
                     initialValue: formVals.CompanyCode,
                     rules: [{ required: true, message: '请选择交易公司！' }],
                   })(<MDMCommonality initialValue={formVals.CompanyCode} data={Company} />)}
-                </FormItem>
-              </Col>
-              <Col lg={8} md={12} sm={24}>
-                <FormItem key="SourceType" {...this.formLayout} label="来源类型">
-                  {getFieldDecorator('SourceType', {
-                    initialValue: formVals.SourceType,
-                    rules: [{ required: true, message: '请选择来源类型！' }],
-                  })(<MDMCommonality initialValue={formVals.SourceType} data={orderSourceType} />)}
                 </FormItem>
               </Col>
               <Col lg={8} md={12} sm={24}>

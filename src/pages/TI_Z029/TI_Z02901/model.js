@@ -17,7 +17,7 @@ export default {
     orderDetail: {
       Comment: '',
       OrderType: '1',
-      SourceType: '1',
+
       Transport: 'N',
       DocDate: new Date(),
       CreateDate: new Date(),

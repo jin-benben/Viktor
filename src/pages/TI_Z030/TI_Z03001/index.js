@@ -45,7 +45,7 @@ import HSCode from '@/components/HSCode';
 import PushLink from '@/components/PushLink';
 import Attachment from '@/components/Attachment';
 import { getName } from '@/utils/utils';
-import { otherCostCColumns, orderSourceType, baseType } from '@/utils/publicData';
+import { otherCostCColumns, baseType } from '@/utils/publicData';
 
 const { TextArea } = Input;
 const { TabPane } = Tabs;
@@ -105,13 +105,15 @@ class AgreementEdit extends React.Component {
       dataIndex: 'BrandName',
       render: (text, record, index) =>
         record.lastIndex ? null : (
-          <Brand
-            initialValue={record.BrandName}
-            keyType="Name"
-            onChange={value => {
-              this.rowSelectChange(value, record, index, 'BrandName');
-            }}
-          />
+          <div style={{ width: 90 }}>
+            <Brand
+              initialValue={record.BrandName}
+              keyType="Name"
+              onChange={value => {
+                this.rowSelectChange(value, record, index, 'BrandName');
+              }}
+            />
+          </div>
         ),
     },
     {
@@ -579,7 +581,6 @@ class AgreementEdit extends React.Component {
           City: '',
           AreaID: '',
           Area: '',
-          SourceType: '1',
           Address: '',
           NumAtCard: '',
           Owner: '',
@@ -1655,14 +1656,6 @@ class AgreementEdit extends React.Component {
                     initialValue: formVals.CompanyCode,
                     rules: [{ required: true, message: '请选择交易公司！' }],
                   })(<MDMCommonality initialValue={formVals.CompanyCode} data={Company} />)}
-                </FormItem>
-              </Col>
-              <Col lg={8} md={12} sm={24}>
-                <FormItem key="SourceType" {...this.formLayout} label="来源类型">
-                  {getFieldDecorator('SourceType', {
-                    initialValue: formVals.SourceType,
-                    rules: [{ required: true, message: '请选择来源类型！' }],
-                  })(<MDMCommonality initialValue={formVals.SourceType} data={orderSourceType} />)}
                 </FormItem>
               </Col>
               <Col lg={8} md={12} sm={24}>
