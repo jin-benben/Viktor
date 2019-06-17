@@ -1,3 +1,4 @@
+/* eslint-disable react/destructuring-assignment */
 /* eslint-disable array-callback-return */
 import React, { Fragment } from 'react';
 import { connect } from 'dva';
@@ -224,7 +225,7 @@ class TI_Z02801 extends React.Component {
       type: 'global/getMDMCommonality',
       payload: {
         Content: {
-          CodeList: ['Saler', 'Company', 'Purchaser'],
+          CodeList: ['Saler', 'Company', 'Purchaser', 'Curr'],
         },
       },
     });
@@ -301,6 +302,14 @@ class TI_Z02801 extends React.Component {
                       )}
                     </span>
                   </li>
+                  <li>
+                    币种：
+                    <span>{getName(this.props.global.Curr, item.Currency)}</span>
+                  </li>
+                  <li>
+                    汇率：
+                    <span>{item.DocRate}</span>
+                  </li>
                 </ul>
               }
             />
@@ -315,10 +324,8 @@ class TI_Z02801 extends React.Component {
     const CardCode = item.target.value;
     const targetLine = record.TI_Z02803.find(line => line.CardCode === CardCode);
     const { orderLineList } = this.state;
-
     const newrecord = orderLineList[index];
-    delete targetLine.LineID; //  删除Key,避免key重复
-    Object.assign(newrecord, targetLine);
+    Object.assign(newrecord, targetLine, { LineID: record.LineID });
     orderLineList[index] = newrecord;
     this.setState({ orderLineList: [...orderLineList] });
   };

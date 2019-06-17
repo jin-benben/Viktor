@@ -1,3 +1,4 @@
+/* eslint-disable react/destructuring-assignment */
 import React, { Component, Fragment } from 'react';
 import { Row, Col, Form, Input, DatePicker, Modal, Table, List, Icon, message } from 'antd';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
@@ -5,6 +6,7 @@ import MDMCommonality from '@/components/Select';
 import moment from 'moment';
 import Link from 'umi/link';
 import { connect } from 'dva';
+import { getName } from '@/utils/utils';
 
 import styles from '../style.less';
 
@@ -207,6 +209,14 @@ class OrderPreview extends Component {
                       <Icon type="frown" theme="twoTone" />
                     )}
                   </span>
+                </li>
+                <li>
+                  币种：
+                  <span>{getName(this.props.global.Curr, item.Currency)}</span>
+                </li>
+                <li>
+                  汇率：
+                  <span>{item.DocRate}</span>
                 </li>
               </ul>
             }

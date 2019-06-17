@@ -54,9 +54,9 @@ class orderLine extends PureComponent {
       fixed: 'left',
       dataIndex: 'DocEntry',
       render: (text, recond) => (
-        <Link target="_blank" to={`/sellabout/TI_Z029/detail?DocEntry=${text}`}>{`${text}-${
-          recond.LineID
-        }`}</Link>
+        <Link target="_blank" to={`/sellabout/TI_Z029/detail?DocEntry=${text}`}>
+          {`${text}-${recond.LineID}`}
+        </Link>
       ),
     },
     {
@@ -70,21 +70,6 @@ class orderLine extends PureComponent {
       width: 100,
       dataIndex: 'CreateDate',
       render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
-    },
-    {
-      title: '客户',
-      dataIndex: 'CardName',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {' '}
-          {text}{' '}
-        </Ellipsis>
-      ),
-    },
-    {
-      title: '客户参考号',
-      width: 100,
-      dataIndex: 'NumAtCard',
     },
     {
       title: 'SKU',
@@ -127,17 +112,7 @@ class orderLine extends PureComponent {
       width: 100,
       dataIndex: 'Package',
     },
-    {
-      title: '采购员',
-      width: 80,
-      dataIndex: 'Purchaser',
-      render: text => {
-        const {
-          global: { Purchaser },
-        } = this.props;
-        return <span>{getName(Purchaser, text)}</span>;
-      },
-    },
+
     {
       title: '数量',
       width: 80,
@@ -155,9 +130,9 @@ class orderLine extends PureComponent {
       render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
     {
-      title: '价格',
+      title: '客户参考号',
       width: 100,
-      dataIndex: 'Price',
+      dataIndex: 'NumAtCard',
     },
     {
       title: '询价交期',
@@ -166,9 +141,21 @@ class orderLine extends PureComponent {
       render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
     {
+      title: '价格',
+      width: 100,
+      dataIndex: 'Price',
+    },
+
+    {
       title: '行备注',
       width: 80,
       dataIndex: 'LineComment',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {' '}
+          {text}{' '}
+        </Ellipsis>
+      ),
     },
     {
       title: '销售总计',
@@ -180,8 +167,9 @@ class orderLine extends PureComponent {
       width: 100,
       dataIndex: 'InquiryLineTotalLocal',
     },
+
     {
-      title: '所有人',
+      title: '销售员',
       width: 80,
       dataIndex: 'Owner',
       render: text => {
@@ -189,6 +177,17 @@ class orderLine extends PureComponent {
           global: { Saler },
         } = this.props;
         return <span>{getName(Saler, text)}</span>;
+      },
+    },
+    {
+      title: '采购员',
+      width: 80,
+      dataIndex: 'Purchaser',
+      render: text => {
+        const {
+          global: { Purchaser },
+        } = this.props;
+        return <span>{getName(Purchaser, text)}</span>;
       },
     },
   ];
@@ -242,6 +241,7 @@ class orderLine extends PureComponent {
         DocDateFrom = moment(fieldsValue.dateArr[0]).format('YYYY-MM-DD');
         DocDateTo = moment(fieldsValue.dateArr[1]).format('YYYY-MM-DD');
       }
+      // eslint-disable-next-line no-param-reassign
       delete fieldsValue.orderNo;
       const queryData = {
         ...fieldsValue,
@@ -252,6 +252,7 @@ class orderLine extends PureComponent {
 
       this.fetchOrder({
         Content: {
+          // eslint-disable-next-line react/destructuring-assignment
           ...this.state.queryData.Content,
           ...queryData,
         },
@@ -363,7 +364,7 @@ class orderLine extends PureComponent {
             data={{ list: orderLineList }}
             pagination={pagination}
             rowKey="Key"
-            scroll={{ x: 2300, y: 500 }}
+            scroll={{ x: 2100, y: 500 }}
             columns={columns}
             rowSelection={{
               onSelectRow: this.onSelectRow,

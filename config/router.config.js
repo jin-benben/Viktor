@@ -504,13 +504,11 @@ export default [
         routes:[
           {
             name: '确认交货',
-            icon: 'iconxunjia',
             path: '/confrmBatch/ODLN',
             component: './ODLN',
           },
           {
             name: '应收发票',
-            icon: 'iconxunjia',
             path: '/confrmBatch/OINV',
             component: './OINV',
           }
@@ -611,10 +609,6 @@ export default [
           }
         ]
       },
-     
-     
-      
-     
     ],
   },
 ]

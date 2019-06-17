@@ -696,8 +696,9 @@ class TI_Z029Component extends React.Component {
               DueDate,
               ToDate,
               TI_Z02605,
+              SourceType,
+              TI_Z02602,
             } = response.Content;
-            this.addLineSKU(response.Content.TI_Z02602);
             dispatch({
               type: 'TI_Z029/save',
               payload: {
@@ -726,9 +727,11 @@ class TI_Z029Component extends React.Component {
                   DueDate,
                   ToDate,
                   TI_Z02905: TI_Z02605,
+                  TI_Z02902: TI_Z02602,
                 },
               },
             });
+            this.addLineSKU(TI_Z02602, SourceType);
           }
         },
       });
@@ -772,38 +775,53 @@ class TI_Z029Component extends React.Component {
   //  计算总计
   getTotal = () => {
     const { formVals } = this.state;
+    const {
+      dispatch,
+      TI_Z029: { orderDetail },
+    } = this.props;
     let DocTotal = 0;
     let InquiryDocTotalLocal = 0;
     let InquiryDocTotal = 0;
     let OtherTotal = 0;
+    let ProfitTotal = 0;
     // eslint-disable-next-line array-callback-return
     formVals.TI_Z02902.map(record => {
-      record.InquiryLineTotalLocal = isNaN(record.Quantity * record.InquiryPrice)
+      record.OtherTotal = record.OtherTotal || 0;
+      record.InquiryLineTotal = isNaN(record.Quantity * record.InquiryPrice)
         ? 0
         : record.Quantity * record.InquiryPrice;
-      record.InquiryLineTotalLocal = round(record.InquiryLineTotalLocal, 2);
-      record.InquiryLineTotal = isNaN(record.Quantity * record.InquiryPrice * record.DocRate)
+      record.InquiryLineTotal = round(record.InquiryLineTotal, 2);
+      record.InquiryLineTotalLocal = isNaN(record.Quantity * record.InquiryPrice * record.DocRate)
         ? 0
         : record.Quantity * record.InquiryPrice * record.DocRate;
-      record.InquiryLineTotal = round(record.InquiryLineTotal, 2);
+      record.InquiryLineTotalLocal = round(record.InquiryLineTotalLocal, 2);
       record.LineTotal = isNaN(record.Quantity * record.Price) ? 0 : record.Quantity * record.Price;
       record.LineTotal = round(record.LineTotal, 2);
-      record.ProfitLineTotal =
-        record.LineTotal -
-        record.InquiryLineTotalLocal -
-        (isNaN(record.OtherTotal) ? record.OtherTotal : 0);
+      record.ProfitLineTotal = record.LineTotal - record.InquiryLineTotalLocal - record.OtherTotal;
       record.ProfitLineTotal = round(record.ProfitLineTotal, 2);
       DocTotal += record.LineTotal;
       InquiryDocTotalLocal += record.InquiryLineTotalLocal;
       InquiryDocTotal += record.InquiryLineTotal;
       OtherTotal += record.OtherTotal;
     });
-    formVals.DocTotal = round(DocTotal, 2);
-    formVals.InquiryDocTotalLocal = round(InquiryDocTotalLocal, 2);
-    formVals.InquiryDocTotal = round(InquiryDocTotal, 2);
-    formVals.OtherTotal = round(OtherTotal, 2);
-    formVals.ProfitTotal = round(DocTotal - InquiryDocTotalLocal - OtherTotal, 2);
-    this.setState({ formVals });
+    DocTotal = round(DocTotal, 2);
+    InquiryDocTotalLocal = round(InquiryDocTotalLocal, 2);
+    InquiryDocTotal = round(InquiryDocTotal, 2);
+    OtherTotal = round(OtherTotal, 2);
+    ProfitTotal = round(DocTotal - InquiryDocTotalLocal - OtherTotal, 2);
+    dispatch({
+      type: 'TI_Z029/save',
+      payload: {
+        orderDetail: {
+          ...orderDetail,
+          DocTotal,
+          InquiryDocTotalLocal,
+          InquiryDocTotal,
+          ProfitTotal,
+          OtherTotal,
+        },
+      },
+    });
   };
 
   // 品牌,仓库改变
@@ -1085,7 +1103,7 @@ class TI_Z029Component extends React.Component {
   };
 
   // 添加行
-  addLineSKU = selectedRows => {
+  addLineSKU = (selectedRows, SourceType) => {
     const {
       global: { currentUser },
     } = this.props;
@@ -1138,13 +1156,12 @@ class TI_Z029Component extends React.Component {
         WhsCode,
         LineID,
         DocEntry,
-        SourceType,
       } = item;
       formVals.TI_Z02902.push({
         BaseEntry: DocEntry,
         BaseLineID: LineID,
         LineComment,
-        SourceType,
+        SourceType: item.SourceType || SourceType,
         SKU,
         SKUName,
         BrandName,
@@ -1458,15 +1475,6 @@ class TI_Z029Component extends React.Component {
         ProfitLineTotal: formVals.ProfitTotal,
       });
     }
-
-    // let tablwidth=0;
-    // this.skuColumns.map(item=>{
-    //   if(item.width){
-    //     tablwidth+=item.width
-    //   }
-    // })
-    // console.log(tablwidth)
-    console.log(formVals);
     return (
       <Card bordered={false} loading={detailloading}>
         <Form {...formItemLayout}>

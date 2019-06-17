@@ -1011,7 +1011,6 @@ class InquiryEdit extends React.Component {
             )}
           </TabPane>
         </Tabs>
-
         <FooterToolbar>
           <CancelOrder cancelSubmit={this.cancelSubmit} />
           <Button
@@ -1020,6 +1019,14 @@ class InquiryEdit extends React.Component {
             type="primary"
           >
             更新
+          </Button>
+          <Button
+            style={{ marginRight: 10 }}
+            type="primary"
+            href={`/purchase/TI_Z027/detail?DocEntry=${formVals.DocEntry}`}
+            target="_blank"
+          >
+            详情
           </Button>
           <Button icon="plus" type="primary" href="/purchase/TI_Z027/edit" target="_blank">
             新建

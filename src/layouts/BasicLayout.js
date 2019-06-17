@@ -154,7 +154,7 @@ class BasicLayout extends React.PureComponent {
     const breadcrumbObj = conversionBreadcrumbList({
       ...this.props,
     });
-    const isbreadcrumb = breadcrumbObj.routes.length > 1;
+    const isbreadcrumb = breadcrumbObj.routes.length > 1 && pathname.indexOf('/exception') === -1;
     const contentStyle = !fixedHeader ? { paddingTop: 0 } : {};
     const layout = (
       <Scrollbars style={{ minHeight: '100vh' }}>

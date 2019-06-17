@@ -301,9 +301,7 @@ class AgreementEdit extends React.Component {
     {
       title: '建议价',
       width: 100,
-      inputType: 'text',
       dataIndex: 'AdvisePrice',
-      editable: true,
       align: 'center',
     },
     {
@@ -662,7 +660,7 @@ class AgreementEdit extends React.Component {
               ToDate,
               TI_Z02905,
             } = response.Content;
-            this.addLineSKU(response.Content.TI_Z02902);
+
             dispatch({
               type: 'agreementEdit/save',
               payload: {
@@ -694,6 +692,7 @@ class AgreementEdit extends React.Component {
                 },
               },
             });
+            this.addLineSKU(response.Content.TI_Z02902);
           }
         },
       });
@@ -734,12 +733,18 @@ class AgreementEdit extends React.Component {
   //  计算总计
   getTotal = () => {
     const { formVals } = this.state;
+    const {
+      dispatch,
+      agreementEdit: { orderDetail },
+    } = this.props;
     let DocTotal = 0;
     let InquiryDocTotalLocal = 0;
     let InquiryDocTotal = 0;
     let OtherTotal = 0;
+    let ProfitTotal = 0;
     // eslint-disable-next-line array-callback-return
     formVals.TI_Z03002.map(record => {
+      record.OtherTotal = record.OtherTotal || 0;
       record.InquiryLineTotal = isNaN(record.Quantity * record.InquiryPrice)
         ? 0
         : record.Quantity * record.InquiryPrice;
@@ -747,26 +752,34 @@ class AgreementEdit extends React.Component {
       record.InquiryDocTotalLocal = isNaN(record.Quantity * record.InquiryPrice * record.DocRate)
         ? 0
         : record.Quantity * record.InquiryPrice * record.DocRate;
-      record.InquiryLineTotal = round(record.InquiryDocTotalLocal, 2);
+      record.InquiryDocTotalLocal = round(record.InquiryDocTotalLocal, 2);
       record.LineTotal = isNaN(record.Quantity * record.Price) ? 0 : record.Quantity * record.Price;
       record.LineTotal = round(record.LineTotal, 2);
-      record.ProfitLineTotal =
-        record.LineTotal -
-        record.InquiryLineTotalLocal -
-        (record.OtherTotal ? record.OtherTotal : 0);
+      record.ProfitLineTotal = record.LineTotal - record.InquiryLineTotalLocal - record.OtherTotal;
       record.ProfitLineTotal = round(record.ProfitLineTotal, 2);
       DocTotal += record.LineTotal;
       InquiryDocTotalLocal += record.InquiryLineTotalLocal;
       InquiryDocTotal += record.InquiryLineTotal;
       OtherTotal += record.OtherTotal || 0;
     });
-    formVals.DocTotal = DocTotal;
-    formVals.InquiryDocTotalLocal = InquiryDocTotalLocal;
-    formVals.InquiryDocTotal = InquiryDocTotal;
-    formVals.DocTotal = DocTotal;
-    formVals.ProfitTotal = round(DocTotal - InquiryDocTotalLocal - OtherTotal, 2);
-    formVals.OtherTotal = OtherTotal;
-    this.setState({ formVals });
+    DocTotal = round(DocTotal, 2);
+    InquiryDocTotalLocal = round(InquiryDocTotalLocal, 2);
+    InquiryDocTotal = round(InquiryDocTotal, 2);
+    OtherTotal = round(OtherTotal, 2);
+    ProfitTotal = round(DocTotal - InquiryDocTotalLocal - OtherTotal, 2);
+    dispatch({
+      type: 'agreementEdit/save',
+      payload: {
+        orderDetail: {
+          ...orderDetail,
+          DocTotal,
+          InquiryDocTotalLocal,
+          InquiryDocTotal,
+          ProfitTotal,
+          OtherTotal,
+        },
+      },
+    });
   };
 
   // 品牌,仓库改变
@@ -1067,7 +1080,6 @@ class AgreementEdit extends React.Component {
       newLineID += index;
       const {
         LineComment,
-        SourceType,
         SKU,
         SKUName,
         BrandName,
@@ -1107,6 +1119,7 @@ class AgreementEdit extends React.Component {
         BaseEntry,
         BaseLineID,
         DocEntry,
+        SourceType,
       } = item;
       formVals.TI_Z03002.push({
         QuotationEntry: DocEntry,
@@ -1453,13 +1466,6 @@ class AgreementEdit extends React.Component {
       attachmentList.push(...item.TI_Z02603);
     });
 
-    let tablwidth = 0;
-    this.skuColumns.map(item => {
-      if (item.width) {
-        tablwidth += item.width;
-      }
-    });
-    console.log(tablwidth);
     return (
       <Card bordered={false} loading={detailloading}>
         <Form {...formItemLayout}>

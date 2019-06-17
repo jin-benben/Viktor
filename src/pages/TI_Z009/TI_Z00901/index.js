@@ -202,7 +202,6 @@ class AddSKU extends Component {
       render: (text, record, index) => (
         <Select
           defaultValue={record.Putaway}
-          style={{ width: 120 }}
           onChange={value => this.codeChange(value, record, index, 'Putaway')}
         >
           <Option value="1">是</Option>

@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import moment from 'moment';
 import { connect } from 'dva';
-import { Form, Modal, message } from 'antd';
+import { Form, Modal } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import { getName } from '@/utils/utils';
 
@@ -37,7 +37,6 @@ class OrderLine extends PureComponent {
     {
       title: '产品描述',
       dataIndex: 'SKUName',
-
       width: 200,
 
       align: 'center',
