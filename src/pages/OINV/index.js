@@ -117,6 +117,7 @@ class OINVConfrim extends PureComponent {
         return <span>{getName(Company, val)}</span>;
       },
     },
+
     {
       title: '发货状态',
       dataIndex: 'DeliverSts',
@@ -176,6 +177,16 @@ class OINVConfrim extends PureComponent {
         } = this.props;
         return <span>{getName(Saler, val)}</span>;
       },
+    },
+    {
+      title: '打印状态',
+      dataIndex: 'PrintStatus',
+      width: 80,
+      render: text => (
+        <span>
+          {text === 'Y' ? <Tag color="green">已打印</Tag> : <Tag color="blue">未打印</Tag>}
+        </span>
+      ),
     },
     {
       title: '收货地址',
@@ -531,6 +542,16 @@ class OINVConfrim extends PureComponent {
                   )}
                 </FormItem>
               </Col>
+              <Col md={4} sm={24}>
+                <FormItem key="PrintStatus" {...formLayout}>
+                  {getFieldDecorator('PrintStatus', { initialValue: 'N' })(
+                    <Select placeholder="请选择打印状态">
+                      <Option value="Y">已打印</Option>
+                      <Option value="N">未打印</Option>
+                    </Select>
+                  )}
+                </FormItem>
+              </Col>
             </Fragment>
           ) : null}
           <Col md={2} sm={24}>
@@ -594,7 +615,7 @@ class OINVConfrim extends PureComponent {
               data={{ list: orderLineList }}
               pagination={pagination}
               rowKey="DocEntry"
-              scroll={{ x: 1900, y: 500 }}
+              scroll={{ x: 2000, y: 500 }}
               columns={columns}
               rowSelection={{
                 onSelectRow: this.onSelectRow,

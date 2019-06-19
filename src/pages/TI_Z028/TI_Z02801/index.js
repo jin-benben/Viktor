@@ -5,8 +5,20 @@ import { connect } from 'dva';
 import router from 'umi/router';
 import Link from 'umi/link';
 import moment from 'moment';
-import { Row, Col, Card, Form, Input, Button, DatePicker, List, Icon, message, Radio } from 'antd';
-import StandardTable from '@/components/StandardTable';
+import {
+  Row,
+  Col,
+  Card,
+  Form,
+  Input,
+  Button,
+  DatePicker,
+  List,
+  Icon,
+  message,
+  Radio,
+  Table,
+} from 'antd';
 import MDMCommonality from '@/components/Select';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
@@ -208,6 +220,7 @@ class TI_Z02801 extends React.Component {
     selectedRows: [],
     orderLineList: [],
     modalVisible: false,
+    selectedRowKeys: [],
   };
 
   componentDidMount() {
@@ -377,17 +390,19 @@ class TI_Z02801 extends React.Component {
           sord: 'Desc',
         },
       });
+      this.setState({ selectedRowKeys: [], selectedRows: [] });
     });
   };
 
-  onSelectRow = selectedRows => {
-    this.setState({ selectedRows: [...selectedRows] });
+  onSelectRow = (selectedRowKeys, selectedRows) => {
+    this.setState({ selectedRows: [...selectedRows], selectedRowKeys: [...selectedRowKeys] });
   };
 
   confrimModel = () => {
     const { selectedRows } = this.state;
     if (!selectedRows.length) {
       message.warning('请先选择');
+      return;
     }
     this.setState({ modalVisible: true });
   };
@@ -478,7 +493,7 @@ class TI_Z02801 extends React.Component {
       loading,
     } = this.props;
 
-    const { modalVisible, selectedRows, orderLineList } = this.state;
+    const { modalVisible, selectedRows, orderLineList, selectedRowKeys } = this.state;
 
     const columns = this.columns.map(item => {
       const newitem = item;
@@ -494,14 +509,16 @@ class TI_Z02801 extends React.Component {
         <Card bordered={false}>
           <div className="tableList">
             <div className="tableListForm">{this.renderSimpleForm()}</div>
-            <StandardTable
+            <Table
+              bordered
               loading={loading}
-              data={{ list: orderLineList }}
+              dataSource={orderLineList}
               pagination={pagination}
               rowKey="LineID"
               scroll={{ x: 2350, y: 800 }}
               rowSelection={{
-                onSelectRow: this.onSelectRow,
+                onChange: this.onSelectRow,
+                selectedRowKeys,
               }}
               expandedRowRender={this.expandedRowRender}
               columns={columns}

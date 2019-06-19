@@ -173,6 +173,16 @@ class salerConfrim extends PureComponent {
       },
     },
     {
+      title: '打印状态',
+      dataIndex: 'PrintStatus',
+      width: 80,
+      render: text => (
+        <span>
+          {text === 'Y' ? <Tag color="green">已打印</Tag> : <Tag color="blue">未打印</Tag>}
+        </span>
+      ),
+    },
+    {
       title: '收货地址',
       dataIndex: 'Address',
       render: text => (
@@ -522,6 +532,16 @@ class salerConfrim extends PureComponent {
                     <Select placeholder="请选择发货状态">
                       <Option value="Y">已发货</Option>
                       <Option value="N">未发货</Option>
+                    </Select>
+                  )}
+                </FormItem>
+              </Col>
+              <Col md={4} sm={24}>
+                <FormItem key="PrintStatus" {...formLayout}>
+                  {getFieldDecorator('PrintStatus', { initialValue: 'N' })(
+                    <Select placeholder="请选择打印状态">
+                      <Option value="Y">已打印</Option>
+                      <Option value="N">未打印</Option>
                     </Select>
                   )}
                 </FormItem>

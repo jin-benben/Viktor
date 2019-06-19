@@ -689,6 +689,7 @@ class AgreementEdit extends React.Component {
                   ToDate,
                   UserID,
                   TI_Z03005: TI_Z02905,
+                  TI_Z03002: [],
                 },
               },
             });

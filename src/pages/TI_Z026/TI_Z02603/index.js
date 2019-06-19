@@ -11,6 +11,7 @@ import CancelOrder from '@/components/Modal/CancelOrder';
 import DescriptionList from 'ant-design-pro/lib/DescriptionList';
 import MyTag from '@/components/Tag';
 import NeedAskPrice from '../components/needAskPrice';
+import Transfer from '@/components/Transfer';
 import Attachment from '@/components/Attachment';
 import { getName } from '@/utils/utils';
 import { orderSourceType, linkmanColumns } from '@/utils/publicData';
@@ -323,6 +324,7 @@ class InquiryEdit extends PureComponent {
       attachmentVisible: false,
       selectedRows: [],
       needmodalVisible: false,
+      transferModalVisible: false, // 转移modal
       prviewList: [],
     };
   }
@@ -382,6 +384,11 @@ class InquiryEdit extends PureComponent {
             确认需采购询价
           </a>
         </Menu.Item>
+        <Menu.Item>
+          <a href="javacript:void(0)" onClick={() => this.setState({ transferModalVisible: true })}>
+            转移
+          </a>
+        </Menu.Item>
       </Menu>
     );
   };
@@ -391,7 +398,11 @@ class InquiryEdit extends PureComponent {
   };
 
   handleModalVisible = flag => {
-    this.setState({ attachmentVisible: !!flag, needmodalVisible: !!flag });
+    this.setState({
+      attachmentVisible: !!flag,
+      needmodalVisible: !!flag,
+      transferModalVisible: !!flag,
+    });
   };
 
   // 获取单据详情
@@ -469,7 +480,14 @@ class InquiryEdit extends PureComponent {
       global: { Saler, Company, TI_Z004 },
       loading,
     } = this.props;
-    const { formVals, attachmentVisible, prviewList, selectedRows, needmodalVisible } = this.state;
+    const {
+      formVals,
+      attachmentVisible,
+      prviewList,
+      selectedRows,
+      needmodalVisible,
+      transferModalVisible,
+    } = this.state;
     const newdata = [...formVals.TI_Z02602];
     if (newdata.length > 0) {
       newdata.push({
@@ -482,6 +500,9 @@ class InquiryEdit extends PureComponent {
     }
     const needParentMethods = {
       handleSubmit: this.submitNeedLine,
+      handleModalVisible: this.handleModalVisible,
+    };
+    const transferParentMethods = {
       handleModalVisible: this.handleModalVisible,
     };
     //  let tablwidth=0;
@@ -601,6 +622,12 @@ class InquiryEdit extends PureComponent {
             data={selectedRows}
             {...needParentMethods}
             modalVisible={needmodalVisible}
+          />
+          <Transfer
+            SourceEntry={formVals.DocEntry}
+            SourceType="TI_Z026"
+            modalVisible={transferModalVisible}
+            {...transferParentMethods}
           />
         </FooterToolbar>
       </Card>

@@ -159,9 +159,6 @@ class SupplierAsk extends Component {
   };
 
   submitSelect = select => {
-    const {
-      global: { currentUser },
-    } = this.props;
     const lineList = [];
     select.map((item, lineIndex) => {
       const {
@@ -193,6 +190,7 @@ class SupplierAsk extends Component {
         ContactsID,
         CompanyCode,
         linkmanList,
+        Purchaser,
       } = item;
       const ToDate = moment()
         .add('30', 'day')
@@ -218,7 +216,7 @@ class SupplierAsk extends Component {
           CellphoneNO,
           PhoneNO,
           Email,
-          Owner: currentUser.Owner,
+          Owner: Purchaser,
           Key,
           CardName: item.SupplierName,
           CardCode: item.SupplierCode,

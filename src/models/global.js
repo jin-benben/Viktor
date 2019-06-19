@@ -34,6 +34,7 @@ export default {
     TI_Z003: [], // 部门
     TI_Z042: [], // 产地
     HSCodeList: [], // hscode
+    TI_Z050: [], // 转移类型
   },
 
   effects: {

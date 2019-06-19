@@ -727,7 +727,7 @@ class TI_Z029Component extends React.Component {
                   DueDate,
                   ToDate,
                   TI_Z02905: TI_Z02605,
-                  TI_Z02902: TI_Z02602,
+                  TI_Z02902: [],
                 },
               },
             });
@@ -1112,8 +1112,9 @@ class TI_Z029Component extends React.Component {
     if (formVals.TI_Z02902.length) {
       newLineID = formVals.TI_Z02902[formVals.TI_Z02902.length - 1].LineID + 1;
     }
+    console.log('ok');
     selectedRows.map((item, index) => {
-      if (item.SLineStatus !== 'O') {
+      if (item.SLineStatus === 'C') {
         return false;
       }
       newLineID += index;
