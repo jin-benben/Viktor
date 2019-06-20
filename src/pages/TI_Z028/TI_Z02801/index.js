@@ -112,6 +112,26 @@ class TI_Z02801 extends React.Component {
       ),
     },
     {
+      title: '外文名称',
+      width: 100,
+      dataIndex: 'ForeignName',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
+    },
+    {
+      title: '规格(外)',
+      width: 100,
+      dataIndex: 'ForeignParameters',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
+    },
+    {
       title: '包装',
       width: 100,
       dataIndex: 'Package',
@@ -130,6 +150,16 @@ class TI_Z02801 extends React.Component {
       title: '单位',
       width: 80,
       dataIndex: 'Unit',
+    },
+    {
+      title: '总/确认',
+      width: 80,
+      dataIndex: 'SubRowCount',
+      render: (val, record) => (
+        <span
+          style={{ color: `${record.SubRowCount !== record.PriceRStatusCount ? 'red' : '#666'}` }}
+        >{`${record.SubRowCount}/${record.PriceRStatusCount}`}</span>
+      ),
     },
     {
       title: '行备注',
@@ -170,16 +200,6 @@ class TI_Z02801 extends React.Component {
     {
       title: '供应商',
       dataIndex: 'CardName',
-    },
-    {
-      title: '外文名称',
-      width: 100,
-      dataIndex: 'ForeignName',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
     },
     {
       title: '创建日期',
@@ -515,7 +535,7 @@ class TI_Z02801 extends React.Component {
               dataSource={orderLineList}
               pagination={pagination}
               rowKey="LineID"
-              scroll={{ x: 2350, y: 800 }}
+              scroll={{ x: 2500, y: 800 }}
               rowSelection={{
                 onChange: this.onSelectRow,
                 selectedRowKeys,

@@ -20,6 +20,7 @@ import StandardTable from '@/components/StandardTable';
 import MDMCommonality from '@/components/Select';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import NeedAskPrice from '../components/needAskPrice';
+import Transfer from '@/components/Transfer';
 import Link from 'umi/link';
 import DocEntryFrom from '@/components/DocEntryFrom';
 import MyTag from '@/components/Tag';
@@ -40,6 +41,8 @@ class SalesQuotationSku extends PureComponent {
   state = {
     expandForm: false,
     needmodalVisible: false,
+    transferModalVisible: false,
+    transferLine: {},
     selectedRows: [],
   };
 
@@ -50,9 +53,9 @@ class SalesQuotationSku extends PureComponent {
       fixed: 'left',
       dataIndex: 'DocEntry',
       render: (text, recond) => (
-        <Link target="_blank" to={`/sellabout/TI_Z029/detail?DocEntry=${text}`}>{`${text}-${
-          recond.LineID
-        }`}</Link>
+        <Link target="_blank" to={`/sellabout/TI_Z029/detail?DocEntry=${text}`}>
+          {`${text}-${recond.LineID}`}
+        </Link>
       ),
     },
     {
@@ -370,8 +373,20 @@ class SalesQuotationSku extends PureComponent {
     });
   };
 
+  toTransfer = () => {
+    const { selectedRows } = this.state;
+    if (selectedRows.length) {
+      this.setState({
+        transferLine: selectedRows[0],
+        transferModalVisible: true,
+      });
+    } else {
+      message.warning('请先选择转移的行');
+    }
+  };
+
   handleModalVisible = flag => {
-    this.setState({ needmodalVisible: !!flag });
+    this.setState({ needmodalVisible: !!flag, transferModalVisible: !!flag });
   };
 
   renderSimpleForm() {
@@ -510,9 +525,12 @@ class SalesQuotationSku extends PureComponent {
       SalesQuotationSku: { SalesQuotationSkuList, pagination },
       loading,
     } = this.props;
-    const { needmodalVisible, selectedRows } = this.state;
+    const { needmodalVisible, selectedRows, transferModalVisible, transferLine } = this.state;
     const needParentMethods = {
       handleSubmit: this.submitNeedLine,
+      handleModalVisible: this.handleModalVisible,
+    };
+    const transferParentMethods = {
       handleModalVisible: this.handleModalVisible,
     };
     return (
@@ -539,6 +557,15 @@ class SalesQuotationSku extends PureComponent {
           <Button onClick={this.toConfrim} type="primary">
             确认销售报价
           </Button>
+          <Button type="primary" onClick={this.toTransfer}>
+            转移
+          </Button>
+          <Transfer
+            SourceEntry={transferLine.DocEntry}
+            SourceType="TI_Z029"
+            modalVisible={transferModalVisible}
+            {...transferParentMethods}
+          />
         </FooterToolbar>
       </Fragment>
     );

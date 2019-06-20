@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 /* eslint no-useless-escape:0 import/prefer-default-export:0 */
 const reg = /(((^https?:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+(?::\d+)?|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)$/;
 const emailReg = /^[a-zA-Z0-9_.-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.[a-zA-Z0-9]{2,6}$/;
@@ -26,8 +27,8 @@ export function requestUrl(url) {
   if (url.indexOf('/Login') !== -1) {
     return url.replace(/\/Login/i, 'http://47.104.65.49:8083');
   }
-  if (url.indexOf('/Print') !== -1) {
-    return url.replace(/\/Print/i, 'http://47.104.65.49:8086');
+  if (url.indexOf('/Report') !== -1) {
+    return url.replace(/\/Report/i, 'http://47.104.65.49:8086');
   }
   return url;
 }
@@ -41,6 +42,7 @@ export function getName(arr, code) {
     newCode = code.toString();
   }
   let name;
+  // eslint-disable-next-line array-callback-return
   arr.some(item => {
     if (item.Key === newCode) {
       name = item.Value;

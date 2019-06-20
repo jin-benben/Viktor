@@ -10,6 +10,14 @@ export const printType = [
 ];
 export const printOrderType = [
   {
+    Key: 'TI_Z026',
+    Value: '采购询价',
+  },
+  {
+    Key: 'OPOR',
+    Value: '采购订单',
+  },
+  {
     Key: 'TI_Z029',
     Value: '销售报价',
   },
@@ -22,6 +30,7 @@ export const printOrderType = [
     Value: '交货单',
   },
 ];
+
 export const emailSendType = [
   {
     Key: 'TI_Z027',
@@ -53,6 +62,25 @@ export const baseType = [
   {
     Key: 'TI_Z030',
     Value: '销售合同',
+  },
+];
+
+export const transferBaseType = [
+  {
+    Key: 'TI_Z026',
+    Value: '客户询价单',
+  },
+  {
+    Key: 'TI_Z027',
+    Value: '供应商询价单',
+  },
+  {
+    Key: 'TI_Z029',
+    Value: '销售报价',
+  },
+  {
+    Key: 'TI_Z043',
+    Value: '转移轨迹',
   },
 ];
 

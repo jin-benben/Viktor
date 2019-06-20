@@ -43,29 +43,29 @@ class OrderPrint extends PureComponent {
   columns = [
     {
       title: '代码',
-      width: 80,
+      width: 60,
       dataIndex: 'Code',
     },
     {
       title: '名称',
-      width: 100,
+      width: 200,
       dataIndex: 'Name',
     },
     {
       title: '打印类型',
       dataIndex: 'PrintType',
-      width: 100,
+      width: 70,
       render: text => <span>{getName(printType, text)}</span>,
     },
     {
       title: '单据类型',
       dataIndex: 'BaseType',
-      width: 100,
+      width: 80,
       render: text => <span>{getName(printOrderType, text)}</span>,
     },
     {
       title: '内容模板',
-      width: 100,
+      width: 70,
       dataIndex: 'HtmlTemplateCode',
       render: text => (
         <Ellipsis tooltip lines={5}>
@@ -75,7 +75,7 @@ class OrderPrint extends PureComponent {
     },
     {
       title: '备注',
-      width: 100,
+      width: 200,
       dataIndex: 'Comment',
     },
   ];
@@ -135,7 +135,7 @@ class OrderPrint extends PureComponent {
       if (err) return;
       this.getTemplate({
         Content: {
-          ...queryData,
+          ...queryData.Content,
           ...fieldsValue,
         },
         page: 1,
@@ -160,6 +160,10 @@ class OrderPrint extends PureComponent {
         this.setState({
           templateList: [...rows],
           pagination: { ...pagination, total: records, current: page },
+        });
+      } else {
+        this.setState({
+          templateList: [],
         });
       }
     }

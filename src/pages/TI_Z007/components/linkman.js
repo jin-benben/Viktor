@@ -1,10 +1,8 @@
 import React, { PureComponent } from 'react';
-import { Row, Col, Form, Input, Modal, Select } from 'antd';
+import { Row, Col, Form, Input, Modal } from 'antd';
 import { chechEmail } from '@/utils/utils';
 
 const FormItem = Form.Item;
-const { Option } = Select;
-
 @Form.create()
 class LinkManFrom extends PureComponent {
   constructor(props) {
@@ -55,14 +53,7 @@ class LinkManFrom extends PureComponent {
         md: { span: 10 },
       },
     };
-    const prefixSelector = getFieldDecorator('prefix', {
-      initialValue: '86',
-    })(
-      <Select style={{ width: 70 }}>
-        <Option value="86">+86</Option>
-        <Option value="87">+87</Option>
-      </Select>
-    );
+
     const okHandle = () => {
       form.validateFields((err, fieldsValue) => {
         if (err) return;
@@ -93,7 +84,7 @@ class LinkManFrom extends PureComponent {
               <FormItem key="CellphoneNO" {...this.formLayout} label="手机号">
                 {getFieldDecorator('CellphoneNO', {
                   initialValue: formVals.CellphoneNO,
-                })(<Input addonBefore={prefixSelector} placeholder="请输入手机号" />)}
+                })(<Input placeholder="请输入手机号" />)}
               </FormItem>
             </Col>
           </Row>

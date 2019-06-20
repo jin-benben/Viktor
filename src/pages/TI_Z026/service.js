@@ -81,6 +81,15 @@ export async function purchaserRule(params) {
   });
 }
 
+export async function trackListRule(params) {
+  return request('/OMS/TI_Z043/TI_Z04303', {
+    method: 'POST',
+    data: {
+      ...params,
+    },
+  });
+}
+
 export async function companyRule(params) {
   return request('/MDM/TI_Z006/TI_Z00603', {
     method: 'POST',

@@ -7,6 +7,7 @@ import moment from 'moment';
 import { connect } from 'dva';
 import Link from 'umi/link';
 import router from 'umi/router';
+
 import { getName } from '@/utils/utils';
 
 const { Description } = DescriptionList;
@@ -16,19 +17,15 @@ const { Description } = DescriptionList;
   TI_Z02802,
 }))
 class TI_Z02802 extends PureComponent {
-  state = {
-    purchaseDetail: {},
-  };
-
   columns = [
     {
       title: '客询价单',
       width: 100,
       dataIndex: 'BaseEntry',
       render: (text, recond) => (
-        <Link target="_blank" to={`/sellabout/TI_Z026/detail?DocEntry=${text}`}>{`${text}-${
-          recond.BaseLineID
-        }`}</Link>
+        <Link target="_blank" to={`/sellabout/TI_Z026/detail?DocEntry=${text}`}>
+          {`${text}-${recond.BaseLineID}`}
+        </Link>
       ),
     },
     {

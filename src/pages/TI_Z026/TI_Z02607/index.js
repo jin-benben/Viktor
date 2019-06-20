@@ -21,6 +21,7 @@ import DocEntryFrom from '@/components/DocEntryFrom';
 import MyTag from '@/components/Tag';
 import NeedAskPrice from '../components/needAskPrice';
 import MDMCommonality from '@/components/Select';
+import Transfer from '@/components/Transfer';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import Link from 'umi/link';
 import { getName } from '@/utils/utils';
@@ -41,8 +42,12 @@ class orderLine extends PureComponent {
   state = {
     expandForm: false,
     modalVisible: false,
+    transferModalVisible: false,
     selectedRows: [],
     needAsk: [],
+    transferLine: {
+      DocEntry: '',
+    },
   };
 
   columns = [
@@ -158,6 +163,17 @@ class orderLine extends PureComponent {
       title: '外文名称',
       width: 100,
       dataIndex: 'ForeignName',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
+    },
+    {
+      title: '规格(外)',
+      width: 100,
+      dataIndex: 'ForeignParameters',
+      align: 'center',
       render: text => (
         <Ellipsis tooltip lines={1}>
           {text}
@@ -364,7 +380,19 @@ class orderLine extends PureComponent {
 
   // 需询价弹窗
   handleModalVisible = flag => {
-    this.setState({ modalVisible: !!flag });
+    this.setState({ modalVisible: !!flag, transferModalVisible: !!flag });
+  };
+
+  toTransfer = () => {
+    const { selectedRows } = this.state;
+    if (selectedRows.length) {
+      this.setState({
+        transferLine: selectedRows[0],
+        transferModalVisible: true,
+      });
+    } else {
+      message.warning('请先选择转移的行');
+    }
   };
 
   renderSimpleForm() {
@@ -479,7 +507,7 @@ class orderLine extends PureComponent {
       orderLine: { orderLineList, pagination },
       loading,
     } = this.props;
-    const { needAsk, modalVisible } = this.state;
+    const { needAsk, modalVisible, transferModalVisible, transferLine } = this.state;
 
     const columns = this.columns.map(item => {
       // eslint-disable-next-line no-param-reassign
@@ -492,7 +520,9 @@ class orderLine extends PureComponent {
       handleModalVisible: this.handleModalVisible,
     };
 
-    console.log(needAsk);
+    const transferParentMethods = {
+      handleModalVisible: this.handleModalVisible,
+    };
 
     return (
       <Fragment>
@@ -504,7 +534,7 @@ class orderLine extends PureComponent {
               data={{ list: orderLineList }}
               pagination={pagination}
               rowKey="Key"
-              scroll={{ x: 2600, y: 500 }}
+              scroll={{ x: 2700, y: 500 }}
               columns={columns}
               rowSelection={{
                 onSelectRow: this.onSelectRow,
@@ -515,10 +545,19 @@ class orderLine extends PureComponent {
           </div>
         </Card>
         <FooterToolbar>
-          <Button style={{ marginTop: 20 }} onClick={this.selectNeed} type="primary">
+          <Button onClick={this.selectNeed} type="primary">
             确认需采购询价
           </Button>
+          <Button type="primary" onClick={this.toTransfer}>
+            转移
+          </Button>
         </FooterToolbar>
+        <Transfer
+          SourceEntry={transferLine.DocEntry}
+          SourceType="TI_Z026"
+          modalVisible={transferModalVisible}
+          {...transferParentMethods}
+        />
       </Fragment>
     );
   }

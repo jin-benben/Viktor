@@ -115,7 +115,10 @@ class supplierSearch extends PureComponent {
     } = this.props;
     const { BrandName } = query;
     const { queryData } = this.state;
-    Object.assign(queryData.Content, { BrandName: BrandName || '' });
+    Object.assign(queryData.Content, {
+      BrandName: BrandName || '',
+      IsCheck: BrandName ? 'Y' : 'N',
+    });
     this.setState({ queryData: { ...queryData } });
     dispatch({
       type: 'global/getMDMCommonality',

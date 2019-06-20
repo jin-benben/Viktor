@@ -6,6 +6,7 @@ import {
   customerRule,
   supplierRule,
   hscodeRule,
+  processorRule,
 } from '@/services';
 import { routerRedux } from 'dva/router';
 import { parse } from 'qs';
@@ -35,6 +36,7 @@ export default {
     TI_Z042: [], // 产地
     HSCodeList: [], // hscode
     TI_Z050: [], // 转移类型
+    ProcessorList: [], // 处理人
   },
 
   effects: {
@@ -153,6 +155,18 @@ export default {
             },
           });
         }
+      }
+    },
+    // 获取品牌下拉框初始值
+    *getProcessor({ payload }, { put, call }) {
+      const response = yield call(processorRule, payload);
+      if (response && response.Status === 200) {
+        yield put({
+          type: 'save',
+          payload: {
+            ProcessorList: response.Content.OSLP,
+          },
+        });
       }
     },
     // 获取分类下拉框初始值

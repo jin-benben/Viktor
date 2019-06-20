@@ -340,6 +340,11 @@ export default [
                 component: './TI_Z026/TI_Z02607',
               },
               {
+                name: '轨迹查询',
+                path: '/sellabout/TI_Z026/track',
+                component: './TI_Z026/track',
+              },
+              {
                 name: '客户询价详情',
                 path: '/sellabout/TI_Z026/detail',
                 hideInMenu: true,
@@ -424,7 +429,12 @@ export default [
              
             ]
           },
-         
+          {
+            name: '交易查询',
+            icon: 'iconxunjia',
+            path: '/sellabout/transaction',
+            component: './transaction'
+          },
         ]
       }, 
       {

@@ -1,3 +1,4 @@
+/* eslint-disable no-script-url */
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 
@@ -36,7 +37,6 @@ class PrintTemplate extends PureComponent {
       title: '代码',
       width: 80,
       dataIndex: 'Code',
-      // eslint-disable-next-line no-script-url
       render: (text, record) => (
         <a href="javascript:;" onClick={() => this.changeTemplate(record)}>
           {text}
@@ -188,6 +188,20 @@ class PrintTemplate extends PureComponent {
     }
   };
 
+  addNewTemplate = () => {
+    this.setState({
+      templatdetail: {
+        Code: '',
+        Name: '',
+        Comment: '',
+        BaseType: '',
+        PrintType: '',
+        HtmlTemplateCode: '',
+      },
+      modalVisible: true,
+    });
+  };
+
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
@@ -217,7 +231,7 @@ class PrintTemplate extends PureComponent {
                   icon="plus"
                   style={{ marginLeft: 8 }}
                   type="primary"
-                  onClick={() => this.handleModalVisible(true)}
+                  onClick={this.addNewTemplate}
                 >
                   新建
                 </Button>

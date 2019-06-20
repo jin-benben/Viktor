@@ -157,6 +157,14 @@ class TI_Z029Component extends React.Component {
       align: 'center',
     },
     {
+      title: '规格(外)',
+      width: 150,
+      dataIndex: 'ForeignParameters',
+      inputType: 'textArea',
+      editable: true,
+      align: 'center',
+    },
+    {
       title: '数量',
       width: 80,
       inputType: 'text',
@@ -1125,6 +1133,7 @@ class TI_Z029Component extends React.Component {
         BrandName,
         ProductName,
         ManufactureNO,
+        ForeignParameters,
         ManLocation,
         HSVatRate,
         HSVatRateOther,
@@ -1173,6 +1182,7 @@ class TI_Z029Component extends React.Component {
         HSVatRate,
         HSVatRateOther,
         CustomerName,
+        ForeignParameters,
         Rweight,
         ForeignFreight,
         AdvisePrice,
@@ -1583,7 +1593,7 @@ class TI_Z029Component extends React.Component {
             <EditableFormTable
               rowChange={this.rowChange}
               rowKey="LineID"
-              scroll={{ x: 3600, y: 600 }}
+              scroll={{ x: 3800, y: 600 }}
               columns={this.skuColumns}
               data={newdata}
             />

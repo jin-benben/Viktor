@@ -11,6 +11,7 @@ import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import DescriptionList from 'ant-design-pro/lib/DescriptionList';
 import MyTag from '@/components/Tag';
 import Emails from '@/components/Modal/Email';
+import Transfer from '@/components/Transfer';
 import OrderPrint from '@/components/Modal/OrderPrint';
 import { getName } from '@/utils/utils';
 import { baseType } from '@/utils/publicData';
@@ -238,6 +239,7 @@ class InquiryEdit extends React.Component {
     this.state = {
       formVals: {}, // 单据信息
       attachmentVisible: false,
+      transferModalVisible: false,
       prviewList: [],
     };
   }
@@ -327,7 +329,7 @@ class InquiryEdit extends React.Component {
   };
 
   handleModalVisible = flag => {
-    this.setState({ attachmentVisible: !!flag });
+    this.setState({ attachmentVisible: !!flag, transferModalVisible: !!flag });
   };
 
   // 获取单据详情
@@ -384,7 +386,7 @@ class InquiryEdit extends React.Component {
     const {
       global: { TI_Z004, Company, Curr, Purchaser },
     } = this.props;
-    const { formVals, attachmentVisible, prviewList } = this.state;
+    const { formVals, attachmentVisible, prviewList, transferModalVisible } = this.state;
 
     const newdata = [...formVals.TI_Z02702];
     if (newdata.length > 0) {
@@ -395,6 +397,10 @@ class InquiryEdit extends React.Component {
         InquiryLineTotalLocal: formVals.InquiryDocTotalLocal,
       });
     }
+
+    const transferParentMethods = {
+      handleModalVisible: this.handleModalVisible,
+    };
 
     return (
       <Card bordered={false}>
@@ -531,6 +537,12 @@ class InquiryEdit extends React.Component {
             </Button>
           </Dropdown>
         </FooterToolbar>
+        <Transfer
+          SourceEntry={formVals.DocEntry}
+          SourceType="TI_Z027"
+          modalVisible={transferModalVisible}
+          {...transferParentMethods}
+        />
       </Card>
     );
   }

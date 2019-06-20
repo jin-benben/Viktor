@@ -1,7 +1,6 @@
 import React, { PureComponent } from 'react';
 import { Row, Form, Input, Modal, Col, Checkbox } from 'antd';
 import { connect } from 'dva';
-import { getName } from '@/utils/utils';
 
 const { TextArea } = Input;
 @Form.create()
@@ -10,82 +9,6 @@ const { TextArea } = Input;
   loading: loading.models.global,
 }))
 class TransferConfirm extends PureComponent {
-  columns = [
-    {
-      title: '处理人',
-      dataIndex: 'Code',
-    },
-    {
-      title: '处理角色',
-      dataIndex: 'CardName',
-    },
-    {
-      title: '客询价单',
-      dataIndex: 'BrandName',
-    },
-
-    {
-      title: 'SKU',
-      dataIndex: 'ManufactureNO',
-    },
-    {
-      title: '物料描述',
-      dataIndex: 'Parameters',
-    },
-    {
-      title: '数量',
-      dataIndex: 'package',
-    },
-    {
-      title: '单位',
-      dataIndex: 'Unit',
-    },
-    {
-      title: '原处理人',
-      dataIndex: 'Unit',
-    },
-    {
-      title: '单据类型',
-      dataIndex: 'category',
-      render: (text, record) => (
-        <span>{`${record.Cate1Name}/${record.Cate2Name}/${record.Cate3Name}`}</span>
-      ),
-    },
-
-    {
-      title: '单号',
-      dataIndex: 'Putaway',
-    },
-    {
-      title: '行号',
-      dataIndex: 'Putaway',
-    },
-    {
-      title: '采购员',
-      width: 80,
-      dataIndex: 'Purchaser',
-      align: 'center',
-      render: (val, record) => {
-        const {
-          global: { Purchaser },
-        } = this.props;
-        return record.lastIndex ? '' : <span>{getName(Purchaser, val)}</span>;
-      },
-    },
-    {
-      title: '销售员',
-      width: 80,
-      dataIndex: 'Purchaser',
-      align: 'center',
-      render: (val, record) => {
-        const {
-          global: { Saler },
-        } = this.props;
-        return record.lastIndex ? '' : <span>{getName(Saler, val)}</span>;
-      },
-    },
-  ];
-
   constructor(props) {
     super(props);
     this.state = {};
@@ -96,23 +19,54 @@ class TransferConfirm extends PureComponent {
   }
 
   componentDidMount() {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'global/getMDMCommonality',
-      payload: {
-        Content: {
-          CodeList: ['TI_Z050'],
+    const {
+      dispatch,
+      global: { TI_Z050 },
+    } = this.props;
+    if (!TI_Z050.length) {
+      dispatch({
+        type: 'global/getMDMCommonality',
+        payload: {
+          Content: {
+            CodeList: ['TI_Z050'],
+          },
         },
-      },
-    });
+      });
+    }
   }
 
   okHandle = () => {
-    const { handleSubmit, form } = this.props;
+    const {
+      handleSubmit,
+      DocEntry,
+      form,
+      global: { TI_Z050 },
+    } = this.props;
     if (handleSubmit) {
       form.validateFields((err, fieldsValue) => {
         if (err) return;
-        handleSubmit(fieldsValue);
+        const { IsConfirm, IsEnquiry, Comment, Transfer } = fieldsValue;
+        // eslint-disable-next-line camelcase
+        let TI_Z04302List = [];
+        if (Transfer.length) {
+          // eslint-disable-next-line camelcase
+          TI_Z04302List = Transfer.map((item, index) => {
+            const thisLine = TI_Z050.find(val => val.Key === item);
+            return {
+              DocEntry,
+              OrderID: index + 1,
+              TransferType: thisLine.Key,
+              TransferTypeName: thisLine.Value,
+            };
+          });
+        }
+        const newobj = {
+          IsConfirm: IsConfirm ? 'Y' : 'N',
+          IsEnquiry: IsEnquiry ? 'Y' : 'N',
+          Comment,
+          TI_Z04302List,
+        };
+        handleSubmit(newobj);
       });
     }
   };
@@ -122,19 +76,14 @@ class TransferConfirm extends PureComponent {
       form: { getFieldDecorator },
       modalVisible,
       handleModalVisible,
-      handleSubmit,
       global: { TI_Z050 },
     } = this.props;
 
     const formItemLayout = {
-      labelCol: {
-        xs: { span: 24 },
-        sm: { span: 7 },
-      },
       wrapperCol: {
         xs: { span: 24 },
-        sm: { span: 16 },
-        md: { span: 10 },
+        sm: { span: 24 },
+        md: { span: 24 },
       },
     };
 
@@ -144,18 +93,20 @@ class TransferConfirm extends PureComponent {
         destroyOnClose
         title="确认转移"
         visible={modalVisible}
-        onOk={handleSubmit}
+        onOk={this.okHandle}
         onCancel={() => handleModalVisible()}
       >
         <Form {...formItemLayout} onSubmit={this.handleSubmit}>
           <Row>
-            <Col lg={10} md={24} sm={24}>
+            <Col lg={24} md={24} sm={24}>
               <Form.Item>
-                {getFieldDecorator('Transfer')(
+                {getFieldDecorator('Transfer', {
+                  rules: [{ required: true, message: '请选择转移类型！' }],
+                })(
                   <Checkbox.Group style={{ width: '100%' }}>
                     <Row>
                       {TI_Z050.map(item => (
-                        <Col span={8}>
+                        <Col lg={8} md={12} sm={24} key={item.Key}>
                           <Checkbox value={item.Key}>{item.Value}</Checkbox>
                         </Col>
                       ))}
@@ -166,25 +117,27 @@ class TransferConfirm extends PureComponent {
             </Col>
           </Row>
           <Row>
-            <Col>
+            <Col lg={24} md={24} sm={24}>
               <Form.Item>
-                {getFieldDecorator('Comment', {})(<TextArea placeholder="备注" />)}
+                {getFieldDecorator('Comment', {
+                  rules: [{ required: true, message: '请填写备注！' }],
+                })(<TextArea placeholder="备注" />)}
               </Form.Item>
             </Col>
           </Row>
           <Row>
-            <Col lg={10} md={12} sm={24}>
+            <Col lg={4} md={12} sm={24}>
               <Form.Item>
                 {getFieldDecorator('IsConfirm', {
                   valuePropName: 'checked',
                 })(<Checkbox>需要确认</Checkbox>)}
               </Form.Item>
             </Col>
-            <Col lg={10} md={12} sm={24}>
+            <Col lg={4} md={12} sm={24}>
               <Form.Item>
-                {getFieldDecorator('IsConfirm', {
+                {getFieldDecorator('IsEnquiry', {
                   valuePropName: 'checked',
-                })(<Checkbox>需要确认</Checkbox>)}
+                })(<Checkbox>需要询价</Checkbox>)}
               </Form.Item>
             </Col>
           </Row>

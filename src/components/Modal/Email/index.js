@@ -44,12 +44,12 @@ class EmailModal extends PureComponent {
   columns = [
     {
       title: '代码',
-      width: 80,
+      width: 60,
       dataIndex: 'Code',
     },
     {
       title: '名称',
-      width: 100,
+      width: 200,
       dataIndex: 'Name',
     },
     {
@@ -60,7 +60,7 @@ class EmailModal extends PureComponent {
     },
     {
       title: '内容模板',
-      width: 100,
+      width: 80,
       dataIndex: 'HtmlTemplateCode',
       render: text => (
         <Ellipsis tooltip lines={5}>
@@ -70,7 +70,7 @@ class EmailModal extends PureComponent {
     },
     {
       title: '备注',
-      width: 100,
+      width: 200,
       dataIndex: 'Comment',
     },
   ];
@@ -130,7 +130,7 @@ class EmailModal extends PureComponent {
       if (err) return;
       this.getTemplate({
         Content: {
-          ...queryData,
+          ...queryData.Content,
           ...fieldsValue,
         },
         page: 1,
@@ -155,6 +155,10 @@ class EmailModal extends PureComponent {
         this.setState({
           templateList: [...rows],
           pagination: { ...pagination, total: records, current: page },
+        });
+      } else {
+        this.setState({
+          templateList: [],
         });
       }
     }
@@ -199,7 +203,7 @@ class EmailModal extends PureComponent {
           width={960}
           destroyOnClose
           confirmLoading={loading}
-          title="模板选择"
+          title="邮件模板选择"
           visible={modalVisible}
           onOk={this.okHandle}
           onCancel={() => this.handleModalVisible(false)}

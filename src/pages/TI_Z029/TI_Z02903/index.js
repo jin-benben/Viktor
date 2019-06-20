@@ -14,6 +14,7 @@ import OrderPrint from '@/components/Modal/OrderPrint';
 import NeedAskPrice from '../components/needAskPrice';
 import Emails from '@/components/Modal/Email';
 import TargetLine from '@/components/TargetLine';
+import Transfer from '@/components/Transfer';
 import { getName } from '@/utils/utils';
 import { orderSourceType, linkmanColumns, otherCostCColumns, baseType } from '@/utils/publicData';
 
@@ -263,6 +264,7 @@ class InquiryEdit extends React.Component {
       formVals: {}, // 单据信息
       attachmentVisible: false,
       needmodalVisible: false,
+      transferModalVisible: false,
       targetLine: {},
     };
   }
@@ -369,6 +371,11 @@ class InquiryEdit extends React.Component {
         <Menu.Item>
           <Emails BaseEntry={formVals.DocEntry} BaseType="TI_Z029" />
         </Menu.Item>
+        <Menu.Item>
+          <a href="javacript:void(0)" onClick={() => this.setState({ transferModalVisible: true })}>
+            转移
+          </a>
+        </Menu.Item>
       </Menu>
     );
   };
@@ -381,6 +388,7 @@ class InquiryEdit extends React.Component {
     this.setState({
       attachmentVisible: !!flag,
       needmodalVisible: !!flag,
+      transferModalVisible: !!flag,
     });
   };
 
@@ -491,10 +499,20 @@ class InquiryEdit extends React.Component {
       global: { TI_Z004, Saler, Company },
       loading,
     } = this.props;
-    const { formVals, attachmentVisible, needmodalVisible, targetLine } = this.state;
+    const {
+      formVals,
+      attachmentVisible,
+      needmodalVisible,
+      targetLine,
+      transferModalVisible,
+    } = this.state;
 
     const needParentMethods = {
       handleSubmit: this.submitNeedLine,
+      handleModalVisible: this.handleModalVisible,
+    };
+
+    const transferParentMethods = {
       handleModalVisible: this.handleModalVisible,
     };
 
@@ -652,6 +670,12 @@ class InquiryEdit extends React.Component {
             {...needParentMethods}
             rowKey="LineID"
             modalVisible={needmodalVisible}
+          />
+          <Transfer
+            SourceEntry={formVals.DocEntry}
+            SourceType="TI_Z029"
+            modalVisible={transferModalVisible}
+            {...transferParentMethods}
           />
         </FooterToolbar>
       </Card>

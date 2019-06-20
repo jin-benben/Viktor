@@ -18,6 +18,15 @@ export async function loginRule(params) {
   });
 }
 
+export async function processorRule(params) {
+  return request('/MDM/ERPSelect/OSLP', {
+    method: 'POST',
+    data: {
+      ...params,
+    },
+  });
+}
+
 export async function loginOutRule(params) {
   return request(`/Login/TI_Z004/TI_Z00403`, {
     method: 'POST',

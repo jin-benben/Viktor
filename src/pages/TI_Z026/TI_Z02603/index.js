@@ -120,6 +120,17 @@ class InquiryEdit extends PureComponent {
       ),
     },
     {
+      title: '规格(外)',
+      width: 100,
+      dataIndex: 'ForeignParameters',
+      align: 'center',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
+    },
+    {
       title: '包装',
       width: 100,
       dataIndex: 'Package',
@@ -564,7 +575,7 @@ class InquiryEdit extends PureComponent {
             <StandardTable
               data={{ list: newdata }}
               rowKey="LineID"
-              scroll={{ x: 3125, y: 600 }}
+              scroll={{ x: 3225, y: 600 }}
               columns={this.skuColumns}
             />
           </TabPane>

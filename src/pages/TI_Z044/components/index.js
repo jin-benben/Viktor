@@ -16,10 +16,7 @@ class PrintTemplateDetail extends PureComponent {
   };
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    if (
-      !prevState.templatdetail.HtmlTemplateCode &&
-      nextProps.templatdetail !== prevState.templatdetail
-    ) {
+    if (nextProps.templatdetail.HtmlTemplateCode !== prevState.templatdetail.HtmlTemplateCode) {
       return {
         templatdetail: nextProps.templatdetail,
       };

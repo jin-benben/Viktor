@@ -1,3 +1,4 @@
+/* eslint-disable no-script-url */
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 
@@ -36,7 +37,6 @@ class EmailSendTemplate extends PureComponent {
       title: '代码',
       width: 80,
       dataIndex: 'Code',
-      // eslint-disable-next-line no-script-url
       render: (text, record) => (
         <a href="javascript:;" onClick={() => this.changeTemplate(record)}>
           {text}
@@ -83,6 +83,20 @@ class EmailSendTemplate extends PureComponent {
       },
     });
   }
+
+  addNewTemplate = () => {
+    this.setState({
+      templatdetail: {
+        Code: '',
+        Name: '',
+        Comment: '',
+        BaseType: '',
+        PrintType: '',
+        HtmlTemplateCode: '',
+      },
+      modalVisible: true,
+    });
+  };
 
   handleStandardTableChange = pagination => {
     const {

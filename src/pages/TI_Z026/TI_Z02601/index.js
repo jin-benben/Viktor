@@ -143,6 +143,14 @@ class InquiryEdit extends React.Component {
       align: 'center',
     },
     {
+      title: '规格(外)',
+      width: 150,
+      dataIndex: 'ForeignParameters',
+      inputType: 'textArea',
+      editable: true,
+      align: 'center',
+    },
+    {
       title: '包装',
       width: 150,
       dataIndex: 'Package',
@@ -1338,7 +1346,7 @@ class InquiryEdit extends React.Component {
             <EditableFormTable
               rowChange={this.rowChange}
               rowKey="LineID"
-              scroll={{ x: 3500, y: 600 }}
+              scroll={{ x: 3700, y: 600 }}
               columns={this.skuColumns}
               data={newdata}
             />
