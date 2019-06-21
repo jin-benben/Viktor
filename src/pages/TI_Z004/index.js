@@ -336,6 +336,9 @@ class Staffs extends PureComponent {
   handleStandardTableChange = pagination => {
     const { dispatch } = this.props;
     const { queryData } = this.state;
+    this.setState({
+      queryData: { ...queryData, page: pagination.current, rows: pagination.pageSize },
+    });
     dispatch({
       type: 'staffs/fetch',
       payload: {
@@ -352,6 +355,18 @@ class Staffs extends PureComponent {
     const { queryData } = this.state;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
+      this.setState({
+        queryData: {
+          Content: {
+            ...queryData.Content,
+            ...fieldsValue,
+          },
+          page: 1,
+          rows: 30,
+          sidx: 'Code',
+          sord: 'Desc',
+        },
+      });
       dispatch({
         type: 'staffs/fetch',
         payload: {
@@ -377,11 +392,8 @@ class Staffs extends PureComponent {
   };
 
   handleSubmit = fieldsValue => {
-    const {
-      dispatch,
-      staffs: { queryData },
-    } = this.props;
-    const { method } = this.state;
+    const { dispatch } = this.props;
+    const { method, queryData } = this.state;
     if (method === 'A') {
       dispatch({
         type: 'staffs/add',

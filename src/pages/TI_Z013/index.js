@@ -40,20 +40,8 @@ class CreateForm extends PureComponent {
 
   static getDerivedStateFromProps(nextProps, prevState) {
     if (nextProps.formVals !== prevState.formVals) {
-      let option;
-      if (nextProps.method === 'A') {
-        option = {
-          Code: '',
-          Name: '',
-          PCode: nextProps.formVals.Code,
-          Level: nextProps.formVals.Level + 1,
-          Type: '',
-          Action: '',
-          Method: '',
-        };
-      }
       return {
-        formVals: { ...nextProps.formVals, ...option },
+        formVals: { ...nextProps.formVals },
       };
     }
     return null;
@@ -274,19 +262,31 @@ class Organization extends PureComponent {
     });
   };
 
+  addNewTree = () => {
+    const { dispatch } = this.props;
+    this.setState({
+      method: 'A',
+      modalVisible: true,
+    });
+    dispatch({
+      type: 'authority/save',
+      payload: {
+        singleInfo: {
+          Code: '',
+          Name: '',
+          PCode: '',
+          Level: 1,
+          Type: '',
+          Action: '',
+          Method: '',
+        },
+      },
+    });
+  };
+
   handleModalVisible = flag => {
     this.setState({
       modalVisible: !!flag,
-      method: 'A',
-      singleInfo: {
-        Code: '',
-        Name: '',
-        PCode: '',
-        Level: 0,
-        Type: '',
-        Action: '',
-        Method: '',
-      },
     });
   };
 
@@ -313,6 +313,7 @@ class Organization extends PureComponent {
       handleSubmit: this.handleSubmit,
       handleModalVisible: this.handleModalVisible,
     };
+    console.log(singleInfo);
     return (
       <div>
         <Card bordered={false}>
@@ -320,7 +321,7 @@ class Organization extends PureComponent {
             icon="plus"
             style={{ marginLeft: 8, marginBottom: 28, marginTop: 28 }}
             type="primary"
-            onClick={() => this.handleModalVisible(true)}
+            onClick={this.addNewTree}
           >
             新建根节点
           </Button>

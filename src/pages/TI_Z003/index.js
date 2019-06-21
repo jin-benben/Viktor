@@ -64,13 +64,13 @@ const CreateForm = Form.create()(props => {
         </FormItem>
         <FormItem key="Code" {...formLayout} label="部门ID">
           {getFieldDecorator('Code', {
-            rules: [{ required: true, message: '请输入部门ID！' }],
+            // rules: [{ required: true, message: '请输入部门ID！' }],
             initialValue: formVals.Code,
           })(<Input placeholder="请输入部门ID！" />)}
         </FormItem>
         <FormItem key="Name" {...formLayout} label="名称">
           {getFieldDecorator('Name', {
-            rules: [{ required: true, message: '请输入名称！' }],
+            //  rules: [{ required: true, message: '请输入名称！' }],
             initialValue: formVals.Name,
           })(<Input placeholder="请输入名称！" />)}
         </FormItem>
@@ -127,6 +127,14 @@ class Organization extends PureComponent {
     const { method } = this.state;
     if (method === 'A') {
       dispatch({
+        type: 'organization/save',
+        payload: {
+          singleInfo: {
+            ...fieldsValue,
+          },
+        },
+      });
+      dispatch({
         type: 'organization/add',
         payload: {
           Content: {
@@ -173,6 +181,7 @@ class Organization extends PureComponent {
         Content: {
           Code: tree.Code,
         },
+        method: 'A',
       },
     });
     this.setState({
@@ -189,6 +198,7 @@ class Organization extends PureComponent {
         Content: {
           Code: tree.Code,
         },
+        method: 'U',
       },
     });
     this.setState({
@@ -223,25 +233,15 @@ class Organization extends PureComponent {
     const {
       organization: { treeData },
     } = this.props;
-    let {
+    const {
       organization: { singleInfo },
     } = this.props;
-    const { modalVisible, method } = this.state;
-    if (method === 'A') {
-      singleInfo = {
-        ...singleInfo,
-        Code: '',
-        Name: '',
-        Comment: '',
-        FatherCode: singleInfo.Code,
-        Level: singleInfo.Level + 1,
-      };
-    }
+    const { modalVisible } = this.state;
+
     const parentMethods = {
       handleSubmit: this.handleSubmit,
       handleModalVisible: this.handleModalVisible,
     };
-
     return (
       <div>
         <Card bordered={false}>

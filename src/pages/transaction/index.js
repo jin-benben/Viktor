@@ -370,7 +370,7 @@ class TransactionSearch extends PureComponent {
                   data={{ list: odlnordnList }}
                   pagination={pagination3}
                   rowKey="DocEntry"
-                  scroll={{ x: 2300, y: 600 }}
+                  scroll={{ x: 2100, y: 600 }}
                   columns={this.columns2}
                   onChange={this.handleStandardTableChange}
                 />
@@ -381,13 +381,12 @@ class TransactionSearch extends PureComponent {
                   data={{ list: oinvorinList }}
                   pagination={pagination4}
                   rowKey="DocEntry"
-                  scroll={{ x: 2300, y: 600 }}
+                  scroll={{ x: 2100, y: 600 }}
                   columns={this.columns2}
                   onChange={this.handleStandardTableChange}
                 />
               </TabPane>
             </Tabs>
-            ,
           </div>
         </Card>
       </Fragment>

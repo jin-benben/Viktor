@@ -27,13 +27,31 @@ export default {
       });
     },
     *single({ payload }, { call, put }) {
-      const response = yield call(querySingleRule, payload);
-      yield put({
-        type: 'save',
-        payload: {
-          singleInfo: response.Content,
-        },
-      });
+      const { method, Content } = payload;
+      const response = yield call(querySingleRule, { Content });
+
+      if (method === 'A') {
+        yield put({
+          type: 'save',
+          payload: {
+            singleInfo: {
+              ...response.Content,
+              Code: '',
+              Name: '',
+              Comment: '',
+              FatherCode: response.Content.Code,
+              Level: response.Content.Level + 1,
+            },
+          },
+        });
+      } else {
+        yield put({
+          type: 'save',
+          payload: {
+            singleInfo: response.Content,
+          },
+        });
+      }
     },
     *add({ payload, callback }, { call, put }) {
       const response = yield call(addRule, payload);

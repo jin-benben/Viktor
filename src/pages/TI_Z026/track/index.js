@@ -2,7 +2,19 @@ import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
 import moment from 'moment';
-import { Row, Col, Card, Form, Input, Button, Select, DatePicker, Icon, message } from 'antd';
+import {
+  Row,
+  Col,
+  Card,
+  Form,
+  Input,
+  Button,
+  Select,
+  DatePicker,
+  Icon,
+  message,
+  Modal,
+} from 'antd';
 import StandardTable from '@/components/StandardTable';
 import MDMCommonality from '@/components/Select';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
@@ -11,9 +23,10 @@ import { getName } from '@/utils/utils';
 import { transferBaseType } from '@/utils/publicData';
 
 const { RangePicker } = DatePicker;
-
+const { confirm } = Modal;
 const FormItem = Form.Item;
 const { Option } = Select;
+const { TextArea } = Input;
 
 /* eslint react/no-multi-comp:0 */
 @connect(({ inquiryFetchtrack, loading, global }) => ({
@@ -217,6 +230,7 @@ class inquiryFetchtrackPage extends PureComponent {
     this.setState({ transferModalVisible: !!flag });
   };
 
+  // 转移
   toTransfer = () => {
     const { selectedRows } = this.state;
     if (selectedRows.length) {
@@ -226,6 +240,40 @@ class inquiryFetchtrackPage extends PureComponent {
       });
     } else {
       message.warning('请先选择转移的行');
+    }
+  };
+
+  // 确认
+  confrimTransfer = () => {
+    const { selectedRows } = this.state;
+    const { dispatch } = this.props;
+    if (selectedRows.length) {
+      let ConfirmComment = '';
+      confirm({
+        icon: null,
+        // eslint-disable-next-line no-return-assign
+        content: (
+          <TextArea placeholder="请输入备注" onChange={e => (ConfirmComment = e.target.value)} />
+        ),
+        onOk() {
+          // eslint-disable-next-line camelcase
+          const TI_Z04304RequestItemList = selectedRows.map(item => ({
+            DocEntry: item.DocEntry,
+            ConfirmComment,
+          }));
+          dispatch({
+            type: 'inquiryFetchtrack/confrim',
+            payload: {
+              Content: {
+                TI_Z04304RequestItemList,
+              },
+            },
+          });
+        },
+        onCancel() {},
+      });
+    } else {
+      message.warning('请先选择需确认的行');
     }
   };
 
@@ -352,6 +400,9 @@ class inquiryFetchtrackPage extends PureComponent {
             onClick={() => router.push('/sellabout/TI_Z026/TI_Z02601')}
           >
             新建
+          </Button>
+          <Button type="primary" onClick={this.confrimTransfer}>
+            确认
           </Button>
           <Button type="primary" onClick={this.toTransfer}>
             转移

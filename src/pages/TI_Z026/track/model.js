@@ -1,4 +1,4 @@
-import { trackListRule } from '../service';
+import { trackListRule, confrimRule } from '../service';
 
 export default {
   namespace: 'inquiryFetchtrack',
@@ -52,6 +52,10 @@ export default {
           });
         }
       }
+    },
+    *confrim({ payload, callback }, { call }) {
+      const response = yield call(confrimRule, payload);
+      if (callback) callback(response);
     },
   },
   reducers: {
