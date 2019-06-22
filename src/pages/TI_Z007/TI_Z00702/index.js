@@ -16,7 +16,7 @@ const FormItem = Form.Item;
   loading: loading.models.supplierSearch,
 }))
 @Form.create()
-class supplierSearch extends PureComponent {
+class SupplierSearch extends PureComponent {
   state = {};
 
   columns = [
@@ -257,4 +257,4 @@ class supplierSearch extends PureComponent {
   }
 }
 
-export default supplierSearch;
+export default SupplierSearch;

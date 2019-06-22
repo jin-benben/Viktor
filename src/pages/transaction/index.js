@@ -1,15 +1,14 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import router from 'umi/router';
 import moment from 'moment';
-import { Row, Col, Card, Form, Input, Button, Tabs, Tag } from 'antd';
+import { Row, Col, Card, Form, Input, Button, DatePicker, Tabs, Tag } from 'antd';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import StandardTable from '@/components/StandardTable';
 import { getName } from '@/utils/utils';
 
 const FormItem = Form.Item;
 const { TabPane } = Tabs;
-
+const { RangePicker } = DatePicker;
 /* eslint react/no-multi-comp:0 */
 @connect(({ transaction, loading, global }) => ({
   transaction,
@@ -30,6 +29,12 @@ class TransactionSearch extends PureComponent {
       dataIndex: 'DocDate',
       width: 100,
       render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
+    },
+    {
+      title: '单据状态',
+      dataIndex: 'DocStatus',
+      width: 80,
+      render: text => (text === 'O' ? <Tag color="gold">未清</Tag> : <Tag color="green">已清</Tag>),
     },
     {
       title: '客户',
@@ -112,16 +117,119 @@ class TransactionSearch extends PureComponent {
   columns1 = [
     {
       title: '单号',
+      width: 80,
+      fixed: 'left',
+      dataIndex: 'DocEntry',
+    },
+    {
+      title: '单据日期',
+      dataIndex: 'DocDate',
+      width: 100,
+      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
+    },
+    {
+      title: '单据状态',
+      dataIndex: 'DocStatus',
+      width: 80,
+      render: text => (text === 'O' ? <Tag color="gold">未清</Tag> : <Tag color="green">已清</Tag>),
+    },
+    {
+      title: '客户',
+      dataIndex: 'CardName',
+      width: 150,
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
+    },
+    {
+      title: '客户参考号',
+      dataIndex: 'NumAtCard',
+      width: 100,
+    },
+    {
+      title: '物料代码',
+      dataIndex: 'ItemCode',
+      width: 80,
+    },
+
+    {
+      title: '物料名称',
+
+      dataIndex: 'ItemName',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
+    },
+    {
+      title: '单位',
+      dataIndex: 'InvntryUom',
+      width: 80,
+    },
+    {
+      title: '数量',
+      dataIndex: 'Quantity',
+      width: 80,
+    },
+
+    {
+      title: '含税价格',
+      dataIndex: 'PriceAfVAT',
+      width: 80,
+    },
+    {
+      title: '行总计',
+      dataIndex: 'LineTotal',
+      width: 100,
+    },
+    {
+      title: '行备注',
+      dataIndex: 'FreeTxt',
+      width: 200,
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
+    },
+    {
+      title: '合同号',
+      dataIndex: 'U_ContractEntry',
+      width: 100,
+    },
+
+    {
+      title: '销售员',
+      dataIndex: 'SlpCode',
+      width: 80,
+      render: text => {
+        const {
+          global: { Saler },
+        } = this.props;
+        return <span>{getName(Saler, text)}</span>;
+      },
+    },
+  ];
+
+  columns2 = [
+    {
+      title: '单号',
+      width: 80,
       dataIndex: 'DocEntry',
     },
     {
       title: '单据类型',
       dataIndex: 'ObjType',
-      //  render: val => <span>{}</span>,
+      width: 80,
+      render: val => <span>{val === '24' ? '收款' : '付款'}</span>,
     },
     {
       title: '单据日期',
       dataIndex: 'DocDate',
+      width: 100,
       render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
     {
@@ -130,25 +238,28 @@ class TransactionSearch extends PureComponent {
     },
     {
       title: '转帐金额',
+      width: 100,
       dataIndex: 'TrsfrSum',
     },
     {
       title: '记账名称',
+      width: 200,
       dataIndex: 'AcctName',
     },
 
     {
       title: '备注',
+      width: 200,
       dataIndex: 'Comments',
     },
     {
       title: '单据总计',
+      width: 100,
       dataIndex: 'DocTotal',
     },
   ];
 
-  columns2 = [
-    ...this.columns,
+  comColumns = [
     {
       title: '发货状态',
       dataIndex: 'U_DeliverSts',
@@ -185,6 +296,54 @@ class TransactionSearch extends PureComponent {
     },
   ];
 
+  columns4 = [
+    {
+      title: '单据类型',
+      dataIndex: 'ObjType',
+      width: 80,
+      fixed: 'left',
+      render: val => <span>{val === '15' ? '交货单' : '退货单'}</span>,
+    },
+    ...this.columns1,
+    ...this.comColumns,
+  ];
+
+  columns3 = [
+    {
+      title: '单据类型',
+      dataIndex: 'ObjType',
+      fixed: 'left',
+      width: 80,
+      render: val => <span>{val === '15' ? '交货单' : '退货单'}</span>,
+    },
+    ...this.columns,
+    ...this.comColumns,
+  ];
+
+  columns6 = [
+    {
+      title: '单据类型',
+      dataIndex: 'ObjType',
+      width: 80,
+      fixed: 'left',
+      render: val => <span>{val === '13' ? '发票' : '贷项'}</span>,
+    },
+    ...this.columns1,
+    ...this.comColumns,
+  ];
+
+  columns5 = [
+    {
+      title: '单据类型',
+      dataIndex: 'ObjType',
+      width: 80,
+      fixed: 'left',
+      render: val => <span>{val === '13' ? '发票' : '贷项'}</span>,
+    },
+    ...this.columns,
+    ...this.comColumns,
+  ];
+
   state = {
     expandForm: false,
     activeKey: '3',
@@ -209,7 +368,11 @@ class TransactionSearch extends PureComponent {
   }
 
   activeKeyChange = activeKey => {
+    const {
+      transaction: { queryData },
+    } = this.props;
     this.setState({ activeKey });
+    this.whichSerch(activeKey, queryData);
   };
 
   whichSerch = (activeKey, payload) => {
@@ -222,20 +385,37 @@ class TransactionSearch extends PureComponent {
     }
     if (activeKey === '2') {
       dispatch({
-        type: 'transaction/getOrctovpm',
+        type: 'transaction/getOrdrLine',
         payload,
       });
     }
-    console.log(activeKey);
     if (activeKey === '3') {
       dispatch({
-        type: 'transaction/getOdlnordn',
+        type: 'transaction/getOrctovpm',
         payload,
       });
     }
     if (activeKey === '4') {
       dispatch({
+        type: 'transaction/getOdlnordn',
+        payload,
+      });
+    }
+    if (activeKey === '5') {
+      dispatch({
+        type: 'transaction/getOdlnordnLine',
+        payload,
+      });
+    }
+    if (activeKey === '6') {
+      dispatch({
         type: 'transaction/getOinvorin',
+        payload,
+      });
+    }
+    if (activeKey === '7') {
+      dispatch({
+        type: 'transaction/getOinvorinLine',
         payload,
       });
     }
@@ -243,39 +423,47 @@ class TransactionSearch extends PureComponent {
 
   handleStandardTableChange = pagination => {
     const {
-      dispatch,
       transaction: { queryData },
     } = this.props;
-    dispatch({
-      type: 'transaction/getOrdr',
-      payload: {
-        ...queryData,
-        page: pagination.current,
-        rows: pagination.pageSize,
-      },
+    const { activeKey } = this.state;
+    this.whichSerch(activeKey, {
+      ...queryData,
+      page: pagination.current,
+      rows: pagination.pageSize,
     });
   };
 
   handleSearch = e => {
     // 搜索
     e.preventDefault();
-    const { dispatch, form } = this.props;
-
+    const {
+      transaction: { queryData },
+      form,
+    } = this.props;
+    const { activeKey } = this.state;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
-      dispatch({
-        type: 'transaction/getOrdr',
-        payload: {
-          Content: {
-            SearchText: '',
-            SearchKey: 'Name',
-            ...fieldsValue,
-          },
-          page: 1,
-          rows: 30,
-          sidx: 'Code',
-          sord: 'Desc',
+      let DocDateFrom;
+      let DocDateTo;
+      if (fieldsValue.dateArr) {
+        DocDateFrom = moment(fieldsValue.dateArr[0]).format('YYYY-MM-DD');
+        DocDateTo = moment(fieldsValue.dateArr[1]).format('YYYY-MM-DD');
+        // eslint-disable-next-line no-param-reassign
+        delete fieldsValue.dateArr;
+      }
+      this.whichSerch(activeKey, {
+        Content: {
+          ...queryData.Content,
+          SearchText: '',
+          SearchKey: 'Name',
+          ...fieldsValue,
+          DocDateFrom,
+          DocDateTo,
         },
+        page: 1,
+        rows: 20,
+        sidx: 'Code',
+        sord: 'Desc',
       });
     });
   };
@@ -306,6 +494,13 @@ class TransactionSearch extends PureComponent {
               {getFieldDecorator('SearchText')(<Input placeholder="请输入关键字" />)}
             </FormItem>
           </Col>
+          <Col md={10} lg={6} sm={24}>
+            <FormItem label="日期" {...formLayout}>
+              {getFieldDecorator('dateArr', { rules: [{ type: 'array' }] })(
+                <RangePicker style={{ width: '100%' }} />
+              )}
+            </FormItem>
+          </Col>
 
           <Col md={5} sm={24}>
             <FormItem key="searchBtn">
@@ -328,6 +523,12 @@ class TransactionSearch extends PureComponent {
         orctovpmList,
         odlnordnList,
         oinvorinList,
+        ordrLineList,
+        odlnordnLineList,
+        oinvorinLineList,
+        pagination7,
+        pagination6,
+        pagination5,
         pagination1,
         pagination2,
         pagination3,
@@ -336,6 +537,7 @@ class TransactionSearch extends PureComponent {
       loading,
     } = this.props;
     const { activeKey } = this.state;
+
     return (
       <Fragment>
         <Card bordered={false}>
@@ -353,36 +555,69 @@ class TransactionSearch extends PureComponent {
                   onChange={this.handleStandardTableChange}
                 />
               </TabPane>
-              <TabPane tab="收付款查询" key="2">
+              <TabPane tab="销售订单物料查询" key="2">
+                <StandardTable
+                  loading={loading}
+                  data={{ list: ordrLineList }}
+                  pagination={pagination5}
+                  rowKey="DocEntry"
+                  scroll={{ x: 1500, y: 600 }}
+                  columns={this.columns1}
+                  onChange={this.handleStandardTableChange}
+                />
+              </TabPane>
+              <TabPane tab="收付款查询" key="3">
                 <StandardTable
                   loading={loading}
                   data={{ list: orctovpmList }}
                   pagination={pagination2}
                   rowKey="DocEntry"
                   scroll={{ y: 600 }}
-                  columns={this.columns1}
+                  columns={this.columns2}
                   onChange={this.handleStandardTableChange}
                 />
               </TabPane>
-              <TabPane tab="交货退货查询" key="3">
+              <TabPane tab="交货退货查询" key="4">
                 <StandardTable
                   loading={loading}
                   data={{ list: odlnordnList }}
                   pagination={pagination3}
                   rowKey="DocEntry"
                   scroll={{ x: 2100, y: 600 }}
-                  columns={this.columns2}
+                  columns={this.columns3}
                   onChange={this.handleStandardTableChange}
                 />
               </TabPane>
-              <TabPane tab="发票贷项查询" key="4">
+              <TabPane tab="交货退货物料查询" key="5">
+                <StandardTable
+                  loading={loading}
+                  data={{ list: odlnordnLineList }}
+                  pagination={pagination6}
+                  rowKey="DocEntry"
+                  scroll={{ x: 2100, y: 600 }}
+                  columns={this.columns4}
+                  onChange={this.handleStandardTableChange}
+                />
+              </TabPane>
+              <TabPane tab="发票贷项查询" key="6">
                 <StandardTable
                   loading={loading}
                   data={{ list: oinvorinList }}
                   pagination={pagination4}
                   rowKey="DocEntry"
                   scroll={{ x: 2100, y: 600 }}
-                  columns={this.columns2}
+                  columns={this.columns5}
+                  onChange={this.handleStandardTableChange}
+                />
+              </TabPane>
+              <TabPane tab="发票贷项物料查询" key="7">
+                <StandardTable
+                  loading={loading}
+                  data={{ list: oinvorinLineList }}
+                  pagination={pagination7}
+                  rowKey="DocEntry"
+                  scroll={{ x: 2100, y: 600 }}
+                  columns={this.columns6}
                   onChange={this.handleStandardTableChange}
                 />
               </TabPane>

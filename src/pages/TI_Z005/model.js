@@ -1,4 +1,4 @@
-import { queryRule, addRule, updateRule } from './service';
+import { queryRule, addRule, updateRule, querySingleRule } from './service';
 
 export default {
   namespace: 'brands',
@@ -23,6 +23,7 @@ export default {
       pageSize: 30,
       current: 1,
     },
+    brandDetail: {},
   },
 
   effects: {
@@ -52,20 +53,23 @@ export default {
         }
       }
     },
-    *add({ payload, callback }, { call, put }) {
+    *fetchDetail({ payload }, { call, put }) {
+      const response = yield call(querySingleRule, payload);
+      if (response && response.Status === 200) {
+        yield put({
+          type: 'save',
+          payload: {
+            brandDetail: response.Content,
+          },
+        });
+      }
+    },
+    *add({ payload, callback }, { call }) {
       const response = yield call(addRule, payload);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
       if (callback) callback(response);
     },
-    *update({ payload, callback }, { call, put }) {
+    *update({ payload, callback }, { call }) {
       const response = yield call(updateRule, payload);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
       if (callback) callback(response);
     },
   },

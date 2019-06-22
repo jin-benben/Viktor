@@ -4,6 +4,7 @@ import { connect } from 'dva';
 import { Row, Col, Card, Form, Input, Modal, Button, message, Divider, Select } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import Supplier from '@/components/Supplier';
+import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import Upload from '@/components/Upload';
 import MDMCommonality from '@/components/Select';
 import { getName } from '@/utils/utils';
@@ -216,31 +217,43 @@ class BrandList extends PureComponent {
   columns = [
     {
       title: '品牌ID',
+      width: 80,
       dataIndex: 'Code',
+      render: val => (
+        <a
+          target="_blank"
+          href={`/main/product/TI_Z005/detail?Code=${val}`}
+          rel="noopener noreferrer"
+        >
+          {val}
+        </a>
+      ),
     },
     {
       title: '品牌名称',
       dataIndex: 'Name',
-      render: (val, record) =>
-        record.WebSite ? (
-          <a target="_blank" href={record.WebSite} rel="noopener noreferrer">
-            {val}
-          </a>
-        ) : (
-          val
-        ),
+      render: text => <div style={{ wordWrap: 'break-word', wordBreak: 'break-all' }}>{text}</div>,
+      width: 250,
     },
     {
       title: '品牌介绍',
       dataIndex: 'Content',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
+      width: 350,
     },
     {
       title: '主图',
       dataIndex: 'Picture',
-      render: val => <img style={{ width: 50, height: 50 }} src={val} alt="主图" />,
+      width: 100,
+      render: val => (val ? <img style={{ width: 50, height: 50 }} src={val} alt="主图" /> : ''),
     },
     {
       title: '采购员',
+      width: 80,
       dataIndex: 'Purchaser',
       render: text => {
         const {
@@ -251,11 +264,13 @@ class BrandList extends PureComponent {
     },
     {
       title: '品牌级别',
+      width: 100,
       dataIndex: 'BrandLevel',
       render: text => <span>{getName(brandLevel, text)}</span>,
     },
     {
       title: '简写',
+      width: 150,
       dataIndex: 'Abbreviate',
     },
     {
@@ -264,6 +279,7 @@ class BrandList extends PureComponent {
     },
     {
       title: '操作',
+      width: 100,
       render: (text, record) => (
         <Fragment>
           <a onClick={() => this.handleUpdateModalVisible(true, record)}>修改</a>
@@ -274,14 +290,6 @@ class BrandList extends PureComponent {
             rel="noopener noreferrer"
           >
             物料
-          </a>
-          <Divider type="vertical" />
-          <a
-            href={`/main/TI_Z007/search?BrandName=${record.Name}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            供应商
           </a>
         </Fragment>
       ),
@@ -482,6 +490,7 @@ class BrandList extends PureComponent {
               loading={loading}
               data={{ list: brandsList }}
               rowKey="Code"
+              scroll={{ x: 1300, y: 600 }}
               pagination={pagination}
               columns={this.columns}
               onChange={this.handleStandardTableChange}

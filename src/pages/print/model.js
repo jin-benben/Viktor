@@ -1,4 +1,4 @@
-import { queryRule, querySingleRule, getPrintRule, savePrintRule } from './service';
+import { queryRule, querySingleRule, getReportRule, saveReportRule } from './service';
 
 export default {
   namespace: 'print',
@@ -66,7 +66,7 @@ export default {
       }
     },
     *getPrint({ payload }, { call, put }) {
-      const response = yield call(getPrintRule, payload);
+      const response = yield call(getReportRule, payload);
       if (response && response.Status === 200) {
         const { PaperHTMLString, HtmlString } = response.Content;
         yield put({
@@ -81,7 +81,7 @@ export default {
       }
     },
     *savePrint({ payload, callback }, { call }) {
-      const response = yield call(savePrintRule, payload);
+      const response = yield call(saveReportRule, payload);
       if (callback) callback(response);
     },
   },

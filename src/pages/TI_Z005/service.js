@@ -26,3 +26,30 @@ export async function updateRule(params) {
     },
   });
 }
+
+export async function querySingleRule(params) {
+  return request('/MDM/TI_Z005/TI_Z00503', {
+    method: 'POST',
+    data: {
+      ...params,
+    },
+  });
+}
+
+export async function supplierRule(params) {
+  return request('/MDM/TI_Z007/TI_Z00702', {
+    method: 'POST',
+    data: {
+      ...params,
+    },
+  });
+}
+
+export async function skuRule(params) {
+  return request(`/MDM/TI_Z009/TI_Z00902`, {
+    method: 'POST',
+    data: {
+      ...params,
+    },
+  });
+}

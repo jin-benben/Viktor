@@ -188,6 +188,12 @@ export default [
                   component: './TI_Z005',
                 },
                 {
+                  name: '品牌详情',
+                  hideInMenu:true,
+                  path: '/main/product/TI_Z005/detail',
+                  component: './TI_Z005/detail',
+                },
+                {
                   name: '产品分类',
                   icon: 'iconwsdzb_zbgzt_xxzx_newpxb_type',
                   path: '/main/product/TI_Z010',

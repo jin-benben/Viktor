@@ -22,6 +22,7 @@ class PrintPage extends Component {
       dispatch,
     } = this.props;
     if (query.BaseEntry && query.Code) {
+      console.log(query);
       dispatch({
         type: 'print/getPrint',
         payload: {

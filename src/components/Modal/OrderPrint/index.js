@@ -7,7 +7,6 @@ import request from '@/utils/request';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import { printType, printOrderType } from '@/utils/publicData';
 import { getName } from '@/utils/utils';
-import router from 'umi/router';
 
 const FormItem = Form.Item;
 
@@ -104,7 +103,7 @@ class OrderPrint extends PureComponent {
     const { BaseEntry, BaseType } = this.props;
     if (selectedRows.length) {
       const { Code, Name } = selectedRows[0];
-      router.push(
+      window.open(
         `/base/print?BaseEntry=${BaseEntry}&BaseType=${BaseType}&Code=${Code}&Name=${Name}`
       );
     } else {

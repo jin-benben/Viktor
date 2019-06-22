@@ -1,4 +1,12 @@
-import { odlnordnRule, orctovpmRule, oinvorinRule, ordrRule } from './service';
+import {
+  odlnordnRule,
+  orctovpmRule,
+  oinvorinRule,
+  ordrRule,
+  ordrLineRule,
+  odlnordnLineRule,
+  oinvorinLineRule,
+} from './service';
 
 export default {
   namespace: 'transaction',
@@ -8,46 +16,73 @@ export default {
     orctovpmList: [],
     oinvorinList: [],
     ordrList: [],
+    ordrLineList: [],
+    odlnordnLineList: [],
+    oinvorinLineList: [],
     queryData: {
       Content: {
         SearchText: '',
         SearchKey: '',
       },
       page: 1,
-      rows: 30,
+      rows: 20,
       sidx: 'Code',
       sord: 'Desc',
     },
-    pagination1: {
+    pagination: {
       showSizeChanger: true,
       showTotal: total => `共 ${total} 条`,
-      pageSizeOptions: ['30', '60', '90'],
+      pageSizeOptions: ['20', '40', '40'],
       total: 0,
-      pageSize: 30,
+      pageSize: 20,
       current: 1,
     },
     pagination2: {
       showSizeChanger: true,
       showTotal: total => `共 ${total} 条`,
-      pageSizeOptions: ['30', '60', '90'],
+      pageSizeOptions: ['20', '40', '60'],
       total: 0,
-      pageSize: 30,
+      pageSize: 20,
       current: 1,
     },
     pagination3: {
       showSizeChanger: true,
       showTotal: total => `共 ${total} 条`,
-      pageSizeOptions: ['30', '60', '90'],
+      pageSizeOptions: ['20', '40', '60'],
       total: 0,
-      pageSize: 30,
+      pageSize: 20,
       current: 1,
     },
     pagination4: {
       showSizeChanger: true,
       showTotal: total => `共 ${total} 条`,
-      pageSizeOptions: ['30', '60', '90'],
+      pageSizeOptions: ['20', '40', '60'],
       total: 0,
-      pageSize: 30,
+      pageSize: 20,
+      current: 1,
+    },
+    pagination5: {
+      showSizeChanger: true,
+      showTotal: total => `共 ${total} 条`,
+      pageSizeOptions: ['20', '40', '60'],
+      total: 0,
+      pageSize: 20,
+      current: 1,
+    },
+    pagination6: {
+      showSizeChanger: true,
+      showTotal: total => `共 ${total} 条`,
+      pageSizeOptions: ['20', '40', '60'],
+      total: 0,
+      pageSize: 20,
+      current: 1,
+    },
+    pagination7: {
+      showSizeChanger: true,
+      showTotal: total => `共 ${total} 条`,
+      pageSizeOptions: ['20', '40', '60'],
+      total: 0,
+      pageSize: 20,
       current: 1,
     },
   },
@@ -70,6 +105,32 @@ export default {
             payload: {
               ordrList: rows,
               pagination1: {
+                total: records,
+                pageSize: payload.rows,
+                current: page,
+              },
+            },
+          });
+        }
+      }
+    },
+    *getOrdrLine({ payload }, { call, put }) {
+      const response = yield call(ordrLineRule, payload);
+      if (response && response.Status === 200) {
+        if (!response.Content) {
+          yield put({
+            type: 'save',
+            payload: {
+              ordrLineList: [],
+            },
+          });
+        } else {
+          const { rows, records, page } = response.Content;
+          yield put({
+            type: 'save',
+            payload: {
+              ordrLineList: rows,
+              pagination5: {
                 total: records,
                 pageSize: payload.rows,
                 current: page,
@@ -131,6 +192,32 @@ export default {
         }
       }
     },
+    *getOdlnordnLine({ payload }, { call, put }) {
+      const response = yield call(odlnordnLineRule, payload);
+      if (response && response.Status === 200) {
+        if (!response.Content) {
+          yield put({
+            type: 'save',
+            payload: {
+              odlnordnLineList: [],
+            },
+          });
+        } else {
+          const { rows, records, page } = response.Content;
+          yield put({
+            type: 'save',
+            payload: {
+              odlnordnLineList: rows,
+              pagination6: {
+                total: records,
+                pageSize: payload.rows,
+                current: page,
+              },
+            },
+          });
+        }
+      }
+    },
 
     *getOinvorin({ payload }, { call, put }) {
       const response = yield call(oinvorinRule, payload);
@@ -149,6 +236,32 @@ export default {
             payload: {
               oinvorinList: rows,
               pagination4: {
+                total: records,
+                pageSize: payload.rows,
+                current: page,
+              },
+            },
+          });
+        }
+      }
+    },
+    *getOinvorinLine({ payload }, { call, put }) {
+      const response = yield call(oinvorinLineRule, payload);
+      if (response && response.Status === 200) {
+        if (!response.Content) {
+          yield put({
+            type: 'save',
+            payload: {
+              oinvorinLineList: [],
+            },
+          });
+        } else {
+          const { rows, records, page } = response.Content;
+          yield put({
+            type: 'save',
+            payload: {
+              oinvorinLineList: rows,
+              pagination7: {
                 total: records,
                 pageSize: payload.rows,
                 current: page,

@@ -19,7 +19,8 @@ export async function querySingleRule(params) {
 }
 
 export async function getReportRule(params) {
-  return request('/Report/TI_Z045/TI_Z045Report01', {
+  console.log(params);
+  return request('/Report/TI_Z045/TI_Z045Print01', {
     method: 'POST',
     data: {
       ...params,
