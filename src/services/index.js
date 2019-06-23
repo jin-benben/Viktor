@@ -44,6 +44,16 @@ export async function tokenOutRule(params) {
     },
   });
 }
+
+export async function ddLoginRule(params) {
+  return request(`/Login/TI_Z004/TI_Z00405`, {
+    method: 'POST',
+    data: {
+      ...params,
+    },
+  });
+}
+
 export async function supplierRule() {
   return request('/MDM/TI_Z007/TI_Z00702', {
     method: 'POST',

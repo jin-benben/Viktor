@@ -6,7 +6,7 @@ import StandardTable from '@/components/StandardTable';
 import Organization from '@/components/Organization';
 import MDMCommonality from '@/components/Select';
 import { validatorEmail, validatorPhone, getName } from '@/utils/utils';
-import { formLayout, formItemLayout } from '@/utils/publicData';
+import { formLayout, formItemLayout, roleType } from '@/utils/publicData';
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -144,6 +144,14 @@ class CreateForm extends PureComponent {
               </FormItem>
             </Col>
             <Col span={12}>
+              <FormItem key="Role" {...formLayout} label="角色">
+                {getFieldDecorator('Role', {
+                  rules: [{ required: true, message: '请选择角色！' }],
+                  initialValue: formVals.Role,
+                })(<MDMCommonality initialValue={formVals.Role} data={roleType} />)}
+              </FormItem>
+            </Col>
+            <Col span={12}>
               <FormItem key="EntryTime" {...formLayout} label="入职时间">
                 {getFieldDecorator('EntryTime', {
                   initialValue: formVals.ResignationTime
@@ -202,6 +210,7 @@ class Staffs extends PureComponent {
       Position: '',
       Mobile: '',
       Email: '',
+      Role: '',
     },
     queryData: {
       Content: {

@@ -127,6 +127,25 @@ export const orderSourceType = [
   },
 ];
 
+export const roleType = [
+  {
+    Key: 'S',
+    Value: '销售',
+  },
+  {
+    Key: 'P',
+    Value: '采购',
+  },
+  {
+    Key: 'A',
+    Value: '全部',
+  },
+  {
+    Key: 'N',
+    Value: '无角色',
+  },
+];
+
 export const formItemLayout = {
   labelCol: {
     xs: { span: 24 },

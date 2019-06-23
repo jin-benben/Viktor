@@ -41,6 +41,13 @@ export default [
             component: './TI_Z004',
           },
           {
+            name: '数据权限设置',
+            icon: 'iconyuangong',
+            hideInMenu:true,
+            path: '/base/dataAuthority',
+            component: './TI_Z004/set',
+          },
+          {
             name: '邮箱管理',
             icon: 'iconEmailHili',
             path: '/base/TI_Z051',
@@ -590,16 +597,6 @@ export default [
             component: './message/wxbind',
           },
         ],
-      },
-     
-     
-     
-      {
-        name: '用户查询',
-        icon: 'smile',
-        path: '/users',
-        hideInMenu: true,
-        component: './users',
       },
      
       {

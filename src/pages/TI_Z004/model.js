@@ -1,11 +1,21 @@
-import { queryRule, addRule, updateRule } from './service';
+import {
+  queryRule,
+  addRule,
+  updateRule,
+  getControllerRule,
+  setLoadingRule,
+  getSalerRule,
+  getDepartmentRule,
+  getDepartmentTreeRule,
+} from './service';
 
 export default {
   namespace: 'staffs',
 
   state: {
     staffsList: [],
-
+    controllerList: [],
+    treeData: [],
     pagination: {
       showSizeChanger: true,
       showTotal: total => `共 ${total} 条`,
@@ -51,12 +61,40 @@ export default {
       });
       if (callback) callback(response);
     },
-    *update({ payload, callback }, { call, put }) {
+    *update({ payload, callback }, { call }) {
       const response = yield call(updateRule, payload);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
+      if (callback) callback(response);
+    },
+    *getController({ payload }, { call, put }) {
+      const response = yield call(getControllerRule, payload);
+      const responseTree = yield call(getDepartmentTreeRule);
+      if (response && response.Status === 200) {
+        yield put({
+          type: 'save',
+          payload: {
+            controllerList: response.Content.TI_Z00409ResponseItem,
+          },
+        });
+      }
+      if (responseTree && responseTree.Status === 200) {
+        yield put({
+          type: 'save',
+          payload: {
+            treeData: responseTree.Content,
+          },
+        });
+      }
+    },
+    *getSaler({ payload, callback }, { call }) {
+      const response = yield call(getSalerRule, payload);
+      if (callback) callback(response);
+    },
+    *getDepartment({ payload, callback }, { call }) {
+      const response = yield call(getDepartmentRule, payload);
+      if (callback) callback(response);
+    },
+    *setLoading({ payload, callback }, { call }) {
+      const response = yield call(setLoadingRule, payload);
       if (callback) callback(response);
     },
   },
