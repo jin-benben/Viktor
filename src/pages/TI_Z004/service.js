@@ -71,3 +71,12 @@ export async function getDepartmentTreeRule() {
     },
   });
 }
+
+export async function getOSLPRule(params) {
+  return request(`/MDM/ERPSelect/OSLP`, {
+    method: 'POST',
+    data: {
+      ...params,
+    },
+  });
+}

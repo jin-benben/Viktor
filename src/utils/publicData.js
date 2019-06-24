@@ -31,6 +31,21 @@ export const printOrderType = [
   },
 ];
 
+export const flagType = [
+  {
+    Key: '0',
+    Value: '正常',
+  },
+  {
+    Key: '1',
+    Value: '额外排除',
+  },
+  {
+    Key: '2',
+    Value: '额外添加',
+  },
+];
+
 export const emailSendType = [
   {
     Key: 'TI_Z027',

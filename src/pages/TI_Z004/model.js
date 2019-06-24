@@ -7,6 +7,7 @@ import {
   getSalerRule,
   getDepartmentRule,
   getDepartmentTreeRule,
+  getOSLPRule,
 } from './service';
 
 export default {
@@ -15,6 +16,7 @@ export default {
   state: {
     staffsList: [],
     controllerList: [],
+    OSLP: [],
     treeData: [],
     pagination: {
       showSizeChanger: true,
@@ -68,6 +70,7 @@ export default {
     *getController({ payload }, { call, put }) {
       const response = yield call(getControllerRule, payload);
       const responseTree = yield call(getDepartmentTreeRule);
+      const responseSP = yield call(getOSLPRule, { Content: { SlpName: '' } });
       if (response && response.Status === 200) {
         yield put({
           type: 'save',
@@ -81,6 +84,14 @@ export default {
           type: 'save',
           payload: {
             treeData: responseTree.Content,
+          },
+        });
+      }
+      if (responseSP && responseSP.Status === 200) {
+        yield put({
+          type: 'save',
+          payload: {
+            OSLP: responseSP.Content.OSLP,
           },
         });
       }

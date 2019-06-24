@@ -1,8 +1,10 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
-import { Row, Col, List, Card, Button, Tabs, Tree, Checkbox } from 'antd';
+import { Row, Col, List, Card, Button, Tabs, Tree, message, Table } from 'antd';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import styles from './style.less';
+import { flagType, roleType } from '@/utils/publicData';
+import { getName } from '@/utils/utils';
 
 const { TabPane } = Tabs;
 const { TreeNode } = Tree;
@@ -13,11 +15,50 @@ const { TreeNode } = Tree;
   setLoading: loading.effects['staffs/setLoading'],
 }))
 class DataAuthority extends Component {
+  columns = [
+    {
+      title: '销售员',
+      dataIndex: 'SlpName',
+    },
+    {
+      title: '类型',
+      dataIndex: 'U_Type',
+      render: text => <span>{getName(roleType, text)}</span>,
+    },
+    {
+      title: '状态',
+      dataIndex: 'Flag',
+      render: text => <span>{getName(flagType, text)}</span>,
+    },
+    {
+      title: '操作',
+      dataIndex: 'Do',
+      render: (text, record, index) => (
+        <Fragment>
+          <Button onClick={() => this.changeStatus(record, index, '0')} size="small" type="primary">
+            恢复
+          </Button>
+          <Button
+            style={{ marginRight: 8, marginLeft: 8 }}
+            onClick={() => this.changeStatus(record, index, '1')}
+            size="small"
+            type="primary"
+          >
+            额外排除
+          </Button>
+          <Button onClick={() => this.changeStatus(record, index, '2')} size="small" type="primary">
+            额外添加
+          </Button>
+        </Fragment>
+      ),
+    },
+  ];
+
   state = {
     checkedKeys: [],
     expandedKeys: [],
-    salerList: [],
-    EmployeeList: [], // 选中的销售员
+    selectedRows: [],
+    selectedRowKeys: [], // 选中的销售员
     Targetline: '', // 当前选中主管
   };
 
@@ -45,26 +86,34 @@ class DataAuthority extends Component {
       return <TreeNode title={item.Name} key={item.Code} />;
     });
 
+  // 点击树形节点时
   onExpand = expandedKeys => {
-    console.log('onExpand', expandedKeys);
-    // if not set autoExpandParent to false, if children expanded, parent can not collapse.
-    // or, you can remove all expanded children keys.
     this.setState({
       expandedKeys,
     });
   };
 
+  // 树形check时
   onCheck = checkedKeys => {
-    console.log('onCheck', checkedKeys);
     this.setState({ checkedKeys });
   };
 
-  salerChange = EmployeeList => {
-    this.setState({
-      EmployeeList,
+  changeStatus = (record, index, value) => {
+    const {
+      staffs: { OSLP },
+      dispatch,
+    } = this.props;
+    record.Flag = value;
+    OSLP[index] = record;
+    dispatch({
+      type: 'staffs/save',
+      payload: {
+        OSLP,
+      },
     });
   };
 
+  // 主管修改时
   changeController = Targetline => {
     const { dispatch } = this.props;
     this.setState({ Targetline });
@@ -88,8 +137,12 @@ class DataAuthority extends Component {
     });
   };
 
+  // 获取销售员
   getSalerHangele = (Code, DepartmentList) => {
-    const { dispatch } = this.props;
+    const {
+      dispatch,
+      staffs: { OSLP },
+    } = this.props;
     dispatch({
       type: 'staffs/getSaler',
       payload: {
@@ -100,24 +153,77 @@ class DataAuthority extends Component {
       },
       callback: response => {
         if (response && response.Status === 200) {
+          const selectedRowKeys = [];
+          const newOslp = OSLP.map(item => {
+            const thisLine = response.Content.TI_Z00411ResponseItem.find(
+              line => line.EmployeeCode === item.Code
+            );
+            if (thisLine) {
+              selectedRowKeys.push(item.Code);
+              return {
+                ...item,
+                Flag: thisLine.Flag,
+              };
+            }
+            return {
+              ...item,
+              Flag: '0',
+            };
+          });
           this.setState({
-            salerList: response.Content.TI_Z00411ResponseItem,
+            selectedRowKeys,
+          });
+          dispatch({
+            type: 'staffs/save',
+            payload: {
+              OSLP: [...newOslp],
+            },
           });
         }
       },
     });
   };
 
+  setDataFun = () => {
+    const { Targetline, selectedRows, checkedKeys } = this.state;
+    const { dispatch } = this.props;
+    const EmployeeList = selectedRows.map(item => ({
+      EmployeeCode: item.Code,
+      Flag: item.Flag,
+    }));
+    if (Targetline) {
+      dispatch({
+        type: 'staffs/setLoading',
+        payload: {
+          Content: {
+            Code: Targetline,
+            DepartmentList: checkedKeys,
+            EmployeeList,
+          },
+        },
+        callback: response => {
+          if (response && response.Status === 200) {
+            message.success('保存成功');
+            this.changeController(Targetline);
+          }
+        },
+      });
+    }
+  };
+
+  rowSelection = (selectedRowKeys, selectedRows) => {
+    this.setState({ selectedRowKeys, selectedRows });
+  };
+
   render() {
     const {
-      staffs: { controllerList, setLoading, treeData },
+      staffs: { controllerList, setLoading, treeData, OSLP },
     } = this.props;
-    console.log(treeData);
-    const { Targetline, expandedKeys, checkedKeys, salerList } = this.state;
+    const { Targetline, expandedKeys, checkedKeys, selectedRowKeys } = this.state;
     return (
       <Card bordered={false} style={{ paddingTop: 30 }}>
         <Row type="flex" justify="space-between">
-          <Col span={6}>
+          <Col span={5}>
             <List
               header={<h3>主管列表</h3>}
               bordered
@@ -127,12 +233,12 @@ class DataAuthority extends Component {
                   className={`${styles.item} ${Targetline === item.Code ? styles.active : ''}`}
                   onClick={() => this.changeController(item.Code)}
                 >
-                  {`${item.Name}(${item.type === 'P' ? '采购' : '销售'})`}
+                  {`${item.SlpName}(${item.type === 'P' ? '采购' : '销售'})`}
                 </List.Item>
               )}
             />
           </Col>
-          <Col span={12}>
+          <Col span={15}>
             <Tabs defaultActiveKey="1">
               <TabPane tab="部门" key="1">
                 {treeData.length ? (
@@ -151,22 +257,24 @@ class DataAuthority extends Component {
                 ) : null}
               </TabPane>
               <TabPane tab="销售员" key="2">
-                <Checkbox.Group style={{ width: '100%' }} onChange={this.salerChange}>
-                  <Row>
-                    {salerList.map(item => (
-                      <Col span={4}>
-                        <Checkbox value={item.EmployeeCode}>{item.EmployeeCode}</Checkbox>
-                      </Col>
-                    ))}
-                  </Row>
-                </Checkbox.Group>
+                <Table
+                  dataSource={OSLP}
+                  bordered
+                  pagination={false}
+                  rowKey="Code"
+                  rowSelection={{
+                    onChange: this.rowSelection,
+                    selectedRowKeys,
+                  }}
+                  columns={this.columns}
+                />
               </TabPane>
             </Tabs>
             ,
           </Col>
         </Row>
         <FooterToolbar>
-          <Button loading={setLoading} type="primary">
+          <Button loading={setLoading} type="primary" onClick={this.setDataFun}>
             保存
           </Button>
         </FooterToolbar>

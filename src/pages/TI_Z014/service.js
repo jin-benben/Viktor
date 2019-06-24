@@ -53,3 +53,12 @@ export async function getTreeRule(params) {
     },
   });
 }
+
+export async function queryTreeRule() {
+  return request(`/MDM/TI_Z013/TI_Z01302`, {
+    method: 'POST',
+    data: {
+      Content: {},
+    },
+  });
+}

@@ -1,10 +1,11 @@
-import { getTreeRule, setRule } from '../service';
+import { getTreeRule, setRule, queryTreeRule } from '../service';
 
 export default {
   namespace: 'authoritySet',
 
   state: {
     authorityList: [],
+    treeData: [],
   },
 
   effects: {
@@ -19,7 +20,17 @@ export default {
         });
       }
     },
-
+    *fetchTree({ payload }, { call, put }) {
+      const response = yield call(queryTreeRule, payload);
+      if (response && response.Status === 200) {
+        yield put({
+          type: 'save',
+          payload: {
+            treeData: response.Content,
+          },
+        });
+      }
+    },
     *update({ payload, callback }, { call, put }) {
       const response = yield call(setRule, payload);
       yield put({

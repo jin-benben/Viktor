@@ -313,7 +313,6 @@ class Organization extends PureComponent {
       handleSubmit: this.handleSubmit,
       handleModalVisible: this.handleModalVisible,
     };
-    console.log(singleInfo);
     return (
       <div>
         <Card bordered={false}>
@@ -325,7 +324,6 @@ class Organization extends PureComponent {
           >
             新建根节点
           </Button>
-
           <Row>
             <Col lg={12} md={12} sm={24}>
               <Tree className="trees" defaultExpandAll>

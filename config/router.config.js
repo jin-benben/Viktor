@@ -112,14 +112,9 @@ export default [
             path: '/base/sendEmail/detail',
             component: './email/detail',
           },
+         
           {
-            name: '权限定义',
-            icon: 'iconquanxian',
-            path: '/base/TI_Z013',
-            component: './TI_Z013',
-          },
-          {
-            name: '角色管理',
+            name: '权限管理',
             icon: 'iconjiaose',
             path: '/base/TI_Z014',
             routes:[
@@ -139,7 +134,16 @@ export default [
                 path: '/base/TI_Z014/set',
                 component: './TI_Z014/set',
               },
-             
+              {
+                name: '权限定义',
+                path: '/base/TI_Z014/TI_Z013',
+                component: './TI_Z013',
+              },
+              {
+                name: '数据权限',
+                path: '/base/TI_Z014/TI_Z004',
+                component: './TI_Z004/set',
+              },
             ]
           },
           {
@@ -582,6 +586,7 @@ export default [
           },
           {
             path: '/message/approve',
+            icon:'iconshenpi',
             name: '钉钉审批单',
             component: './message/ddapprove',
           },
@@ -593,6 +598,7 @@ export default [
           },
           {
             path: '/message/bind',
+            icon:'iconbangding',
             name: '微信绑定',
             component: './message/wxbind',
           },

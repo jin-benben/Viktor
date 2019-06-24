@@ -1,7 +1,7 @@
 /* eslint-disable array-callback-return */
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Switch, Card, Form, Button, message } from 'antd';
+import { Switch, Card, Form, Button, message, Tree } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 
@@ -17,6 +17,8 @@ function switchType(Type) {
       return '未知';
   }
 }
+
+const { TreeNode } = Tree;
 
 /* eslint react/no-multi-comp:0 */
 @connect(({ authoritySet, loading }) => ({
@@ -56,12 +58,17 @@ class authorityGroup extends PureComponent {
   ];
 
   state = {
-    method: 'A',
     authorityList: [],
+    checkedKeys: [],
+    expandedKeys: [],
   };
 
   componentDidMount() {
+    const { dispatch } = this.props;
     this.getSingle();
+    dispatch({
+      type: 'authoritySet/fetchTree',
+    });
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
@@ -73,13 +80,24 @@ class authorityGroup extends PureComponent {
     return null;
   }
 
+  // 点击树形节点时
+  onExpand = expandedKeys => {
+    this.setState({
+      expandedKeys,
+    });
+  };
+
+  // 树形check时
+  onCheck = checkedKeys => {
+    this.setState({ checkedKeys });
+  };
+
   getSingle() {
     const {
       dispatch,
       location: { query },
     } = this.props;
     if (query.Code) {
-      this.setState({ method: 'U' });
       dispatch({
         type: 'authoritySet/fetch',
         payload: {
@@ -91,35 +109,24 @@ class authorityGroup extends PureComponent {
     }
   }
 
+  renderTreeNodes = data =>
+    data.map(item => {
+      if (item.children) {
+        return (
+          <TreeNode title={item.Name} key={item.Code} dataRef={item}>
+            {this.renderTreeNodes(item.children)}
+          </TreeNode>
+        );
+      }
+      return <TreeNode title={item.Name} key={item.Code} dataRef={item} />;
+    });
+
   permissionChange = (value, record, index) => {
     const { authorityList } = this.state;
     // eslint-disable-next-line no-param-reassign
     record.Permission = value ? 'Y' : 'N';
     authorityList[index] = record;
     this.setState({ authorityList });
-  };
-
-  saveHandle = () => {
-    // 保存主数据
-    const { form, dispatch } = this.props;
-    const { employeeList } = this.state;
-    form.validateFields((err, fieldsValue) => {
-      if (err) return;
-      dispatch({
-        type: 'authoritySet/add',
-        payload: {
-          Content: {
-            ...fieldsValue,
-            TI_Z01402: employeeList,
-          },
-        },
-        callback: response => {
-          if (response && response.Status === 200) {
-            message.success('添加成功');
-          }
-        },
-      });
-    });
   };
 
   updateHandle = () => {
@@ -146,7 +153,10 @@ class authorityGroup extends PureComponent {
   };
 
   render() {
-    const { authorityList, method } = this.state;
+    const { expandedKeys, checkedKeys, authorityList } = this.state;
+    const {
+      authoritySet: { treeData },
+    } = this.props;
 
     return (
       <Card bordered={false}>
@@ -155,16 +165,24 @@ class authorityGroup extends PureComponent {
           rowKey="PermissionCode"
           columns={this.columns}
         />
+        {treeData.length ? (
+          <Tree
+            onExpand={this.onExpand}
+            className="trees"
+            checkable
+            expandedKeys={expandedKeys}
+            autoExpandParent
+            onCheck={this.onCheck}
+            checkedKeys={checkedKeys}
+            selectedKeys={checkedKeys}
+          >
+            {this.renderTreeNodes(treeData)}
+          </Tree>
+        ) : null}
         <FooterToolbar>
-          {method === 'U' ? (
-            <Button onClick={this.updateHandle} type="primary">
-              更新
-            </Button>
-          ) : (
-            <Button onClick={this.saveHandle} type="primary">
-              保存
-            </Button>
-          )}
+          <Button onClick={this.updateHandle} type="primary">
+            保存
+          </Button>
         </FooterToolbar>
       </Card>
     );
