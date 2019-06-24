@@ -1,7 +1,20 @@
+/* eslint-disable no-param-reassign */
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
-import { Row, Col, Card, Form, Input, Modal, Button, DatePicker, message, Select } from 'antd';
+import {
+  Row,
+  Col,
+  Card,
+  Form,
+  Input,
+  Modal,
+  Button,
+  DatePicker,
+  message,
+  Select,
+  Checkbox,
+} from 'antd';
 import StandardTable from '@/components/StandardTable';
 import Organization from '@/components/Organization';
 import MDMCommonality from '@/components/Select';
@@ -30,7 +43,8 @@ class CreateForm extends PureComponent {
     const okHandle = () => {
       form.validateFields((err, fieldsValue) => {
         if (err) return;
-        form.resetFields();
+        fieldsValue.AllDataPermission = fieldsValue.AllDataPermission ? 'Y' : 'N';
+        fieldsValue.IsAdministrator = fieldsValue.IsAdministrator ? 'Y' : 'N';
         handleSubmit({ ...formVals, ...fieldsValue });
       });
     };
@@ -151,6 +165,15 @@ class CreateForm extends PureComponent {
                 })(<MDMCommonality initialValue={formVals.Role} data={roleType} />)}
               </FormItem>
             </Col>
+
+            <Col span={12}>
+              <FormItem key="DefaultWhsCode" {...formLayout} label="默认仓库">
+                {getFieldDecorator('DefaultWhsCode', {
+                  rules: [{ message: '请选择仓库！' }],
+                  initialValue: formVals.DefaultWhsCode,
+                })(<MDMCommonality initialValue={formVals.DefaultWhsCode} data={WhsCode} />)}
+              </FormItem>
+            </Col>
             <Col span={12}>
               <FormItem key="EntryTime" {...formLayout} label="入职时间">
                 {getFieldDecorator('EntryTime', {
@@ -175,6 +198,22 @@ class CreateForm extends PureComponent {
                   rules: [{ message: '请选择仓库！' }],
                   initialValue: formVals.DefaultWhsCode,
                 })(<MDMCommonality initialValue={formVals.DefaultWhsCode} data={WhsCode} />)}
+              </FormItem>
+            </Col>
+            <Col span={12}>
+              <FormItem key="IsAdministrator" {...formLayout} label="管理员">
+                {getFieldDecorator('IsAdministrator', {
+                  valuePropName: 'checked',
+                  initialValue: formVals.IsAdministrator === 'Y',
+                })(<Checkbox />)}
+              </FormItem>
+            </Col>
+            <Col span={12}>
+              <FormItem key="AllDataPermission" {...formLayout} label="数据权限">
+                {getFieldDecorator('AllDataPermission', {
+                  valuePropName: 'checked',
+                  initialValue: formVals.AllDataPermission === 'Y',
+                })(<Checkbox />)}
               </FormItem>
             </Col>
             <Col span={12}>
@@ -228,61 +267,91 @@ class Staffs extends PureComponent {
   columns = [
     {
       title: '员工ID',
+      width: 80,
       dataIndex: 'Code',
     },
     {
       title: '姓名',
+      width: 80,
       dataIndex: 'Name',
     },
     {
       title: '部门',
+      width: 200,
       dataIndex: 'Department',
       render: val => {
         const {
           global: { TI_Z003 },
         } = this.props;
-        return <span>{getName(TI_Z003, val)}</span>;
+        return <span style={{ fontSize: 13 }}>{getName(TI_Z003, val)}</span>;
       },
     },
     {
       title: '级别',
+      width: 60,
       dataIndex: 'Dmanager',
       render: val => <span>{val === '1' ? '主管' : '员工'}</span>,
     },
     {
+      title: '角色',
+      width: 80,
+      dataIndex: 'Role',
+      render: val => <span>{getName(roleType, val)}</span>,
+    },
+    {
       title: '手机号',
+      width: 150,
       dataIndex: 'Mobile',
     },
     {
       title: 'Email',
+      width: 200,
       dataIndex: 'Email',
+      render: text => <span style={{ fontSize: 13 }}>{text}</span>,
     },
     {
       title: '职位',
+      width: 100,
       dataIndex: 'Position',
     },
     {
       title: '性别',
+      width: 60,
       dataIndex: 'Gender',
       render: val => <span>{val === '1' ? '男' : '女'}</span>,
     },
     {
+      title: '管理员',
+      width: 70,
+      dataIndex: 'IsAdministrator',
+      render: val => <span>{val === 'Y' ? '是' : '否'}</span>,
+    },
+    {
+      title: '数据权限',
+      width: 80,
+      dataIndex: 'AllDataPermission',
+      render: val => <span>{val === 'Y' ? '有' : '无'}</span>,
+    },
+    {
       title: '状态',
+      width: 50,
       dataIndex: 'Status',
       render: val => <span>{val === '1' ? '在职' : '离职'}</span>,
     },
     {
       title: '交易公司',
+      width: 200,
       dataIndex: 'CompanyCode',
       render: val => {
         const {
           global: { Company },
         } = this.props;
-        return <span>{getName(Company, val)}</span>;
+        return <span style={{ fontSize: 13 }}>{getName(Company, val)}</span>;
       },
     },
     {
       title: '默认仓库',
+      width: 150,
       dataIndex: 'DefaultWhsCode',
       render: val => {
         const {
@@ -293,17 +362,19 @@ class Staffs extends PureComponent {
     },
     {
       title: '入职时间',
+      width: 100,
       dataIndex: 'EntryTime',
       render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
     {
       title: '离职时间',
+      width: 100,
       dataIndex: 'ResignationTime',
       render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
     {
       title: '操作',
-
+      width: 80,
       render: (text, record) => (
         <Fragment>
           <a onClick={() => this.handleUpdateModalVisible(true, record)}>修改</a>
@@ -510,6 +581,14 @@ class Staffs extends PureComponent {
       handleSubmit: this.handleSubmit,
       handleModalVisible: this.handleModalVisible,
     };
+
+    let tabw = 0;
+    this.columns.map(item => {
+      if (item.width) {
+        tabw += item.width;
+      }
+    });
+    console.log(tabw);
     return (
       <Fragment>
         <Card bordered={false}>
@@ -519,6 +598,7 @@ class Staffs extends PureComponent {
               loading={loading}
               data={{ list: staffsList }}
               rowKey="Code"
+              scroll={{ x: 1900, y: 600 }}
               pagination={pagination}
               columns={this.columns}
               onChange={this.handleStandardTableChange}

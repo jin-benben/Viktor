@@ -57,7 +57,6 @@ class DataAuthority extends Component {
   state = {
     checkedKeys: [],
     expandedKeys: [],
-    selectedRows: [],
     selectedRowKeys: [], // 选中的销售员
     Targetline: '', // 当前选中主管
   };
@@ -96,6 +95,8 @@ class DataAuthority extends Component {
   // 树形check时
   onCheck = checkedKeys => {
     this.setState({ checkedKeys });
+    const { Targetline } = this.state;
+    this.getSalerHangele(Targetline, checkedKeys);
   };
 
   changeStatus = (record, index, value) => {
@@ -103,6 +104,7 @@ class DataAuthority extends Component {
       staffs: { OSLP },
       dispatch,
     } = this.props;
+    // eslint-disable-next-line no-param-reassign
     record.Flag = value;
     OSLP[index] = record;
     dispatch({
@@ -185,12 +187,18 @@ class DataAuthority extends Component {
   };
 
   setDataFun = () => {
-    const { Targetline, selectedRows, checkedKeys } = this.state;
-    const { dispatch } = this.props;
-    const EmployeeList = selectedRows.map(item => ({
-      EmployeeCode: item.Code,
-      Flag: item.Flag,
-    }));
+    const { Targetline, selectedRowKeys, checkedKeys } = this.state;
+    const {
+      dispatch,
+      staffs: { OSLP },
+    } = this.props;
+    const EmployeeList = selectedRowKeys.map(item => {
+      const thisLine = OSLP.find(line => line.Code === item);
+      return {
+        EmployeeCode: thisLine.Code,
+        Flag: thisLine.Flag,
+      };
+    });
     if (Targetline) {
       dispatch({
         type: 'staffs/setLoading',
@@ -211,8 +219,8 @@ class DataAuthority extends Component {
     }
   };
 
-  rowSelection = (selectedRowKeys, selectedRows) => {
-    this.setState({ selectedRowKeys, selectedRows });
+  rowSelection = selectedRowKeys => {
+    this.setState({ selectedRowKeys });
   };
 
   render() {
@@ -233,7 +241,7 @@ class DataAuthority extends Component {
                   className={`${styles.item} ${Targetline === item.Code ? styles.active : ''}`}
                   onClick={() => this.changeController(item.Code)}
                 >
-                  {`${item.SlpName}(${item.type === 'P' ? '采购' : '销售'})`}
+                  {`${item.SlpName}(${getName(roleType, item.U_Type)})`}
                 </List.Item>
               )}
             />
