@@ -1,11 +1,11 @@
 import React, { PureComponent } from 'react';
-import request from '@/utils/request';
 import { Select, Spin, Empty } from 'antd';
 import debounce from 'lodash/debounce';
+import request from '@/utils/request';
 
 const { Option } = Select;
 
-class Brand extends PureComponent {
+class SalerPurchaser extends PureComponent {
   constructor(props) {
     super(props);
     this.lastFetchId = 0;
@@ -89,4 +89,4 @@ class Brand extends PureComponent {
   }
 }
 
-export default Brand;
+export default SalerPurchaser;

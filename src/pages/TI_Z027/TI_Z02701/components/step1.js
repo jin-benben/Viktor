@@ -9,6 +9,8 @@ import Link from 'umi/link';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import SupplierSelect from '@/components/Select/Supplier';
 import MDMCommonality from '@/components/Select';
+import Organization from '@/components/Organization/multiple';
+import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
 import { getName } from '@/utils/utils';
 import styles from '../style.less';
 import request from '@/utils/request';
@@ -226,17 +228,65 @@ class NeedTabl extends React.Component {
       title: '行备注',
       width: 80,
       dataIndex: 'LineComment',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '销总计',
       width: 80,
       dataIndex: 'LineTotal',
     },
+    {
+      title: '销报单号',
+      width: 100,
+      dataIndex: 'QuoteEntry',
+      render: (text, recond) =>
+        text ? (
+          <Link target="_blank" to={`/sellabout/TI_Z029/detail?DocEntry=${text}`}>
+            {`${text}-${recond.QuoteLine}`}
+          </Link>
+        ) : (
+          ''
+        ),
+    },
+    {
+      title: '销合单号',
+      width: 100,
+      dataIndex: 'ContractEntry',
+      render: (text, recond) =>
+        text ? (
+          <Link target="_blank" to={`/sellabout/TI_Z030/detail?DocEntry=${text}`}>
+            {`${text}-${recond.ContractLine}`}
+          </Link>
+        ) : (
+          ''
+        ),
+    },
+    {
+      title: '销订单号',
+      width: 100,
+      dataIndex: 'SoEntry',
+      render: (text, recond) =>
+        text ? (
+          <Link target="_blank" to={`/sellabout/orderdetail?DocEntry=${text}`}>
+            {`${text}-${recond.SoLine}`}
+          </Link>
+        ) : (
+          ''
+        ),
+    },
   ];
 
   componentDidMount() {
     const { queryData } = this.state;
+    const { dispatch } = this.props;
     this.fetchOrder(queryData);
+    dispatch({
+      type: 'global/getAuthority',
+    });
   }
 
   fetchOrder = async params => {
@@ -385,7 +435,7 @@ class NeedTabl extends React.Component {
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
-      global: { Saler, Purchaser },
+      global: { Purchaser },
     } = this.props;
     const formLayout = {
       labelCol: { span: 6 },
@@ -407,9 +457,9 @@ class NeedTabl extends React.Component {
               )}
             </FormItem>
           </Col>
-          <Col md={5} sm={24}>
-            <FormItem label="销售员" {...formLayout}>
-              {getFieldDecorator('Owner')(<MDMCommonality data={Saler} />)}
+          <Col md={4} sm={24}>
+            <FormItem key="Owner" {...formLayout} label="销售员">
+              {getFieldDecorator('Owner')(<SalerPurchaser />)}
             </FormItem>
           </Col>
 
@@ -425,7 +475,12 @@ class NeedTabl extends React.Component {
             <Fragment>
               <Col md={5} sm={24}>
                 <FormItem label="采购员" {...formLayout}>
-                  {getFieldDecorator('Owner')(<MDMCommonality data={Purchaser} />)}
+                  {getFieldDecorator('Purchaser')(<MDMCommonality data={Purchaser} />)}
+                </FormItem>
+              </Col>
+              <Col md={5} sm={24}>
+                <FormItem key="DeptList" {...this.formLayout} label="部门">
+                  {getFieldDecorator('DeptList')(<Organization />)}
                 </FormItem>
               </Col>
             </Fragment>
@@ -473,7 +528,7 @@ class NeedTabl extends React.Component {
             dataSource={orderLineList}
             rowKey="Key"
             pagination={pagination}
-            scroll={{ x: 2600, y: 600 }}
+            scroll={{ x: 2900, y: 600 }}
             rowSelection={{
               onChange: this.onSelectRow,
               selectedRowKeys,

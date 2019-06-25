@@ -2,15 +2,17 @@ import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
 import { Row, Col, Card, Form, Input, Button } from 'antd';
-import StandardTable from '@/components/StandardTable';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import Link from 'umi/link';
+import StandardTable from '@/components/StandardTable';
+import { getName } from '@/utils/utils';
 
 const FormItem = Form.Item;
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ skuFetch, loading }) => ({
+@connect(({ skuFetch, global, loading }) => ({
   skuFetch,
+  global,
   loading: loading.models.rule,
 }))
 @Form.create()
@@ -38,6 +40,7 @@ class SkuFetchComponent extends PureComponent {
     },
     {
       title: '物料名称',
+      width: 100,
       dataIndex: 'ProductName',
       render: text => (
         <Ellipsis tooltip lines={1}>
@@ -45,22 +48,21 @@ class SkuFetchComponent extends PureComponent {
         </Ellipsis>
       ),
     },
+
     {
-      title: '外文名称',
-      dataIndex: 'EnglishName',
+      title: '品牌',
+      width: 100,
+      dataIndex: 'BrandName',
       render: text => (
         <Ellipsis tooltip lines={1}>
           {text}
         </Ellipsis>
       ),
     },
-    {
-      title: '品牌',
-      dataIndex: 'BrandName',
-    },
 
     {
       title: '型号',
+      width: 100,
       dataIndex: 'ManufactureNO',
       render: text => (
         <Ellipsis tooltip lines={1}>
@@ -70,6 +72,7 @@ class SkuFetchComponent extends PureComponent {
     },
     {
       title: '参数',
+      width: 100,
       dataIndex: 'Parameters',
       render: text => (
         <Ellipsis tooltip lines={1}>
@@ -79,6 +82,7 @@ class SkuFetchComponent extends PureComponent {
     },
     {
       title: '包装',
+      width: 100,
       dataIndex: 'Package',
       render: text => (
         <Ellipsis tooltip lines={1}>
@@ -89,20 +93,60 @@ class SkuFetchComponent extends PureComponent {
     {
       title: '分类',
       dataIndex: 'category',
+      width: 200,
       render: (text, record) => (
         <span>{`${record.Cate1Name}/${record.Cate2Name}/${record.Cate3Name}`}</span>
       ),
     },
     {
       title: '单位',
+      width: 80,
       dataIndex: 'Unit',
     },
     {
+      title: '销售价格',
+      width: 80,
+      dataIndex: 'SPrice',
+    },
+    {
+      title: '采购价格',
+      width: 80,
+      dataIndex: 'PPrice',
+    },
+    {
       title: '产地',
+      width: 80,
       dataIndex: 'ManLocation',
+      render: text => {
+        const {
+          global: { TI_Z042 },
+        } = this.props;
+        return <span>{getName(TI_Z042, text)}</span>;
+      },
+    },
+    {
+      title: '外文名称',
+      width: 100,
+      dataIndex: 'EnglishName',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
+    },
+    {
+      title: '规格(外)',
+      width: 100,
+      dataIndex: 'ForeignParameters',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '上架状态',
+      width: 80,
       dataIndex: 'Putaway',
       render: text => <span>{text === '1' ? '已上架' : '未上架'}</span>,
     },
@@ -136,6 +180,14 @@ class SkuFetchComponent extends PureComponent {
       type: 'skuFetch/fetch',
       payload: {
         ...queryData,
+      },
+    });
+    dispatch({
+      type: 'global/getMDMCommonality',
+      payload: {
+        Content: {
+          CodeList: ['TI_Z042'],
+        },
       },
     });
   }
@@ -244,6 +296,7 @@ class SkuFetchComponent extends PureComponent {
               data={{ list: skuList }}
               pagination={pagination}
               rowKey="Code"
+              scroll={{ x: 2000, y: 600 }}
               columns={this.columns}
               onChange={this.handleStandardTableChange}
             />

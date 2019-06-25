@@ -23,6 +23,12 @@ class TransactionSearch extends PureComponent {
       width: 80,
       fixed: 'left',
       dataIndex: 'DocEntry',
+      // eslint-disable-next-line no-script-url
+      render: (text, record) => (
+        <a href="javascript:void(0)" onClick={() => this.whichGo(text, record.ObjType)}>
+          {text}
+        </a>
+      ),
     },
     {
       title: '单据日期',
@@ -120,6 +126,12 @@ class TransactionSearch extends PureComponent {
       width: 80,
       fixed: 'left',
       dataIndex: 'DocEntry',
+      // eslint-disable-next-line no-script-url
+      render: (text, record) => (
+        <a href="javascript:void(0)" onClick={() => this.whichGo(text, record.ObjType)}>
+          {text}
+        </a>
+      ),
     },
     {
       title: '单据日期',
@@ -367,6 +379,19 @@ class TransactionSearch extends PureComponent {
     this.whichSerch(activeKey, queryData);
   }
 
+  whichGo = (DocEntry, ObjType) => {
+    const { activeKey } = this.state;
+    if (activeKey === '1' || activeKey === '2') {
+      window.open(`/sellabout/orderdetail?DocEntry=${DocEntry}`);
+    }
+    if (activeKey === '5' || activeKey === '4') {
+      window.open(`/sellabout/odlnordnDetail?DocEntry=${DocEntry}&ObjType=${ObjType}`);
+    }
+    if (activeKey === '7' || activeKey === '6') {
+      window.open(`/sellabout/oinvorinDetail?DocEntry=${DocEntry}&ObjType=${ObjType}`);
+    }
+  };
+
   activeKeyChange = activeKey => {
     const {
       transaction: { queryData },
@@ -543,79 +568,79 @@ class TransactionSearch extends PureComponent {
         <Card bordered={false}>
           <div className="tableList">
             <div className="tableListForm">{this.renderSimpleForm()}</div>
-            <Tabs defaultActiveKey={activeKey} onChange={this.activeKeyChange}>
-              <TabPane tab="销售订单查询" key="1">
+            <Tabs defaultActiveKey={activeKey} onChange={this.activeKeyChange} animated={false}>
+              <TabPane tab="销售订单查询" key="1" forceRender>
                 <StandardTable
                   loading={loading}
                   data={{ list: ordrList }}
                   pagination={pagination1}
-                  rowKey="DocEntry"
+                  rowKey="key"
                   scroll={{ x: 1500, y: 600 }}
                   columns={this.columns}
                   onChange={this.handleStandardTableChange}
                 />
               </TabPane>
-              <TabPane tab="销售订单物料查询" key="2">
+              <TabPane tab="销售订单物料查询" key="2" forceRender>
                 <StandardTable
                   loading={loading}
                   data={{ list: ordrLineList }}
                   pagination={pagination5}
-                  rowKey="DocEntry"
+                  rowKey="key"
                   scroll={{ x: 1500, y: 600 }}
                   columns={this.columns1}
                   onChange={this.handleStandardTableChange}
                 />
               </TabPane>
-              <TabPane tab="收付款查询" key="3">
+              <TabPane tab="收付款查询" key="3" forceRender>
                 <StandardTable
                   loading={loading}
                   data={{ list: orctovpmList }}
                   pagination={pagination2}
-                  rowKey="DocEntry"
+                  rowKey="key"
                   scroll={{ y: 600 }}
                   columns={this.columns2}
                   onChange={this.handleStandardTableChange}
                 />
               </TabPane>
-              <TabPane tab="交货退货查询" key="4">
+              <TabPane tab="交货退货查询" key="4" forceRender>
                 <StandardTable
                   loading={loading}
                   data={{ list: odlnordnList }}
                   pagination={pagination3}
-                  rowKey="DocEntry"
+                  rowKey="key"
                   scroll={{ x: 2100, y: 600 }}
                   columns={this.columns3}
                   onChange={this.handleStandardTableChange}
                 />
               </TabPane>
-              <TabPane tab="交货退货物料查询" key="5">
+              <TabPane tab="交货退货物料查询" key="5" forceRender>
                 <StandardTable
                   loading={loading}
                   data={{ list: odlnordnLineList }}
                   pagination={pagination6}
-                  rowKey="DocEntry"
+                  rowKey="key"
                   scroll={{ x: 2100, y: 600 }}
                   columns={this.columns4}
                   onChange={this.handleStandardTableChange}
                 />
               </TabPane>
-              <TabPane tab="发票贷项查询" key="6">
+              <TabPane tab="发票贷项查询" key="6" forceRender>
                 <StandardTable
                   loading={loading}
                   data={{ list: oinvorinList }}
                   pagination={pagination4}
-                  rowKey="DocEntry"
+                  rowKey="key"
                   scroll={{ x: 2100, y: 600 }}
                   columns={this.columns5}
                   onChange={this.handleStandardTableChange}
                 />
               </TabPane>
-              <TabPane tab="发票贷项物料查询" key="7">
+              <TabPane tab="发票贷项物料查询" key="7" forceRender>
                 <StandardTable
                   loading={loading}
                   data={{ list: oinvorinLineList }}
                   pagination={pagination7}
-                  rowKey="DocEntry"
+                  rowKey="key"
                   scroll={{ x: 2100, y: 600 }}
                   columns={this.columns6}
                   onChange={this.handleStandardTableChange}

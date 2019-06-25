@@ -4,13 +4,13 @@ import { Card, Tabs, Button, Icon, message, Dropdown, Menu, Collapse, Empty } fr
 import moment from 'moment';
 import router from 'umi/router';
 import Link from 'umi/link';
-import StandardTable from '@/components/StandardTable';
+import DescriptionList from 'ant-design-pro/lib/DescriptionList';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
+import StandardTable from '@/components/StandardTable';
 import CancelOrder from '@/components/Modal/CancelOrder';
 import MyTag from '@/components/Tag';
 import NeedAskPrice from '../components/needAskPrice';
-import DescriptionList from 'ant-design-pro/lib/DescriptionList';
 import OrderPrint from '@/components/Modal/OrderPrint';
 import TargetLine from '@/components/TargetLine';
 import Emails from '@/components/Modal/Email';
@@ -220,6 +220,11 @@ class InquiryEdit extends React.Component {
       dataIndex: 'InquiryComment',
       width: 100,
       align: 'center',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '询行总计',

@@ -1,6 +1,20 @@
 import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
-import { Row, Col, List, Card, Button, Tabs, Tree, message, Table } from 'antd';
+import {
+  Row,
+  Col,
+  List,
+  Card,
+  Button,
+  Tabs,
+  Tree,
+  message,
+  Table,
+  Form,
+  Input,
+  Select,
+  Checkbox,
+} from 'antd';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import styles from './style.less';
 import { flagType, roleType } from '@/utils/publicData';
@@ -8,12 +22,16 @@ import { getName } from '@/utils/utils';
 
 const { TabPane } = Tabs;
 const { TreeNode } = Tree;
+const { Option } = Select;
+const FormItem = Form.Item;
+
 @connect(({ staffs, loading, global }) => ({
   staffs,
   global,
   loading: loading.effects['staffs/getController'],
   setLoading: loading.effects['staffs/setLoading'],
 }))
+@Form.create()
 class DataAuthority extends Component {
   columns = [
     {
@@ -67,6 +85,7 @@ class DataAuthority extends Component {
       type: 'staffs/getController',
       payload: {
         Content: {
+          ShowAll: 'Y',
           SearchText: '',
         },
       },
@@ -223,6 +242,68 @@ class DataAuthority extends Component {
     this.setState({ selectedRowKeys });
   };
 
+  handleSearch = e => {
+    e.preventDefault();
+    const { dispatch, form } = this.props;
+    form.validateFields((err, fieldsValue) => {
+      if (err) return;
+      const { SearchText, ShowAll, Type } = fieldsValue;
+      dispatch({
+        type: 'staffs/getController',
+        payload: {
+          Content: {
+            SearchText,
+            Type,
+            ShowAll: ShowAll ? 'Y' : 'N',
+          },
+        },
+      });
+    });
+  };
+
+  renderSimpleForm() {
+    const {
+      form: { getFieldDecorator },
+    } = this.props;
+    return (
+      <Form onSubmit={this.handleSearch} layout="inline">
+        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
+          <Col>
+            <FormItem key="SearchText">
+              {getFieldDecorator('SearchText')(<Input placeholder="请输入关键字" />)}
+            </FormItem>
+          </Col>
+          <Col md={3} sm={24}>
+            <FormItem key="Type">
+              {getFieldDecorator('Type')(
+                <Select placeholder="请选择类型">
+                  <Option value="S">销售</Option>
+                  <Option value="P">采购</Option>
+                  <Option value="">全部</Option>
+                </Select>
+              )}
+            </FormItem>
+          </Col>
+          <Col>
+            <FormItem key="ShowAll">
+              {getFieldDecorator('ShowAll', {
+                valuePropName: 'checked',
+                initialValue: true,
+              })(<Checkbox>全部</Checkbox>)}
+            </FormItem>
+          </Col>
+          <Col>
+            <span className="submitButtons">
+              <Button size="small" type="primary" htmlType="submit">
+                查询
+              </Button>
+            </span>
+          </Col>
+        </Row>
+      </Form>
+    );
+  }
+
   render() {
     const {
       staffs: { controllerList, setLoading, treeData, OSLP },
@@ -230,6 +311,9 @@ class DataAuthority extends Component {
     const { Targetline, expandedKeys, checkedKeys, selectedRowKeys } = this.state;
     return (
       <Card bordered={false} style={{ paddingTop: 30 }}>
+        <Row>
+          <div className="tableListForm">{this.renderSimpleForm()}</div>
+        </Row>
         <Row type="flex" justify="space-between">
           <Col span={5}>
             <List

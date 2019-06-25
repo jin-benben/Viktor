@@ -4,13 +4,15 @@ import router from 'umi/router';
 import Link from 'umi/link';
 import moment from 'moment';
 import { Row, Col, Card, Form, Input, Button, Divider, Select, DatePicker, Icon } from 'antd';
-import StandardTable from '@/components/StandardTable';
-import Ellipsis from 'ant-design-pro/lib/Ellipsis';
-import MDMCommonality from '@/components/Select';
-import { getName } from '@/utils/utils';
-import DocEntryFrom from '@/components/DocEntryFrom';
-import MyTag from '@/components/Tag';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
+import Ellipsis from 'ant-design-pro/lib/Ellipsis';
+import StandardTable from '@/components/StandardTable';
+import MDMCommonality from '@/components/Select';
+import DocEntryFrom from '@/components/DocEntryFrom';
+import Organization from '@/components/Organization/multiple';
+import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
+import MyTag from '@/components/Tag';
+import { getName } from '@/utils/utils';
 
 const { RangePicker } = DatePicker;
 
@@ -32,7 +34,7 @@ class supplierQuotationSku extends PureComponent {
   columns = [
     {
       title: '单号',
-      width: 100,
+      width: 80,
       fixed: 'left',
       dataIndex: 'DocEntry',
       render: (text, recond) => (
@@ -46,9 +48,9 @@ class supplierQuotationSku extends PureComponent {
       width: 100,
       dataIndex: 'BaseEntry',
       render: (text, recond) => (
-        <Link target="_blank" to={`/sellabout/TI_Z026/detail?DocEntry=${text}`}>{`${text}-${
-          recond.BaseLineID
-        }`}</Link>
+        <Link target="_blank" to={`/sellabout/TI_Z026/detail?DocEntry=${text}`}>
+          {`${text}-${recond.BaseLineID}`}
+        </Link>
       ),
     },
     {
@@ -172,12 +174,12 @@ class supplierQuotationSku extends PureComponent {
     },
     {
       title: '数量',
-      width: 50,
+      width: 60,
       dataIndex: 'Quantity',
     },
     {
       title: '单位',
-      width: 50,
+      width: 60,
       dataIndex: 'Unit',
     },
     {
@@ -201,6 +203,11 @@ class supplierQuotationSku extends PureComponent {
       title: '行备注',
       width: 100,
       dataIndex: 'LineComment',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '采购员',
@@ -231,7 +238,6 @@ class supplierQuotationSku extends PureComponent {
       dispatch,
       supplierQuotationSku: { queryData },
     } = this.props;
-
     dispatch({
       type: 'supplierQuotationSku/fetch',
       payload: {
@@ -245,6 +251,9 @@ class supplierQuotationSku extends PureComponent {
           CodeList: ['Saler', 'Company', 'Purchaser'],
         },
       },
+    });
+    dispatch({
+      type: 'global/getAuthority',
     });
   }
 
@@ -310,7 +319,7 @@ class supplierQuotationSku extends PureComponent {
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
-      global: { Purchaser, Saler },
+      global: { Saler },
     } = this.props;
     const { expandForm } = this.state;
     const formLayout = {
@@ -333,8 +342,8 @@ class supplierQuotationSku extends PureComponent {
             </FormItem>
           </Col>
           <Col md={5} sm={24}>
-            <FormItem label="所有者" {...formLayout}>
-              {getFieldDecorator('Owner')(<MDMCommonality data={Purchaser} />)}
+            <FormItem key="Owner" {...formLayout} label="采购员">
+              {getFieldDecorator('Owner')(<SalerPurchaser />)}
             </FormItem>
           </Col>
           <Col md={5} sm={24}>
@@ -350,6 +359,11 @@ class supplierQuotationSku extends PureComponent {
           {expandForm ? (
             <Fragment>
               <Col md={5} sm={24}>
+                <FormItem key="DeptList" {...this.formLayout} label="部门">
+                  {getFieldDecorator('DeptList')(<Organization />)}
+                </FormItem>
+              </Col>
+              <Col md={4} sm={24}>
                 <FormItem key="Closed" {...formLayout}>
                   {getFieldDecorator('Closed')(
                     <Select placeholder="请选择关闭状态">
@@ -413,7 +427,7 @@ class supplierQuotationSku extends PureComponent {
               data={{ list: supplierQuotationSkuList }}
               pagination={pagination}
               rowKey="Key"
-              scroll={{ x: 2400, y: 700 }}
+              scroll={{ x: 2300, y: 700 }}
               columns={this.columns}
               onChange={this.handleStandardTableChange}
             />

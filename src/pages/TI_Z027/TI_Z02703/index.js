@@ -4,11 +4,11 @@ import { Card, Tabs, Modal, Button, Icon, message, Dropdown, Menu, Collapse, Emp
 import moment from 'moment';
 import router from 'umi/router';
 import Link from 'umi/link';
-import StandardTable from '@/components/StandardTable';
-import CancelOrder from '@/components/Modal/CancelOrder';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import DescriptionList from 'ant-design-pro/lib/DescriptionList';
+import StandardTable from '@/components/StandardTable';
+import CancelOrder from '@/components/Modal/CancelOrder';
 import MyTag from '@/components/Tag';
 import Emails from '@/components/Modal/Email';
 import Transfer from '@/components/Transfer';
@@ -139,6 +139,11 @@ class InquiryEdit extends React.Component {
       dataIndex: 'LineComment',
       width: 100,
       align: 'center',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '总计',
@@ -325,7 +330,7 @@ class InquiryEdit extends React.Component {
   };
 
   lookLineAttachment = record => {
-    this.setState({ attachmentVisible: true, prviewList: [...record.TI_Z02704] });
+    this.setState({ attachmentVisible: true, prviewList: [...record.TI_Z02604] });
   };
 
   handleModalVisible = flag => {

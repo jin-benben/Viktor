@@ -450,8 +450,27 @@ export default [
             name: '交易查询',
             icon: 'iconxunjia',
             path: '/sellabout/transaction',
-            component: './transaction'
+            component: './transaction',
           },
+          {
+            name: '订单详情',
+            hideInMenu: true,
+            path: '/sellabout/orderdetail',
+            component: './transaction/orderDetail',
+          },
+          {
+            name: '交货退货详情',
+            hideInMenu: true,
+            path: '/sellabout/odlnordnDetail',
+            component: './transaction/odlnordnDetail',
+          },
+          {
+            name: '发票贷项详情',
+            hideInMenu: true,
+            path: '/sellabout/oinvorinDetail',
+            component: './transaction/oinvorinDetail',
+          },
+          
         ]
       }, 
       {

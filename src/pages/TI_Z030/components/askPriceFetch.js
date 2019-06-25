@@ -1,14 +1,15 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { getName } from '@/utils/utils';
+import Link from 'umi/link';
 import moment from 'moment';
-import { Row, Col, Form, Input, Button, DatePicker, Modal, message } from 'antd';
+import { Row, Col, Form, Input, Button, DatePicker, Modal, message, Icon } from 'antd';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import request from '@/utils/request';
 import StandardTable from '@/components/StandardTable';
 import DocEntryFrom from '@/components/DocEntryFrom';
-import MDMCommonality from '@/components/Select';
-import Link from 'umi/link';
+import Organization from '@/components/Organization/multiple';
+import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
+import { getName } from '@/utils/utils';
 
 const { RangePicker } = DatePicker;
 
@@ -193,7 +194,10 @@ class orderLine extends PureComponent {
   ];
 
   componentDidMount() {
-    const { onRef } = this.props;
+    const { onRef, dispatch } = this.props;
+    dispatch({
+      type: 'global/getAuthority',
+    });
     if (onRef) onRef(this);
   }
 
@@ -289,19 +293,43 @@ class orderLine extends PureComponent {
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
-      global: { Saler },
     } = this.props;
+    const { queryData, expandForm } = this.state;
     const formLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 18 },
     };
-
+    const formItemLayout = {
+      labelCol: {
+        xs: { span: 24 },
+        sm: { span: 10 },
+      },
+      wrapperCol: {
+        xs: { span: 24 },
+        sm: { span: 14 },
+        md: { span: 10 },
+      },
+    };
+    const searchFormItemLayout = {
+      wrapperCol: {
+        xs: {
+          span: 24,
+          offset: 0,
+        },
+        sm: {
+          span: 16,
+          offset: 6,
+        },
+      },
+    };
     return (
-      <Form onSubmit={this.handleSearch} layout="inline">
-        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={4} sm={24}>
-            <FormItem key="SearchText" {...formLayout}>
-              {getFieldDecorator('SearchText')(<Input placeholder="请输入关键字" />)}
+      <Form onSubmit={this.handleSearch} {...formItemLayout}>
+        <Row gutter={{ md: 16 }}>
+          <Col md={5} sm={24}>
+            <FormItem key="SearchText" wrapperCol={{ span: 24 }}>
+              {getFieldDecorator('SearchText', { initialValue: queryData.Content.SearchText })(
+                <Input placeholder="请输入关键字" />
+              )}
             </FormItem>
           </Col>
           <Col md={6} sm={24}>
@@ -311,11 +339,6 @@ class orderLine extends PureComponent {
               )}
             </FormItem>
           </Col>
-          <Col md={4} sm={24}>
-            <FormItem label="所有者" {...formLayout}>
-              {getFieldDecorator('Owner')(<MDMCommonality data={Saler} />)}
-            </FormItem>
-          </Col>
           <Col md={6} sm={24}>
             <FormItem key="orderNo" {...formLayout} label="单号">
               {getFieldDecorator('orderNo', {
@@ -323,13 +346,37 @@ class orderLine extends PureComponent {
               })(<DocEntryFrom />)}
             </FormItem>
           </Col>
-
+          <Col md={4} sm={24}>
+            <FormItem key="Owner" {...formLayout} label="销售员">
+              {getFieldDecorator('Owner')(<SalerPurchaser />)}
+            </FormItem>
+          </Col>
+          {expandForm ? (
+            <Fragment>
+              <Col md={5} sm={24}>
+                <FormItem key="DeptList" wrapperCol={{ span: 24 }}>
+                  {getFieldDecorator('DeptList')(<Organization />)}
+                </FormItem>
+              </Col>
+            </Fragment>
+          ) : null}
           <Col md={2} sm={24}>
-            <FormItem key="searchBtn">
+            <FormItem key="searchBtn" {...searchFormItemLayout}>
               <span className="submitButtons">
                 <Button type="primary" htmlType="submit">
                   查询
                 </Button>
+                <a style={{ marginLeft: 8 }} onClick={this.toggleForm}>
+                  {expandForm ? (
+                    <span>
+                      收起 <Icon type="up" />
+                    </span>
+                  ) : (
+                    <span>
+                      展开 <Icon type="down" />
+                    </span>
+                  )}
+                </a>
               </span>
             </FormItem>
           </Col>

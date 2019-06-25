@@ -2,8 +2,8 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { Switch, Card, Form, Button, message, Tree } from 'antd';
-import StandardTable from '@/components/StandardTable';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
+import StandardTable from '@/components/StandardTable';
 
 function switchType(Type) {
   switch (Type) {

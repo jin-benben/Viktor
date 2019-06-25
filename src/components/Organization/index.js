@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
-import request from '@/utils/request';
 import { TreeSelect } from 'antd';
+import request from '@/utils/request';
 
 const { TreeNode } = TreeSelect;
 class Organization extends PureComponent {

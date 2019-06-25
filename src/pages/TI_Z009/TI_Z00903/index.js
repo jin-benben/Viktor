@@ -1,15 +1,14 @@
 import React, { Component } from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
-import { Row, Col, Form, Input, Card, Tabs, Button, message, Icon, DatePicker, Select } from 'antd';
-import StandardTable from '@/components/StandardTable';
+import { Row, Col, Form, Input, Card, Tabs, Button, message, DatePicker, Select } from 'antd';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
+import StandardTable from '@/components/StandardTable';
 import MDMCommonality from '@/components/Select';
 import Brand from '@/components/Brand';
 import HSCode from '@/components/HSCode';
 import FHSCode from '@/components/FHSCode';
 import SPUCode from '@/components/SPUCode';
-import Category from '@/components/Category';
 import Upload from '@/components/Upload';
 
 const FormItem = Form.Item;
@@ -183,11 +182,6 @@ class SKUDetail extends Component {
     const { formVals } = this.state;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
-      let category;
-      if (fieldsValue.category) {
-        category = { ...fieldsValue.category };
-      }
-      delete fieldsValue.category;
       dispatch({
         type: 'skuDetail/update',
         payload: {
@@ -196,7 +190,6 @@ class SKUDetail extends Component {
               {
                 ...formVals,
                 ...fieldsValue,
-                ...category,
                 PutawayDateTime: fieldsValue.PutawayDateTime
                   ? fieldsValue.PutawayDateTime.format('YYYY-MM-DD')
                   : '',
@@ -363,14 +356,6 @@ class SKUDetail extends Component {
             </Col>
             <Col lg={12} md={12} sm={24}>
               <FormItem key="category" {...this.formLayout} label="分类">
-                {/* {getFieldDecorator('category', {
-                  initialValue: [formVals.Category1, formVals.Category2, formVals.Category3],
-                })(
-                  <Category
-                    initialValue={[formVals.Category1, formVals.Category2, formVals.Category3]}
-                    placeholder="请选择分类"
-                  />
-                )} */}
                 <span>{`${formVals.Cate1Name}/${formVals.Cate2Name}/${formVals.Cate3Name}`}</span>
               </FormItem>
             </Col>
@@ -458,6 +443,13 @@ class SKUDetail extends Component {
                 {getFieldDecorator('EnglishName', {
                   initialValue: formVals.EnglishName,
                 })(<Input placeholder="请输入外文名称" />)}
+              </FormItem>
+            </Col>
+            <Col lg={12} md={12} sm={24}>
+              <FormItem key="ForeignParameters" {...this.formLayout} label="规格(外)">
+                {getFieldDecorator('ForeignParameters', {
+                  initialValue: formVals.ForeignParameters,
+                })(<Input placeholder="请输入规格(外)" />)}
               </FormItem>
             </Col>
           </Row>

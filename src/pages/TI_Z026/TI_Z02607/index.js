@@ -16,14 +16,16 @@ import {
   message,
 } from 'antd';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
+import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
+import Link from 'umi/link';
 import StandardTable from '@/components/StandardTable';
 import DocEntryFrom from '@/components/DocEntryFrom';
 import MyTag from '@/components/Tag';
 import NeedAskPrice from '../components/needAskPrice';
-import MDMCommonality from '@/components/Select';
+import Organization from '@/components/Organization/multiple';
+import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
 import Transfer from '@/components/Transfer';
-import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
-import Link from 'umi/link';
+
 import { getName } from '@/utils/utils';
 
 const { RangePicker } = DatePicker;
@@ -248,6 +250,11 @@ class orderLine extends PureComponent {
       title: '行备注',
       width: 80,
       dataIndex: 'LineComment',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '销售总计',
@@ -270,6 +277,45 @@ class orderLine extends PureComponent {
         return <span>{getName(Saler, text)}</span>;
       },
     },
+    {
+      title: '销报单号',
+      width: 100,
+      dataIndex: 'QuoteEntry',
+      render: (text, recond) =>
+        text ? (
+          <Link target="_blank" to={`/sellabout/TI_Z029/detail?DocEntry=${text}`}>
+            {`${text}-${recond.QuoteLine}`}
+          </Link>
+        ) : (
+          ''
+        ),
+    },
+    {
+      title: '销合单号',
+      width: 100,
+      dataIndex: 'ContractEntry',
+      render: (text, recond) =>
+        text ? (
+          <Link target="_blank" to={`/sellabout/TI_Z030/detail?DocEntry=${text}`}>
+            {`${text}-${recond.ContractLine}`}
+          </Link>
+        ) : (
+          ''
+        ),
+    },
+    {
+      title: '销订单号',
+      width: 100,
+      dataIndex: 'SoEntry',
+      render: (text, recond) =>
+        text ? (
+          <Link target="_blank" to={`/sellabout/orderdetail?DocEntry=${text}`}>
+            {`${text}-${recond.SoLine}`}
+          </Link>
+        ) : (
+          ''
+        ),
+    },
   ];
 
   componentDidMount() {
@@ -290,6 +336,9 @@ class orderLine extends PureComponent {
           CodeList: ['Saler', 'Purchaser'],
         },
       },
+    });
+    dispatch({
+      type: 'global/getAuthority',
     });
   }
 
@@ -398,7 +447,6 @@ class orderLine extends PureComponent {
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
-      global: { Saler },
     } = this.props;
     const { expandForm } = this.state;
     const formLayout = {
@@ -422,8 +470,8 @@ class orderLine extends PureComponent {
             </FormItem>
           </Col>
           <Col md={5} sm={24}>
-            <FormItem label="所有者" {...formLayout}>
-              {getFieldDecorator('Owner')(<MDMCommonality data={Saler} />)}
+            <FormItem key="Owner" {...formLayout} label="销售员">
+              {getFieldDecorator('Owner')(<SalerPurchaser />)}
             </FormItem>
           </Col>
           <Col md={3} sm={24}>
@@ -435,6 +483,11 @@ class orderLine extends PureComponent {
           </Col>
           {expandForm ? (
             <Fragment>
+              <Col md={5} sm={24}>
+                <FormItem key="DeptList" {...this.formLayout} label="部门">
+                  {getFieldDecorator('DeptList')(<Organization />)}
+                </FormItem>
+              </Col>
               <Col md={4} sm={24}>
                 <FormItem key="Closed" {...formLayout}>
                   {getFieldDecorator('Closed')(
@@ -445,6 +498,7 @@ class orderLine extends PureComponent {
                   )}
                 </FormItem>
               </Col>
+
               <Col md={5} sm={24}>
                 <FormItem key="orderNo" {...formLayout} label="单号">
                   {getFieldDecorator('orderNo', {
@@ -458,19 +512,6 @@ class orderLine extends PureComponent {
                     <Select placeholder="请选择">
                       <Option value="C">已询价</Option>
                       <Option value="O">未询价</Option>
-                    </Select>
-                  )}
-                </FormItem>
-              </Col>
-
-              <Col md={5} sm={24}>
-                <FormItem key="QueryType" {...formLayout} label="查询类型">
-                  {getFieldDecorator('QueryType')(
-                    <Select placeholder="请选择">
-                      <Option value="1">常规查询</Option>
-                      <Option value="2">采购物料确认查询</Option>
-                      <Option value="3">采购询价单生成查询</Option>
-                      <Option value="4">复制到销售报价单</Option>
                     </Select>
                   )}
                 </FormItem>
@@ -534,7 +575,7 @@ class orderLine extends PureComponent {
               data={{ list: orderLineList }}
               pagination={pagination}
               rowKey="Key"
-              scroll={{ x: 2700, y: 500 }}
+              scroll={{ x: 3000, y: 500 }}
               columns={columns}
               rowSelection={{
                 onSelectRow: this.onSelectRow,

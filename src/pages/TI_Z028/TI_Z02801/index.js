@@ -19,9 +19,10 @@ import {
   Radio,
   Table,
 } from 'antd';
-import MDMCommonality from '@/components/Select';
+
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
+import MDMCommonality from '@/components/Select';
 import OrderPreview from './components';
 import { getName } from '@/utils/utils';
 import styles from './style.less';
@@ -158,7 +159,9 @@ class TI_Z02801 extends React.Component {
       render: (val, record) => (
         <span
           style={{ color: `${record.SubRowCount !== record.PriceRStatusCount ? 'red' : '#666'}` }}
-        >{`${record.SubRowCount}/${record.PriceRStatusCount}`}</span>
+        >
+          {`${record.SubRowCount}/${record.PriceRStatusCount}`}
+        </span>
       ),
     },
     {
@@ -196,6 +199,11 @@ class TI_Z02801 extends React.Component {
       title: '采购备注',
       width: 100,
       dataIndex: 'LineComment',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '供应商',

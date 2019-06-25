@@ -1,3 +1,4 @@
+/* eslint-disable no-return-assign */
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
@@ -15,9 +16,9 @@ import {
   message,
   Modal,
 } from 'antd';
+import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import StandardTable from '@/components/StandardTable';
 import MDMCommonality from '@/components/Select';
-import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import Transfer from '@/components/Transfer';
 import { getName } from '@/utils/utils';
 import { transferBaseType } from '@/utils/publicData';
@@ -116,7 +117,7 @@ class inquiryFetchtrackPage extends PureComponent {
     },
     {
       title: '采购员',
-      width: 80,
+      width: 100,
       dataIndex: 'Purchaser',
       align: 'center',
       render: val => {
@@ -128,7 +129,7 @@ class inquiryFetchtrackPage extends PureComponent {
     },
     {
       title: '销售员',
-      width: 80,
+      width: 100,
       dataIndex: 'Salesperson',
       align: 'center',
       render: val => {
@@ -251,7 +252,6 @@ class inquiryFetchtrackPage extends PureComponent {
       let ConfirmComment = '';
       confirm({
         icon: null,
-        // eslint-disable-next-line no-return-assign
         content: (
           <TextArea placeholder="请输入备注" onChange={e => (ConfirmComment = e.target.value)} />
         ),

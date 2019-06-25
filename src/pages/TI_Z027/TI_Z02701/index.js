@@ -2,11 +2,11 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable array-callback-return */
 import React, { Component, Fragment } from 'react';
-import StandardTable from '@/components/StandardTable';
 import { connect } from 'dva';
 import moment from 'moment';
 import { Card, Form, Button, Steps, message } from 'antd';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
+import StandardTable from '@/components/StandardTable';
 import NeedTabl from './components/step1';
 import ConfirmTabl from './components/step2';
 import OrderModal from './components/orderModal';

@@ -4,11 +4,11 @@ import { Card, Tabs, Modal, Button, Icon, message, Dropdown, Menu } from 'antd';
 import moment from 'moment';
 import router from 'umi/router';
 import Link from 'umi/link';
-import StandardTable from '@/components/StandardTable';
+import DescriptionList from 'ant-design-pro/lib/DescriptionList';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import CancelOrder from '@/components/Modal/CancelOrder';
-import DescriptionList from 'ant-design-pro/lib/DescriptionList';
+import StandardTable from '@/components/StandardTable';
 import MyTag from '@/components/Tag';
 import NeedAskPrice from '../components/needAskPrice';
 import Transfer from '@/components/Transfer';
@@ -299,10 +299,49 @@ class InquiryEdit extends PureComponent {
     },
     {
       title: '需询价',
-      width: 80,
+      width: 100,
       dataIndex: 'IsInquiry',
       align: 'center',
       render: (text, record) => (record.lastIndex ? null : <MyTag type="IsInquiry" value={text} />),
+    },
+    {
+      title: '销报单号',
+      width: 100,
+      dataIndex: 'QuoteEntry',
+      render: (text, recond) =>
+        text ? (
+          <Link target="_blank" to={`/sellabout/TI_Z029/detail?DocEntry=${text}`}>
+            {`${text}-${recond.QuoteLine}`}
+          </Link>
+        ) : (
+          ''
+        ),
+    },
+    {
+      title: '销合单号',
+      width: 100,
+      dataIndex: 'ContractEntry',
+      render: (text, recond) =>
+        text ? (
+          <Link target="_blank" to={`/sellabout/TI_Z030/detail?DocEntry=${text}`}>
+            {`${text}-${recond.ContractLine}`}
+          </Link>
+        ) : (
+          ''
+        ),
+    },
+    {
+      title: '销订单号',
+      width: 100,
+      dataIndex: 'SoEntry',
+      render: (text, recond) =>
+        text ? (
+          <Link target="_blank" to={`/sellabout/orderdetail?DocEntry=${text}`}>
+            {`${text}-${recond.SoLine}`}
+          </Link>
+        ) : (
+          ''
+        ),
     },
     {
       title: '操作',
@@ -575,7 +614,7 @@ class InquiryEdit extends PureComponent {
             <StandardTable
               data={{ list: newdata }}
               rowKey="LineID"
-              scroll={{ x: 3225, y: 600 }}
+              scroll={{ x: 3540, y: 600 }}
               columns={this.skuColumns}
             />
           </TabPane>

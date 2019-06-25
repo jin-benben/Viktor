@@ -1,13 +1,15 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
+import Link from 'umi/link';
 import moment from 'moment';
 import { Row, Col, Card, Form, Input, Button, Divider, Select, DatePicker, Icon } from 'antd';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import StandardTable from '@/components/StandardTable';
 import MDMCommonality from '@/components/Select';
+import Organization from '@/components/Organization/multiple';
+import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
 import DocEntryFrom from '@/components/DocEntryFrom';
-import Link from 'umi/link';
 import MyTag from '@/components/Tag';
 import { getName } from '@/utils/utils';
 
@@ -35,9 +37,9 @@ class AgreementLine extends PureComponent {
       fixed: 'left',
       dataIndex: 'DocEntry',
       render: (text, recond) => (
-        <Link target="_blank" to={`/sellabout/TI_Z030/detail?DocEntry=${text}`}>{`${text}-${
-          recond.LineID
-        }`}</Link>
+        <Link target="_blank" to={`/sellabout/TI_Z030/detail?DocEntry=${text}`}>
+          {`${text}-${recond.LineID}`}
+        </Link>
       ),
     },
 
@@ -226,6 +228,11 @@ class AgreementLine extends PureComponent {
       title: '行备注',
       width: 100,
       dataIndex: 'LineComment',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '采购员',
@@ -269,6 +276,9 @@ class AgreementLine extends PureComponent {
           CodeList: ['Saler', 'Purchaser'],
         },
       },
+    });
+    dispatch({
+      type: 'global/getAuthority',
     });
   }
 
@@ -334,7 +344,7 @@ class AgreementLine extends PureComponent {
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
-      global: { Saler, Purchaser },
+      global: { Purchaser },
     } = this.props;
     const { expandForm } = this.state;
     const formLayout = {
@@ -378,24 +388,22 @@ class AgreementLine extends PureComponent {
               )}
             </FormItem>
           </Col>
+
           <Col md={5} sm={24}>
-            <FormItem key="LineStatus" {...formLayout} label="确认状态">
-              {getFieldDecorator('LineStatus')(
-                <Select placeholder="请选择">
-                  <Option value="C">已报价</Option>
-                  <Option value="O">未报价</Option>
-                </Select>
-              )}
+            <FormItem key="Owner" {...formLayout} label="销售员">
+              {getFieldDecorator('Owner')(<SalerPurchaser />)}
             </FormItem>
           </Col>
-
           {expandForm ? (
             <Fragment>
               <Col md={5} sm={24}>
-                <FormItem key="orderNo" {...formLayout} label="单号">
-                  {getFieldDecorator('orderNo', {
-                    initialValue: { DocEntryFrom: '', DocEntryTo: '' },
-                  })(<DocEntryFrom />)}
+                <FormItem key="LineStatus" {...formLayout} label="确认状态">
+                  {getFieldDecorator('LineStatus')(
+                    <Select placeholder="请选择">
+                      <Option value="C">已报价</Option>
+                      <Option value="O">未报价</Option>
+                    </Select>
+                  )}
                 </FormItem>
               </Col>
               <Col md={4} sm={24}>
@@ -409,23 +417,21 @@ class AgreementLine extends PureComponent {
                 </FormItem>
               </Col>
               <Col md={5} sm={24}>
-                <FormItem label="所有者" {...formLayout}>
-                  {getFieldDecorator('Owner')(<MDMCommonality data={Saler} />)}
+                <FormItem key="orderNo" {...formLayout} label="单号">
+                  {getFieldDecorator('orderNo', {
+                    initialValue: { DocEntryFrom: '', DocEntryTo: '' },
+                  })(<DocEntryFrom />)}
                 </FormItem>
               </Col>
               <Col md={5} sm={24}>
-                <FormItem label="采购" {...formLayout}>
-                  {getFieldDecorator('Purchaser')(<MDMCommonality data={Purchaser} />)}
+                <FormItem key="DeptList" {...this.formLayout} label="部门">
+                  {getFieldDecorator('DeptList')(<Organization />)}
                 </FormItem>
               </Col>
 
               <Col md={5} sm={24}>
-                <FormItem key="OrderType" {...formLayout} label="订单类型">
-                  {getFieldDecorator('OrderType')(
-                    <Select placeholder="请选择">
-                      <Option value="1">正常订单</Option>
-                    </Select>
-                  )}
+                <FormItem label="采购" {...formLayout}>
+                  {getFieldDecorator('Purchaser')(<MDMCommonality data={Purchaser} />)}
                 </FormItem>
               </Col>
             </Fragment>

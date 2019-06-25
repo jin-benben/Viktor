@@ -1,10 +1,9 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
+import Link from 'umi/link';
 import { Row, Col, Card, Form, Input, Button } from 'antd';
 import StandardTable from '@/components/StandardTable';
-import Ellipsis from 'ant-design-pro/lib/Ellipsis';
-import Link from 'umi/link';
 import { getName } from '@/utils/utils';
 import { templateType } from '@/utils/publicData';
 

@@ -581,14 +581,6 @@ class Staffs extends PureComponent {
       handleSubmit: this.handleSubmit,
       handleModalVisible: this.handleModalVisible,
     };
-
-    let tabw = 0;
-    this.columns.map(item => {
-      if (item.width) {
-        tabw += item.width;
-      }
-    });
-    console.log(tabw);
     return (
       <Fragment>
         <Card bordered={false}>

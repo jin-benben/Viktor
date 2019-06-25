@@ -1,14 +1,15 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { getName } from '@/utils/utils';
 import moment from 'moment';
-import { Row, Col, Form, Input, Button, DatePicker, Modal, message } from 'antd';
+import { Row, Col, Form, Input, Button, DatePicker, Modal, message, Icon } from 'antd';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import Link from 'umi/link';
 import request from '@/utils/request';
 import StandardTable from '@/components/StandardTable';
 import DocEntryFrom from '@/components/DocEntryFrom';
-import MDMCommonality from '@/components/Select';
+import Organization from '@/components/Organization/multiple';
+import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
+import { getName } from '@/utils/utils';
 
 const { RangePicker } = DatePicker;
 
@@ -132,6 +133,11 @@ class orderLine extends PureComponent {
       title: '行备注',
       width: 80,
       dataIndex: 'LineComment',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '销售总计',
@@ -176,10 +182,52 @@ class orderLine extends PureComponent {
         return <span>{getName(Saler, text)}</span>;
       },
     },
+    {
+      title: '销报单号',
+      width: 100,
+      dataIndex: 'QuoteEntry',
+      render: (text, recond) =>
+        text ? (
+          <Link target="_blank" to={`/sellabout/TI_Z029/detail?DocEntry=${text}`}>
+            {`${text}-${recond.QuoteLine}`}
+          </Link>
+        ) : (
+          ''
+        ),
+    },
+    {
+      title: '销合单号',
+      width: 100,
+      dataIndex: 'ContractEntry',
+      render: (text, recond) =>
+        text ? (
+          <Link target="_blank" to={`/sellabout/TI_Z030/detail?DocEntry=${text}`}>
+            {`${text}-${recond.ContractLine}`}
+          </Link>
+        ) : (
+          ''
+        ),
+    },
+    {
+      title: '销订单号',
+      width: 100,
+      dataIndex: 'SoEntry',
+      render: (text, recond) =>
+        text ? (
+          <Link target="_blank" to={`/sellabout/orderdetail?DocEntry=${text}`}>
+            {`${text}-${recond.SoLine}`}
+          </Link>
+        ) : (
+          ''
+        ),
+    },
   ];
 
   componentDidMount() {
-    const { onRef } = this.props;
+    const { onRef, dispatch } = this.props;
+    dispatch({
+      type: 'global/getAuthority',
+    });
     onRef(this);
   }
 
@@ -268,9 +316,8 @@ class orderLine extends PureComponent {
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
-      global: { Saler },
     } = this.props;
-    const { queryData } = this.state;
+    const { queryData, expandForm } = this.state;
     const formLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 18 },
@@ -301,7 +348,7 @@ class orderLine extends PureComponent {
     return (
       <Form onSubmit={this.handleSearch} {...formItemLayout}>
         <Row gutter={{ md: 16 }}>
-          <Col md={4} sm={24}>
+          <Col md={5} sm={24}>
             <FormItem key="SearchText" wrapperCol={{ span: 24 }}>
               {getFieldDecorator('SearchText', { initialValue: queryData.Content.SearchText })(
                 <Input placeholder="请输入关键字" />
@@ -315,11 +362,6 @@ class orderLine extends PureComponent {
               )}
             </FormItem>
           </Col>
-          <Col md={4} sm={24}>
-            <FormItem label="销售员" {...formLayout}>
-              {getFieldDecorator('Owner')(<MDMCommonality data={Saler} />)}
-            </FormItem>
-          </Col>
           <Col md={6} sm={24}>
             <FormItem key="orderNo" {...formLayout} label="单号">
               {getFieldDecorator('orderNo', {
@@ -327,12 +369,37 @@ class orderLine extends PureComponent {
               })(<DocEntryFrom />)}
             </FormItem>
           </Col>
+          <Col md={4} sm={24}>
+            <FormItem key="Owner" {...formLayout} label="销售员">
+              {getFieldDecorator('Owner')(<SalerPurchaser />)}
+            </FormItem>
+          </Col>
+          {expandForm ? (
+            <Fragment>
+              <Col md={5} sm={24}>
+                <FormItem key="DeptList" wrapperCol={{ span: 24 }}>
+                  {getFieldDecorator('DeptList')(<Organization />)}
+                </FormItem>
+              </Col>
+            </Fragment>
+          ) : null}
           <Col md={2} sm={24}>
             <FormItem key="searchBtn" {...searchFormItemLayout}>
               <span className="submitButtons">
                 <Button type="primary" htmlType="submit">
                   查询
                 </Button>
+                <a style={{ marginLeft: 8 }} onClick={this.toggleForm}>
+                  {expandForm ? (
+                    <span>
+                      收起 <Icon type="up" />
+                    </span>
+                  ) : (
+                    <span>
+                      展开 <Icon type="down" />
+                    </span>
+                  )}
+                </a>
               </span>
             </FormItem>
           </Col>
@@ -367,7 +434,7 @@ class orderLine extends PureComponent {
             data={{ list: orderLineList }}
             pagination={pagination}
             rowKey="Key"
-            scroll={{ x: 2000, y: 500 }}
+            scroll={{ x: 2300, y: 500 }}
             columns={columns}
             rowSelection={{
               onSelectRow: this.onSelectRow,

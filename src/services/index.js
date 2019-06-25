@@ -69,6 +69,16 @@ export async function supplierRule() {
     },
   });
 }
+
+export async function authorityRule() {
+  return request(`/MDM/TI_Z004/TI_Z00410`, {
+    method: 'POST',
+    data: {
+      Content: '',
+    },
+  });
+}
+
 export async function customerRule() {
   return request('/MDM/TI_Z006/TI_Z00602', {
     method: 'POST',

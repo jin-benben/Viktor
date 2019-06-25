@@ -133,6 +133,11 @@ class OrderLine extends PureComponent {
       dataIndex: 'InquiryComment',
       width: 150,
       align: 'center',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '销售行总计',

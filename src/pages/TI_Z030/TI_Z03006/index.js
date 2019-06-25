@@ -1,14 +1,15 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
+import Link from 'umi/link';
 import moment from 'moment';
 import { Row, Col, Card, Form, Input, Button, Divider, Select, DatePicker, Icon } from 'antd';
-import StandardTable from '@/components/StandardTable';
-import MDMCommonality from '@/components/Select';
-import DocEntryFrom from '@/components/DocEntryFrom';
-import Link from 'umi/link';
-import { getName } from '@/utils/utils';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
+import StandardTable from '@/components/StandardTable';
+import DocEntryFrom from '@/components/DocEntryFrom';
+import Organization from '@/components/Organization/multiple';
+import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
+import { getName } from '@/utils/utils';
 import MyTag from '@/components/Tag';
 
 const { RangePicker } = DatePicker;
@@ -126,6 +127,11 @@ class agreementOrder extends PureComponent {
       title: '备注',
       width: 100,
       dataIndex: 'Comment',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
   ];
 
@@ -147,6 +153,9 @@ class agreementOrder extends PureComponent {
           CodeList: ['Saler', 'Purchaser'],
         },
       },
+    });
+    dispatch({
+      type: 'global/getAuthority',
     });
   }
 
@@ -212,7 +221,6 @@ class agreementOrder extends PureComponent {
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
-      global: { Saler },
     } = this.props;
     const { expandForm } = this.state;
     const formLayout = {
@@ -246,8 +254,8 @@ class agreementOrder extends PureComponent {
             </FormItem>
           </Col>
           <Col md={5} sm={24}>
-            <FormItem label="所有者" {...formLayout}>
-              {getFieldDecorator('Owner')(<MDMCommonality data={Saler} />)}
+            <FormItem key="Owner" {...formLayout} label="销售员">
+              {getFieldDecorator('Owner')(<SalerPurchaser />)}
             </FormItem>
           </Col>
 
@@ -268,6 +276,11 @@ class agreementOrder extends PureComponent {
                       <Option value="N">未关闭</Option>
                     </Select>
                   )}
+                </FormItem>
+              </Col>
+              <Col md={5} sm={24}>
+                <FormItem key="DeptList" {...this.formLayout} label="部门">
+                  {getFieldDecorator('DeptList')(<Organization />)}
                 </FormItem>
               </Col>
               <Col md={5} sm={24}>

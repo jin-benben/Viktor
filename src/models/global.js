@@ -1,3 +1,5 @@
+import { routerRedux } from 'dva/router';
+import { parse } from 'qs';
 import {
   getMDMCommonalityRule,
   tokenOutRule,
@@ -7,9 +9,8 @@ import {
   supplierRule,
   hscodeRule,
   processorRule,
+  authorityRule,
 } from '@/services';
-import { routerRedux } from 'dva/router';
-import { parse } from 'qs';
 
 export default {
   namespace: 'global',
@@ -36,7 +37,11 @@ export default {
     TI_Z042: [], // 产地
     HSCodeList: [], // hscode
     TI_Z050: [], // 转移类型
-    ProcessorList: [], // 处理人
+    ProcessorList: [], // 处理人,
+    DepartmentList: [],
+    NoPermissionDepartmentList: [],
+    OSLPList: [],
+    hasLoad: false,
   },
 
   effects: {
@@ -89,6 +94,22 @@ export default {
           },
         });
         if (callback) callback(response);
+      }
+    },
+    // 获取权限
+    *getAuthority(_, { call, put }) {
+      const response = yield call(authorityRule);
+      if (response && response.Status === 200) {
+        const { DepartmentList, NoPermissionDepartmentList, OSLPList } = response.Content;
+        yield put({
+          type: 'save',
+          payload: {
+            DepartmentList,
+            NoPermissionDepartmentList,
+            OSLPList,
+            hasLoad: true,
+          },
+        });
       }
     },
     // 获取客户下拉框初始值

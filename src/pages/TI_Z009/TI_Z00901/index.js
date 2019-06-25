@@ -2,16 +2,16 @@
 /* eslint-disable no-param-reassign */
 import React, { Component, Fragment } from 'react';
 import { Card, Icon, Button, message, Select } from 'antd';
+import { connect } from 'dva';
+import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
+import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import EditableFormTable from '@/components/EditableFormTable';
 import MDMCommonality from '@/components/Select';
 import Brand from '@/components/Brand';
 import HSCode from '@/components/HSCode';
 import FHSCode from '@/components/FHSCode';
 import SPUCode from '@/components/SPUCode';
-import { connect } from 'dva';
-import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import AskPriceFetch from '@/pages/TI_Z030/components/askPriceFetch';
-import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 
 const { Option } = Select;
 
@@ -97,6 +97,14 @@ class AddSKU extends Component {
       editable: true,
     },
     {
+      title: '规格(外)',
+      width: 150,
+      dataIndex: 'ForeignParameters',
+      inputType: 'textArea',
+      editable: true,
+      align: 'center',
+    },
+    {
       title: '包装',
       width: 100,
       dataIndex: 'Package',
@@ -127,6 +135,20 @@ class AddSKU extends Component {
       width: 80,
       inputType: 'text',
       dataIndex: 'Unit',
+      editable: true,
+    },
+    {
+      title: '销售价格',
+      width: 80,
+      inputType: 'text',
+      dataIndex: 'SPrice',
+      editable: true,
+    },
+    {
+      title: '采购价格',
+      width: 80,
+      inputType: 'text',
+      dataIndex: 'PPrice',
       editable: true,
     },
     {
@@ -401,6 +423,7 @@ class AddSKU extends Component {
       ManufactureNO: '',
       Parameters: '',
       PurchaserName: '',
+      ForeignParameters: '',
       Rweight: '',
       Package: '',
       Purchaser: currentUser.Owner,
@@ -420,6 +443,8 @@ class AddSKU extends Component {
       HSCode: '',
       FHSCode: '',
       SPUCode: '',
+      SPrice: 0,
+      PPrice: 0,
     };
 
     TI_Z00901.push(line);
@@ -452,6 +477,7 @@ class AddSKU extends Component {
         DocEntry,
         LineID,
         ManLocation,
+        ForeignParameters,
       } = item;
       TI_Z00901.push({
         LineID: lastLine + index,
@@ -461,6 +487,7 @@ class AddSKU extends Component {
         Parameters,
         Package,
         Unit,
+        ForeignParameters,
         Name: SKUName,
         HSCode: item.HSCode || '',
         Purchaser: Purchaser || currentUser.Owner,
@@ -571,7 +598,7 @@ class AddSKU extends Component {
         <EditableFormTable
           rowChange={this.rowChange}
           rowKey="LineID"
-          scroll={{ x: 2600 }}
+          scroll={{ x: 2800 }}
           rowSelection={{
             onChange: this.onSelectRow,
           }}

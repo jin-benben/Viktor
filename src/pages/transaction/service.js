@@ -17,6 +17,15 @@ export async function odlnordnLineRule(params) {
   });
 }
 
+export async function odlnordnDetailRule(params) {
+  return request('/Report/ODLNORDN/ODLNORDN03', {
+    method: 'POST',
+    data: {
+      ...params,
+    },
+  });
+}
+
 export async function oinvorinRule(params) {
   return request('/Report/OINVORIN/OINVORIN01', {
     method: 'POST',
@@ -28,6 +37,15 @@ export async function oinvorinRule(params) {
 
 export async function oinvorinLineRule(params) {
   return request('/Report/OINVORIN/OINVORIN02', {
+    method: 'POST',
+    data: {
+      ...params,
+    },
+  });
+}
+
+export async function oinvorinDetailRule(params) {
+  return request('/Report/OINVORIN/OINVORIN03', {
     method: 'POST',
     data: {
       ...params,
@@ -55,6 +73,15 @@ export async function ordrRule(params) {
 
 export async function ordrLineRule(params) {
   return request('/Report/ORDR/ORDR02', {
+    method: 'POST',
+    data: {
+      ...params,
+    },
+  });
+}
+
+export async function ordrDetailRule(params) {
+  return request('/Report/ORDR/ORDR03', {
     method: 'POST',
     data: {
       ...params,

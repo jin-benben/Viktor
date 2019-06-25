@@ -122,6 +122,11 @@ class TI_Z02802 extends PureComponent {
       title: '行备注',
       width: 100,
       dataIndex: 'SLineComment',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '要求交期',
@@ -144,6 +149,11 @@ class TI_Z02802 extends PureComponent {
       title: '采购备注',
       width: 100,
       dataIndex: 'LineComment',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '供应商',
@@ -194,6 +204,11 @@ class TI_Z02802 extends PureComponent {
       title: '备注',
       width: 100,
       dataIndex: 'LineComment',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '最优',

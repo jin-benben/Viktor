@@ -1,11 +1,11 @@
 /* eslint-disable no-param-reassign */
 import React, { Component } from 'react';
 import moment from 'moment';
+import { connect } from 'dva';
 import { DatePicker, Select, Input } from 'antd';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import StandardTable from '@/components/StandardTable';
 import MDMCommonality from '@/components/Select/index';
-import { connect } from 'dva';
 
 const { Option } = Select;
 @connect(({ global }) => ({
@@ -273,6 +273,11 @@ class SelectionLine extends Component {
         title: '行备注',
         width: 80,
         dataIndex: 'LineComment',
+        render: text => (
+          <Ellipsis tooltip lines={1}>
+            {text}
+          </Ellipsis>
+        ),
       },
       {
         title: '单号',

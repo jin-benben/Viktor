@@ -4,12 +4,13 @@ import router from 'umi/router';
 import Link from 'umi/link';
 import moment from 'moment';
 import { Row, Col, Card, Form, Input, Button, Divider, Select, DatePicker, Icon } from 'antd';
-import StandardTable from '@/components/StandardTable';
-import MDMCommonality from '@/components/Select';
-import DocEntryFrom from '@/components/DocEntryFrom';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
-import MyTag from '@/components/Tag';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
+import StandardTable from '@/components/StandardTable';
+import DocEntryFrom from '@/components/DocEntryFrom';
+import MyTag from '@/components/Tag';
+import Organization from '@/components/Organization/multiple';
+import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
 import { getName } from '@/utils/utils';
 
 const { RangePicker } = DatePicker;
@@ -174,6 +175,9 @@ class supplierQuotation extends PureComponent {
         },
       },
     });
+    dispatch({
+      type: 'global/getAuthority',
+    });
   }
 
   handleStandardTableChange = pagination => {
@@ -238,7 +242,6 @@ class supplierQuotation extends PureComponent {
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
-      global: { Purchaser },
     } = this.props;
     const { expandForm } = this.state;
     const formLayout = {
@@ -271,8 +274,8 @@ class supplierQuotation extends PureComponent {
             </FormItem>
           </Col>
           <Col md={5} sm={24}>
-            <FormItem label="所有者" {...formLayout}>
-              {getFieldDecorator('Owner')(<MDMCommonality data={Purchaser} />)}
+            <FormItem key="Owner" {...formLayout} label="采购员">
+              {getFieldDecorator('Owner')(<SalerPurchaser />)}
             </FormItem>
           </Col>
 
@@ -293,6 +296,11 @@ class supplierQuotation extends PureComponent {
                       <Option value="N">未关闭</Option>
                     </Select>
                   )}
+                </FormItem>
+              </Col>
+              <Col md={5} sm={24}>
+                <FormItem key="DeptList" {...this.formLayout} label="部门">
+                  {getFieldDecorator('DeptList')(<Organization />)}
                 </FormItem>
               </Col>
               <Col md={5} sm={24}>

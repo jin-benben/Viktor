@@ -3,10 +3,10 @@ import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
 import { Row, Col, Card, Form, Input, Button, DatePicker } from 'antd';
-import StandardTable from '@/components/StandardTable';
-import MDMCommonality from '@/components/Select';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import Link from 'umi/link';
+import StandardTable from '@/components/StandardTable';
+import MDMCommonality from '@/components/Select';
 import { getName } from '@/utils/utils';
 
 const { RangePicker } = DatePicker;
@@ -26,9 +26,9 @@ class TI_Z02804 extends PureComponent {
       width: 80,
       dataIndex: 'DocEntry',
       render: (text, recond) => (
-        <Link target="_blank" to={`/purchase/TI_Z028/TI_Z02802?DocEntry=${text}`}>{`${text}-${
-          recond.LineID
-        }`}</Link>
+        <Link target="_blank" to={`/purchase/TI_Z028/TI_Z02802?DocEntry=${text}`}>
+          {`${text}-${recond.LineID}`}
+        </Link>
       ),
     },
     {
@@ -36,9 +36,9 @@ class TI_Z02804 extends PureComponent {
       width: 80,
       dataIndex: 'BaseEntry',
       render: (text, recond) => (
-        <Link target="_blank" to={`/sellabout/TI_Z026/detail?DocEntry=${text}`}>{`${text}-${
-          recond.BaseLineID
-        }`}</Link>
+        <Link target="_blank" to={`/sellabout/TI_Z026/detail?DocEntry=${text}`}>
+          {`${text}-${recond.BaseLineID}`}
+        </Link>
       ),
     },
     {
@@ -147,6 +147,11 @@ class TI_Z02804 extends PureComponent {
       title: '行备注',
       width: 100,
       dataIndex: 'SLineComment',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '要求交期',
@@ -169,6 +174,11 @@ class TI_Z02804 extends PureComponent {
       title: '采购备注',
       width: 100,
       dataIndex: 'LineComment',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
   ];
 
@@ -215,6 +225,11 @@ class TI_Z02804 extends PureComponent {
       title: '备注',
       width: 100,
       dataIndex: 'LineComment',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '最优',

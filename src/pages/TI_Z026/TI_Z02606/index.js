@@ -1,15 +1,16 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
+import Link from 'umi/link';
 import moment from 'moment';
 import { Row, Col, Card, Form, Input, Button, Divider, Select, DatePicker, Icon } from 'antd';
-import StandardTable from '@/components/StandardTable';
-import MDMCommonality from '@/components/Select';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
+import Ellipsis from 'ant-design-pro/lib/Ellipsis';
+import StandardTable from '@/components/StandardTable';
 import DocEntryFrom from '@/components/DocEntryFrom';
 import MyTag from '@/components/Tag';
-import Ellipsis from 'ant-design-pro/lib/Ellipsis';
-import Link from 'umi/link';
+import Organization from '@/components/Organization/multiple';
+import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
 import { getName } from '@/utils/utils';
 
 const { RangePicker } = DatePicker;
@@ -134,6 +135,7 @@ class inquiryListPage extends PureComponent {
       dispatch,
       inquiryFetch: { queryData },
     } = this.props;
+
     dispatch({
       type: 'inquiryFetch/fetch',
       payload: {
@@ -147,6 +149,9 @@ class inquiryListPage extends PureComponent {
           CodeList: ['Saler'],
         },
       },
+    });
+    dispatch({
+      type: 'global/getAuthority',
     });
   }
 
@@ -178,6 +183,8 @@ class inquiryListPage extends PureComponent {
         DocDateFrom = moment(fieldsValue.dateArr[0]).format('YYYY-MM-DD');
         DocDateTo = moment(fieldsValue.dateArr[1]).format('YYYY-MM-DD');
       }
+      // eslint-disable-next-line no-param-reassign
+      delete fieldsValue.dateArr;
       const queryData = {
         ...fieldsValue,
         DocDateFrom,
@@ -194,7 +201,7 @@ class inquiryListPage extends PureComponent {
           },
           page: 1,
           rows: 30,
-          sidx: 'Code',
+          sidx: 'DocEntry',
           sord: 'Desc',
         },
       });
@@ -212,7 +219,6 @@ class inquiryListPage extends PureComponent {
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
-      global: { Saler },
     } = this.props;
     const { expandForm } = this.state;
     const formLayout = {
@@ -246,11 +252,10 @@ class inquiryListPage extends PureComponent {
             </FormItem>
           </Col>
           <Col md={5} sm={24}>
-            <FormItem key="Owner" {...this.formLayout} label="所有者">
-              {getFieldDecorator('Owner', {})(<MDMCommonality data={Saler} />)}
+            <FormItem key="Owner" {...formLayout} label="销售员">
+              {getFieldDecorator('Owner')(<SalerPurchaser />)}
             </FormItem>
           </Col>
-
           {expandForm ? (
             <Fragment>
               <Col md={5} sm={24}>
@@ -271,6 +276,11 @@ class inquiryListPage extends PureComponent {
                 </FormItem>
               </Col>
               <Col md={5} sm={24}>
+                <FormItem key="DeptList" {...this.formLayout} label="部门">
+                  {getFieldDecorator('DeptList')(<Organization />)}
+                </FormItem>
+              </Col>
+              <Col md={5} sm={24}>
                 <FormItem key="InquiryStatus" {...formLayout} label="询价状态">
                   {getFieldDecorator('InquiryStatus')(
                     <Select placeholder="请选择">
@@ -281,7 +291,7 @@ class inquiryListPage extends PureComponent {
                 </FormItem>
               </Col>
               <Col md={5} sm={24}>
-                <FormItem key="IsInquiry" {...formLayout} label="需要采购询价">
+                <FormItem key="IsInquiry" {...formLayout} label="需询价">
                   {getFieldDecorator('IsInquiry')(
                     <Select placeholder="请选择">
                       <Option value="Y">是</Option>

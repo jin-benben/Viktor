@@ -15,15 +15,17 @@ import {
   Icon,
   message,
 } from 'antd';
+import Link from 'umi/link';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
+import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import StandardTable from '@/components/StandardTable';
 import MDMCommonality from '@/components/Select';
-import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import NeedAskPrice from '../components/needAskPrice';
 import Transfer from '@/components/Transfer';
-import Link from 'umi/link';
 import DocEntryFrom from '@/components/DocEntryFrom';
 import MyTag from '@/components/Tag';
+import Organization from '@/components/Organization/multiple';
+import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
 
 const { RangePicker } = DatePicker;
 
@@ -265,6 +267,9 @@ class SalesQuotationSku extends PureComponent {
         },
       },
     });
+    dispatch({
+      type: 'global/getAuthority',
+    });
   }
 
   handleStandardTableChange = pagination => {
@@ -392,7 +397,7 @@ class SalesQuotationSku extends PureComponent {
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
-      global: { Saler, Purchaser },
+      global: { Purchaser },
     } = this.props;
     const { expandForm } = this.state;
     const formLayout = {
@@ -425,16 +430,10 @@ class SalesQuotationSku extends PureComponent {
             </FormItem>
           </Col>
           <Col md={5} sm={24}>
-            <FormItem key="LineStatus" {...formLayout} label="确认状态">
-              {getFieldDecorator('LineStatus')(
-                <Select placeholder="请选择">
-                  <Option value="C">已报价</Option>
-                  <Option value="O">未报价</Option>
-                </Select>
-              )}
+            <FormItem key="Owner" {...formLayout} label="销售员">
+              {getFieldDecorator('Owner')(<SalerPurchaser />)}
             </FormItem>
           </Col>
-
           {expandForm ? (
             <Fragment>
               <Col md={5} sm={24}>
@@ -455,19 +454,18 @@ class SalesQuotationSku extends PureComponent {
                 </FormItem>
               </Col>
               <Col md={5} sm={24}>
-                <FormItem key="QueryType" {...formLayout} label="查询类型">
-                  {getFieldDecorator('QueryType', { initialValue: '1' })(
-                    <Select placeholder="请选择">
-                      <Option value="1">常规查询</Option>
-                      <Option value="2">复制到销售合同</Option>
-                      <Option value="3">SKU生成查询</Option>
-                    </Select>
-                  )}
+                <FormItem key="DeptList" {...this.formLayout} label="部门">
+                  {getFieldDecorator('DeptList')(<Organization />)}
                 </FormItem>
               </Col>
-              <Col md={4} sm={24}>
-                <FormItem label="所有者" {...formLayout}>
-                  {getFieldDecorator('Owner')(<MDMCommonality data={Saler} />)}
+              <Col md={5} sm={24}>
+                <FormItem key="LineStatus" {...formLayout} label="确认状态">
+                  {getFieldDecorator('LineStatus')(
+                    <Select placeholder="请选择">
+                      <Option value="C">已报价</Option>
+                      <Option value="O">未报价</Option>
+                    </Select>
+                  )}
                 </FormItem>
               </Col>
               <Col md={5} sm={24}>
