@@ -161,7 +161,41 @@ class InquiryEdit extends React.Component {
         return record.lastIndex ? '' : <span>{getName(WhsCode, text)}</span>;
       },
     },
-
+    {
+      title: '产地',
+      width: 80,
+      dataIndex: 'ManLocation',
+      align: 'center',
+      render: text => {
+        const {
+          global: { TI_Z042 },
+        } = this.props;
+        return <span>{getName(TI_Z042, text)}</span>;
+      },
+    },
+    {
+      title: 'HS编码',
+      width: 100,
+      dataIndex: 'HSCode',
+      render: text => {
+        const {
+          global: { HS },
+        } = this.props;
+        return <span>{getName(HS, text)}</span>;
+      },
+    },
+    {
+      title: '报关税率',
+      width: 80,
+      dataIndex: 'HSVatRate',
+      align: 'center',
+    },
+    {
+      title: '附加税率',
+      width: 80,
+      dataIndex: 'HSVatRateOther',
+      align: 'center',
+    },
     {
       title: '询价最终价',
       width: 100,
@@ -270,6 +304,7 @@ class InquiryEdit extends React.Component {
       attachmentVisible: false,
       needmodalVisible: false,
       transferModalVisible: false,
+      ApproveStsList: [],
       targetLine: {},
     };
   }
@@ -284,7 +319,16 @@ class InquiryEdit extends React.Component {
         type: 'global/getMDMCommonality',
         payload: {
           Content: {
-            CodeList: ['Saler', 'Purchaser', 'TI_Z004', 'Curr', 'WhsCode', 'Company'],
+            CodeList: [
+              'Saler',
+              'Purchaser',
+              'TI_Z004',
+              'TI_Z042',
+              'HS',
+              'Curr',
+              'WhsCode',
+              'Company',
+            ],
           },
         },
       });
@@ -361,7 +405,7 @@ class InquiryEdit extends React.Component {
           </Link>
         </Menu.Item>
         <Menu.Item>
-          <a href="javacript:void(0)" onClick={() => this.setState({ needmodalVisible: true })}>
+          <a href="javacript:void(0)" onClick={this.confirmApproveSts}>
             确认销售报价
           </a>
         </Menu.Item>
@@ -383,6 +427,12 @@ class InquiryEdit extends React.Component {
         </Menu.Item>
       </Menu>
     );
+  };
+
+  confirmApproveSts = () => {
+    const { formVals } = this.state;
+    const ApproveStsList = formVals.TI_Z02902.filter(item => item.ApproveSts === 'N');
+    this.setState({ ApproveStsList, needmodalVisible: true });
   };
 
   lookLineAttachment = record => {
@@ -510,6 +560,7 @@ class InquiryEdit extends React.Component {
       needmodalVisible,
       targetLine,
       transferModalVisible,
+      ApproveStsList,
     } = this.state;
 
     const needParentMethods = {
@@ -578,7 +629,7 @@ class InquiryEdit extends React.Component {
             <StandardTable
               data={{ list: newdata }}
               rowKey="LineID"
-              scroll={{ x: 2700, y: 600 }}
+              scroll={{ x: 3000, y: 600 }}
               columns={this.skuColumns}
             />
           </TabPane>
@@ -671,7 +722,7 @@ class InquiryEdit extends React.Component {
             </Button>
           </Dropdown>
           <NeedAskPrice
-            data={formVals.TI_Z02902}
+            data={ApproveStsList}
             {...needParentMethods}
             rowKey="LineID"
             modalVisible={needmodalVisible}

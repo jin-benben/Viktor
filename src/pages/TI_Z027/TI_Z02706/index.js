@@ -63,7 +63,7 @@ class supplierQuotation extends PureComponent {
           {record.Closed === 'Y' ? (
             <MyTag type="关闭" value="Y" />
           ) : (
-            <MyTag type="询价" value={record.LineStatus} />
+            <MyTag type="询价" value={record.DocStatus} />
           )}
         </Fragment>
       ),
@@ -224,7 +224,7 @@ class supplierQuotation extends PureComponent {
           },
           page: 1,
           rows: 30,
-          sidx: 'Code',
+          sidx: 'DocEntry',
           sord: 'Desc',
         },
       });

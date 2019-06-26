@@ -1,10 +1,10 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
+import Link from 'umi/link';
 import moment from 'moment';
 import { Row, Col, Card, Form, Input, Button, Icon } from 'antd';
 import StandardTable from '@/components/StandardTable';
-import Link from 'umi/link';
 import { formItemLayout } from '@/utils/publicData';
 
 const FormItem = Form.Item;
@@ -19,17 +19,20 @@ class inquiryList extends PureComponent {
     {
       title: '角色代码',
       align: 'center',
+      width: 100,
       dataIndex: 'Code',
     },
     {
       title: '角色名称',
       align: 'center',
+      width: 100,
       dataIndex: 'Name',
     },
     {
       title: '权限设置',
       align: 'center',
       dataIndex: 'set',
+      width: 100,
       render: (text, record) => (
         <Link to={`/base/TI_Z014/set?Code=${record.Code}`}>
           <Icon type="setting" theme="twoTone" />
@@ -39,6 +42,7 @@ class inquiryList extends PureComponent {
     {
       title: '角色修改',
       align: 'center',
+      width: 100,
       dataIndex: 'change',
       render: (text, record) => (
         <Link to={`/base/TI_Z014/edit?Code=${record.Code}`}>
@@ -53,7 +57,14 @@ class inquiryList extends PureComponent {
       dispatch,
       authorityGroup: { queryData },
     } = this.props;
-
+    dispatch({
+      type: 'global/getMDMCommonality',
+      payload: {
+        Content: {
+          CodeList: ['TI_Z042'],
+        },
+      },
+    });
     dispatch({
       type: 'authorityGroup/fetch',
       payload: {

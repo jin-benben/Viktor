@@ -1,11 +1,11 @@
 import React, { Fragment } from 'react';
+import { connect } from 'dva';
 import { Card, Icon, Button, message } from 'antd';
+import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import EditableFormTable from '@/components/EditableFormTable';
-
+import MDMCommonality from '@/components/Select';
 import Brand from '@/components/Brand';
 import Category from '@/components/Category';
-import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
-import { connect } from 'dva';
 
 @connect(({ spu, loading, global }) => ({
   spu,
@@ -55,8 +55,22 @@ class AddSKU extends React.Component {
     },
     {
       title: '产地',
+      width: 100,
       dataIndex: 'ManLocation',
-      editable: true,
+      render: (text, record, index) => {
+        const {
+          global: { TI_Z042 },
+        } = this.props;
+        return (
+          <MDMCommonality
+            onChange={value => {
+              this.codeChange(value, record, index, 'ManLocation');
+            }}
+            initialValue={text}
+            data={TI_Z042}
+          />
+        );
+      },
     },
     {
       title: '分类',
@@ -105,6 +119,14 @@ class AddSKU extends React.Component {
         type: 'global/getCategory',
       });
     }
+    dispatch({
+      type: 'global/getMDMCommonality',
+      payload: {
+        Content: {
+          CodeList: ['TI_Z042'],
+        },
+      },
+    });
   }
 
   deleteLine = (record, index) => {

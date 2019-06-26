@@ -8,7 +8,7 @@ import StandardTable from '@/components/StandardTable';
 import { validatorEmail } from '@/utils/utils';
 
 const FormItem = Form.Item;
-
+const { TextArea } = Input;
 @Form.create()
 class CreateForm extends PureComponent {
   okHandle = () => {
@@ -68,6 +68,13 @@ class CreateForm extends PureComponent {
               })(<Input placeholder="请输入邮箱" />)}
             </FormItem>
           </Row>
+          <Row>
+            <FormItem key="Comment" {...formLayout} label="备注">
+              {getFieldDecorator('Comment', {
+                initialValue: formVals.Comment,
+              })(<TextArea placeholder="请输入备注" />)}
+            </FormItem>
+          </Row>
         </Form>
       </Modal>
     );
@@ -103,13 +110,13 @@ class Emails extends PureComponent {
   columns = [
     {
       title: '邮箱',
-      width: 100,
+      width: 300,
       dataIndex: 'Code',
     },
     {
-      title: '密码',
+      title: '备注',
       width: 100,
-      dataIndex: 'EmailPassword',
+      dataIndex: 'Comment',
     },
 
     {

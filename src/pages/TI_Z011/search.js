@@ -1,3 +1,4 @@
+/* eslint-disable no-script-url */
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
@@ -5,9 +6,13 @@ import { Row, Col, Card, Form, Input, Button, Modal, message } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import Brand from '@/components/Brand';
 import Category from '@/components/Category';
+import MDMCommonality from '@/components/Select';
+import { getName } from '@/utils/utils';
 
 const FormItem = Form.Item;
-
+@connect(({ global }) => ({
+  global,
+}))
 @Form.create()
 class CreateForm extends PureComponent {
   constructor(props) {
@@ -37,6 +42,7 @@ class CreateForm extends PureComponent {
       modalVisible,
       handleModalVisible,
       handleSubmit,
+      global: { TI_Z042 },
     } = this.props;
     const { formVals } = this.state;
     const formItemLayout = {
@@ -78,7 +84,7 @@ class CreateForm extends PureComponent {
             {getFieldDecorator('ManLocation', {
               rules: [{ required: true, message: '请输入产地！' }],
               initialValue: formVals.ManLocation,
-            })(<Input placeholder="请输入产地！" />)}
+            })(<MDMCommonality initialValue={formVals.ManLocation} data={TI_Z042} />)}
           </FormItem>
           <FormItem key="Unit" {...this.formLayout} label="单位">
             {getFieldDecorator('Unit', {
@@ -117,30 +123,49 @@ class SkuFetchComponent extends PureComponent {
   columns = [
     {
       title: 'SPU代码',
+      width: 100,
       dataIndex: 'Code',
+      render: (text, record) => (
+        <a onClick={() => this.handleOnRow(record)} href="javascript:void(0)">
+          {text}
+        </a>
+      ),
     },
     {
       title: '描述',
+      width: 200,
       dataIndex: 'Name',
     },
     {
       title: '名称',
+      width: 200,
       dataIndex: 'ProductName',
     },
     {
       title: '品牌',
+      width: 200,
       dataIndex: 'BrandName',
     },
     {
       title: '单位',
+      width: 80,
       dataIndex: 'Unit',
     },
     {
       title: '产地',
+      width: 100,
       dataIndex: 'ManLocation',
+      align: 'center',
+      render: text => {
+        const {
+          global: { TI_Z042 },
+        } = this.props;
+        return <span>{getName(TI_Z042, text)}</span>;
+      },
     },
     {
       title: '分类',
+      width: 200,
       dataIndex: 'category',
       render: (text, record) => (
         <span>{`${record.Cate1Name}/${record.Cate2Name}/${record.Cate3Name}`}</span>
@@ -175,6 +200,14 @@ class SkuFetchComponent extends PureComponent {
         type: 'global/getCategory',
       });
     }
+    dispatch({
+      type: 'global/getMDMCommonality',
+      payload: {
+        Content: {
+          CodeList: ['TI_Z042'],
+        },
+      },
+    });
   }
 
   handleSubmit = fieldsValue => {
@@ -189,6 +222,7 @@ class SkuFetchComponent extends PureComponent {
       },
     });
     const category = { ...fieldsValue.category };
+    // eslint-disable-next-line no-param-reassign
     delete fieldsValue.category;
     dispatch({
       type: 'spu/update',
@@ -252,14 +286,12 @@ class SkuFetchComponent extends PureComponent {
     });
   };
 
-  handleOnRow = record => ({
-    onClick: () => {
-      this.setState({
-        modalVisible: true,
-        formValues: record,
-      });
-    },
-  });
+  handleOnRow = record => {
+    this.setState({
+      modalVisible: true,
+      formValues: record,
+    });
+  };
 
   handleModalVisible = flag => {
     this.setState({
@@ -271,10 +303,6 @@ class SkuFetchComponent extends PureComponent {
     const {
       form: { getFieldDecorator },
     } = this.props;
-    const formLayout = {
-      labelCol: { span: 8 },
-      wrapperCol: { span: 12 },
-    };
     const formItemLayout = {
       labelCol: {
         xs: { span: 24 },
@@ -334,8 +362,8 @@ class SkuFetchComponent extends PureComponent {
               data={{ list: spuList }}
               pagination={pagination}
               rowKey="Code"
+              scroll={{ x: 1200 }}
               columns={this.columns}
-              onRow={this.handleOnRow}
               onChange={this.handleStandardTableChange}
             />
           </div>

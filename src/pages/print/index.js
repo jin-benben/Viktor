@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { Card, Button } from 'antd';
 import { connect } from 'dva';
-import UEditor from '@/components/Ueditor';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
+import UEditor from '@/components/Ueditor';
 
 @connect(({ print, loading }) => ({
   print,
@@ -22,7 +22,6 @@ class PrintPage extends Component {
       dispatch,
     } = this.props;
     if (query.BaseEntry && query.Code) {
-      console.log(query);
       dispatch({
         type: 'print/getPrint',
         payload: {
@@ -102,11 +101,8 @@ class PrintPage extends Component {
         {isEdit ? (
           <div
             style={{
-              // display: isEdit ? 'block' : 'none',
-              // 设置成显示隐藏，如果用display，编辑器初始化内容渲染不出来
               width: 1000,
               margin: '0 auto',
-              overflow: 'auto',
               textAlign: 50,
               marginLeft: 50,
             }}

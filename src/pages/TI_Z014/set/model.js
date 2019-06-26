@@ -4,21 +4,13 @@ export default {
   namespace: 'authoritySet',
 
   state: {
-    authorityList: [],
     treeData: [],
   },
 
   effects: {
-    *fetch({ payload }, { call, put }) {
+    *fetch({ payload, callback }, { call }) {
       const response = yield call(getTreeRule, payload);
-      if (response && response.Status === 200) {
-        yield put({
-          type: 'save',
-          payload: {
-            authorityList: response.Content.rows,
-          },
-        });
-      }
+      if (callback) callback(response);
     },
     *fetchTree({ payload }, { call, put }) {
       const response = yield call(queryTreeRule, payload);
@@ -31,12 +23,8 @@ export default {
         });
       }
     },
-    *update({ payload, callback }, { call, put }) {
+    *update({ payload, callback }, { call }) {
       const response = yield call(setRule, payload);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
       if (callback) callback(response);
     },
   },

@@ -3,7 +3,19 @@ import { connect } from 'dva';
 import router from 'umi/router';
 import Link from 'umi/link';
 import moment from 'moment';
-import { Row, Col, Card, Form, Input, Button, Divider, Select, DatePicker, Icon } from 'antd';
+import {
+  Row,
+  Col,
+  Card,
+  Form,
+  Input,
+  Button,
+  Divider,
+  Select,
+  DatePicker,
+  Icon,
+  message,
+} from 'antd';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import StandardTable from '@/components/StandardTable';
@@ -12,6 +24,7 @@ import DocEntryFrom from '@/components/DocEntryFrom';
 import Organization from '@/components/Organization/multiple';
 import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
 import MyTag from '@/components/Tag';
+import Transfer from '@/components/Transfer';
 import { getName } from '@/utils/utils';
 
 const { RangePicker } = DatePicker;
@@ -27,10 +40,6 @@ const { Option } = Select;
 }))
 @Form.create()
 class supplierQuotationSku extends PureComponent {
-  state = {
-    expandForm: false,
-  };
-
   columns = [
     {
       title: '单号',
@@ -233,6 +242,13 @@ class supplierQuotationSku extends PureComponent {
     },
   ];
 
+  state = {
+    expandForm: false,
+    selectedRows: [],
+    transferModalVisible: false,
+    transferLine: '',
+  };
+
   componentDidMount() {
     const {
       dispatch,
@@ -301,7 +317,7 @@ class supplierQuotationSku extends PureComponent {
           },
           page: 1,
           rows: 30,
-          sidx: 'Code',
+          sidx: 'DocEntry',
           sord: 'Desc',
         },
       });
@@ -314,6 +330,26 @@ class supplierQuotationSku extends PureComponent {
     this.setState({
       expandForm: !expandForm,
     });
+  };
+
+  onSelectRow = selectedRows => {
+    this.setState({ selectedRows: [...selectedRows] });
+  };
+
+  toTransfer = () => {
+    const { selectedRows } = this.state;
+    if (selectedRows.length) {
+      this.setState({
+        transferLine: selectedRows[0],
+        transferModalVisible: true,
+      });
+    } else {
+      message.warning('请先选择转移的行');
+    }
+  };
+
+  handleModalVisible = flag => {
+    this.setState({ transferModalVisible: !!flag });
   };
 
   renderSimpleForm() {
@@ -417,6 +453,10 @@ class supplierQuotationSku extends PureComponent {
       supplierQuotationSku: { supplierQuotationSkuList, pagination },
       loading,
     } = this.props;
+    const { transferModalVisible, transferLine } = this.state;
+    const transferParentMethods = {
+      handleModalVisible: this.handleModalVisible,
+    };
     return (
       <Fragment>
         <Card bordered={false}>
@@ -428,6 +468,10 @@ class supplierQuotationSku extends PureComponent {
               pagination={pagination}
               rowKey="Key"
               scroll={{ x: 2300, y: 700 }}
+              rowSelection={{
+                type: 'radio',
+                onSelectRow: this.onSelectRow,
+              }}
               columns={this.columns}
               onChange={this.handleStandardTableChange}
             />
@@ -442,6 +486,15 @@ class supplierQuotationSku extends PureComponent {
           >
             新建
           </Button>
+          <Button type="primary" onClick={this.toTransfer}>
+            转移
+          </Button>
+          <Transfer
+            SourceEntry={transferLine.DocEntry}
+            SourceType="TI_Z027"
+            modalVisible={transferModalVisible}
+            {...transferParentMethods}
+          />
         </FooterToolbar>
       </Fragment>
     );

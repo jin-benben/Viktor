@@ -9,7 +9,7 @@ import MDMCommonality from '@/components/Select';
 
 import { getName } from '@/utils/utils';
 
-import styles from '../style.less';
+import styles from '../../style.less';
 
 const FormItem = Form.Item;
 
@@ -279,7 +279,7 @@ class OrderPreview extends Component {
     };
     const ToDate = moment().add('30', 'day'); // 询价日期当前时间后30天
     return (
-      <Form onSubmit={this.handleSearch} {...formItemLayout}>
+      <Form {...formItemLayout}>
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={8} sm={24}>
             <FormItem key="DocDate" label="单据日期" {...formLayout}>

@@ -7,10 +7,9 @@ import { connect } from 'dva';
 import { ContainerQuery } from 'react-container-query';
 import { Scrollbars } from 'react-custom-scrollbars';
 import classNames from 'classnames';
-
+import Media from 'react-media';
 import pathToRegexp from 'path-to-regexp';
 import { conversionBreadcrumbList } from '@/components/PageHeader/breadcrumb';
-import Media from 'react-media';
 
 import logo from '../assets/log.jpg';
 

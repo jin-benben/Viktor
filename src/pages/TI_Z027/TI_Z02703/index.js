@@ -105,6 +105,18 @@ class InquiryEdit extends React.Component {
       align: 'center',
     },
     {
+      title: '产地',
+      width: 80,
+      dataIndex: 'ManLocation',
+      align: 'center',
+      render: text => {
+        const {
+          global: { TI_Z042 },
+        } = this.props;
+        return <span>{getName(TI_Z042, text)}</span>;
+      },
+    },
+    {
       title: '单位',
       width: 80,
 
@@ -256,7 +268,7 @@ class InquiryEdit extends React.Component {
       type: 'global/getMDMCommonality',
       payload: {
         Content: {
-          CodeList: ['Saler', 'Purchaser', 'Curr', 'TI_Z004', 'WhsCode', 'Company'],
+          CodeList: ['Saler', 'Purchaser', 'Curr', 'TI_Z004', 'TI_Z042', 'WhsCode', 'Company'],
         },
       },
     });
@@ -324,6 +336,11 @@ class InquiryEdit extends React.Component {
         </Menu.Item>
         <Menu.Item>
           <Emails BaseEntry={formVals.DocEntry} BaseType="TI_Z027" />
+        </Menu.Item>
+        <Menu.Item>
+          <a href="javacript:void(0)" onClick={() => this.setState({ transferModalVisible: true })}>
+            转移
+          </a>
         </Menu.Item>
       </Menu>
     );
@@ -439,8 +456,7 @@ class InquiryEdit extends React.Component {
               <MyTag type="关闭" value="Y" />
             ) : (
               <Fragment>
-                <MyTag type="报价" value={formVals.SDocStatus} />
-                <MyTag type="询价" value={formVals.PDocStatus} />
+                <MyTag type="询价" value={formVals.DocStatus} />
               </Fragment>
             )}
           </Description>
@@ -456,7 +472,7 @@ class InquiryEdit extends React.Component {
             <StandardTable
               data={{ list: newdata }}
               rowKey="LineID"
-              scroll={{ x: 1750 }}
+              scroll={{ x: 1830 }}
               columns={this.skuColumns}
             />
           </TabPane>

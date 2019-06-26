@@ -174,9 +174,9 @@ class InquiryEdit extends PureComponent {
       >
         <DescriptionList style={{ marginBottom: 24, marginTop: 24 }}>
           <Description term="单号">{odlnordnDetailInfo.DocEntry}</Description>
-          <Description term="客户">{`${odlnordnDetailInfo.CardName}(${
-            odlnordnDetailInfo.CardCode
-          })`}</Description>
+          <Description term="客户">
+            {`${odlnordnDetailInfo.CardName}(${odlnordnDetailInfo.CardCode})`}
+          </Description>
           <Description term="单据日期">
             {moment(odlnordnDetailInfo.DocDate).format('YYYY-MM-DD')}
           </Description>
@@ -189,9 +189,9 @@ class InquiryEdit extends PureComponent {
           <Description term="销售员">
             <span>{getName(Saler, odlnordnDetailInfo.SlpCode)}</span>
           </Description>
-          <Description term="发货地址">{`${odlnordnDetailInfo.ShipToCode}${
-            odlnordnDetailInfo.Address2
-          }`}</Description>
+          <Description term="发货地址">
+            {`${odlnordnDetailInfo.ShipToCode}${odlnordnDetailInfo.Address2}`}
+          </Description>
           <Description term="客户参考号">{odlnordnDetailInfo.NumAtCard}</Description>
           <Description term="备注">{odlnordnDetailInfo.Comments}</Description>
           <Description term="单据总计">{odlnordnDetailInfo.DocTotal}</Description>

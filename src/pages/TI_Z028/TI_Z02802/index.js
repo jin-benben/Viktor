@@ -1,5 +1,6 @@
+/* eslint-disable react/destructuring-assignment */
 import React, { PureComponent } from 'react';
-import { Card, Table, Button } from 'antd';
+import { Card, Table, Button, Icon, List } from 'antd';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import DescriptionList from 'ant-design-pro/lib/DescriptionList';
@@ -7,7 +8,7 @@ import moment from 'moment';
 import { connect } from 'dva';
 import Link from 'umi/link';
 import router from 'umi/router';
-
+import styles from '../style.less';
 import { getName } from '@/utils/utils';
 
 const { Description } = DescriptionList;
@@ -76,26 +77,56 @@ class TI_Z02802 extends PureComponent {
       title: '品牌',
       width: 80,
       dataIndex: 'BrandName',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {' '}
+          {text}{' '}
+        </Ellipsis>
+      ),
     },
     {
       title: '名称',
       width: 100,
       dataIndex: 'ProductName',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {' '}
+          {text}{' '}
+        </Ellipsis>
+      ),
     },
     {
       title: '型号',
       width: 100,
       dataIndex: 'ManufactureNO',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {' '}
+          {text}{' '}
+        </Ellipsis>
+      ),
     },
     {
       title: '参数',
       width: 100,
       dataIndex: 'Parameters',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {' '}
+          {text}{' '}
+        </Ellipsis>
+      ),
     },
     {
       title: '包装',
       width: 100,
       dataIndex: 'Package',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {' '}
+          {text}{' '}
+        </Ellipsis>
+      ),
     },
     {
       title: '采购员',
@@ -159,6 +190,12 @@ class TI_Z02802 extends PureComponent {
       title: '供应商',
       width: 150,
       dataIndex: 'CardName',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {' '}
+          {text}{' '}
+        </Ellipsis>
+      ),
     },
   ];
 
@@ -241,7 +278,7 @@ class TI_Z02802 extends PureComponent {
       type: 'global/getMDMCommonality',
       payload: {
         Content: {
-          CodeList: ['Purchaser'],
+          CodeList: ['Purchaser', 'Curr'],
         },
       },
     });
@@ -267,12 +304,71 @@ class TI_Z02802 extends PureComponent {
   }
 
   expandedRowRender = record => (
-    <Table
+    <List
+      itemLayout="horizontal"
+      style={{ marginLeft: 60 }}
+      className={styles.askInfo}
       dataSource={record.TI_Z02803}
-      bordered
-      rowKey="Key"
-      pagination={false}
-      columns={this.childColumns}
+      renderItem={item => (
+        <List.Item>
+          <List.Item.Meta
+            title={`${item.CardName}(${item.CardCode})`}
+            description={
+              <ul className={styles.itemInfo}>
+                <li>
+                  联系人：<span>{item.Contacts}</span>
+                </li>
+                <li>
+                  手机：<span>{item.CellphoneNO}</span>
+                </li>
+                <li>
+                  邮箱：<span>{item.Email}</span>
+                </li>
+                <li>
+                  备注：<span>{item.LineComment}</span>
+                </li>
+                <li>
+                  价格：<span>{item.Price}</span>
+                </li>
+                <li>
+                  交期：<span>{moment(item.InquiryDueDate).format('YYYY-MM-DD')}</span>
+                </li>
+                <li>
+                  询价返回时间：<span>{moment(item.PriceRDateTime).format('YYYY-MM-DD')}</span>
+                </li>
+                <li>
+                  询价单号：
+                  <Link
+                    target="_blank"
+                    style={{ marginLeft: 10 }}
+                    to={`/purchase/TI_Z027/update?DocEntry=${item.PInquiryEntry}`}
+                  >
+                    {item.PInquiryEntry}
+                  </Link>
+                </li>
+                <li>
+                  最优：
+                  <span>
+                    {item.IsSelect === 'Y' ? (
+                      <Icon type="smile" theme="twoTone" />
+                    ) : (
+                      <Icon type="frown" theme="twoTone" />
+                    )}
+                  </span>
+                </li>
+                <li>
+                  币种：
+                  <span>{getName(this.props.global.Curr, item.Currency)}</span>
+                </li>
+                <li>
+                  汇率：
+                  <span>{item.DocRate}</span>
+                </li>
+              </ul>
+            }
+          />
+        </List.Item>
+      )}
     />
   );
 

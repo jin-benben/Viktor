@@ -7,6 +7,7 @@ export default {
     orderList: [],
     queryData: {
       Content: {
+        PLineStatus: 'O',
         SearchText: '',
         SearchKey: '',
       },

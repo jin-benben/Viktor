@@ -16,9 +16,8 @@ import {
   Popover,
   Divider,
 } from 'antd';
-import Upload from '@/components/Upload';
-import Link from 'umi/link';
 import router from 'umi/router';
+import Upload from '@/components/Upload';
 
 const FormItem = Form.Item;
 const { TreeNode } = Tree;

@@ -141,11 +141,23 @@ class InquiryEdit extends PureComponent {
       width: 80,
       dataIndex: 'ManLocation',
       align: 'center',
+      render: text => {
+        const {
+          global: { TI_Z042 },
+        } = this.props;
+        return <span>{getName(TI_Z042, text)}</span>;
+      },
     },
     {
       title: 'HS编码',
       width: 100,
       dataIndex: 'HSCode',
+      render: text => {
+        const {
+          global: { HS },
+        } = this.props;
+        return <span>{getName(HS, text)}</span>;
+      },
     },
     {
       title: '报关税率',
@@ -386,7 +398,16 @@ class InquiryEdit extends PureComponent {
       type: 'global/getMDMCommonality',
       payload: {
         Content: {
-          CodeList: ['Saler', 'Purchaser', 'TI_Z004', 'Curr', 'WhsCode', 'Company'],
+          CodeList: [
+            'Saler',
+            'Purchaser',
+            'TI_Z004',
+            'TI_Z042',
+            'HS',
+            'Curr',
+            'WhsCode',
+            'Company',
+          ],
         },
       },
     });

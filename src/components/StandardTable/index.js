@@ -33,7 +33,14 @@ class StandardTable extends PureComponent {
     this.state = {
       selectedRowKeys: [],
       columns: props.columns,
+      height: 0,
     };
+  }
+
+  componentDidMount() {
+    this.setState({
+      height: document.body.offsetHeight - 56 - 64 - 56 - 24 - 32 - 30,
+    });
   }
 
   static getDerivedStateFromProps(nextProps) {
@@ -84,11 +91,11 @@ class StandardTable extends PureComponent {
   };
 
   render() {
-    const { data = {}, size, rowKey, ...rest } = this.props;
+    const { data = {}, size, rowKey, scroll, ...rest } = this.props;
     let { rowSelection } = this.props;
 
     const { list = [], pagination } = data;
-    const { selectedRowKeys } = this.state;
+    const { selectedRowKeys, height } = this.state;
     let paginationProps = false;
     if (pagination) {
       paginationProps = {
@@ -116,17 +123,19 @@ class StandardTable extends PureComponent {
         onResize: this.handleResize(index),
       }),
     }));
-
     return (
       <div className={styles.standardTable}>
         <Table
           bordered
+          // eslint-disable-next-line no-return-assign
+          ref={c => (this.tabledom = c)}
           components={this.components}
           rowKey={rowKey || 'key'}
           dataSource={list}
           pagination={paginationProps}
           size={size || 'small'}
           onChange={this.handleTableChange}
+          scroll={{ ...scroll, y: height }}
           {...rest}
           rowSelection={rowSelection}
           columns={columns} //  columns={columns} 需放到  {...rest} 后，防止 columns 被覆盖

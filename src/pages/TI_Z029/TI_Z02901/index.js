@@ -30,10 +30,10 @@ import moment from 'moment';
 import round from 'lodash/round';
 import router from 'umi/router';
 import Link from 'umi/link';
+import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import CancelOrder from '@/components/Modal/CancelOrder';
 import StandardTable from '@/components/StandardTable';
 import EditableFormTable from '@/components/EditableFormTable';
-import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import OrderAttachUpload from '@/components/Modal/OrderAttachUpload';
 import AskPriceFetch from '../components/askPriceFetch';
 import Brand from '@/components/Brand';
@@ -1579,10 +1579,10 @@ class TI_Z029Component extends React.Component {
               </FormItem>
             </Col>
             <Col lg={10} md={12} sm={24}>
-              <FormItem key="ToDate" {...this.formLayout} label="有效期至">
-                {getFieldDecorator('ToDate', {
-                  initialValue: formVals.ToDate ? moment(formVals.ToDate, 'YYYY-MM-DD') : null,
-                  rules: [{ required: true, message: '请选择有效期！' }],
+              <FormItem key="DueDate" {...this.formLayout} label="要求交期">
+                {getFieldDecorator('DueDate', {
+                  initialValue: formVals.DueDate ? moment(formVals.DueDate, 'YYYY-MM-DD') : null,
+                  rules: [{ required: true, message: '请选择要求交期！' }],
                 })(<DatePicker style={{ width: '100%' }} />)}
               </FormItem>
             </Col>
@@ -1688,12 +1688,11 @@ class TI_Z029Component extends React.Component {
                   )}
                 </FormItem>
               </Col>
-
               <Col lg={8} md={12} sm={24}>
-                <FormItem key="DueDate" {...this.formLayout} label="要求交期">
-                  {getFieldDecorator('DueDate', {
-                    initialValue: formVals.DueDate ? moment(formVals.DueDate, 'YYYY-MM-DD') : null,
-                    rules: [{ required: true, message: '请选择要求交期！' }],
+                <FormItem key="ToDate" {...this.formLayout} label="有效期至">
+                  {getFieldDecorator('ToDate', {
+                    initialValue: formVals.ToDate ? moment(formVals.ToDate, 'YYYY-MM-DD') : null,
+                    rules: [{ required: true, message: '请选择有效期！' }],
                   })(<DatePicker style={{ width: '100%' }} />)}
                 </FormItem>
               </Col>

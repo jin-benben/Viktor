@@ -46,7 +46,7 @@ export async function setRule(params) {
 }
 
 export async function getTreeRule(params) {
-  return request('/MDM/TI_Z015/TI_Z01502', {
+  return request('/MDM/TI_Z015/TI_Z01505', {
     method: 'POST',
     data: {
       ...params,

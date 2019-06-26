@@ -28,13 +28,17 @@ class MDMCommonality extends PureComponent {
     }
   };
 
+  filterOption = (inputValue, option) => option.props.children.indexOf(inputValue) !== -1;
+
   render() {
     const { value, data } = this.state;
+    const { placeholder } = this.props;
     return (
       <Select
         value={value}
-        placeholder="请选择"
-        filterOption={false}
+        showSearch
+        placeholder={`请选择${placeholder}`}
+        filterOption={this.filterOption}
         onChange={this.handleChange}
         style={{ width: '100%' }}
       >

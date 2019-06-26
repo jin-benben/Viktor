@@ -309,8 +309,8 @@ class inquiryFetchtrackPage extends PureComponent {
             </FormItem>
           </Col>
           <Col md={5} sm={24}>
-            <FormItem key="SourceType" {...formLayout} label="处理人">
-              {getFieldDecorator('SourceType')(<MDMCommonality data={TI_Z004} />)}
+            <FormItem key="Processor" {...formLayout} label="处理人">
+              {getFieldDecorator('Processor')(<MDMCommonality data={TI_Z004} />)}
             </FormItem>
           </Col>
           {expandForm ? (

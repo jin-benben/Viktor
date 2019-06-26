@@ -19,7 +19,8 @@ class UEditor extends PureComponent {
       const ue = UE.getEditor('container', {
         UEDITOR_HOME_URL: '/ueditor/',
         serverUrl: 'http://47.104.65.49:8089/controller.ashx',
-        initialFrameHeight: 300,
+        initialFrameHeight: 600,
+        autoHeightEnabled: false,
         toolbars: [
           [
             'source', // html

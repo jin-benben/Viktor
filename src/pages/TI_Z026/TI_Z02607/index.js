@@ -389,7 +389,7 @@ class orderLine extends PureComponent {
           },
           page: 1,
           rows: 30,
-          sidx: 'Code',
+          sidx: 'DocEntry',
           sord: 'Desc',
         },
       });

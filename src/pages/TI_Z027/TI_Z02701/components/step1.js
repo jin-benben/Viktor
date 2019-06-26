@@ -474,13 +474,15 @@ class NeedTabl extends React.Component {
           {expandForm ? (
             <Fragment>
               <Col md={5} sm={24}>
-                <FormItem label="采购员" {...formLayout}>
-                  {getFieldDecorator('Purchaser')(<MDMCommonality data={Purchaser} />)}
-                </FormItem>
-              </Col>
-              <Col md={5} sm={24}>
                 <FormItem key="DeptList" {...this.formLayout} label="部门">
                   {getFieldDecorator('DeptList')(<Organization />)}
+                </FormItem>
+              </Col>
+              <Col md={4} sm={24}>
+                <FormItem {...formLayout}>
+                  {getFieldDecorator('Purchaser')(
+                    <MDMCommonality placeholder="采购员" data={Purchaser} />
+                  )}
                 </FormItem>
               </Col>
             </Fragment>

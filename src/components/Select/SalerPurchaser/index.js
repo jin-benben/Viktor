@@ -24,7 +24,7 @@ class SalerPurchaser extends PureComponent {
       !prevState.data.length
     ) {
       return {
-        value: Number(nextProps.initialValue),
+        value: nextProps.initialValue,
         data: nextProps.data,
       };
     }

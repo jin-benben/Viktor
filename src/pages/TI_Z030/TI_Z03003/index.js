@@ -161,6 +161,41 @@ class InquiryEdit extends React.Component {
       },
     },
     {
+      title: '产地',
+      width: 80,
+      dataIndex: 'ManLocation',
+      align: 'center',
+      render: text => {
+        const {
+          global: { TI_Z042 },
+        } = this.props;
+        return <span>{getName(TI_Z042, text)}</span>;
+      },
+    },
+    {
+      title: 'HS编码',
+      width: 100,
+      dataIndex: 'HSCode',
+      render: text => {
+        const {
+          global: { HS },
+        } = this.props;
+        return <span>{getName(HS, text)}</span>;
+      },
+    },
+    {
+      title: '报关税率',
+      width: 80,
+      dataIndex: 'HSVatRate',
+      align: 'center',
+    },
+    {
+      title: '附加税率',
+      width: 80,
+      dataIndex: 'HSVatRateOther',
+      align: 'center',
+    },
+    {
       title: '询价最终价',
       width: 100,
       dataIndex: 'InquiryPrice',
@@ -307,7 +342,16 @@ class InquiryEdit extends React.Component {
       type: 'global/getMDMCommonality',
       payload: {
         Content: {
-          CodeList: ['Saler', 'Purchaser', 'TI_Z004', 'Curr', 'WhsCode', 'Company'],
+          CodeList: [
+            'Saler',
+            'Purchaser',
+            'TI_Z004',
+            'TI_Z042',
+            'HS',
+            'Curr',
+            'WhsCode',
+            'Company',
+          ],
         },
       },
     });
@@ -584,7 +628,7 @@ class InquiryEdit extends React.Component {
             <StandardTable
               data={{ list: newdata }}
               rowKey="LineID"
-              scroll={{ x: 2800, y: 600 }}
+              scroll={{ x: 3100, y: 600 }}
               columns={this.skuColumns}
             />
           </TabPane>

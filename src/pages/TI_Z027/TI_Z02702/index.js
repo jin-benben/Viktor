@@ -22,16 +22,16 @@ import {
   Empty,
 } from 'antd';
 import moment from 'moment';
+import Link from 'umi/link';
 import round from 'lodash/round';
+import Ellipsis from 'ant-design-pro/lib/Ellipsis';
+import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import CancelOrder from '@/components/Modal/CancelOrder';
 import MDMCommonality from '@/components/Select';
-import Link from 'umi/link';
 import EditableFormTable from '@/components/EditableFormTable';
-import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import OrderAttachUpload from '@/components/Modal/OrderAttachUpload';
 import SKUModal from '@/components/Modal/SKU';
 import Brand from '@/components/Brand';
-import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import Attachment from '@/components/Attachment';
 import SupplierSelect from '@/components/Select/Supplier';
 import { getName } from '@/utils/utils';
@@ -139,6 +139,29 @@ class InquiryEdit extends React.Component {
       inputType: 'textArea',
       editable: true,
       align: 'center',
+    },
+    {
+      title: '产地',
+      width: 100,
+      dataIndex: 'ManLocation',
+      align: 'center',
+      render: (text, record, index) => {
+        const {
+          global: { TI_Z042 },
+        } = this.props;
+        if (!record.lastIndex) {
+          return (
+            <MDMCommonality
+              onChange={value => {
+                this.rowSelectChange(value, record, index, 'ManLocation');
+              }}
+              initialValue={text}
+              data={TI_Z042}
+            />
+          );
+        }
+        return '';
+      },
     },
     {
       title: '数量',
@@ -341,7 +364,7 @@ class InquiryEdit extends React.Component {
       type: 'global/getMDMCommonality',
       payload: {
         Content: {
-          CodeList: ['Saler', 'Company', 'Purchaser', 'Curr', 'TI_Z004', 'WhsCode'],
+          CodeList: ['Saler', 'Company', 'Purchaser', 'Curr', 'TI_Z004', 'TI_Z042', 'WhsCode'],
         },
       },
     });
@@ -888,7 +911,7 @@ class InquiryEdit extends React.Component {
             <EditableFormTable
               rowChange={this.rowChange}
               rowKey="LineID"
-              scroll={{ x: 2000 }}
+              scroll={{ x: 2100 }}
               columns={this.skuColumns}
               data={newdata}
             />

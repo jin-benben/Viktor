@@ -18,17 +18,20 @@ import {
   message,
   Radio,
   Table,
+  Select,
 } from 'antd';
 
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import MDMCommonality from '@/components/Select';
+import Organization from '@/components/Organization/multiple';
+import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
 import OrderPreview from './components';
 import { getName } from '@/utils/utils';
-import styles from './style.less';
+import styles from '../style.less';
 
 const { RangePicker } = DatePicker;
-
+const { Option } = Select;
 const FormItem = Form.Item;
 
 /* eslint react/no-multi-comp:0 */
@@ -248,6 +251,7 @@ class TI_Z02801 extends React.Component {
     selectedRows: [],
     orderLineList: [],
     modalVisible: false,
+    expandForm: false,
     selectedRowKeys: [],
   };
 
@@ -269,6 +273,9 @@ class TI_Z02801 extends React.Component {
           CodeList: ['Saler', 'Company', 'Purchaser', 'Curr'],
         },
       },
+    });
+    dispatch({
+      type: 'global/getAuthority',
     });
   }
 
@@ -389,7 +396,11 @@ class TI_Z02801 extends React.Component {
   handleSearch = e => {
     // 搜索
     e.preventDefault();
-    const { dispatch, form } = this.props;
+    const {
+      dispatch,
+      TI_Z02801: { queryData },
+      form,
+    } = this.props;
 
     form.validateFields((err, fieldsValue) => {
       if (err) return;
@@ -399,7 +410,8 @@ class TI_Z02801 extends React.Component {
         DocDateFrom = moment(fieldsValue.dateArr[0]).format('YYYY-MM-DD');
         DocDateTo = moment(fieldsValue.dateArr[1]).format('YYYY-MM-DD');
       }
-      const queryData = {
+      const newQueryData = {
+        ...queryData.Content,
         ...fieldsValue,
         DocDateFrom,
         DocDateTo,
@@ -410,11 +422,11 @@ class TI_Z02801 extends React.Component {
           Content: {
             SearchText: '',
             SearchKey: 'Name',
-            ...queryData,
+            ...newQueryData,
           },
           page: 1,
           rows: 30,
-          sidx: 'Code',
+          sidx: 'DocEntry',
           sord: 'Desc',
         },
       });
@@ -433,6 +445,14 @@ class TI_Z02801 extends React.Component {
       return;
     }
     this.setState({ modalVisible: true });
+  };
+
+  toggleForm = () => {
+    // 是否展开
+    const { expandForm } = this.state;
+    this.setState({
+      expandForm: !expandForm,
+    });
   };
 
   okHandle = (selectedRows, fieldsValue) => {
@@ -470,9 +490,9 @@ class TI_Z02801 extends React.Component {
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
-      global: { Purchaser, currentUser },
+      global: { Saler },
     } = this.props;
-
+    const { expandForm } = this.state;
     const formLayout = {
       labelCol: { span: 8 },
       wrapperCol: { span: 16 },
@@ -493,19 +513,52 @@ class TI_Z02801 extends React.Component {
               )}
             </FormItem>
           </Col>
-          <Col md={6} lg={4} sm={24}>
+          <Col md={5} sm={24}>
             <FormItem key="Owner" {...formLayout} label="采购员">
-              {getFieldDecorator('Owner', { initialValue: currentUser.Owner })(
-                <MDMCommonality initialValue={currentUser.Owner} data={Purchaser} />
-              )}
+              {getFieldDecorator('Owner')(<SalerPurchaser />)}
             </FormItem>
           </Col>
+          {expandForm ? (
+            <Fragment>
+              <Col md={5} sm={24}>
+                <FormItem key="DeptList" {...this.formLayout} label="部门">
+                  {getFieldDecorator('DeptList')(<Organization />)}
+                </FormItem>
+              </Col>
+              <Col md={4} lg={4} sm={24}>
+                <FormItem key="Sales" {...formLayout} label="销售员">
+                  {getFieldDecorator('Sales')(<MDMCommonality data={Saler} />)}
+                </FormItem>
+              </Col>
+              <Col md={4} sm={24}>
+                <FormItem key="PLineStatus" {...formLayout}>
+                  {getFieldDecorator('PLineStatus', { initialValue: 'O' })(
+                    <Select placeholder="请选择确认状态">
+                      <Option value="C">已确认</Option>
+                      <Option value="O">未确认</Option>
+                    </Select>
+                  )}
+                </FormItem>
+              </Col>
+            </Fragment>
+          ) : null}
           <Col md={2} sm={24}>
             <FormItem key="searchBtn">
               <span className="submitButtons">
                 <Button type="primary" htmlType="submit">
                   查询
                 </Button>
+                <a style={{ marginLeft: 8 }} onClick={this.toggleForm}>
+                  {expandForm ? (
+                    <span>
+                      收起 <Icon type="up" />
+                    </span>
+                  ) : (
+                    <span>
+                      展开 <Icon type="down" />
+                    </span>
+                  )}
+                </a>
               </span>
             </FormItem>
           </Col>

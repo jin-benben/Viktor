@@ -76,7 +76,9 @@ class TI_Z02803 extends PureComponent {
     const {
       dispatch,
       TI_Z02803: { queryData },
+      global: { currentUser },
     } = this.props;
+    Object.assign(queryData.Content, { Owner: currentUser.Owner });
     dispatch({
       type: 'TI_Z02803/fetch',
       payload: {
@@ -136,7 +138,7 @@ class TI_Z02803 extends PureComponent {
           },
           page: 1,
           rows: 30,
-          sidx: 'Code',
+          sidx: 'DocEntry',
           sord: 'Desc',
         },
       });
@@ -146,7 +148,7 @@ class TI_Z02803 extends PureComponent {
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
-      global: { Purchaser },
+      global: { Purchaser, currentUser },
     } = this.props;
 
     const formLayout = {
@@ -181,9 +183,11 @@ class TI_Z02803 extends PureComponent {
               )}
             </FormItem>
           </Col>
-          <Col md={4} sm={24}>
+          <Col md={6} sm={24}>
             <FormItem key="Owner" {...formLayout} label="采购员">
-              {getFieldDecorator('Owner', {})(<MDMCommonality data={Purchaser} />)}
+              {getFieldDecorator('Owner', { initialValue: currentUser.Owner })(
+                <MDMCommonality initialValue={currentUser.Owner} data={Purchaser} />
+              )}
             </FormItem>
           </Col>
 

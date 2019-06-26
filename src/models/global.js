@@ -35,6 +35,7 @@ export default {
     TI_Z004: [], // 员工列表
     TI_Z003: [], // 部门
     TI_Z042: [], // 产地
+    HS: [], // 海关编码
     HSCodeList: [], // hscode
     TI_Z050: [], // 转移类型
     ProcessorList: [], // 处理人,
