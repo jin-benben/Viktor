@@ -14,7 +14,8 @@ import NeedAskPrice from '../components/needAskPrice';
 import OrderPrint from '@/components/Modal/OrderPrint';
 import TargetLine from '@/components/TargetLine';
 import Emails from '@/components/Modal/Email';
-
+import PrintHistory from '@/components/Order/PrintHistory';
+import SendEmail from '@/components/Order/SendEmail';
 import { getName } from '@/utils/utils';
 import { orderSourceType, linkmanColumns, otherCostCColumns, baseType } from '@/utils/publicData';
 
@@ -563,6 +564,7 @@ class InquiryEdit extends React.Component {
   render() {
     const {
       global: { Saler, Company, TI_Z004 },
+      location: { query },
     } = this.props;
     const { formVals, attachmentVisible, targetLine, needmodalVisible } = this.state;
 
@@ -701,6 +703,12 @@ class InquiryEdit extends React.Component {
               rowKey="UserID"
               columns={linkmanColumns}
             />
+          </TabPane>
+          <TabPane tab="打印记录" key="6">
+            <PrintHistory QueryType="4" QueryKey={query.DocEntry} />
+          </TabPane>
+          <TabPane tab="邮件发送记录" key="7">
+            <SendEmail QueryType="4" QueryKey={query.DocEntry} />
           </TabPane>
         </Tabs>
         <TargetLine

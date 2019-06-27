@@ -13,6 +13,8 @@ import MyTag from '@/components/Tag';
 import Emails from '@/components/Modal/Email';
 import Transfer from '@/components/Transfer';
 import OrderPrint from '@/components/Modal/OrderPrint';
+import PrintHistory from '@/components/Order/PrintHistory';
+import SendEmail from '@/components/Order/SendEmail';
 import { getName } from '@/utils/utils';
 import { baseType } from '@/utils/publicData';
 
@@ -407,6 +409,7 @@ class InquiryEdit extends React.Component {
   render() {
     const {
       global: { TI_Z004, Company, Curr, Purchaser },
+      location: { query },
     } = this.props;
     const { formVals, attachmentVisible, prviewList, transferModalVisible } = this.state;
 
@@ -528,6 +531,12 @@ class InquiryEdit extends React.Component {
             ) : (
               <Empty />
             )}
+          </TabPane>
+          <TabPane tab="打印记录" key="4">
+            <PrintHistory QueryType="2" QueryKey={query.DocEntry} />
+          </TabPane>
+          <TabPane tab="邮件发送记录" key="5">
+            <SendEmail QueryType="2" QueryKey={query.DocEntry} />
           </TabPane>
         </Tabs>
 

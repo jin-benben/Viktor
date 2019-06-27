@@ -2,9 +2,9 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import { Row, Col, Card, Form, Input, Modal, Button, message, Divider, Select } from 'antd';
+import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import StandardTable from '@/components/StandardTable';
 import Supplier from '@/components/Supplier';
-import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import Upload from '@/components/Upload';
 import MDMCommonality from '@/components/Select';
 import { getName } from '@/utils/utils';
@@ -109,7 +109,12 @@ class CreateForm extends PureComponent {
         if (err) return;
         form.resetFields();
         delete fieldsValue.Picture;
-        fieldsValue.WebSite = fieldsValue.prefix + fieldsValue.WebSite;
+        if (
+          fieldsValue.WebSite.indexOf('Http://') === -1 &&
+          fieldsValue.WebSite.indexOf('Https://') === -1
+        ) {
+          fieldsValue.WebSite = fieldsValue.prefix + fieldsValue.WebSite;
+        }
         delete fieldsValue.prefix;
         handleSubmit({ ...formVals, ...fieldsValue });
       });

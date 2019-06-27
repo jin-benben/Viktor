@@ -1,28 +1,54 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import moment from 'moment';
 import Link from 'umi/link';
-import { Row, Col, Card, Form, Input, Button, Select, DatePicker } from 'antd';
+import moment from 'moment';
+import { Row, Col, Card, Form, Input, Button, DatePicker } from 'antd';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import StandardTable from '@/components/StandardTable';
-import MyTag from '@/components/Tag';
-import DocEntryFrom from '@/components/DocEntryFrom';
-import { emailSendType } from '@/utils/publicData';
 import { getName } from '@/utils/utils';
+import request from '@/utils/request';
+import { emailSendType } from '@/utils/publicData';
 
 const { RangePicker } = DatePicker;
 
 const FormItem = Form.Item;
-const { Option } = Select;
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ sendEmail, loading, global }) => ({
-  sendEmail,
+@connect(({ loading, global }) => ({
   global,
-  loading: loading.models.sendEmail,
+  loading: loading.models.global,
 }))
 @Form.create()
-class PrintHistory extends PureComponent {
+class ClientAsk extends PureComponent {
+  state = {
+    queryData: {
+      Content: {
+        DocDateFrom: '',
+        DocDateTo: '',
+        DeptList: [],
+        QueryType: '',
+        QueryKey: '',
+        LineStatus: '',
+        Closed: 'N',
+        SearchText: '',
+        SearchKey: '',
+      },
+      page: 1,
+      rows: 30,
+      sidx: 'DocEntry',
+      sord: 'Desc',
+    },
+    pagination: {
+      showSizeChanger: true,
+      showTotal: total => `共 ${total} 条`,
+      pageSizeOptions: ['30', '60', '90'],
+      total: 0,
+      pageSize: 30,
+      current: 1,
+    },
+    orderList: [],
+  };
+
   columns = [
     {
       title: '单号',
@@ -51,12 +77,6 @@ class PrintHistory extends PureComponent {
       width: 100,
       dataIndex: 'CreateDate',
       render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
-    },
-    {
-      title: '状态',
-      dataIndex: 'SendStatus',
-      width: 80,
-      render: text => <MyTag type="成功" value={text} />,
     },
     {
       title: '发送人',
@@ -118,45 +138,70 @@ class PrintHistory extends PureComponent {
   ];
 
   componentDidMount() {
-    const {
-      dispatch,
-      sendEmail: { queryData },
-    } = this.props;
-    dispatch({
-      type: 'sendEmail/fetch',
-      payload: {
-        ...queryData,
+    const { QueryType, QueryKey } = this.props;
+
+    const queryData = {
+      Content: {
+        DocDateFrom: '',
+        DocDateTo: '',
+        QueryType,
+        QueryKey,
+        SearchText: '',
+        SearchKey: '',
       },
-    });
-    dispatch({
-      type: 'global/getMDMCommonality',
-      payload: {
-        Content: {
-          CodeList: ['TI_Z004'],
-        },
+      page: 1,
+      rows: 30,
+      sidx: 'DocEntry',
+      sord: 'Desc',
+    };
+    this.setState(
+      {
+        queryData,
       },
-    });
+      () => {
+        this.getOrder(queryData);
+      }
+    );
   }
 
-  handleStandardTableChange = pagination => {
-    const {
-      dispatch,
-      sendEmail: { queryData },
-    } = this.props;
-    dispatch({
-      type: 'sendEmail/fetch',
-      payload: {
-        ...queryData,
-        page: pagination.current,
-        rows: pagination.pageSize,
+  getOrder = async params => {
+    const response = await request('/Report/TI_Z047/TI_Z04706', {
+      method: 'POST',
+      data: {
+        ...params,
       },
     });
+    if (response && response.Status === 200) {
+      if (response.Content) {
+        const { rows, records, page } = response.Content;
+        const { pagination } = this.state;
+        this.setState({
+          orderList: [...rows],
+          pagination: { ...pagination, total: records, current: page },
+        });
+      }
+    }
+  };
+
+  handleStandardTableChange = pagination => {
+    const { queryData } = this.state;
+    const { current, pageSize } = pagination;
+    Object.assign(queryData, { page: current, rows: pageSize });
+    this.setState(
+      {
+        queryData,
+      },
+      () => {
+        this.getOrder(queryData);
+      }
+    );
   };
 
   handleSearch = e => {
     // 搜索
     e.preventDefault();
-    const { dispatch, form } = this.props;
+    const { form } = this.props;
+    const { queryData } = this.state;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
       let DocDateFrom;
@@ -165,26 +210,23 @@ class PrintHistory extends PureComponent {
         DocDateFrom = moment(fieldsValue.dateArr[0]).format('YYYY-MM-DD');
         DocDateTo = moment(fieldsValue.dateArr[1]).format('YYYY-MM-DD');
       }
-      const queryData = {
+      // eslint-disable-next-line no-param-reassign
+      delete fieldsValue.dateArr;
+      const queryDataContent = {
         ...fieldsValue,
         DocDateFrom,
         DocDateTo,
-        ...fieldsValue.orderNo,
       };
-      dispatch({
-        type: 'sendEmail/fetch',
-        payload: {
-          Content: {
-            SearchText: '',
-            SearchKey: 'Name',
-            ...queryData,
-          },
-          page: 1,
-          rows: 30,
-          sidx: 'DocEntry',
-          sord: 'Desc',
+      Object.assign(queryData.Content, queryDataContent);
+      Object.assign(queryData, { page: 1, rows: 30 });
+      this.setState(
+        {
+          queryData,
         },
-      });
+        () => {
+          this.getOrder(queryData);
+        }
+      );
     });
   };
 
@@ -192,11 +234,11 @@ class PrintHistory extends PureComponent {
     const {
       form: { getFieldDecorator },
     } = this.props;
-
     const formLayout = {
       labelCol: { span: 8 },
       wrapperCol: { span: 16 },
     };
+
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
@@ -205,34 +247,14 @@ class PrintHistory extends PureComponent {
               {getFieldDecorator('SearchText')(<Input placeholder="请输入关键字" />)}
             </FormItem>
           </Col>
-          <Col md={5} sm={24}>
+          <Col md={6} sm={24}>
             <FormItem label="日期" {...formLayout}>
               {getFieldDecorator('dateArr', { rules: [{ type: 'array' }] })(
                 <RangePicker style={{ width: '100%' }} />
               )}
             </FormItem>
           </Col>
-          <Col md={5} sm={24}>
-            <FormItem key="BaseType" {...formLayout} label="单据类型">
-              {getFieldDecorator('BaseType')(
-                <Select placeholder="请选择单据类型！" style={{ width: '100%' }}>
-                  {emailSendType.map(option => (
-                    <Option key={option.Key} value={option.Key}>
-                      {option.Value}
-                    </Option>
-                  ))}
-                </Select>
-              )}
-            </FormItem>
-          </Col>
-          <Col md={5} sm={24}>
-            <FormItem key="orderNo" {...formLayout} label="单号">
-              {getFieldDecorator('orderNo', {
-                initialValue: { DocEntryFrom: '', DocEntryTo: '' },
-              })(<DocEntryFrom />)}
-            </FormItem>
-          </Col>
-          <Col md={2} sm={24}>
+          <Col md={3} sm={24}>
             <FormItem key="searchBtn">
               <span className="submitButtons">
                 <Button type="primary" htmlType="submit">
@@ -247,10 +269,8 @@ class PrintHistory extends PureComponent {
   }
 
   render() {
-    const {
-      sendEmail: { sendEmailList, pagination },
-      loading,
-    } = this.props;
+    const { loading } = this.props;
+    const { pagination, orderList } = this.state;
     return (
       <Fragment>
         <Card bordered={false}>
@@ -258,12 +278,11 @@ class PrintHistory extends PureComponent {
             <div className="tableListForm">{this.renderSimpleForm()}</div>
             <StandardTable
               loading={loading}
-              data={{ list: sendEmailList }}
+              data={{ list: orderList }}
               pagination={pagination}
-              rowKey="DocEntry"
-              scroll={{ x: 1800, y: 600 }}
+              rowKey="LineID"
               columns={this.columns}
-              onRow={this.handleOnRow}
+              scroll={{ x: 1800, y: 800 }}
               onChange={this.handleStandardTableChange}
             />
           </div>
@@ -273,4 +292,4 @@ class PrintHistory extends PureComponent {
   }
 }
 
-export default PrintHistory;
+export default ClientAsk;

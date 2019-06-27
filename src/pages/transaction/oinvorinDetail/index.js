@@ -174,9 +174,9 @@ class InquiryEdit extends PureComponent {
       >
         <DescriptionList style={{ marginBottom: 24, marginTop: 24 }}>
           <Description term="单号">{oinvorinDetailInfo.DocEntry}</Description>
-          <Description term="客户">{`${oinvorinDetailInfo.CardName}(${
-            oinvorinDetailInfo.CardCode
-          })`}</Description>
+          <Description term="客户">
+            {`${oinvorinDetailInfo.CardName}(${oinvorinDetailInfo.CardCode})`}
+          </Description>
           <Description term="单据日期">
             {moment(oinvorinDetailInfo.DocDate).format('YYYY-MM-DD')}
           </Description>
@@ -189,9 +189,9 @@ class InquiryEdit extends PureComponent {
           <Description term="销售员">
             <span>{getName(Saler, oinvorinDetailInfo.SlpCode)}</span>
           </Description>
-          <Description term="发货地址">{`${oinvorinDetailInfo.ShipToCode}${
-            oinvorinDetailInfo.Address2
-          }`}</Description>
+          <Description term="发货地址">
+            {`${oinvorinDetailInfo.ShipToCode}${oinvorinDetailInfo.Address2}`}
+          </Description>
           <Description term="客户参考号">{oinvorinDetailInfo.NumAtCard}</Description>
           <Description term="备注">{oinvorinDetailInfo.Comments}</Description>
           <Description term="单据总计">{oinvorinDetailInfo.DocTotal}</Description>

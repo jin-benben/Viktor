@@ -2,10 +2,15 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { Form, Card, Tabs, message } from 'antd';
+import Link from 'umi/link';
+import DescriptionList from 'ant-design-pro/lib/DescriptionList';
 import BrandSku from './components/sku';
 import BrandSupplier from './components/supplier';
-import DescriptionList from 'ant-design-pro/lib/DescriptionList';
-import Link from 'umi/link';
+import ClientAsk from '@/components/Order/TI_Z026';
+import SupplierAsk from '@/components/Order/TI_Z027';
+import OdlnordnFetch from '@/components/Order/OdlnordnFetch';
+import OinvorinFetch from '@/components/Order/OinvorinFetch';
+import OrderFetch from '@/components/Order/OrderFetch';
 import { getName } from '@/utils/utils';
 
 const { TabPane } = Tabs;
@@ -246,6 +251,7 @@ class BrandDetail extends PureComponent {
           <Description term="官网">{formVals.WebSite}</Description>
           <Description term="简写">{formVals.Abbreviate}</Description>
           <Description term="级别">{getName(brandLevel, formVals.BrandLevel)}</Description>
+          <Description term="品牌介绍">{formVals.Content}</Description>
           <Description term="品牌主图">
             {formVals.Picture ? (
               <img style={{ width: 50, height: 50 }} src={formVals.Picture} alt="" />
@@ -254,16 +260,27 @@ class BrandDetail extends PureComponent {
             )}
           </Description>
         </DescriptionList>
-
-        <Tabs>
-          <TabPane tab="品牌介绍" key="1">
-            <div> {formVals.Content}</div>
-          </TabPane>
+        <Tabs animated={false}>
           <TabPane tab="品牌供应商" key="2">
             {formVals.Name ? <BrandSupplier BrandName={formVals.Name} /> : ''}
           </TabPane>
           <TabPane tab="品牌物料" key="3">
             {formVals.Name ? <BrandSku BrandName={formVals.Name} /> : ''}
+          </TabPane>
+          <TabPane tab="客户询价单" key="4">
+            {formVals.Name ? <ClientAsk QueryType="1" QueryKey={formVals.Code} /> : ''}
+          </TabPane>
+          <TabPane tab="供应商询价单" key="5">
+            {formVals.Name ? <SupplierAsk QueryType="1" QueryKey={formVals.Code} /> : ''}
+          </TabPane>
+          <TabPane tab="销售订单物料查询" key="6">
+            {formVals.Name ? <OrderFetch QueryType="2" QueryKey={formVals.Code} /> : ''}
+          </TabPane>
+          <TabPane tab="交货退货物料查询" key="7">
+            {formVals.Name ? <OdlnordnFetch QueryType="2" QueryKey={formVals.Code} /> : ''}
+          </TabPane>
+          <TabPane tab="发票贷项物料查询" key="8">
+            {formVals.Name ? <OinvorinFetch QueryType="2" QueryKey={formVals.Code} /> : ''}
           </TabPane>
         </Tabs>
       </Card>

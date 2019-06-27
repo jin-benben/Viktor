@@ -45,26 +45,32 @@ class companySearch extends PureComponent {
     },
     {
       title: '客户名称',
+      width: 200,
       dataIndex: 'Name',
     },
     {
       title: '开户行',
+      width: 200,
       dataIndex: 'OpeningBank',
     },
     {
       title: '账号',
+      width: 200,
       dataIndex: 'BankAccount',
     },
     {
       title: '地址',
+      width: 200,
       dataIndex: 'Laddress',
     },
     {
       title: '电话',
+      width: 200,
       dataIndex: 'LPhone',
     },
     {
       title: '信用代码',
+      width: 200,
       dataIndex: 'CreditCode',
     },
     {
@@ -197,6 +203,7 @@ class companySearch extends PureComponent {
               loading={loading}
               data={{ list: companyList }}
               rowKey="Code"
+              scroll={{ x: 1600 }}
               pagination={pagination}
               columns={this.columns}
               onChange={this.handleStandardTableChange}

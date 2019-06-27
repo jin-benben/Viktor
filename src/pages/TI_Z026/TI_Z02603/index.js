@@ -11,6 +11,8 @@ import CancelOrder from '@/components/Modal/CancelOrder';
 import StandardTable from '@/components/StandardTable';
 import MyTag from '@/components/Tag';
 import NeedAskPrice from '../components/needAskPrice';
+import PrintHistory from '@/components/Order/PrintHistory';
+import SendEmail from '@/components/Order/SendEmail';
 import Transfer from '@/components/Transfer';
 import Attachment from '@/components/Attachment';
 import { getName } from '@/utils/utils';
@@ -393,7 +395,6 @@ class InquiryEdit extends PureComponent {
 
   componentDidMount() {
     const { dispatch } = this.props;
-
     dispatch({
       type: 'global/getMDMCommonality',
       payload: {
@@ -550,6 +551,7 @@ class InquiryEdit extends PureComponent {
     const {
       global: { Saler, Company, TI_Z004 },
       loading,
+      location: { query },
     } = this.props;
     const {
       formVals,
@@ -658,6 +660,12 @@ class InquiryEdit extends PureComponent {
               rowKey="UserID"
               columns={linkmanColumns}
             />
+          </TabPane>
+          <TabPane tab="打印记录" key="5">
+            <PrintHistory QueryType="1" QueryKey={query.DocEntry} />
+          </TabPane>
+          <TabPane tab="邮件发送记录" key="6">
+            <SendEmail QueryType="1" QueryKey={query.DocEntry} />
           </TabPane>
         </Tabs>
 

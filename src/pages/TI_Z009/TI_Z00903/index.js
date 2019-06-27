@@ -3,7 +3,12 @@ import { connect } from 'dva';
 import moment from 'moment';
 import { Row, Col, Form, Input, Card, Tabs, Button, message, DatePicker, Select } from 'antd';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
-import StandardTable from '@/components/StandardTable';
+// import StandardTable from '@/components/StandardTable';
+import ClientAsk from '@/components/Order/TI_Z026';
+import SupplierAsk from '@/components/Order/TI_Z027';
+import OdlnordnFetch from '@/components/Order/OdlnordnFetch';
+import OinvorinFetch from '@/components/Order/OinvorinFetch';
+import OrderFetch from '@/components/Order/OrderFetch';
 import MDMCommonality from '@/components/Select';
 import Brand from '@/components/Brand';
 import HSCode from '@/components/HSCode';
@@ -277,7 +282,7 @@ class SKUDetail extends Component {
     const { tabIndex, formVals } = this.state;
 
     return (
-      <Card>
+      <Card bordered={false}>
         <Form {...formItemLayout} onSubmit={this.handleSubmit}>
           <Row gutter={8}>
             <Col lg={12} md={12} sm={24}>
@@ -468,7 +473,7 @@ class SKUDetail extends Component {
               </Col>
             </Row>
           </TabPane>
-          <TabPane tab="详情页" key="2">
+          {/* <TabPane tab="详情页" key="2">
             sss
           </TabPane>
           <TabPane tab="客户物料代码" key="3">
@@ -477,6 +482,21 @@ class SKUDetail extends Component {
               rowKey="AttachmentCode"
               columns={this.Columns}
             />
+          </TabPane> */}
+          <TabPane tab="客户询价单" key="4">
+            {formVals.Name ? <ClientAsk QueryType="2" QueryKey={formVals.Code} /> : ''}
+          </TabPane>
+          <TabPane tab="供应商询价单" key="5">
+            {formVals.Name ? <SupplierAsk QueryType="2" QueryKey={formVals.Code} /> : ''}
+          </TabPane>
+          <TabPane tab="销售订单物料查询" key="6">
+            {formVals.Name ? <OrderFetch QueryType="3" QueryKey={formVals.Code} /> : ''}
+          </TabPane>
+          <TabPane tab="交货退货物料查询" key="7">
+            {formVals.Name ? <OdlnordnFetch QueryType="3" QueryKey={formVals.Code} /> : ''}
+          </TabPane>
+          <TabPane tab="发票贷项物料查询" key="8">
+            {formVals.Name ? <OinvorinFetch QueryType="3" QueryKey={formVals.Code} /> : ''}
           </TabPane>
         </Tabs>
 

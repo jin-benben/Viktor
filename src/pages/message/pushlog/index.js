@@ -1,14 +1,13 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Row, DatePicker, Col, Card, Form, Input, Button } from 'antd';
-import StandardTable from '@/components/StandardTable';
 import moment from 'moment';
 import Link from 'umi/link';
+import { Row, DatePicker, Col, Card, Form, Input, Button } from 'antd';
+import StandardTable from '@/components/StandardTable';
 
 const { RangePicker } = DatePicker;
 const FormItem = Form.Item;
 
-/* eslint react/no-multi-comp:0 */
 @connect(({ pushMessage, loading }) => ({
   pushMessage,
   loading: loading.models.rule,
@@ -28,7 +27,7 @@ class PushMessage extends PureComponent {
     },
     {
       title: '推送代码',
-      width: 80,
+      width: 100,
       dataIndex: 'NotificationCode',
     },
     {

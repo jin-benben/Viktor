@@ -1,10 +1,10 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
+import Link from 'umi/link';
 import { Row, Col, Card, Form, Input, Button } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import Brand from '@/components/Brand';
-import Link from 'umi/link';
 import { getName } from '@/utils/utils';
 
 const FormItem = Form.Item;
@@ -17,12 +17,11 @@ const FormItem = Form.Item;
 }))
 @Form.create()
 class SupplierSearch extends PureComponent {
-  state = {};
-
   columns = [
     {
       title: '供应商ID',
       dataIndex: 'Code',
+      width: 80,
       render: text => (
         <Link target="_blank" to={`/main/TI_Z007/detail?Code=${text}`}>
           {text}
@@ -31,14 +30,17 @@ class SupplierSearch extends PureComponent {
     },
     {
       title: '供应商名称',
+      width: 200,
       dataIndex: 'Name',
     },
     {
       title: '开户行',
+      width: 200,
       dataIndex: 'OpeningBank',
     },
     {
       title: '账号',
+      width: 200,
       dataIndex: 'BankAccount',
     },
     {
@@ -47,10 +49,12 @@ class SupplierSearch extends PureComponent {
     },
     {
       title: '电话',
+      width: 120,
       dataIndex: 'LPhone',
     },
     {
       title: '信用代码',
+      width: 200,
       dataIndex: 'CreditCode',
     },
     {
@@ -246,6 +250,7 @@ class SupplierSearch extends PureComponent {
               loading={loading}
               data={{ list: supplierList }}
               rowKey="Code"
+              scroll={{ x: 1500 }}
               pagination={pagination}
               columns={this.columns}
               onChange={this.handleStandardTableChange}

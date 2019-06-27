@@ -3,9 +3,11 @@ import React, { Fragment } from 'react';
 import { connect } from 'dva';
 import { Row, Col, Form, Input, Card, Switch, Tabs, Button, message, Popconfirm } from 'antd';
 import router from 'umi/router';
+import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import StandardTable from '@/components/StandardTable';
 import BrandModal from '@/components/Modal/Brand';
-import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
+import SendEmail from '@/components/Order/SendEmail';
+import SupplierAsk from '@/components/Order/TI_Z027';
 import LinkMan from '../components/linkman';
 import MDMCommonality from '@/components/Select';
 
@@ -24,18 +26,21 @@ class CompanyEdit extends React.Component {
     {
       title: 'ID',
       dataIndex: 'LineID',
-      width: 80,
+      width: 50,
     },
     {
       title: '姓名',
+      width: 150,
       dataIndex: 'Name',
     },
     {
       title: '手机号码',
+      width: 150,
       dataIndex: 'CellphoneNO',
     },
     {
       title: '电话号码',
+      width: 150,
       dataIndex: 'PhoneNO',
     },
     {
@@ -44,10 +49,12 @@ class CompanyEdit extends React.Component {
     },
     {
       title: '职位',
+      width: 100,
       dataIndex: 'Position',
     },
     {
       title: '操作',
+      width: 50,
       render: (text, record) => (
         <Fragment>
           <a
@@ -70,13 +77,16 @@ class CompanyEdit extends React.Component {
     {
       title: '品牌ID',
       dataIndex: 'Brand',
+      width: 100,
     },
     {
       title: '品牌名称',
+      width: 200,
       dataIndex: 'BrandName',
     },
     {
       title: '操作',
+      width: 50,
       render: (text, record) => (
         <Popconfirm title="确定要删除吗?" onConfirm={() => this.handleDelete(record.Brand)}>
           <a href="javascript:;">删除</a>
@@ -395,7 +405,7 @@ class CompanyEdit extends React.Component {
       handleModalVisible: this.handleModalVisible,
     };
     return (
-      <Card>
+      <Card bordered={false}>
         <Form {...formItemLayout}>
           <Row gutter={8}>
             <Col lg={8} md={12} sm={24}>
@@ -525,6 +535,7 @@ class CompanyEdit extends React.Component {
               <TabPane tab="联系人" key="1">
                 <StandardTable
                   data={{ list: formVals.TI_Z00702List }}
+                  scroll={{ x: 1000 }}
                   rowKey="LineID"
                   columns={this.linkmanColumns}
                 />
@@ -533,8 +544,15 @@ class CompanyEdit extends React.Component {
                 <StandardTable
                   data={{ list: formVals.TI_Z00703List }}
                   rowKey="Brand"
+                  scroll={{ x: 500 }}
                   columns={this.brandColumns}
                 />
+              </TabPane>
+              <TabPane tab="供应商询价单" key="5">
+                {formVals.Name ? <SupplierAsk QueryType="3" QueryKey={formVals.Code} /> : ''}
+              </TabPane>
+              <TabPane tab="邮件发送记录" key="6">
+                {formVals.Name ? <SendEmail QueryType="6" QueryKey={formVals.Code} /> : ''}
               </TabPane>
             </Tabs>
             <LinkMan

@@ -1,9 +1,9 @@
 import React, { PureComponent } from 'react';
 import { Card, Button, Form, Row, Input, message } from 'antd';
 import { connect } from 'dva';
-import UEditor from '@/components/Ueditor';
-import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import router from 'umi/router';
+import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
+import UEditor from '@/components/Ueditor';
 
 const FormItem = Form.Item;
 

@@ -1,8 +1,8 @@
 import React, { PureComponent } from 'react';
-import request from '@/utils/request';
 import { Select, Spin, message, Empty } from 'antd';
 import { connect } from 'dva';
 import debounce from 'lodash/debounce';
+import request from '@/utils/request';
 
 const { Option } = Select;
 @connect(({ global }) => ({
@@ -26,7 +26,6 @@ class Staffs extends PureComponent {
         nextProps.initialValue.key !== prevState.value.key) ||
       !prevState.data.length
     ) {
-      console.log(prevState.data.length, nextProps.initialValue.key, prevState.value.key);
       return {
         value: nextProps.initialValue.key ? nextProps.initialValue : prevState.value,
         data: nextProps.global.SupplierList,

@@ -1,8 +1,7 @@
 import React, { PureComponent } from 'react';
-
 import { Row, Col, Form, Input, Modal, Button, message } from 'antd';
-import StandardTable from '@/components/StandardTable';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
+import StandardTable from '@/components/StandardTable';
 import request from '@/utils/request';
 
 const FormItem = Form.Item;

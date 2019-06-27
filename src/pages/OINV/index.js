@@ -19,11 +19,11 @@ import {
   Checkbox,
 } from 'antd';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
+import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import StandardTable from '@/components/StandardTable';
 import DocEntryFrom from '@/components/DocEntryFrom';
 import NeedAskPrice from './components';
 import MDMCommonality from '@/components/Select';
-import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import { getName } from '@/utils/utils';
 
 const { RangePicker } = DatePicker;

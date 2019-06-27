@@ -2,13 +2,18 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import { Row, Col, Form, Input, Card, Switch, Tabs, Button, message } from 'antd';
+import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
+import router from 'umi/router';
 import StandardTable from '@/components/StandardTable';
 import AddressInfo from '../components/address';
-import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import LinkMan from '../components/linkman';
 import CardSource from '@/components/Select/CardSource';
+import SendEmail from '@/components/Order/SendEmail';
+import ClientAsk from '@/components/Order/TI_Z026';
+import OdlnordnFetch from '@/components/Order/OdlnordnFetch';
+import OinvorinFetch from '@/components/Order/OinvorinFetch';
+import OrderFetch from '@/components/Order/OrderFetch';
 import MDMCommonality from '@/components/Select';
-import router from 'umi/router';
 import { getName } from '@/utils/utils';
 
 const { TabPane } = Tabs;
@@ -30,26 +35,32 @@ class CompanyEdit extends PureComponent {
     },
     {
       title: '姓名',
+      width: 100,
       dataIndex: 'Name',
     },
     {
       title: '手机号码',
+      width: 120,
       dataIndex: 'CellphoneNO',
     },
     {
       title: '电话号码',
+      width: 200,
       dataIndex: 'PhoneNO',
     },
     {
       title: 'Email',
+      width: 200,
       dataIndex: 'Email',
     },
     {
       title: '职位',
+      width: 100,
       dataIndex: 'Position',
     },
     {
       title: '销售',
+      width: 100,
       dataIndex: 'Saler',
       render: text => {
         const {
@@ -60,6 +71,7 @@ class CompanyEdit extends PureComponent {
     },
     {
       title: '交易公司',
+      width: 200,
       dataIndex: 'CompanyCode',
       render: text => {
         const {
@@ -70,6 +82,7 @@ class CompanyEdit extends PureComponent {
     },
     {
       title: '操作',
+      width: 100,
       render: (text, record) => (
         <Fragment>
           <a
@@ -92,19 +105,23 @@ class CompanyEdit extends PureComponent {
     },
     {
       title: '地址描述',
+      width: 200,
       dataIndex: 'AddressName',
     },
     {
       title: '收货人姓名',
+      width: 100,
       dataIndex: 'UserName',
     },
     {
       title: '手机号码',
+      width: 100,
       dataIndex: 'ReceiverPhone',
     },
     {
       title: '收货地址',
       key: 'address',
+      width: 200,
       render: (text, record) => (
         <Fragment>
           <span>{`${record.Province + record.City + record.Area}`}</span>
@@ -115,6 +132,7 @@ class CompanyEdit extends PureComponent {
 
     {
       title: '操作',
+      width: 50,
       render: (text, record) => (
         <Fragment>
           <a
@@ -564,6 +582,7 @@ class CompanyEdit extends PureComponent {
                 <StandardTable
                   data={{ list: formVals.TI_Z00602List }}
                   rowKey="UserID"
+                  scroll={{ x: 1200 }}
                   columns={this.linkmanColumns}
                 />
               </TabPane>
@@ -571,8 +590,24 @@ class CompanyEdit extends PureComponent {
                 <StandardTable
                   data={{ list: formVals.TI_Z00603List }}
                   rowKey="AddressID"
+                  scroll={{ x: 800 }}
                   columns={this.addressColumns}
                 />
+              </TabPane>
+              <TabPane tab="客户询价单" key="4">
+                <ClientAsk QueryType="3" QueryKey={formVals.Code} />
+              </TabPane>
+              <TabPane tab="销售订单物料查询" key="6">
+                <OrderFetch QueryType="4" QueryKey={formVals.Code} />
+              </TabPane>
+              <TabPane tab="交货退货物料查询" key="7">
+                <OdlnordnFetch QueryType="4" QueryKey={formVals.Code} />
+              </TabPane>
+              <TabPane tab="发票贷项物料查询" key="8">
+                <OinvorinFetch QueryType="4" QueryKey={formVals.Code} />
+              </TabPane>
+              <TabPane tab="邮件发送记录" key="9">
+                <SendEmail QueryType="5" QueryKey={formVals.Code} />
               </TabPane>
             </Tabs>
             <LinkMan
