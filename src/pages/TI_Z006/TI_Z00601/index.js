@@ -577,7 +577,7 @@ class CompanyEdit extends PureComponent {
 
         {formVals.Code ? (
           <Fragment>
-            <Tabs onChange={this.tabChange}>
+            <Tabs onChange={this.tabChange} animated={false}>
               <TabPane tab="联系人" key="1">
                 <StandardTable
                   data={{ list: formVals.TI_Z00602List }}

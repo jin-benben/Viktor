@@ -103,7 +103,6 @@ class ClientAsk extends PureComponent {
 
     {
       title: '物料名称',
-
       dataIndex: 'ItemName',
       render: text => (
         <Ellipsis tooltip lines={1}>
@@ -232,7 +231,7 @@ class ClientAsk extends PureComponent {
       },
     });
     if (response && response.Status === 200) {
-      if (response.Content.rows) {
+      if (response.Content) {
         const { rows, records, page } = response.Content;
         const { pagination } = this.state;
         this.setState({
@@ -308,23 +307,23 @@ class ClientAsk extends PureComponent {
             </FormItem>
           </Col>
           <Col md={5} sm={24}>
-            <FormItem label="日期" {...formLayout}>
+            <FormItem {...formLayout}>
               {getFieldDecorator('dateArr', { rules: [{ type: 'array' }] })(
                 <RangePicker style={{ width: '100%' }} />
               )}
             </FormItem>
           </Col>
-          <Col md={5} sm={24}>
+          <Col md={6} sm={24}>
             <FormItem key="Owner" {...formLayout} label="销售员">
               {getFieldDecorator('Owner')(<SalerPurchaser />)}
             </FormItem>
           </Col>
-          <Col md={5} sm={24}>
+          <Col md={6} sm={24}>
             <FormItem key="DeptList" {...this.formLayout} label="部门">
               {getFieldDecorator('DeptList')(<Organization />)}
             </FormItem>
           </Col>
-          <Col md={5} sm={24}>
+          <Col md={3} sm={24}>
             <FormItem key="searchBtn">
               <span className="submitButtons">
                 <Button type="primary" htmlType="submit">
@@ -339,8 +338,11 @@ class ClientAsk extends PureComponent {
   }
 
   render() {
-    const { loading } = this.props;
+    const { loading, QueryType } = this.props;
     const { pagination, orderList } = this.state;
+    if (QueryType === '4') {
+      this.columns = this.columns.filter(item => item.dataIndex !== 'CardName');
+    }
     return (
       <Fragment>
         <Card bordered={false}>

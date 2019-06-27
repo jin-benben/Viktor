@@ -459,7 +459,11 @@ class SKUDetail extends Component {
             </Col>
           </Row>
         </Form>
-        <Tabs tabBarExtraContent={this.rightButton(tabIndex)} onChange={this.tabChange}>
+        <Tabs
+          tabBarExtraContent={this.rightButton(tabIndex)}
+          onChange={this.tabChange}
+          animated={false}
+        >
           <TabPane tab="图片管理" key="1">
             <Row>
               <Col lg={4}>

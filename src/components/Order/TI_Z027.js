@@ -111,13 +111,15 @@ class SupplierAsk extends PureComponent {
     },
     {
       title: '物料',
-      width: 200,
       dataIndex: 'SKUName',
-      render: (text, recond) => (
-        <Link target="_blank" to={`/sellabout/TI_Z029/detail?DocEntry=${text}`}>
-          {`${text}-${recond.SKU}`}
-        </Link>
-      ),
+      render: (text, recond) =>
+        recond.SKU ? (
+          <Link target="_blank" to={`/main/product/TI_Z009/TI_Z00903?Code=${recond.SKU}`}>
+            {`${text}-${recond.SKU}`}
+          </Link>
+        ) : (
+          <span>{text}</span>
+        ),
     },
     {
       title: '数量(单位)',
@@ -308,12 +310,12 @@ class SupplierAsk extends PureComponent {
             </FormItem>
           </Col>
           <Col md={4} sm={24}>
-            <FormItem key="Sales" {...formLayout} label="销售采购">
-              {getFieldDecorator('Sales')(<Input placeholder="请输入名字" />)}
+            <FormItem key="Sales" {...formLayout}>
+              {getFieldDecorator('Sales')(<Input placeholder="请输入销售采购名字" />)}
             </FormItem>
           </Col>
           <Col md={5} sm={24}>
-            <FormItem label="日期" {...formLayout}>
+            <FormItem {...formLayout}>
               {getFieldDecorator('dateArr', { rules: [{ type: 'array' }] })(
                 <RangePicker style={{ width: '100%' }} />
               )}

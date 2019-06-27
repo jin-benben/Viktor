@@ -1,3 +1,4 @@
+/* eslint-disable no-script-url */
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
@@ -23,7 +24,6 @@ class TransactionSearch extends PureComponent {
       width: 80,
       fixed: 'left',
       dataIndex: 'DocEntry',
-      // eslint-disable-next-line no-script-url
       render: (text, record) => (
         <a href="javascript:void(0)" onClick={() => this.whichGo(text, record.ObjType)}>
           {text}
@@ -126,7 +126,6 @@ class TransactionSearch extends PureComponent {
       width: 80,
       fixed: 'left',
       dataIndex: 'DocEntry',
-      // eslint-disable-next-line no-script-url
       render: (text, record) => (
         <a href="javascript:void(0)" onClick={() => this.whichGo(text, record.ObjType)}>
           {text}
@@ -597,7 +596,7 @@ class TransactionSearch extends PureComponent {
                   data={{ list: orctovpmList }}
                   pagination={pagination2}
                   rowKey="key"
-                  scroll={{ y: 600 }}
+                  scroll={{ x: 1200, y: 600 }}
                   columns={this.columns2}
                   onChange={this.handleStandardTableChange}
                 />

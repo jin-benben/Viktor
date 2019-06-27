@@ -237,6 +237,7 @@ class Organization extends PureComponent {
         Content: {
           Code: tree.Code,
         },
+        method: 'A',
       },
     });
     this.setState({

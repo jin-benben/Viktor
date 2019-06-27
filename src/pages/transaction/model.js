@@ -21,6 +21,7 @@ export default {
     oinvorinLineList: [],
     queryData: {
       Content: {
+        QueryType: '1',
         SearchText: '',
         SearchKey: '',
       },

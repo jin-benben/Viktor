@@ -17,14 +17,16 @@ const { TabPane } = Tabs;
   global,
   loading: loading.effects['orderDetail/fetch'],
 }))
-class InquiryEdit extends PureComponent {
+class OrderDetailPage extends PureComponent {
   skuColumns = [
     {
       title: '物料代码',
+      width: 80,
       dataIndex: 'ItemCode',
     },
     {
       title: '物料名称',
+      width: 200,
       dataIndex: 'ItemName',
       render: text => (
         <Ellipsis tooltip lines={1}>
@@ -34,23 +36,28 @@ class InquiryEdit extends PureComponent {
     },
     {
       title: '单位',
+      width: 80,
       dataIndex: 'InvntryUom',
     },
     {
       title: '数量',
+      width: 80,
       dataIndex: 'Quantity',
     },
 
     {
       title: '含税价格',
+      width: 100,
       dataIndex: 'PriceAfVAT',
     },
     {
       title: '行总计',
+      width: 100,
       dataIndex: 'LineTotal',
     },
     {
       title: '行备注',
+      width: 200,
       dataIndex: 'FreeTxt',
       render: text => (
         <Ellipsis tooltip lines={1}>
@@ -61,6 +68,7 @@ class InquiryEdit extends PureComponent {
     {
       title: '操作',
       align: 'center',
+      width: 80,
       render: (text, record, index) =>
         record.lastIndex ? null : (
           <Fragment>
@@ -168,9 +176,9 @@ class InquiryEdit extends PureComponent {
       <Card bordered={false} loading={loading}>
         <DescriptionList style={{ marginBottom: 24 }}>
           <Description term="单号">{orderDetailInfo.DocEntry}</Description>
-          <Description term="客户">{`${orderDetailInfo.CardName}(${
-            orderDetailInfo.CardCode
-          })`}</Description>
+          <Description term="客户">
+            {`${orderDetailInfo.CardName}(${orderDetailInfo.CardCode})`}
+          </Description>
           <Description term="单据日期">
             {moment(orderDetailInfo.DocDate).format('YYYY-MM-DD')}
           </Description>
@@ -180,9 +188,9 @@ class InquiryEdit extends PureComponent {
           <Description term="销售员">
             <span>{getName(Saler, orderDetailInfo.SlpCode)}</span>
           </Description>
-          <Description term="发货地址">{`${orderDetailInfo.ShipToCode}${
-            orderDetailInfo.Address2
-          }`}</Description>
+          <Description term="发货地址">
+            {`${orderDetailInfo.ShipToCode}${orderDetailInfo.Address2}`}
+          </Description>
           <Description term="客户参考号">{orderDetailInfo.NumAtCard}</Description>
           <Description term="备注">{orderDetailInfo.Comments}</Description>
           <Description term="单据总计">{orderDetailInfo.DocTotal}</Description>
@@ -207,7 +215,12 @@ class InquiryEdit extends PureComponent {
         </DescriptionList>
         <Tabs>
           <TabPane tab="物料" key="1">
-            <StandardTable data={{ list: newdata }} rowKey="key" columns={this.skuColumns} />
+            <StandardTable
+              data={{ list: newdata }}
+              scroll={{ x: 1000 }}
+              rowKey="key"
+              columns={this.skuColumns}
+            />
           </TabPane>
           <TabPane tab="附件" key="3">
             <Attachment dataSource={orderDetailInfo.DocEnclosure} iscan />
@@ -228,4 +241,4 @@ class InquiryEdit extends PureComponent {
   }
 }
 
-export default InquiryEdit;
+export default OrderDetailPage;

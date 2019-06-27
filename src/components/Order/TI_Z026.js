@@ -92,7 +92,7 @@ class ClientAsk extends PureComponent {
     {
       title: '单据状态',
       dataIndex: 'LineStatus',
-      width: 120,
+      width: 80,
       render: (text, record) => (
         <Fragment>
           {record.Closed === 'Y' ? (
@@ -105,7 +105,6 @@ class ClientAsk extends PureComponent {
     },
     {
       title: '客户',
-      width: 150,
       dataIndex: 'CardName',
       render: (text, recond) => (
         <Link target="_blank" to={`/sellabout/TI_Z029/detail?DocEntry=${recond.CardCode}`}>
@@ -115,19 +114,21 @@ class ClientAsk extends PureComponent {
     },
     {
       title: '物料',
-      width: 150,
       dataIndex: 'SKUName',
-      render: (text, recond) => (
-        <Link target="_blank" to={`/sellabout/TI_Z029/detail?DocEntry=${text}`}>
-          {`${text}-${recond.SKU}`}
-        </Link>
-      ),
+      render: (text, recond) =>
+        recond.SKU ? (
+          <Link target="_blank" to={`/main/product/TI_Z009/TI_Z00903?Code=${recond.SKU}`}>
+            {`${text}-${recond.SKU}`}
+          </Link>
+        ) : (
+          <span>{text}</span>
+        ),
     },
     {
-      title: '数量',
+      title: '数量(单位)',
       width: 100,
       dataIndex: 'Quantity',
-      render: (text, recond) => <span> {`${text}-${recond.Unit}`}</span>,
+      render: (text, recond) => <span> {`${text} (${recond.Unit})`}</span>,
     },
     {
       title: '价格',
@@ -322,12 +323,12 @@ class ClientAsk extends PureComponent {
             </FormItem>
           </Col>
           <Col md={4} sm={24}>
-            <FormItem key="Sales" {...formLayout} label="销售采购">
-              {getFieldDecorator('Sales')(<Input placeholder="请输入名字" />)}
+            <FormItem key="Sales" {...formLayout}>
+              {getFieldDecorator('Sales')(<Input placeholder="请输入销售采购名字" />)}
             </FormItem>
           </Col>
 
-          <Col md={5} sm={24}>
+          <Col md={6} sm={24}>
             <FormItem label="日期" {...formLayout}>
               {getFieldDecorator('dateArr', { rules: [{ type: 'array' }] })(
                 <RangePicker style={{ width: '100%' }} />
@@ -354,7 +355,7 @@ class ClientAsk extends PureComponent {
               </Col>
             </Fragment>
           ) : null}
-          <Col md={5} sm={24}>
+          <Col md={3} sm={24}>
             <FormItem key="searchBtn">
               <span className="submitButtons">
                 <Button type="primary" htmlType="submit">
@@ -380,8 +381,14 @@ class ClientAsk extends PureComponent {
   }
 
   render() {
-    const { loading } = this.props;
+    const { loading, QueryType } = this.props;
     const { pagination, orderList } = this.state;
+    if (QueryType === '3') {
+      this.columns = this.columns.filter(item => item.dataIndex !== 'CardName');
+    }
+    if (QueryType === '2') {
+      this.columns = this.columns.filter(item => item.dataIndex !== 'SKUName');
+    }
     return (
       <Fragment>
         <Card bordered={false}>
