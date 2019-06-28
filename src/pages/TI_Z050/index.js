@@ -2,7 +2,7 @@
 
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Row, Col, Card, Form, Input, Modal, Button, message, Popconfirm } from 'antd';
+import { Row, Col, Card, Form, Input, Modal, Button, message, Popconfirm, Icon } from 'antd';
 import StandardTable from '@/components/StandardTable';
 
 const FormItem = Form.Item;
@@ -112,10 +112,12 @@ class Emails extends PureComponent {
 
     {
       title: '操作',
-      width: 100,
+      width: 50,
       render: (text, record) => (
         <Popconfirm title="确定要删除吗?" onConfirm={() => this.handleDelete(record.Code)}>
-          <a href="javascript:;">删除</a>
+          <a href="javascript:;">
+            <Icon type="delete" theme="twoTone" />
+          </a>
         </Popconfirm>
       ),
     },

@@ -8,23 +8,24 @@ import {
   Form,
   Input,
   Button,
-  Divider,
   Select,
   DatePicker,
   Checkbox,
   Icon,
+  Tooltip,
   message,
+  Tag,
 } from 'antd';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import Link from 'umi/link';
 import StandardTable from '@/components/StandardTable';
 import DocEntryFrom from '@/components/DocEntryFrom';
-import MyTag from '@/components/Tag';
 import NeedAskPrice from '../components/needAskPrice';
 import Organization from '@/components/Organization/multiple';
 import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
 import Transfer from '@/components/Transfer';
+import { lineStatus } from '@/utils/publicData';
 
 import { getName } from '@/utils/utils';
 
@@ -71,135 +72,180 @@ class orderLine extends PureComponent {
       render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
     {
-      title: '创建日期',
-      width: 100,
-      dataIndex: 'CreateDate',
-      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
+      title: '行状态',
+      width: 200,
+      dataIndex: 'LineStatus',
+      align: 'center',
+      render: (text, record) =>
+        record.lastIndex ? null : (
+          <Fragment>
+            {record.Closed === 'Y' ? (
+              <Tag color="red">已关闭</Tag>
+            ) : (
+              <Fragment>
+                <Tag color="green">{getName(lineStatus, text)}</Tag>
+                {record.PDocStatus === 'O' ? (
+                  <Tag color="green">已确认</Tag>
+                ) : (
+                  <Tag color="gold">未确认</Tag>
+                )}
+                {record.SDocStatus === 'O' ? (
+                  <Tag color="green">已报价</Tag>
+                ) : (
+                  <Tag color="gold">未报价</Tag>
+                )}
+              </Fragment>
+            )}
+          </Fragment>
+        ),
     },
     {
-      title: '单据状态',
-      dataIndex: 'Status',
-      width: 130,
-      render: (text, record) => (
-        <Fragment>
-          {record.Closed === 'Y' ? (
-            <MyTag type="关闭" value="Y" />
-          ) : (
-            <Fragment>
-              <MyTag type="报价" value={record.SDocStatus} />
-              <MyTag type="询价" value={record.PDocStatus} />
-            </Fragment>
-          )}
-        </Fragment>
-      ),
+      title: '物料',
+      dataIndex: 'SKU',
+      align: 'center',
+      width: 300,
+      render: (text, record) =>
+        record.lastIndex ? (
+          ''
+        ) : (
+          <Ellipsis tooltip lines={1}>
+            {text ? (
+              <Link target="_blank" to={`/main/product/TI_Z009/TI_Z00903?Code${text}`}>
+                {text}-
+              </Link>
+            ) : (
+              ''
+            )}
+            {record.SKUName}
+          </Ellipsis>
+        ),
     },
     {
       title: '客户',
       dataIndex: 'CardName',
       render: text => (
         <Ellipsis tooltip lines={1}>
-          {' '}
-          {text}{' '}
+          {text}
         </Ellipsis>
       ),
     },
     {
       title: '联系人',
       width: 100,
-      dataIndex: 'KHContacts',
-    },
-    {
-      title: '联系方式',
-      width: 100,
-      dataIndex: 'contact',
+      dataIndex: 'Contacts',
       render: (text, record) => (
-        <Ellipsis tooltip lines={1}>
-          {' '}
-          {record.CellphoneNO}
-          {record.PhoneNO ? <Divider type="vertical" /> : null}
-          {record.PhoneNO}
-        </Ellipsis>
+        <Tooltip
+          title={
+            <Fragment>
+              {record.CellphoneNO}
+              <br />
+              {record.Email}
+              <br />
+              {record.PhoneNO}
+            </Fragment>
+          }
+        >
+          {text}
+        </Tooltip>
       ),
     },
+
     {
       title: '客户参考号',
       width: 100,
       dataIndex: 'NumAtCard',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
-      title: 'SKU',
-      width: 80,
+      title: '物料',
       dataIndex: 'SKU',
+      align: 'center',
+      width: 300,
+      render: (text, record) =>
+        record.lastIndex ? (
+          ''
+        ) : (
+          <Ellipsis tooltip lines={1}>
+            {text ? (
+              <Link target="_blank" to={`/main/product/TI_Z009/TI_Z00903?Code${text}`}>
+                {text}-
+              </Link>
+            ) : (
+              ''
+            )}
+            {record.SKUName}
+          </Ellipsis>
+        ),
     },
+
     {
-      title: '产品描述',
-      width: 150,
-      dataIndex: 'SKUName',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
-    {
-      title: '品牌',
-      width: 80,
-      dataIndex: 'BrandName',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
-    {
-      title: '名称',
+      title: '数量',
       width: 100,
-      dataIndex: 'ProductName',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
+      dataIndex: 'Quantity',
+      align: 'center',
+      render: (text, record) => <span>{`${text}-${record.Unit}`}</span>,
     },
     {
-      title: '外文名称',
+      title: '价格',
+      width: 80,
+      dataIndex: 'Price',
+      align: 'center',
+    },
+    {
+      title: '行总计',
+      width: 100,
+      align: 'center',
+      dataIndex: 'LineTotal',
+      render: (text, record) =>
+        record.lastIndex ? <span style={{ fontWeight: 'bolder' }}>{text}</span> : text,
+    },
+    {
+      title: '询价价格',
+      width: 120,
+      dataIndex: 'InquiryPrice',
+      align: 'center',
+      render: (text, record) =>
+        record.lastIndex ? '' : <span>{`${text}-${record.Currency || ''}-${record.DocRate}`}</span>,
+    },
+    {
+      title: '询行总计',
+      width: 100,
+      align: 'center',
+      dataIndex: 'InquiryLineTotal',
+      render: (text, record) =>
+        record.lastIndex ? '' : <span>{`${text}-${record.InquiryLineTotalLocal}`}</span>,
+    },
+    {
+      title: '询价备注',
+      dataIndex: 'InquiryComment',
+      width: 100,
+      align: 'center',
+      render: (text, record) =>
+        record.lastIndex ? null : (
+          <Ellipsis tooltip lines={1}>
+            {text}
+          </Ellipsis>
+        ),
+    },
+    {
+      title: '询价交期',
+      width: 100,
+      dataIndex: 'InquiryDueDate',
+      align: 'center',
+      render: (text, record) =>
+        record.lastIndex ? null : <span>{moment(text).format('YYYY-MM-DD')}</span>,
+    },
+    {
+      title: '名称(wai)',
       width: 100,
       dataIndex: 'ForeignName',
-      render: text => (
+      render: (text, record) => (
         <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
-    {
-      title: '规格(外)',
-      width: 100,
-      dataIndex: 'ForeignParameters',
-      align: 'center',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
-    {
-      title: '型号',
-      width: 100,
-      dataIndex: 'ManufactureNO',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
-    {
-      title: '参数',
-      width: 100,
-      dataIndex: 'Parameters',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {' '}
-          {text}{' '}
+          {text}-{record.ForeignParameters}
         </Ellipsis>
       ),
     },
@@ -207,11 +253,84 @@ class orderLine extends PureComponent {
       title: '包装',
       width: 100,
       dataIndex: 'Package',
+      align: 'center',
+    },
+    {
+      title: '产地',
+      width: 80,
+      dataIndex: 'ManLocation',
+      align: 'center',
+      render: text => {
+        const {
+          global: { TI_Z042 },
+        } = this.props;
+        return <span>{getName(TI_Z042, text)}</span>;
+      },
+    },
+    {
+      title: 'HS编码',
+      width: 100,
+      dataIndex: 'HSCode',
+      render: text => {
+        const {
+          global: { HS },
+        } = this.props;
+        return (
+          <Ellipsis tooltip lines={1}>
+            {getName(HS, text)}
+          </Ellipsis>
+        );
+      },
+    },
+    {
+      title: '要求名称',
+      width: 80,
+      dataIndex: 'CustomerName',
+      align: 'center',
+    },
+    {
+      title: '重量',
+      width: 80,
+      dataIndex: 'Rweight',
+      align: 'center',
+    },
+    {
+      title: '国外运费',
+      width: 80,
+      dataIndex: 'ForeignFreight',
+      align: 'center',
+    },
+    {
+      title: '建议价格',
+      width: 80,
+      dataIndex: 'AdvisePrice',
+      align: 'center',
+    },
+    {
+      title: '要求交期',
+      width: 100,
+      inputType: 'date',
+      dataIndex: 'DueDate',
+      align: 'center',
+      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
+    },
+    {
+      title: '仓库',
+      width: 100,
+      dataIndex: 'WhsCode',
+      align: 'center',
+      render: text => {
+        const {
+          global: { WhsCode },
+        } = this.props;
+        return <span>{getName(WhsCode, text)}</span>;
+      },
     },
     {
       title: '采购员',
       width: 80,
       dataIndex: 'Purchaser',
+      align: 'center',
       render: text => {
         const {
           global: { Purchaser },
@@ -220,36 +339,20 @@ class orderLine extends PureComponent {
       },
     },
     {
-      title: '数量',
+      title: '处理人',
       width: 80,
-      dataIndex: 'Quantity',
+      dataIndex: 'Processor',
+      render: val => {
+        const {
+          global: { TI_Z004 },
+        } = this.props;
+        return <span>{getName(TI_Z004, val)}</span>;
+      },
     },
     {
-      title: '单位',
-      width: 80,
-      dataIndex: 'Unit',
-    },
-    {
-      title: '要求交期',
-      dataIndex: 'DueDate',
+      title: '转移备注',
       width: 100,
-      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
-    },
-    {
-      title: '价格',
-      width: 100,
-      dataIndex: 'Price',
-    },
-    {
-      title: '询价交期',
-      width: 100,
-      dataIndex: 'InquiryDueDate',
-      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
-    },
-    {
-      title: '行备注',
-      width: 80,
-      dataIndex: 'LineComment',
+      dataIndex: 'TransferComment',
       render: text => (
         <Ellipsis tooltip lines={1}>
           {text}
@@ -257,29 +360,8 @@ class orderLine extends PureComponent {
       ),
     },
     {
-      title: '销售总计',
-      width: 100,
-      dataIndex: 'LineTotal',
-    },
-    {
-      title: '询价总计',
-      width: 100,
-      dataIndex: 'InquiryLineTotalLocal',
-    },
-    {
-      title: '所有人',
-      width: 80,
-      dataIndex: 'Owner',
-      render: text => {
-        const {
-          global: { Saler },
-        } = this.props;
-        return <span>{getName(Saler, text)}</span>;
-      },
-    },
-    {
       title: '销报单号',
-      width: 100,
+      width: 80,
       dataIndex: 'QuoteEntry',
       render: (text, recond) =>
         text ? (
@@ -292,7 +374,7 @@ class orderLine extends PureComponent {
     },
     {
       title: '销合单号',
-      width: 100,
+      width: 80,
       dataIndex: 'ContractEntry',
       render: (text, recond) =>
         text ? (
@@ -305,7 +387,7 @@ class orderLine extends PureComponent {
     },
     {
       title: '销订单号',
-      width: 100,
+      width: 80,
       dataIndex: 'SoEntry',
       render: (text, recond) =>
         text ? (
@@ -333,7 +415,7 @@ class orderLine extends PureComponent {
       type: 'global/getMDMCommonality',
       payload: {
         Content: {
-          CodeList: ['Saler', 'Purchaser'],
+          CodeList: ['Saler', 'Purchaser', 'TI_Z042', 'HS', 'WhsCode'],
         },
       },
     });
@@ -575,7 +657,7 @@ class orderLine extends PureComponent {
               data={{ list: orderLineList }}
               pagination={pagination}
               rowKey="Key"
-              scroll={{ x: 3000, y: 500 }}
+              scroll={{ x: 3300, y: 500 }}
               columns={columns}
               rowSelection={{
                 onSelectRow: this.onSelectRow,

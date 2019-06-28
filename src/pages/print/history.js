@@ -25,7 +25,6 @@ class PrintHistory extends PureComponent {
     {
       title: '单号',
       width: 80,
-      fixed: 'left',
       dataIndex: 'DocEntry',
       render: text => (
         <Link target="_blank" to={`/base/print/detail?DocEntry=${text}`}>
@@ -79,6 +78,7 @@ class PrintHistory extends PureComponent {
     },
     {
       title: '模板名称',
+      width: 300,
       dataIndex: 'PrintTemplateName',
     },
   ];

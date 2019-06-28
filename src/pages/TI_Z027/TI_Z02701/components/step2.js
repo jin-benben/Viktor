@@ -32,6 +32,7 @@ class SelectionLine extends Component {
     {
       title: '有效期',
       dataIndex: 'ToDate',
+      width: 150,
       render: (text, record, index) => (
         <DatePicker
           onChange={(date, dateString) => this.RowChange(dateString, index, record, 'ToDate')}
@@ -113,6 +114,7 @@ class SelectionLine extends Component {
     {
       title: '备注',
       dataIndex: 'Comment',
+      width: 150,
       render: (text, record, index) => (
         <Input
           onChange={e => this.RowChange(e.target.value, index, record, 'Comment')}

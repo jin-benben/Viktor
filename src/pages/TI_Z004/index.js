@@ -14,10 +14,12 @@ import {
   message,
   Select,
   Checkbox,
+  Tag,
 } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import Organization from '@/components/Organization';
 import MDMCommonality from '@/components/Select';
+import MyIcon from '@/components/MyIcon';
 import { validatorEmail, validatorPhone, getName } from '@/utils/utils';
 import { formLayout, formItemLayout, roleType } from '@/utils/publicData';
 
@@ -290,13 +292,14 @@ class Staffs extends PureComponent {
       title: '级别',
       width: 60,
       dataIndex: 'Dmanager',
-      render: val => <span>{val === '1' ? '主管' : '员工'}</span>,
+      render: val => (val === '1' ? <Tag color="blue">主管</Tag> : ''),
     },
     {
       title: '角色',
-      width: 80,
+      width: 60,
       dataIndex: 'Role',
-      render: val => <span>{getName(roleType, val)}</span>,
+      align: 'center',
+      render: val => this.whichRole(val),
     },
     {
       title: '手机号',
@@ -322,21 +325,23 @@ class Staffs extends PureComponent {
     },
     {
       title: '管理员',
-      width: 70,
+      width: 80,
+      align: 'center',
       dataIndex: 'IsAdministrator',
-      render: val => <span>{val === 'Y' ? '是' : '否'}</span>,
+      render: val => (val === 'Y' ? <Tag color="blue">管理员</Tag> : ''),
     },
     {
       title: '数据权限',
       width: 80,
       dataIndex: 'AllDataPermission',
-      render: val => <span>{val === 'Y' ? '有' : '无'}</span>,
+      render: val => (val === 'Y' ? <Tag color="blue">全部</Tag> : ''),
     },
     {
       title: '状态',
-      width: 50,
+      width: 60,
+      align: 'center',
       dataIndex: 'Status',
-      render: val => <span>{val === '1' ? '在职' : '离职'}</span>,
+      render: val => (val === '1' ? <Tag color="blue">在职</Tag> : <Tag color="red">离职</Tag>),
     },
     {
       title: '交易公司',
@@ -374,12 +379,14 @@ class Staffs extends PureComponent {
     },
     {
       title: '操作',
-      width: 80,
+      width: 60,
+      fixed: 'right',
+      align: 'center',
       render: (text, record) => (
         <Fragment>
-          <a onClick={() => this.handleUpdateModalVisible(true, record)}>修改</a>
-          {/* <Divider type="vertical" />
-          <a href="">删除</a> */}
+          <a onClick={() => this.handleUpdateModalVisible(true, record)}>
+            <MyIcon type="iconedit" />
+          </a>
         </Fragment>
       ),
     },
@@ -412,6 +419,19 @@ class Staffs extends PureComponent {
       },
     });
   }
+
+  whichRole = role => {
+    switch (role) {
+      case 'A':
+        return <Tag color="blue">全部</Tag>;
+      case 'S':
+        return <Tag color="cyan">销售</Tag>;
+      case 'P':
+        return <Tag color="green">采购</Tag>;
+      default:
+        return '';
+    }
+  };
 
   handleStandardTableChange = pagination => {
     const { dispatch } = this.props;

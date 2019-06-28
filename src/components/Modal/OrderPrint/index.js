@@ -2,9 +2,9 @@ import React, { PureComponent, Fragment } from 'react';
 
 import { Row, Col, Form, Input, Modal, Button, message } from 'antd';
 import { connect } from 'dva';
+import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import StandardTable from '@/components/StandardTable';
 import request from '@/utils/request';
-import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import { printType, printOrderType } from '@/utils/publicData';
 import { getName } from '@/utils/utils';
 
@@ -81,11 +81,14 @@ class OrderPrint extends PureComponent {
 
   componentDidMount() {
     const { queryData } = this.state;
+    const { BaseType } = this.props;
+    Object.assign(queryData.Content, { BaseType });
     this.getTemplate(queryData);
   }
 
   componentWillReceiveProps(nextProps) {
     const { queryData } = this.state;
+
     if (nextProps.BaseType !== queryData.Content.BaseType) {
       Object.assign(queryData.Content, { BaseType: nextProps.BaseType });
       this.getTemplate(queryData);

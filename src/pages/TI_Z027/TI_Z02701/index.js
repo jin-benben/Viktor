@@ -35,6 +35,7 @@ class SupplierAsk extends Component {
     {
       title: '单号',
       dataIndex: 'DocEntry',
+      width: 100,
       render: (text, record) => {
         if (record.Status === '1') {
           return <a href={`/purchase/TI_Z027/update?DocEntry=${text}`}>{text}</a>;
@@ -44,10 +45,12 @@ class SupplierAsk extends Component {
     },
     {
       title: '供应商',
+      width: 300,
       dataIndex: 'CardName',
     },
     {
       title: '状态',
+      width: 100,
       dataIndex: 'Status',
       render: (text, record) => (
         <span>{text === '1' ? '成功' : `失败（${record.ErrorMessage}）`}</span>

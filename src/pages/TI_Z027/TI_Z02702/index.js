@@ -74,15 +74,122 @@ class InquiryEdit extends React.Component {
         ),
     },
     {
-      title: '产品描述',
-      dataIndex: 'SKUName',
-      width: 200,
+      title: '名称',
+      dataIndex: 'ProductName',
+      inputType: 'textArea',
+      width: 150,
+      editable: true,
       align: 'center',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
+    },
+    {
+      title: '名称(外)',
+      dataIndex: 'ForeignName',
+      inputType: 'textArea',
+      width: 150,
+      editable: true,
+      align: 'center',
+    },
+    {
+      title: '规格(外)',
+      width: 150,
+      dataIndex: 'ForeignParameters',
+      inputType: 'textArea',
+      editable: true,
+      align: 'center',
+    },
+    {
+      title: '数量',
+      width: 80,
+      inputType: 'text',
+      dataIndex: 'Quantity',
+      editable: true,
+      align: 'center',
+    },
+    {
+      title: '单位',
+      width: 80,
+      inputType: 'text',
+      dataIndex: 'Unit',
+      editable: true,
+      align: 'center',
+    },
+    {
+      title: '价格',
+      width: 100,
+      inputType: 'text',
+      dataIndex: 'Price',
+      editable: true,
+      align: 'center',
+    },
+    {
+      title: '询价交期',
+      width: 120,
+      inputType: 'date',
+      dataIndex: 'InquiryDueDate',
+      editable: true,
+      align: 'center',
+    },
+    {
+      title: '行备注',
+      dataIndex: 'LineComment',
+      inputType: 'textArea',
+      width: 100,
+      editable: true,
+      align: 'center',
+    },
+    {
+      title: '重量',
+      width: 80,
+      dataIndex: 'Rweight',
+      editable: true,
+      inputType: 'text',
+      align: 'center',
+    },
+    {
+      title: '国外运费',
+      width: 80,
+      dataIndex: 'ForeignFreight',
+      align: 'center',
+    },
+    {
+      title: '销行备注',
+      dataIndex: 'SLineComment',
+      inputType: 'textArea',
+      width: 100,
+      editable: true,
+      align: 'center',
+    },
+    {
+      title: '采总计',
+      width: 120,
+      align: 'center',
+      dataIndex: 'LineTotal',
+    },
+    {
+      title: '本币总计',
+      width: 100,
+      align: 'center',
+      dataIndex: 'InquiryLineTotalLocal',
+    },
+    {
+      title: '要求交期',
+      width: 120,
+      inputType: 'date',
+      dataIndex: 'DueDate',
+      editable: true,
+      align: 'center',
+    },
+    {
+      title: '客询价单',
+      width: 80,
+      dataIndex: 'BaseEntry',
+      align: 'center',
+      render: (val, record) =>
+        record.lastIndex ? null : (
+          <Link target="_blank" to={`/sellabout/TI_Z026/detail?DocEntry=${record.BaseEntry}`}>
+            {`${val}-${record.BaseLineID}`}
+          </Link>
+        ),
     },
     {
       title: '品牌',
@@ -100,14 +207,7 @@ class InquiryEdit extends React.Component {
           />
         ),
     },
-    {
-      title: '名称',
-      dataIndex: 'ProductName',
-      inputType: 'textArea',
-      width: 100,
-      editable: true,
-      align: 'center',
-    },
+
     {
       title: '型号',
       width: 130,
@@ -124,14 +224,7 @@ class InquiryEdit extends React.Component {
       editable: true,
       align: 'center',
     },
-    {
-      title: '规格(外)',
-      width: 150,
-      dataIndex: 'ForeignParameters',
-      inputType: 'textArea',
-      editable: true,
-      align: 'center',
-    },
+
     {
       title: '包装',
       width: 100,
@@ -164,75 +257,21 @@ class InquiryEdit extends React.Component {
       },
     },
     {
-      title: '数量',
-      width: 80,
-      inputType: 'text',
-      dataIndex: 'Quantity',
-      editable: true,
-      align: 'center',
-    },
-    {
-      title: '单位',
-      width: 80,
-      inputType: 'text',
-      dataIndex: 'Unit',
-      editable: true,
-      align: 'center',
-    },
-    {
-      title: '要求交期',
-      width: 120,
-      inputType: 'date',
-      dataIndex: 'DueDate',
-      editable: true,
-      align: 'center',
-    },
-    {
-      title: '价格',
+      title: '上一次价格',
       width: 100,
-      inputType: 'text',
-      dataIndex: 'Price',
-      editable: true,
+      dataIndex: 'LastPrice',
       align: 'center',
     },
     {
-      title: '询价交期',
-      width: 120,
-      inputType: 'date',
-      dataIndex: 'InquiryDueDate',
-      editable: true,
-      align: 'center',
-    },
-    {
-      title: '行备注',
-      dataIndex: 'LineComment',
-      inputType: 'textArea',
+      title: '客户参考号',
       width: 100,
-      editable: true,
+      dataIndex: 'NumAtCard',
       align: 'center',
-    },
-    {
-      title: '采总计',
-      width: 120,
-      align: 'center',
-      dataIndex: 'LineTotal',
-    },
-    {
-      title: '本币总计',
-      width: 100,
-      align: 'center',
-      dataIndex: 'InquiryLineTotalLocal',
-    },
-    {
-      title: '客询价单',
-      width: 80,
-      dataIndex: 'BaseEntry',
-      render: (val, record) =>
-        record.lastIndex ? null : (
-          <Link target="_blank" to={`/sellabout/TI_Z026/detail?DocEntry=${record.BaseEntry}`}>
-            {`${val}-${record.BaseLineID}`}
-          </Link>
-        ),
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '操作',
@@ -911,7 +950,7 @@ class InquiryEdit extends React.Component {
             <EditableFormTable
               rowChange={this.rowChange}
               rowKey="LineID"
-              scroll={{ x: 2100 }}
+              scroll={{ x: 2700 }}
               columns={this.skuColumns}
               data={newdata}
             />

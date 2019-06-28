@@ -4,7 +4,6 @@ import moment from 'moment';
 import { connect } from 'dva';
 import { Form, Modal, message, Table } from 'antd';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
-import MDMCommonality from '@/components/Select';
 import { purchaserRule, confirmRule } from '../service';
 import { getName } from '@/utils/utils';
 
@@ -24,120 +23,68 @@ class OrderLine extends React.Component {
       title: '单号',
       dataIndex: 'DocEntry',
       fixed: 'left',
-      width: 50,
+      width: 80,
       align: 'center',
+      render: (text, record) => <span>{`${text}-${record.LineID}`}</span>,
     },
     {
-      title: '行号',
-      dataIndex: 'LineID',
-      fixed: 'left',
-      width: 50,
-      align: 'center',
-    },
-    {
-      title: 'SKU',
+      title: '物料',
       dataIndex: 'SKU',
       align: 'center',
-      width: 80,
-    },
-    {
-      title: '产品描述',
-      dataIndex: 'SKUName',
-      width: 200,
-      align: 'center',
-      render: text => (
+      width: 300,
+      render: (text, record) => (
         <Ellipsis tooltip lines={1}>
-          {text}
+          {`${text}-${record.SKUName}`}
         </Ellipsis>
       ),
-    },
-    {
-      title: '品牌',
-      width: 100,
-      align: 'center',
-      dataIndex: 'BrandName',
-    },
-    {
-      title: '名称',
-      dataIndex: 'ProductName',
-      width: 150,
-      align: 'center',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
-    {
-      title: '外文名称',
-      dataIndex: 'ForeignName',
-      width: 150,
-      align: 'center',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
-    {
-      title: '型号',
-      width: 100,
-      dataIndex: 'ManufactureNO',
-      align: 'center',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
-    {
-      title: '参数',
-      width: 100,
-      dataIndex: 'Parameters',
-      align: 'center',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
-    {
-      title: '包装',
-      width: 100,
-      dataIndex: 'Package',
-      align: 'center',
     },
     {
       title: '数量',
-      width: 80,
+      width: 100,
       dataIndex: 'Quantity',
       align: 'center',
+      render: (text, record) => <span>{`${text}-${record.Unit}`}</span>,
     },
     {
-      title: '单位',
+      title: '产地',
       width: 80,
-      dataIndex: 'Unit',
+      dataIndex: 'ManLocation',
+      align: 'center',
+      render: (text, record) => {
+        const {
+          global: { TI_Z042 },
+        } = this.props;
+        if (!record.lastIndex) {
+          return record.lastIndex ? '' : <span>{getName(TI_Z042, text)}</span>;
+        }
+        return '';
+      },
+    },
+    {
+      title: 'HS编码',
+      width: 100,
+      inputType: 'text',
+      dataIndex: 'HSCode',
+    },
+    {
+      title: '税率',
+      width: 80,
+      dataIndex: 'HSVatRate',
+      align: 'center',
+      render: (text, record) =>
+        record.lastIndex ? '' : <span>{`${text}-${record.HSVatRateOther}`}</span>,
+    },
+    {
+      title: '价格',
+      width: 80,
+      dataIndex: 'Price',
       align: 'center',
     },
     {
-      title: '采购员',
-      width: 100,
-      dataIndex: 'Purchaser',
+      title: '行总计',
+      width: 80,
       align: 'center',
-      render: (text, record, index) => {
-        const {
-          global: { Purchaser },
-        } = this.props;
-        return (
-          <MDMCommonality
-            onChange={value => {
-              this.rowSelectChange(value, record, index);
-            }}
-            initialValue={text}
-            data={Purchaser}
-          />
-        );
-      },
+      dataIndex: 'LineTotal',
     },
     {
       title: '要求交期',
@@ -157,18 +104,6 @@ class OrderLine extends React.Component {
         } = this.props;
         return <span>{getName(WhsCode, text)}</span>;
       },
-    },
-    {
-      title: '价格',
-      width: 100,
-      dataIndex: 'Price',
-      align: 'center',
-    },
-    {
-      title: '行总计',
-
-      align: 'center',
-      dataIndex: 'LineTotal',
     },
   ];
 
@@ -265,10 +200,9 @@ class OrderLine extends React.Component {
           <Table
             bordered
             dataSource={data}
-            size="middle"
             pagination={false}
             rowKey="Key"
-            scroll={{ x: 1750, y: 500 }}
+            scroll={{ x: 1100, y: 600 }}
             rowSelection={{
               onChange: this.onSelectRow,
               selectedRowKeys,

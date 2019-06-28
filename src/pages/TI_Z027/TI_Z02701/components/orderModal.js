@@ -29,72 +29,83 @@ class OrderLine extends PureComponent {
       ),
     },
     {
-      title: 'SKU',
+      title: '单据日期',
+      dataIndex: 'DocDate',
+      width: 100,
+      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
+    },
+    // {
+    //   title: '行状态',
+    //   width: 200,
+    //   dataIndex: 'LineStatus',
+    //   align: 'center',
+    //   render: (text, record) =>
+    //     record.lastIndex ? null : (
+    //       <Fragment>
+    //         {record.Closed === 'Y' ? (
+    //           <Tag color="red">已关闭</Tag>
+    //         ) : (
+    //           <Fragment>
+    //             <Tag color="green">{getName(lineStatus, text)}</Tag>
+    //             {record.PDocStatus === 'O' ? <Tag color="green">已确认</Tag> : <Tag color="gold">未确认</Tag>}
+    //             {record.SDocStatus === 'O' ? <Tag color="green">已报价</Tag> :<Tag color="gold">未报价</Tag>}
+    //           </Fragment>
+    //         )}
+    //       </Fragment>
+    //     ),
+    // },
+    {
+      title: '物料',
       dataIndex: 'SKU',
       align: 'center',
-      width: 100,
-    },
-    {
-      title: '名称',
-      dataIndex: 'ProductName',
-      width: 150,
-      align: 'center',
+      width: 300,
+      render: (text, record) =>
+        record.lastIndex ? (
+          ''
+        ) : (
+          <Ellipsis tooltip lines={1}>
+            {text ? (
+              <Link target="_blank" to={`/main/product/TI_Z009/TI_Z00903?Code${text}`}>
+                {text}-
+              </Link>
+            ) : (
+              ''
+            )}
+            {record.SKUName}
+          </Ellipsis>
+        ),
     },
     {
       title: '数量',
       width: 100,
       dataIndex: 'Quantity',
       align: 'center',
+      render: (text, record) => <span>{`${text}-${record.Unit}`}</span>,
     },
     {
-      title: '单位',
-      width: 80,
-      dataIndex: 'Unit',
-      align: 'center',
-    },
-    {
-      title: '产品描述',
-      dataIndex: 'SKUName',
-      width: 200,
-      align: 'center',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
-    {
-      title: '品牌',
+      title: '要求交期',
       width: 100,
+      inputType: 'date',
+      dataIndex: 'DueDate',
       align: 'center',
-      dataIndex: 'BrandName',
+      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
 
     {
-      title: '型号',
-      width: 150,
-      dataIndex: 'ManufactureNO',
-      align: 'center',
-    },
-    {
-      title: '参数',
-      width: 150,
-      dataIndex: 'Parameters',
-
-      align: 'center',
-    },
-    {
-      title: '包装',
-      width: 150,
-      dataIndex: 'Package',
-
-      align: 'center',
+      title: '销售员',
+      width: 100,
+      dataIndex: 'Owner',
+      render: text => {
+        const {
+          global: { Saler },
+        } = this.props;
+        return <span>{getName(Saler, text)}</span>;
+      },
     },
     {
       title: '采购员',
       width: 100,
       dataIndex: 'Purchaser',
-      align: 'center',
       render: text => {
         const {
           global: { Purchaser },
@@ -102,19 +113,31 @@ class OrderLine extends PureComponent {
         return <span>{getName(Purchaser, text)}</span>;
       },
     },
-
     {
-      title: '要求交期',
-      width: 150,
-      dataIndex: 'DueDate',
-      align: 'center',
-      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
+      title: '处理人',
+      width: 100,
+      dataIndex: 'Processor',
+      render: val => {
+        const {
+          global: { TI_Z004 },
+        } = this.props;
+        return <span>{getName(TI_Z004, val)}</span>;
+      },
+    },
+    {
+      title: '转移备注',
+      width: 100,
+      dataIndex: 'TransferComment',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '仓库',
-      width: 150,
+      width: 120,
       dataIndex: 'WhsCode',
-      align: 'center',
       render: text => {
         const {
           global: { WhsCode },
@@ -123,16 +146,24 @@ class OrderLine extends PureComponent {
       },
     },
     {
-      title: '销售建议价',
-      width: 120,
-      dataIndex: 'Price',
-      align: 'center',
+      title: '交易公司',
+      width: 150,
+      dataIndex: 'CompanyCode',
+      render: text => {
+        const {
+          global: { Company },
+        } = this.props;
+        return (
+          <Ellipsis tooltip lines={1}>
+            {getName(Company, text)}
+          </Ellipsis>
+        );
+      },
     },
     {
-      title: '询价备注',
-      dataIndex: 'InquiryComment',
-      width: 150,
-      align: 'center',
+      title: '行备注',
+      width: 100,
+      dataIndex: 'Comment',
       render: text => (
         <Ellipsis tooltip lines={1}>
           {text}
@@ -140,10 +171,14 @@ class OrderLine extends PureComponent {
       ),
     },
     {
-      title: '销售行总计',
-      width: 150,
-      align: 'center',
-      dataIndex: 'LineTotal',
+      title: '客户参考号',
+      width: 100,
+      dataIndex: 'NumAtCard',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
   ];
 
@@ -191,7 +226,7 @@ class OrderLine extends PureComponent {
             dataSource={data}
             pagination={false}
             rowKey="Key"
-            scroll={{ x: 2260, y: 500 }}
+            scroll={{ x: 1850, y: 500 }}
             rowSelection={{
               onChange: this.onSelectRow,
               selectedRowKeys,

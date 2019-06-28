@@ -330,7 +330,7 @@ class InquiryEdit extends React.Component {
       <Menu>
         <Menu.Item>
           <Link target="_blank" to="/purchase/TI_Z027/edit">
-            新建供应商询价单
+            新建采购询价单
           </Link>
         </Menu.Item>
         <Menu.Item>
@@ -379,7 +379,7 @@ class InquiryEdit extends React.Component {
   cancelSubmit = ClosedComment => {
     const { dispatch } = this.props;
     const {
-      formVals: { DocEntry },
+      formVals: { DocEntry, UpdateTimestamp },
     } = this.state;
     dispatch({
       type: 'supplierAskPreview/cancel',
@@ -387,11 +387,13 @@ class InquiryEdit extends React.Component {
         Content: {
           DocEntry,
           ClosedComment,
+          UpdateTimestamp,
         },
       },
       callback: response => {
         if (response && response.Status === 200) {
           message.success('取消成功');
+          this.getDetail();
         }
       },
     });

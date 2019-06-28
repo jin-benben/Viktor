@@ -7,6 +7,7 @@ import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import StandardTable from '@/components/StandardTable';
 import BrandModal from '@/components/Modal/Brand';
 import SendEmail from '@/components/Order/SendEmail';
+import PrintHistory from '@/components/Order/PrintHistory';
 import SupplierAsk from '@/components/Order/TI_Z027';
 import LinkMan from '../components/linkman';
 import MDMCommonality from '@/components/Select';
@@ -548,11 +549,14 @@ class CompanyEdit extends React.Component {
                   columns={this.brandColumns}
                 />
               </TabPane>
-              <TabPane tab="供应商询价单" key="5">
+              <TabPane tab="采购询价单" key="5">
                 {formVals.Name ? <SupplierAsk QueryType="3" QueryKey={formVals.Code} /> : ''}
               </TabPane>
               <TabPane tab="邮件发送记录" key="6">
                 {formVals.Name ? <SendEmail QueryType="6" QueryKey={formVals.Code} /> : ''}
+              </TabPane>
+              <TabPane tab="打印记录" key="10">
+                <PrintHistory QueryType="6" QueryKey={formVals.Code} />
               </TabPane>
             </Tabs>
             <LinkMan

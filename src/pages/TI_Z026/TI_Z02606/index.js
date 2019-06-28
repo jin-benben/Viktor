@@ -3,7 +3,7 @@ import { connect } from 'dva';
 import router from 'umi/router';
 import Link from 'umi/link';
 import moment from 'moment';
-import { Row, Col, Card, Form, Input, Button, Divider, Select, DatePicker, Icon } from 'antd';
+import { Row, Col, Card, Form, Input, Button, Select, DatePicker, Icon, Tooltip } from 'antd';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import StandardTable from '@/components/StandardTable';
@@ -48,15 +48,15 @@ class inquiryListPage extends PureComponent {
       render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
     {
-      title: '创建日期',
-      dataIndex: 'CreateDate',
+      title: '到期日期',
+      dataIndex: 'ToDate',
       width: 100,
       render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
     {
       title: '单据状态',
       dataIndex: 'Status',
-      width: 120,
+      width: 150,
       render: (text, record) => (
         <Fragment>
           {record.Closed === 'Y' ? (
@@ -72,7 +72,6 @@ class inquiryListPage extends PureComponent {
     },
     {
       title: '客户',
-      width: 150,
       dataIndex: 'CardName',
       render: text => (
         <Ellipsis tooltip lines={1}>
@@ -80,21 +79,25 @@ class inquiryListPage extends PureComponent {
         </Ellipsis>
       ),
     },
+
     {
-      title: '客户参考号',
+      title: '联系人',
       width: 100,
-      dataIndex: 'NumAtCard',
-    },
-    {
-      title: '联系方式',
-      width: 120,
-      dataIndex: 'contact',
+      dataIndex: 'Contacts',
       render: (text, record) => (
-        <Ellipsis tooltip lines={1}>
-          {record.CellphoneNO}
-          {record.CellphoneNO ? <Divider type="vertical" /> : null}
-          {record.PhoneNO}
-        </Ellipsis>
+        <Tooltip
+          title={
+            <Fragment>
+              {record.CellphoneNO}
+              <br />
+              {record.Email}
+              <br />
+              {record.PhoneNO}
+            </Fragment>
+          }
+        >
+          {text}
+        </Tooltip>
       ),
     },
     {
@@ -103,13 +106,13 @@ class inquiryListPage extends PureComponent {
       width: 300,
       render: (text, record) => (
         <Ellipsis tooltip lines={1}>
-          {`${record.Province}/${record.City}/${record.Area}/${record.Address}`}
+          {`${record.Province}${record.City}${record.Area}${record.Address}`}
         </Ellipsis>
       ),
     },
     {
-      title: '所有人',
-      width: 80,
+      title: '销售员',
+      width: 100,
       dataIndex: 'Owner',
       render: text => {
         const {
@@ -127,6 +130,31 @@ class inquiryListPage extends PureComponent {
       title: '销售总计',
       width: 100,
       dataIndex: 'DocTotal',
+    },
+    {
+      title: '交易公司',
+      width: 150,
+      dataIndex: 'CompanyCode',
+      render: text => {
+        const {
+          global: { Company },
+        } = this.props;
+        return (
+          <Ellipsis tooltip lines={1}>
+            {getName(Company, text)}
+          </Ellipsis>
+        );
+      },
+    },
+    {
+      title: '备注',
+      dataIndex: 'Comment',
+      width: 100,
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
   ];
 
@@ -146,7 +174,7 @@ class inquiryListPage extends PureComponent {
       type: 'global/getMDMCommonality',
       payload: {
         Content: {
-          CodeList: ['Saler'],
+          CodeList: ['Saler', 'Company'],
         },
       },
     });

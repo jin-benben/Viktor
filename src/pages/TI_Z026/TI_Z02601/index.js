@@ -20,6 +20,7 @@ import {
   Select,
   Dropdown,
   Menu,
+  Tag,
 } from 'antd';
 import moment from 'moment';
 import round from 'lodash/round';
@@ -39,8 +40,9 @@ import CompanySelect from '@/components/Company/index';
 import HSCode from '@/components/HSCode';
 import PushLink from '@/components/PushLink';
 import Attachment from '@/components/Attachment';
+import MyTag from '@/components/Tag';
 import { getName } from '@/utils/utils';
-import { orderSourceType } from '@/utils/publicData';
+import { orderSourceType, lineStatus } from '@/utils/publicData';
 
 const { TabPane } = Tabs;
 const FormItem = Form.Item;
@@ -54,7 +56,7 @@ const { Option } = Select;
 }))
 @Form.create()
 class InquiryEdit extends React.Component {
-  skuColumns = [
+  skuColumns1 = [
     {
       title: '行号',
       dataIndex: 'LineID',
@@ -80,18 +82,6 @@ class InquiryEdit extends React.Component {
           />
         ),
     },
-    // {
-    //   title: '产品描述',
-    //   dataIndex: 'SKUName',
-    //   width: 200,
-    //   align: 'center',
-    //   render: text => (
-    //     <Ellipsis tooltip lines={1}>
-    //       {' '}
-    //       {text}
-    //     </Ellipsis>
-    //   ),
-    // },
     {
       title: '品牌',
       width: 120,
@@ -119,8 +109,275 @@ class InquiryEdit extends React.Component {
       align: 'center',
     },
     {
-      title: '外文名称',
+      title: '型号',
+      width: 150,
+      dataIndex: 'ManufactureNO',
+      inputType: 'textArea',
+      editable: true,
+      align: 'center',
+    },
+    {
+      title: '参数',
+      width: 150,
+      dataIndex: 'Parameters',
+      inputType: 'textArea',
+      editable: true,
+      align: 'center',
+    },
+    {
+      title: '单位',
+      width: 80,
+      inputType: 'text',
+      dataIndex: 'Unit',
+      editable: true,
+      align: 'center',
+    },
+    {
+      title: '数量',
+      width: 80,
+      inputType: 'text',
+      dataIndex: 'Quantity',
+      editable: true,
+      align: 'center',
+    },
+    {
+      title: '价格',
+      width: 80,
+      inputType: 'text',
+      dataIndex: 'Price',
+      editable: true,
+      align: 'center',
+    },
+    {
+      title: '行总计',
+      width: 100,
+      align: 'center',
+      dataIndex: 'LineTotal',
+      render: (text, record) =>
+        record.lastIndex ? <span style={{ fontWeight: 'bolder' }}>{text}</span> : text,
+    },
+
+    {
+      title: '产地',
+      width: 100,
+      dataIndex: 'ManLocation',
+      align: 'center',
+      render: (text, record, index) => {
+        const {
+          global: { TI_Z042 },
+        } = this.props;
+        if (!record.lastIndex) {
+          return (
+            <MDMCommonality
+              onChange={value => {
+                this.rowSelectChange(value, record, index, 'ManLocation');
+              }}
+              initialValue={text}
+              data={TI_Z042}
+            />
+          );
+        }
+        return '';
+      },
+    },
+    {
+      title: 'HS编码',
+      width: 150,
+      inputType: 'text',
+      dataIndex: 'HSCode',
+      render: (text, record, index) => {
+        const {
+          global: { HSCodeList },
+        } = this.props;
+        return record.lastIndex ? (
+          ''
+        ) : (
+          <HSCode
+            initialValue={text}
+            data={HSCodeList}
+            onChange={select => {
+              this.codeChange(select, record, index);
+            }}
+          />
+        );
+      },
+    },
+    {
+      title: '税率',
+      width: 80,
+      dataIndex: 'HSVatRate',
+      align: 'center',
+      render: (text, record) =>
+        record.lastIndex ? '' : <span>{`${text}-${record.HSVatRateOther}`}</span>,
+    },
+    {
+      title: '要求名称',
+      width: 150,
+      inputType: 'textArea',
+      dataIndex: 'CustomerName',
+      editable: true,
+      align: 'center',
+    },
+    {
+      title: '重量',
+      width: 80,
+      dataIndex: 'Rweight',
+      editable: true,
+      inputType: 'text',
+      align: 'center',
+    },
+    {
+      title: '备注',
+      dataIndex: 'LineComment',
+      inputType: 'textArea',
+      width: 150,
+      editable: true,
+      align: 'center',
+    },
+    {
+      title: '包装',
+      width: 150,
+      dataIndex: 'Package',
+      inputType: 'textArea',
+      editable: true,
+      align: 'center',
+    },
+    {
+      title: '名称(外)',
       dataIndex: 'ForeignName',
+      inputType: 'textArea',
+      width: 150,
+      editable: true,
+      align: 'center',
+    },
+    {
+      title: '规格(外)',
+      width: 150,
+      dataIndex: 'ForeignParameters',
+      inputType: 'textArea',
+      editable: true,
+      align: 'center',
+    },
+
+    {
+      title: '仓库',
+      width: 150,
+      dataIndex: 'WhsCode',
+      align: 'center',
+      render: (text, record, index) => {
+        const {
+          global: { WhsCode },
+        } = this.props;
+        if (!record.lastIndex) {
+          return (
+            <MDMCommonality
+              onChange={value => {
+                this.rowSelectChange(value, record, index, 'WhsCode');
+              }}
+              initialValue={text}
+              data={WhsCode}
+            />
+          );
+        }
+        return null;
+      },
+    },
+    {
+      title: '要求交期',
+      width: 120,
+      inputType: 'date',
+      dataIndex: 'DueDate',
+      editable: true,
+      align: 'center',
+    },
+    {
+      title: '操作',
+      fixed: 'right',
+      align: 'center',
+      width: 80,
+      render: (text, record, index) => {
+        const {
+          formVals: { DocEntry },
+        } = this.state;
+        return record.lastIndex ? null : (
+          <Fragment>
+            <Icon
+              title="预览"
+              type="eye"
+              onClick={() => this.lookLineAttachment(record, index)}
+              style={{ color: '#08c', marginRight: 5 }}
+            />
+            {DocEntry ? (
+              <Icon
+                title="上传附件"
+                className="icons"
+                style={{ color: '#08c', marginRight: 5, marginLeft: 5 }}
+                type="cloud-upload"
+                onClick={() => this.skuLineAttachment(record, index)}
+              />
+            ) : (
+              ''
+            )}
+            <Icon
+              title="删除行"
+              className="icons"
+              type="delete"
+              theme="twoTone"
+              onClick={() => this.deleteSKULine(record, index)}
+            />
+          </Fragment>
+        );
+      },
+    },
+  ];
+
+  skuColumns2 = [
+    {
+      title: '行号',
+      dataIndex: 'LineID',
+      width: 50,
+      fixed: 'left',
+      align: 'center',
+      render: (text, record) =>
+        record.lastIndex ? <span style={{ fontWeight: 'bolder' }}>合计</span> : text,
+    },
+    {
+      title: 'SKU',
+      dataIndex: 'SKU',
+      align: 'center',
+      width: 100,
+      render: (text, record, index) =>
+        record.lastIndex ? null : (
+          <Input
+            value={record.SKU}
+            placeholder="选择SKU"
+            onClick={() => {
+              this.focusLine(record, index);
+            }}
+          />
+        ),
+    },
+    {
+      title: '品牌',
+      width: 120,
+      align: 'center',
+      dataIndex: 'BrandName',
+      render: (text, record, index) =>
+        record.lastIndex ? null : (
+          <div style={{ width: 110 }}>
+            <Brand
+              initialValue={record.BrandName}
+              keyType="Name"
+              onChange={value => {
+                this.rowSelectChange(value, record, index, 'BrandName');
+              }}
+            />
+          </div>
+        ),
+    },
+    {
+      title: '名称',
+      dataIndex: 'ProductName',
       inputType: 'textArea',
       width: 150,
       editable: true,
@@ -143,28 +400,79 @@ class InquiryEdit extends React.Component {
       align: 'center',
     },
     {
-      title: '规格(外)',
-      width: 150,
-      dataIndex: 'ForeignParameters',
-      inputType: 'textArea',
-      editable: true,
-      align: 'center',
-    },
-    {
-      title: '包装',
-      width: 150,
-      dataIndex: 'Package',
-      inputType: 'textArea',
-      editable: true,
-      align: 'center',
-    },
-    {
       title: '单位',
       width: 80,
       inputType: 'text',
       dataIndex: 'Unit',
       editable: true,
       align: 'center',
+    },
+    {
+      title: '数量',
+      width: 80,
+      inputType: 'text',
+      dataIndex: 'Quantity',
+      editable: true,
+      align: 'center',
+    },
+    {
+      title: '价格',
+      width: 80,
+      inputType: 'text',
+      dataIndex: 'Price',
+      editable: true,
+      align: 'center',
+    },
+    {
+      title: '行总计',
+      width: 100,
+      align: 'center',
+      dataIndex: 'LineTotal',
+      render: (text, record) =>
+        record.lastIndex ? <span style={{ fontWeight: 'bolder' }}>{text}</span> : text,
+    },
+    {
+      title: '需询价',
+      width: 100,
+      dataIndex: 'IsInquiry',
+      align: 'center',
+      render: (text, record) => (record.lastIndex ? null : <MyTag type="IsInquiry" value={text} />),
+    },
+    {
+      title: '询价价格',
+      width: 120,
+      dataIndex: 'InquiryPrice',
+      align: 'center',
+      render: (text, record) =>
+        record.lastIndex ? '' : <span>{`${text}-${record.Currency || ''}-${record.DocRate}`}</span>,
+    },
+    {
+      title: '询行总计',
+      width: 100,
+      align: 'center',
+      dataIndex: 'InquiryLineTotal',
+      render: (text, record) =>
+        record.lastIndex ? '' : <span>{`${text}-${record.InquiryLineTotalLocal}`}</span>,
+    },
+    {
+      title: '询价备注',
+      dataIndex: 'InquiryComment',
+      width: 100,
+      align: 'center',
+      render: (text, record) =>
+        record.lastIndex ? null : (
+          <Ellipsis tooltip lines={1}>
+            {text}
+          </Ellipsis>
+        ),
+    },
+    {
+      title: '询价交期',
+      width: 100,
+      dataIndex: 'InquiryDueDate',
+      align: 'center',
+      render: (text, record) =>
+        record.lastIndex ? null : <span>{moment(text).format('YYYY-MM-DD')}</span>,
     },
     {
       title: '产地',
@@ -212,16 +520,12 @@ class InquiryEdit extends React.Component {
       },
     },
     {
-      title: '报关税率',
+      title: '税率',
       width: 80,
       dataIndex: 'HSVatRate',
       align: 'center',
-    },
-    {
-      title: '附加税率',
-      width: 80,
-      dataIndex: 'HSVatRateOther',
-      align: 'center',
+      render: (text, record) =>
+        record.lastIndex ? '' : <span>{`${text}-${record.HSVatRateOther}`}</span>,
     },
     {
       title: '要求名称',
@@ -240,20 +544,6 @@ class InquiryEdit extends React.Component {
       align: 'center',
     },
     {
-      title: '国外运费',
-      width: 80,
-      dataIndex: 'ForeignFreight',
-      align: 'center',
-    },
-    {
-      title: '价格',
-      width: 80,
-      inputType: 'text',
-      dataIndex: 'Price',
-      editable: true,
-      align: 'center',
-    },
-    {
       title: '备注',
       dataIndex: 'LineComment',
       inputType: 'textArea',
@@ -262,35 +552,30 @@ class InquiryEdit extends React.Component {
       align: 'center',
     },
     {
-      title: '数量',
-      width: 80,
-      inputType: 'text',
-      dataIndex: 'Quantity',
+      title: '包装',
+      width: 150,
+      dataIndex: 'Package',
+      inputType: 'textArea',
       editable: true,
       align: 'center',
     },
     {
-      title: '建议价格',
-      width: 100,
-      dataIndex: 'AdvisePrice',
-      align: 'center',
-    },
-    {
-      title: '行总计',
-      width: 100,
-      align: 'center',
-      dataIndex: 'LineTotal',
-      render: (text, record) =>
-        record.lastIndex ? <span style={{ fontWeight: 'bolder' }}>{text}</span> : text,
-    },
-    {
-      title: '要求交期',
-      width: 120,
-      inputType: 'date',
-      dataIndex: 'DueDate',
+      title: '名称(外)',
+      dataIndex: 'ForeignName',
+      inputType: 'textArea',
+      width: 150,
       editable: true,
       align: 'center',
     },
+    {
+      title: '规格(外)',
+      width: 150,
+      dataIndex: 'ForeignParameters',
+      inputType: 'textArea',
+      editable: true,
+      align: 'center',
+    },
+
     {
       title: '仓库',
       width: 150,
@@ -314,33 +599,25 @@ class InquiryEdit extends React.Component {
         return null;
       },
     },
-
     {
-      title: '询价最终价',
-      width: 100,
-      dataIndex: 'InquiryPrice',
+      title: '要求交期',
+      width: 120,
+      inputType: 'date',
+      dataIndex: 'DueDate',
+      editable: true,
       align: 'center',
     },
     {
-      title: '询价币种',
-      width: 100,
-      dataIndex: 'Currency',
-      align: 'center',
-    },
-    {
-      title: '单据汇率',
+      title: '国外运费',
       width: 80,
-      inputType: 'text',
-      dataIndex: 'DocRate',
+      dataIndex: 'ForeignFreight',
       align: 'center',
     },
     {
-      title: '最终交期',
+      title: '建议价格',
       width: 100,
-      dataIndex: 'InquiryDueDate',
+      dataIndex: 'AdvisePrice',
       align: 'center',
-      render: (text, record) =>
-        record.lastIndex ? null : <span>{moment(text).format('YYYY-MM-DD')}</span>,
     },
     {
       title: '采购员',
@@ -355,10 +632,35 @@ class InquiryEdit extends React.Component {
       },
     },
     {
-      title: '询价备注',
-      dataIndex: 'InquiryComment',
-      width: 100,
+      title: '行状态',
+      width: 80,
+      dataIndex: 'LineStatus',
       align: 'center',
+      render: (text, record) =>
+        record.lastIndex ? null : <Tag color="green">{getName(lineStatus, text)}</Tag>,
+    },
+    {
+      title: '采询确认',
+      width: 80,
+      dataIndex: 'PLineStatus',
+      align: 'center',
+      render: (text, record) => (record.lastIndex ? null : <MyTag type="确认" value={text} />),
+    },
+    {
+      title: '处理人',
+      width: 80,
+      dataIndex: 'Processor',
+      render: (val, record) => {
+        const {
+          global: { TI_Z004 },
+        } = this.props;
+        return record.lastIndex ? null : <span>{getName(TI_Z004, val)}</span>;
+      },
+    },
+    {
+      title: '转移备注',
+      width: 100,
+      dataIndex: 'TransferComment',
       render: (text, record) =>
         record.lastIndex ? null : (
           <Ellipsis tooltip lines={1}>
@@ -367,18 +669,47 @@ class InquiryEdit extends React.Component {
         ),
     },
     {
-      title: '询行总计',
-      width: 100,
+      title: '销报单号',
+      width: 80,
+      dataIndex: 'QuoteEntry',
       align: 'center',
-      dataIndex: 'InquiryLineTotal',
+      render: (text, recond) =>
+        text ? (
+          <Link target="_blank" to={`/sellabout/TI_Z029/detail?DocEntry=${text}`}>
+            {`${text}-${recond.QuoteLine}`}
+          </Link>
+        ) : (
+          ''
+        ),
     },
     {
-      title: '询行本总计',
-      width: 120,
+      title: '销合单号',
+      width: 80,
       align: 'center',
-      dataIndex: 'InquiryLineTotalLocal',
+      dataIndex: 'ContractEntry',
+      render: (text, recond) =>
+        text ? (
+          <Link target="_blank" to={`/sellabout/TI_Z030/detail?DocEntry=${text}`}>
+            {`${text}-${recond.ContractLine}`}
+          </Link>
+        ) : (
+          ''
+        ),
     },
-
+    {
+      title: '销订单号',
+      width: 80,
+      align: 'center',
+      dataIndex: 'SoEntry',
+      render: (text, recond) =>
+        text ? (
+          <Link target="_blank" to={`/sellabout/orderdetail?DocEntry=${text}`}>
+            {`${text}-${recond.SoLine}`}
+          </Link>
+        ) : (
+          ''
+        ),
+    },
     {
       title: '操作',
       fixed: 'right',
@@ -424,21 +755,25 @@ class InquiryEdit extends React.Component {
     {
       title: '用户ID',
       align: 'center',
+      width: 80,
       dataIndex: 'UserID',
     },
     {
       title: '联系人',
       align: 'center',
+      width: 100,
       dataIndex: 'Contacts',
     },
     {
       title: '手机号',
       align: 'center',
+      width: 100,
       dataIndex: 'CellphoneNO',
     },
     {
       title: '操作',
       align: 'center',
+      width: 100,
       render: (text, record, index) => (
         <Icon
           title="删除行"
@@ -1185,6 +1520,7 @@ class InquiryEdit extends React.Component {
       updateloading,
       global: { Saler, Company, currentUser },
       detailLoading,
+      location: { query },
     } = this.props;
     const {
       formVals,
@@ -1239,6 +1575,7 @@ class InquiryEdit extends React.Component {
         LineTotal: formVals.DocTotal,
       });
     }
+
     return (
       <Card bordered={false} loading={detailLoading}>
         <Form {...formItemLayout}>
@@ -1343,13 +1680,23 @@ class InquiryEdit extends React.Component {
         </Form>
         <Tabs tabBarExtraContent={this.rightButton(tabIndex)} onChange={this.tabChange}>
           <TabPane tab="物料" key="1">
-            <EditableFormTable
-              rowChange={this.rowChange}
-              rowKey="LineID"
-              scroll={{ x: 3700, y: 600 }}
-              columns={this.skuColumns}
-              data={newdata}
-            />
+            {query.DocEntry ? (
+              <EditableFormTable
+                rowChange={this.rowChange}
+                rowKey="LineID"
+                scroll={{ x: 4100 }}
+                columns={this.skuColumns2}
+                data={newdata}
+              />
+            ) : (
+              <EditableFormTable
+                rowChange={this.rowChange}
+                rowKey="LineID"
+                scroll={{ x: 2700 }}
+                columns={this.skuColumns1}
+                data={newdata}
+              />
+            )}
             <Row style={{ marginTop: 20 }} gutter={8}>
               <Col lg={10} md={12} sm={24}>
                 <FormItem key="Owner" {...this.formLayout} label="销售员">

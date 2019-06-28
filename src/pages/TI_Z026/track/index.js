@@ -15,8 +15,10 @@ import {
   Icon,
   message,
   Modal,
+  Tag,
 } from 'antd';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
+import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import StandardTable from '@/components/StandardTable';
 import MDMCommonality from '@/components/Select';
 import Transfer from '@/components/Transfer';
@@ -85,7 +87,7 @@ class inquiryFetchtrackPage extends PureComponent {
     },
     {
       title: '单位',
-      width: 80,
+      width: 50,
       dataIndex: 'Unit',
     },
     {
@@ -100,6 +102,28 @@ class inquiryFetchtrackPage extends PureComponent {
       },
     },
     {
+      title: '备注',
+      width: 120,
+      dataIndex: 'Comment',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
+    },
+    {
+      title: '关闭',
+      width: 80,
+      dataIndex: 'Closed',
+      render: val => (val === 'Y' ? <Tag color="red">已关闭</Tag> : ''),
+    },
+    {
+      title: '确认',
+      width: 80,
+      dataIndex: 'IsConfirm',
+      render: val => (val === 'Y' ? <Tag color="blue">已确认</Tag> : ''),
+    },
+    {
       title: '单据类型',
       width: 100,
       dataIndex: 'SourceType',
@@ -112,7 +136,7 @@ class inquiryFetchtrackPage extends PureComponent {
     },
     {
       title: '行号',
-      width: 80,
+      width: 50,
       dataIndex: 'SourceLineID',
     },
     {
@@ -325,10 +349,10 @@ class inquiryFetchtrackPage extends PureComponent {
                   )}
                 </FormItem>
               </Col>
-              <Col md={5} sm={24}>
-                <FormItem key="ConfirmStatus" {...formLayout} label="确认状态">
+              <Col md={4} sm={24}>
+                <FormItem key="ConfirmStatus" {...formLayout}>
                   {getFieldDecorator('ConfirmStatus')(
-                    <Select placeholder="请选择">
+                    <Select placeholder="请选择确认状态">
                       <Option value="Y">已确认</Option>
                       <Option value="N">未确认</Option>
                     </Select>

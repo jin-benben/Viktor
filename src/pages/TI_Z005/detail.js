@@ -270,7 +270,7 @@ class BrandDetail extends PureComponent {
           <TabPane tab="客户询价单" key="4">
             {formVals.Name ? <ClientAsk QueryType="1" QueryKey={formVals.Code} /> : ''}
           </TabPane>
-          <TabPane tab="供应商询价单" key="5">
+          <TabPane tab="采购询价单" key="5">
             {formVals.Name ? <SupplierAsk QueryType="1" QueryKey={formVals.Code} /> : ''}
           </TabPane>
           <TabPane tab="销售订单物料查询" key="6">

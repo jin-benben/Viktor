@@ -1,32 +1,13 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import Link from 'umi/link';
 import moment from 'moment';
 import { Row, Col, Card, Form, Input, Button, DatePicker } from 'antd';
-import MDMCommonality from '@/components/Select';
 import StandardTable from '@/components/StandardTable';
-import { getName } from '@/utils/utils';
-import { printOrderType, printType } from '@/utils/publicData';
+import Organization from '@/components/Organization/multiple';
+import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
+
 import request from '@/utils/request';
 
-const BaseType = [
-  {
-    Key: '1',
-    Value: '客户询价',
-  },
-  {
-    Key: '2',
-    Value: '采购询价',
-  },
-  {
-    Key: '3',
-    Value: '销售报价',
-  },
-  {
-    Key: '4',
-    Value: '销售订单',
-  },
-];
 const { RangePicker } = DatePicker;
 
 const FormItem = Form.Item;
@@ -62,74 +43,51 @@ class ClientAsk extends PureComponent {
       current: 1,
     },
     orderList: [],
-    showBaseType: false,
   };
 
   columns = [
     {
       title: '单号',
       width: 80,
-      fixed: 'left',
       dataIndex: 'DocEntry',
-      render: text => (
-        <Link target="_blank" to={`/base/print/detail?DocEntry=${text}`}>
-          {text}
-        </Link>
-      ),
     },
     {
-      title: '创建人',
-      dataIndex: 'CreateUser',
-      width: 100,
-      render: val => {
-        const {
-          global: { TI_Z004 },
-        } = this.props;
-        return <span>{getName(TI_Z004, val)}</span>;
-      },
+      title: '单据类型',
+      dataIndex: 'ObjType',
+      width: 80,
+      render: val => <span>{val === '24' ? '收款' : '付款'}</span>,
     },
     {
-      title: '创建日期',
+      title: '单据日期',
+      dataIndex: 'DocDate',
       width: 100,
-      dataIndex: 'CreateDate',
       render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
     {
-      title: '内容模板',
+      title: '转帐金额',
       width: 100,
-      dataIndex: 'HtmlTemplateCode',
+      dataIndex: 'TrsfrSum',
     },
     {
-      title: '来源类型',
-      width: 150,
-      dataIndex: 'BaseType',
-      render: text => <span>{getName(printOrderType, text)}</span>,
+      title: '记账名称',
+      width: 200,
+      dataIndex: 'AcctName',
+    },
+
+    {
+      title: '备注',
+      width: 200,
+      dataIndex: 'Comments',
     },
     {
-      title: '输出类别',
+      title: '单据总计',
       width: 100,
-      dataIndex: 'OutType',
-      render: text => <span>{getName(printType, text)}</span>,
-    },
-    {
-      title: '来源单号',
-      width: 100,
-      dataIndex: 'BaseEntry',
-    },
-    {
-      title: '模板代码',
-      width: 100,
-      dataIndex: 'PrintTemplateCode',
-    },
-    {
-      title: '模板名称',
-      dataIndex: 'PrintTemplateName',
+      dataIndex: 'DocTotal',
     },
   ];
 
   componentDidMount() {
-    const { QueryType, QueryKey } = this.props;
-    const includeType = ['1', '5', '6'];
+    const { QueryType, QueryKey, dispatch } = this.props;
     const queryData = {
       Content: {
         DocDateFrom: '',
@@ -144,19 +102,21 @@ class ClientAsk extends PureComponent {
       sidx: 'DocEntry',
       sord: 'Desc',
     };
+    dispatch({
+      type: 'global/getAuthority',
+    });
     this.setState(
       {
         queryData,
-        showBaseType: includeType.includes(QueryType),
       },
       () => {
-        this.getPrintHistory(queryData);
+        this.getOinvorin(queryData);
       }
     );
   }
 
-  getPrintHistory = async params => {
-    const response = await request('/Report/TI_Z045/TI_Z04504', {
+  getOinvorin = async params => {
+    const response = await request('/Report/OINVORIN/OINVORIN02', {
       method: 'POST',
       data: {
         ...params,
@@ -183,7 +143,7 @@ class ClientAsk extends PureComponent {
         queryData,
       },
       () => {
-        this.getPrintHistory(queryData);
+        this.getOinvorin(queryData);
       }
     );
   };
@@ -215,7 +175,7 @@ class ClientAsk extends PureComponent {
           queryData,
         },
         () => {
-          this.getPrintHistory(queryData);
+          this.getOinvorin(queryData);
         }
       );
     });
@@ -229,7 +189,7 @@ class ClientAsk extends PureComponent {
       labelCol: { span: 8 },
       wrapperCol: { span: 16 },
     };
-    const { showBaseType } = this.state;
+
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
@@ -239,22 +199,23 @@ class ClientAsk extends PureComponent {
             </FormItem>
           </Col>
           <Col md={5} sm={24}>
-            <FormItem label="日期" {...formLayout}>
+            <FormItem {...formLayout}>
               {getFieldDecorator('dateArr', { rules: [{ type: 'array' }] })(
                 <RangePicker style={{ width: '100%' }} />
               )}
             </FormItem>
           </Col>
-          {showBaseType ? (
-            <Col md={5} sm={24}>
-              <FormItem key="BaseType" {...formLayout} label="来源类型">
-                {getFieldDecorator('BaseType')(<MDMCommonality data={BaseType} />)}
-              </FormItem>
-            </Col>
-          ) : (
-            ''
-          )}
-          <Col md={5} sm={24}>
+          <Col md={6} sm={24}>
+            <FormItem key="Owner" {...formLayout} label="销售员">
+              {getFieldDecorator('Owner')(<SalerPurchaser />)}
+            </FormItem>
+          </Col>
+          <Col md={6} sm={24}>
+            <FormItem key="DeptList" {...this.formLayout} label="部门">
+              {getFieldDecorator('DeptList')(<Organization />)}
+            </FormItem>
+          </Col>
+          <Col md={3} sm={24}>
             <FormItem key="searchBtn">
               <span className="submitButtons">
                 <Button type="primary" htmlType="submit">
@@ -280,9 +241,9 @@ class ClientAsk extends PureComponent {
               loading={loading}
               data={{ list: orderList }}
               pagination={pagination}
-              rowKey="DocEntry"
+              rowKey="key"
               columns={this.columns}
-              scroll={{ x: 1500, y: 800 }}
+              scroll={{ x: 2100, y: 800 }}
               onChange={this.handleStandardTableChange}
             />
           </div>

@@ -1,19 +1,16 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
-import { Row, Col, Card, Form, Input, Button, Select, DatePicker } from 'antd';
-import StandardTable from '@/components/StandardTable';
 import Link from 'umi/link';
+import { Row, Col, Card, Form, Input, Button, DatePicker } from 'antd';
+import StandardTable from '@/components/StandardTable';
 import DocEntryFrom from '@/components/DocEntryFrom';
-import { expressOrderType, expressType } from '@/utils/publicData';
 import { getName } from '@/utils/utils';
 
 const { RangePicker } = DatePicker;
 
 const FormItem = Form.Item;
-const { Option } = Select;
 
-/* eslint react/no-multi-comp:0 */
 @connect(({ express, loading, global }) => ({
   express,
   global,
@@ -36,7 +33,7 @@ class PrintHistory extends PureComponent {
     {
       title: '创建人',
       dataIndex: 'CreateUser',
-      width: 100,
+      width: 80,
       render: val => {
         const {
           global: { TI_Z004 },
@@ -55,48 +52,52 @@ class PrintHistory extends PureComponent {
       width: 100,
       dataIndex: 'CustomerName',
     },
-    // {
-    //   title: '来源类型',
-    //   width: 150,
-    //   dataIndex: 'BaseType',
-    //   render: text => <span>{getName(expressOrderType, text)}</span>,
-    // },
     {
       title: '收件人',
-      width: 100,
+      width: 80,
       dataIndex: 'RName',
     },
     {
       title: '收件地址',
+      width: 400,
       dataIndex: 'RAddress',
-      render: record => (
-        <span>{`${record.RProvinceName}/${record.RCityName}/${record.RExpAreaName}/${
-          record.RAddress
-        }/`}</span>
+      render: (text, record) => (
+        <span>
+          {`${record.RProvinceName}${record.RCityName || ''}/${record.RExpAreaName || ''}/${
+            record.RAddress
+          }/`}
+        </span>
       ),
     },
     {
       title: '发件人',
-      width: 100,
+      width: 80,
       dataIndex: 'SName',
     },
     {
       title: '发件地址',
-      dataIndex: 'RAddress',
-      render: record => (
-        <span>{`${record.SProvinceName}/${record.SCityName}/${record.SExpAreaName}/${
-          record.SAddress
-        }/`}</span>
+      dataIndex: 'SAddress',
+      render: (text, record) => (
+        <span>
+          {`${record.SProvinceName}/${record.SCityName}/${record.SExpAreaName}/${record.SAddress}/`}
+        </span>
       ),
     },
     {
       title: '快递公司',
       width: 100,
       dataIndex: 'ShipperCode',
+      align: 'center',
+      render: text => {
+        const {
+          global: { Trnsp },
+        } = this.props;
+        return <span>{getName(Trnsp, text)}</span>;
+      },
     },
     {
       title: '快递单号',
-      width: 100,
+      width: 300,
       dataIndex: 'LogisticCode',
     },
   ];
@@ -117,7 +118,7 @@ class PrintHistory extends PureComponent {
       type: 'global/getMDMCommonality',
       payload: {
         Content: {
-          CodeList: ['TI_Z004'],
+          CodeList: ['TI_Z004', 'Trnsp'],
         },
       },
     });
@@ -248,7 +249,7 @@ class PrintHistory extends PureComponent {
               data={{ list: expressList }}
               pagination={pagination}
               rowKey="DocEntry"
-              scroll={{ y: 600 }}
+              scroll={{ x: 1800, y: 600 }}
               columns={this.columns}
               onRow={this.handleOnRow}
               onChange={this.handleStandardTableChange}

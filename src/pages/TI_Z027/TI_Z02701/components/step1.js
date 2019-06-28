@@ -82,106 +82,66 @@ class NeedTabl extends React.Component {
       width: 100,
       render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
+    // {
+    //   title: '行状态',
+    //   width: 200,
+    //   dataIndex: 'LineStatus',
+    //   align: 'center',
+    //   render: (text, record) =>
+    //     record.lastIndex ? null : (
+    //       <Fragment>
+    //         {record.Closed === 'Y' ? (
+    //           <Tag color="red">已关闭</Tag>
+    //         ) : (
+    //           <Fragment>
+    //             <Tag color="green">{getName(lineStatus, text)}</Tag>
+    //             {record.PDocStatus === 'O' ? <Tag color="green">已确认</Tag> : <Tag color="gold">未确认</Tag>}
+    //             {record.SDocStatus === 'O' ? <Tag color="green">已报价</Tag> :<Tag color="gold">未报价</Tag>}
+    //           </Fragment>
+    //         )}
+    //       </Fragment>
+    //     ),
+    // },
     {
-      title: '创建日期',
-      width: 100,
-      dataIndex: 'CreateDate',
-      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
-    },
-    {
-      title: 'SKU',
-      width: 80,
+      title: '物料',
       dataIndex: 'SKU',
-    },
-    {
-      title: '名称',
-      width: 100,
-      dataIndex: 'ProductName',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
+      align: 'center',
+      width: 300,
+      render: (text, record) =>
+        record.lastIndex ? (
+          ''
+        ) : (
+          <Ellipsis tooltip lines={1}>
+            {text ? (
+              <Link target="_blank" to={`/main/product/TI_Z009/TI_Z00903?Code${text}`}>
+                {text}-
+              </Link>
+            ) : (
+              ''
+            )}
+            {record.SKUName}
+          </Ellipsis>
+        ),
     },
     {
       title: '数量',
-      width: 80,
+      width: 100,
       dataIndex: 'Quantity',
+      align: 'center',
+      render: (text, record) => <span>{`${text}-${record.Unit}`}</span>,
     },
     {
-      title: '单位',
-      width: 80,
-      dataIndex: 'Unit',
-    },
-    {
-      title: '客户参考号',
-      width: 150,
-      dataIndex: 'NumAtCard',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
+      title: '要求交期',
+      width: 100,
+      inputType: 'date',
+      dataIndex: 'DueDate',
+      align: 'center',
+      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
 
-    {
-      title: '产品描述',
-      dataIndex: 'SKUName',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
-    {
-      title: '品牌',
-      width: 80,
-      dataIndex: 'BrandName',
-    },
-
-    {
-      title: '外文名称',
-      dataIndex: 'ForeignName',
-      width: 100,
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
-    {
-      title: '型号',
-      width: 100,
-      dataIndex: 'ManufactureNO',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
-    {
-      title: '参数',
-      width: 100,
-      dataIndex: 'Parameters',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
-    {
-      title: '包装',
-      width: 100,
-      dataIndex: 'Package',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
     {
       title: '销售员',
-      width: 80,
+      width: 100,
       dataIndex: 'Owner',
       render: text => {
         const {
@@ -192,7 +152,7 @@ class NeedTabl extends React.Component {
     },
     {
       title: '采购员',
-      width: 80,
+      width: 100,
       dataIndex: 'Purchaser',
       render: text => {
         const {
@@ -201,7 +161,27 @@ class NeedTabl extends React.Component {
         return <span>{getName(Purchaser, text)}</span>;
       },
     },
-
+    {
+      title: '处理人',
+      width: 100,
+      dataIndex: 'Processor',
+      render: val => {
+        const {
+          global: { TI_Z004 },
+        } = this.props;
+        return <span>{getName(TI_Z004, val)}</span>;
+      },
+    },
+    {
+      title: '转移备注',
+      width: 100,
+      dataIndex: 'TransferComment',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
+    },
     {
       title: '仓库',
       width: 120,
@@ -214,20 +194,24 @@ class NeedTabl extends React.Component {
       },
     },
     {
-      title: '要求交期',
-      dataIndex: 'DueDate',
-      width: 100,
-      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
-    },
-    {
-      title: '价格',
-      width: 80,
-      dataIndex: 'Price',
+      title: '交易公司',
+      width: 150,
+      dataIndex: 'CompanyCode',
+      render: text => {
+        const {
+          global: { Company },
+        } = this.props;
+        return (
+          <Ellipsis tooltip lines={1}>
+            {getName(Company, text)}
+          </Ellipsis>
+        );
+      },
     },
     {
       title: '行备注',
-      width: 80,
-      dataIndex: 'LineComment',
+      width: 100,
+      dataIndex: 'Comment',
       render: text => (
         <Ellipsis tooltip lines={1}>
           {text}
@@ -235,48 +219,14 @@ class NeedTabl extends React.Component {
       ),
     },
     {
-      title: '销总计',
-      width: 80,
-      dataIndex: 'LineTotal',
-    },
-    {
-      title: '销报单号',
+      title: '客户参考号',
       width: 100,
-      dataIndex: 'QuoteEntry',
-      render: (text, recond) =>
-        text ? (
-          <Link target="_blank" to={`/sellabout/TI_Z029/detail?DocEntry=${text}`}>
-            {`${text}-${recond.QuoteLine}`}
-          </Link>
-        ) : (
-          ''
-        ),
-    },
-    {
-      title: '销合单号',
-      width: 100,
-      dataIndex: 'ContractEntry',
-      render: (text, recond) =>
-        text ? (
-          <Link target="_blank" to={`/sellabout/TI_Z030/detail?DocEntry=${text}`}>
-            {`${text}-${recond.ContractLine}`}
-          </Link>
-        ) : (
-          ''
-        ),
-    },
-    {
-      title: '销订单号',
-      width: 100,
-      dataIndex: 'SoEntry',
-      render: (text, recond) =>
-        text ? (
-          <Link target="_blank" to={`/sellabout/orderdetail?DocEntry=${text}`}>
-            {`${text}-${recond.SoLine}`}
-          </Link>
-        ) : (
-          ''
-        ),
+      dataIndex: 'NumAtCard',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
   ];
 
@@ -302,42 +252,12 @@ class NeedTabl extends React.Component {
     this.setState({ orderLineList: response.Content ? response.Content.rows : [] });
   };
 
-  handleStandardTableChange = pagination => {
-    const { queryData } = this.state;
-    this.fetchOrder({ ...queryData, page: pagination.current, rows: pagination.pageSize });
-  };
-
-  handleSearch = e => {
-    // 搜索
-    e.preventDefault();
-    const { form } = this.props;
-    form.validateFields((err, fieldsValue) => {
-      if (err) return;
-      let DocDateFrom;
-      let DocDateTo;
-      if (fieldsValue.dateArr) {
-        DocDateFrom = moment(fieldsValue.dateArr[0]).format('YYYY-MM-DD');
-        DocDateTo = moment(fieldsValue.dateArr[1]).format('YYYY-MM-DD');
-      }
-      const queryData = {
-        ...fieldsValue,
-        DocDateFrom,
-        DocDateTo,
-        ...fieldsValue.orderNo,
-      };
-      this.fetchOrder({
-        Content: {
-          SearchText: '',
-          SearchKey: '',
-          InquiryStatus: 'O',
-          QueryType: '3',
-          ...queryData,
-        },
-        page: 1,
-        rows: 30,
-        sidx: 'DocEntry',
-        sord: 'Desc',
-      });
+  handleStandardTableChange = params => {
+    const { queryData, pagination } = this.state;
+    const newdata = { ...queryData, page: params.current, rows: params.pageSize };
+    Object.assign(pagination, { pageSize: params.pageSize });
+    this.setState({ queryData: newdata, pagination }, () => {
+      this.fetchOrder(newdata);
     });
   };
 
@@ -372,13 +292,6 @@ class NeedTabl extends React.Component {
     });
     orderLineList[index] = record;
     this.setState({ orderLineList: [...orderLineList] });
-  };
-
-  handleStandardTableChange = pagination => {
-    const { tabChange } = this.props;
-    if (tabChange) {
-      tabChange(pagination);
-    }
   };
 
   submitNeedLine = select => {
@@ -530,7 +443,7 @@ class NeedTabl extends React.Component {
             dataSource={orderLineList}
             rowKey="Key"
             pagination={pagination}
-            scroll={{ x: 2900, y: 600 }}
+            scroll={{ x: 1850, y: 600 }}
             rowSelection={{
               onChange: this.onSelectRow,
               selectedRowKeys,

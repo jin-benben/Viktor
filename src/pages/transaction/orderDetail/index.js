@@ -87,6 +87,105 @@ class OrderDetailPage extends PureComponent {
     },
   ];
 
+  comColumns = [
+    {
+      title: '单据日期',
+      dataIndex: 'DocDate',
+      width: 100,
+      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
+    },
+    {
+      title: '发货状态',
+      dataIndex: 'U_DeliverSts',
+      width: 80,
+      render: text =>
+        text === 'Y' ? <Tag color="green">已发货</Tag> : <Tag color="gold">未发货</Tag>,
+    },
+    {
+      title: '发货人',
+      dataIndex: 'U_DeliverUser',
+      width: 80,
+    },
+    {
+      title: '发货时间',
+      dataIndex: 'U_DeliverDate',
+      width: 100,
+      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
+    },
+    {
+      title: '快递单号',
+      dataIndex: 'U_ExpressNumber',
+      width: 100,
+    },
+    {
+      title: '运输类型',
+      dataIndex: 'TrnspCode',
+      width: 100,
+      render: text => {
+        const {
+          global: { Trnsp },
+        } = this.props;
+        return <span>{getName(Trnsp, text)}</span>;
+      },
+    },
+  ];
+
+  Columns1 = [
+    {
+      title: '单据类型',
+      dataIndex: 'ObjType',
+      width: 80,
+      render: val => <span>{val === '15' ? '交货单' : '退货单'}</span>,
+    },
+    ...this.comColumns,
+  ];
+
+  Columns2 = [
+    {
+      title: '单据类型',
+      dataIndex: 'ObjType',
+      width: 80,
+      render: val => <span>{val === '13' ? '发票' : '贷项'}</span>,
+    },
+    ...this.comColumns,
+  ];
+
+  Columns3 = [
+    {
+      title: '单据类型',
+      dataIndex: 'ObjType',
+      width: 80,
+      render: val => <span>{val === '24' ? '收款' : '付款'}</span>,
+    },
+    {
+      title: '单据日期',
+      dataIndex: 'DocDate',
+      width: 100,
+      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
+    },
+    {
+      title: '转帐金额',
+      width: 100,
+      dataIndex: 'TrsfrSum',
+    },
+    {
+      title: '记账名称',
+      width: 200,
+      dataIndex: 'AcctName',
+    },
+
+    {
+      title: '备注',
+      width: 200,
+      dataIndex: 'Comments',
+    },
+    {
+      title: '单据总计',
+      width: 100,
+      dataIndex: 'DocTotal',
+    },
+  ];
+
   constructor(props) {
     super(props);
     this.state = {
@@ -102,7 +201,7 @@ class OrderDetailPage extends PureComponent {
       type: 'global/getMDMCommonality',
       payload: {
         Content: {
-          CodeList: ['Saler', 'Company'],
+          CodeList: ['Saler', 'Company', 'Trnsp'],
         },
       },
     });
@@ -224,6 +323,30 @@ class OrderDetailPage extends PureComponent {
           </TabPane>
           <TabPane tab="附件" key="3">
             <Attachment dataSource={orderDetailInfo.DocEnclosure} iscan />
+          </TabPane>
+          <TabPane tab="交退货单" key="4">
+            <StandardTable
+              data={{ list: orderDetailInfo.ODLNORDN }}
+              scroll={{ x: 1000 }}
+              rowKey="key"
+              columns={this.Columns1}
+            />
+          </TabPane>
+          <TabPane tab="发票贷项" key="5">
+            <StandardTable
+              data={{ list: orderDetailInfo.OINVORIN }}
+              scroll={{ x: 1000 }}
+              rowKey="key"
+              columns={this.Columns2}
+            />
+          </TabPane>
+          <TabPane tab="收款单" key="6">
+            <StandardTable
+              data={{ list: orderDetailInfo.ORCTOVPM }}
+              scroll={{ x: 1000 }}
+              rowKey="key"
+              columns={this.Columns3}
+            />
           </TabPane>
         </Tabs>
         <Modal

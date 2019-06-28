@@ -24,6 +24,7 @@ import StandardTable from '@/components/StandardTable';
 import DocEntryFrom from '@/components/DocEntryFrom';
 import NeedAskPrice from './components';
 import MDMCommonality from '@/components/Select';
+import OrderPrint from '@/components/Modal/OrderPrint';
 import { getName } from '@/utils/utils';
 
 const { RangePicker } = DatePicker;
@@ -413,6 +414,13 @@ class salerConfrim extends PureComponent {
     this.setState({ modalVisible: !!flag, modalVisible1: !!flag });
   };
 
+  printODLN = () => {
+    const { selectedRows } = this.state;
+    if (!selectedRows.length) {
+      message.warning('请先选择要打印的单据');
+    }
+  };
+
   print = () => {
     const { dispatch } = this.props;
     const { selectedRows } = this.state;
@@ -536,10 +544,10 @@ class salerConfrim extends PureComponent {
                   )}
                 </FormItem>
               </Col>
-              <Col md={4} sm={24}>
-                <FormItem key="PrintStatus" {...formLayout}>
+              <Col md={5} sm={24}>
+                <FormItem key="PrintStatus" {...formLayout} label="打印状态">
                   {getFieldDecorator('PrintStatus', { initialValue: 'N' })(
-                    <Select placeholder="请选择打印状态">
+                    <Select style={{ width: '100%' }} placeholder="请选择打印状态">
                       <Option value="Y">已打印</Option>
                       <Option value="N">未打印</Option>
                     </Select>
@@ -628,8 +636,16 @@ class salerConfrim extends PureComponent {
           <Button style={{ marginTop: 20 }} onClick={this.selectNeed} type="primary">
             确认发货
           </Button>
+
+          <Button style={{ marginTop: 20 }} onClick={this.printODLN} type="primary">
+            {selectedRows.length ? (
+              <OrderPrint BaseEntry={selectedRows[0].DocEntry} BaseType="ODLN" />
+            ) : (
+              '提交打印'
+            )}
+          </Button>
           <Button style={{ marginTop: 20 }} onClick={this.print} type="primary">
-            打印
+            快递单打印
           </Button>
         </FooterToolbar>
         <Modal

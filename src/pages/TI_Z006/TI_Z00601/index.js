@@ -13,6 +13,8 @@ import ClientAsk from '@/components/Order/TI_Z026';
 import OdlnordnFetch from '@/components/Order/OdlnordnFetch';
 import OinvorinFetch from '@/components/Order/OinvorinFetch';
 import OrderFetch from '@/components/Order/OrderFetch';
+import OrctovpmFetch from '@/components/Order/OrctovpmFetch';
+import PrintHistory from '@/components/Order/PrintHistory';
 import MDMCommonality from '@/components/Select';
 import { getName } from '@/utils/utils';
 
@@ -594,6 +596,9 @@ class CompanyEdit extends PureComponent {
                   columns={this.addressColumns}
                 />
               </TabPane>
+              <TabPane tab="收付款单" key="3">
+                <OrctovpmFetch QueryType="2" QueryKey={formVals.Code} />
+              </TabPane>
               <TabPane tab="客户询价单" key="4">
                 <ClientAsk QueryType="3" QueryKey={formVals.Code} />
               </TabPane>
@@ -608,6 +613,9 @@ class CompanyEdit extends PureComponent {
               </TabPane>
               <TabPane tab="邮件发送记录" key="9">
                 <SendEmail QueryType="5" QueryKey={formVals.Code} />
+              </TabPane>
+              <TabPane tab="打印记录" key="10">
+                <PrintHistory QueryType="5" QueryKey={formVals.Code} />
               </TabPane>
             </Tabs>
             <LinkMan

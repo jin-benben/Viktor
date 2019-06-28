@@ -12,16 +12,19 @@ class PushModal extends PureComponent {
     {
       title: '用户ID',
       align: 'center',
+      width: 80,
       dataIndex: 'UserID',
     },
     {
       title: '联系人',
       align: 'center',
+      width: 100,
       dataIndex: 'Name',
     },
     {
       title: '手机号',
       align: 'center',
+      width: 100,
       dataIndex: 'CellphoneNO',
     },
   ];

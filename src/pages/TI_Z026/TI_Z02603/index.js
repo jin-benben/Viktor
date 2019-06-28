@@ -1,6 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Card, Tabs, Modal, Button, Icon, message, Dropdown, Menu } from 'antd';
+import { Card, Tabs, Modal, Button, Icon, message, Dropdown, Menu, Tag } from 'antd';
 import moment from 'moment';
 import router from 'umi/router';
 import Link from 'umi/link';
@@ -16,7 +16,7 @@ import SendEmail from '@/components/Order/SendEmail';
 import Transfer from '@/components/Transfer';
 import Attachment from '@/components/Attachment';
 import { getName } from '@/utils/utils';
-import { orderSourceType, linkmanColumns } from '@/utils/publicData';
+import { orderSourceType, linkmanColumns, lineStatus } from '@/utils/publicData';
 
 const { Description } = DescriptionList;
 const { TabPane } = Tabs;
@@ -38,100 +38,116 @@ class InquiryEdit extends PureComponent {
         record.lastIndex ? <span style={{ fontWeight: 'bolder' }}>合计</span> : text,
     },
     {
-      title: 'SKU',
+      title: '行状态',
+      width: 200,
+      dataIndex: 'LineStatus',
+      align: 'center',
+      render: (text, record) =>
+        record.lastIndex ? null : (
+          <Fragment>
+            {record.Closed === 'Y' ? (
+              <Tag color="red">已关闭</Tag>
+            ) : (
+              <Fragment>
+                <Tag color="green">{getName(lineStatus, text)}</Tag>
+                {record.PLineStatus === 'O' ? <Tag color="green">已确认</Tag> : ''}
+                {record.IsInquiry === 'Y' ? <Tag color="green">需询价</Tag> : ''}
+              </Fragment>
+            )}
+          </Fragment>
+        ),
+    },
+    {
+      title: '物料',
       dataIndex: 'SKU',
       align: 'center',
-      width: 80,
-    },
-    {
-      title: '产品描述',
-      dataIndex: 'SKUName',
-      width: 200,
-      align: 'center',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
-    {
-      title: '单位',
-      width: 50,
-      dataIndex: 'Unit',
-      align: 'center',
+      width: 300,
+      render: (text, record) =>
+        record.lastIndex ? (
+          ''
+        ) : (
+          <Ellipsis tooltip lines={1}>
+            {text ? (
+              <Link target="_blank" to={`/main/product/TI_Z009/TI_Z00903?Code${text}`}>
+                {text}-
+              </Link>
+            ) : (
+              ''
+            )}
+            {record.SKUName}
+          </Ellipsis>
+        ),
     },
     {
       title: '数量',
-      width: 80,
+      width: 100,
       dataIndex: 'Quantity',
       align: 'center',
+      render: (text, record) => (record.lastIndex ? '' : <span>{`${text}-${record.Unit}`}</span>),
     },
     {
-      title: '品牌',
+      title: '价格',
       width: 80,
+      dataIndex: 'Price',
       align: 'center',
-      dataIndex: 'BrandName',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
     },
     {
-      title: '名称',
-      dataIndex: 'ProductName',
+      title: '行总计',
       width: 100,
       align: 'center',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
+      dataIndex: 'LineTotal',
+      render: (text, record) =>
+        record.lastIndex ? <span style={{ fontWeight: 'bolder' }}>{text}</span> : text,
     },
     {
-      title: '外文名称',
+      title: '询价价格',
+      width: 120,
+      dataIndex: 'InquiryPrice',
+      align: 'center',
+      render: (text, record) =>
+        record.lastIndex ? '' : <span>{`${text}-${record.Currency || ''}-${record.DocRate}`}</span>,
+    },
+    {
+      title: '询行总计',
+      width: 100,
+      align: 'center',
+      dataIndex: 'InquiryLineTotal',
+      render: (text, record) =>
+        record.lastIndex ? '' : <span>{`${text}-${record.InquiryLineTotalLocal}`}</span>,
+    },
+    {
+      title: '询价备注',
+      dataIndex: 'InquiryComment',
+      width: 100,
+      align: 'center',
+      render: (text, record) =>
+        record.lastIndex ? null : (
+          <Ellipsis tooltip lines={1}>
+            {text}
+          </Ellipsis>
+        ),
+    },
+    {
+      title: '询价交期',
+      width: 100,
+      dataIndex: 'InquiryDueDate',
+      align: 'center',
+      render: (text, record) =>
+        record.lastIndex ? null : <span>{moment(text).format('YYYY-MM-DD')}</span>,
+    },
+    {
+      title: '名称(外)',
       dataIndex: 'ForeignName',
       width: 100,
       align: 'center',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
+      render: (text, record) =>
+        record.lastIndex ? null : (
+          <Ellipsis tooltip lines={1}>
+            {text} {record.ForeignParameters}
+          </Ellipsis>
+        ),
     },
-    {
-      title: '型号',
-      width: 100,
-      dataIndex: 'ManufactureNO',
-      align: 'center',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
-    {
-      title: '参数',
-      width: 100,
-      dataIndex: 'Parameters',
-      align: 'center',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
-    {
-      title: '规格(外)',
-      width: 100,
-      dataIndex: 'ForeignParameters',
-      align: 'center',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
+
     {
       title: '包装',
       width: 100,
@@ -143,35 +159,23 @@ class InquiryEdit extends PureComponent {
       width: 80,
       dataIndex: 'ManLocation',
       align: 'center',
-      render: text => {
+      render: (text, record) => {
         const {
           global: { TI_Z042 },
         } = this.props;
-        return <span>{getName(TI_Z042, text)}</span>;
+        return record.lastIndex ? null : <span>{getName(TI_Z042, text)}</span>;
       },
     },
     {
       title: 'HS编码',
       width: 100,
       dataIndex: 'HSCode',
-      render: text => {
+      render: (text, record) => {
         const {
           global: { HS },
         } = this.props;
-        return <span>{getName(HS, text)}</span>;
+        return record.lastIndex ? null : <span>{getName(HS, text)}</span>;
       },
-    },
-    {
-      title: '报关税率',
-      width: 80,
-      dataIndex: 'HSVatRate',
-      align: 'center',
-    },
-    {
-      title: '附加税率',
-      width: 80,
-      dataIndex: 'HSVatRateOther',
-      align: 'center',
     },
     {
       title: '要求名称',
@@ -197,22 +201,6 @@ class InquiryEdit extends PureComponent {
       dataIndex: 'AdvisePrice',
       align: 'center',
     },
-
-    {
-      title: '价格',
-      width: 100,
-      dataIndex: 'Price',
-
-      align: 'center',
-    },
-    {
-      title: '销行总计',
-      width: 100,
-      align: 'center',
-      dataIndex: 'LineTotal',
-      render: (text, record) =>
-        record.lastIndex ? <span style={{ fontWeight: 'bolder' }}>{text}</span> : text,
-    },
     {
       title: '要求交期',
       width: 100,
@@ -227,96 +215,46 @@ class InquiryEdit extends PureComponent {
       width: 100,
       dataIndex: 'WhsCode',
       align: 'center',
-      render: text => {
+      render: (text, record) => {
         const {
           global: { WhsCode },
         } = this.props;
-        return <span>{getName(WhsCode, text)}</span>;
+        return record.lastIndex ? null : <span>{getName(WhsCode, text)}</span>;
       },
-    },
-
-    {
-      title: '询价最终价',
-      width: 100,
-      dataIndex: 'InquiryPrice',
-      align: 'center',
-    },
-    {
-      title: '询价币种',
-      width: 80,
-      dataIndex: 'Currency',
-      align: 'center',
-      render: text => {
-        const {
-          global: { Curr },
-        } = this.props;
-        return <span>{getName(Curr, text)}</span>;
-      },
-    },
-    {
-      title: '单据汇率',
-      width: 80,
-      dataIndex: 'DocRate',
-      align: 'center',
-    },
-    {
-      title: '最终交期',
-      width: 100,
-      dataIndex: 'InquiryDueDate',
-      align: 'center',
-      render: (val, record) =>
-        record.lastIndex ? '' : <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
     {
       title: '采购员',
       width: 80,
       dataIndex: 'Purchaser',
       align: 'center',
-      render: text => {
+      render: (text, record) => {
         const {
           global: { Purchaser },
         } = this.props;
-        return <span>{getName(Purchaser, text)}</span>;
+        return record.lastIndex ? null : <span>{getName(Purchaser, text)}</span>;
       },
     },
     {
-      title: '询价备注',
-      dataIndex: 'InquiryComment',
-      width: 100,
-      align: 'center',
-    },
-    {
-      title: '询行总计',
-      width: 100,
-      align: 'center',
-      dataIndex: 'InquiryLineTotal',
-    },
-    {
-      title: '询行本总计',
-      width: 100,
-      align: 'center',
-      dataIndex: 'InquiryLineTotalLocal',
-    },
-    {
-      title: '报价状态',
+      title: '处理人',
       width: 80,
-      dataIndex: 'SLineStatus',
-      align: 'center',
-      render: (text, record) => (record.lastIndex ? null : <MyTag type="报价" value={text} />),
+      dataIndex: 'Processor',
+      render: (val, record) => {
+        const {
+          global: { TI_Z004 },
+        } = this.props;
+        return record.lastIndex ? null : <span>{getName(TI_Z004, val)}</span>;
+      },
     },
     {
-      title: '采询确认',
-      width: 80,
-      dataIndex: 'PLineStatus',
-      align: 'center',
-      render: (text, record) => (record.lastIndex ? null : <MyTag type="确认" value={text} />),
-    },
-    {
-      title: '需询价',
+      title: '转移备注',
       width: 100,
-      dataIndex: 'IsInquiry',
-      align: 'center',
-      render: (text, record) => (record.lastIndex ? null : <MyTag type="IsInquiry" value={text} />),
+      dataIndex: 'TransferComment',
+      render: (text, record) =>
+        record.lastIndex ? null : (
+          <Ellipsis tooltip lines={1}>
+            {text}
+          </Ellipsis>
+        ),
     },
     {
       title: '销报单号',
@@ -498,13 +436,16 @@ class InquiryEdit extends PureComponent {
   // 取消单据
   cancelSubmit = ClosedComment => {
     const { dispatch } = this.props;
-    const { formVals } = this.state;
+    const {
+      formVals: { UpdateTimestamp, DocEntry },
+    } = this.state;
     dispatch({
       type: 'inquiryPreview/cancel',
       payload: {
         Content: {
-          DocEntry: formVals.DocEntry,
+          DocEntry,
           ClosedComment,
+          UpdateTimestamp,
         },
       },
       callback: response => {
@@ -637,7 +578,7 @@ class InquiryEdit extends PureComponent {
             <StandardTable
               data={{ list: newdata }}
               rowKey="LineID"
-              scroll={{ x: 3540, y: 600 }}
+              scroll={{ x: 2750 }}
               columns={this.skuColumns}
             />
           </TabPane>

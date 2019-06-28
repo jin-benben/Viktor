@@ -479,7 +479,7 @@ export default [
         path: '/purchase',
         routes:[
           {
-            name: '供应商询价单',
+            name: '采购询价单',
             icon: 'iconxunjia',
             path: '/purchase/TI_Z027',
             routes:[
@@ -499,13 +499,13 @@ export default [
                 component: './TI_Z027/TI_Z02707',
               },
               {
-                name: '供应商询价单更新',
+                name: '采购询价单更新',
                 hideInMenu: true,
                 path: '/purchase/TI_Z027/update',
                 component: './TI_Z027/TI_Z02702',
               },
               {
-                name: '供应商询价单详情',
+                name: '采购询价单详情',
                 hideInMenu: true,
                 path: '/purchase/TI_Z027/detail',
                 component: './TI_Z027/TI_Z02703',

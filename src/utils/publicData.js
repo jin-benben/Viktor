@@ -31,6 +31,25 @@ export const printOrderType = [
   },
 ];
 
+export const lineStatus = [
+  {
+    Key: '1',
+    Value: '询价',
+  },
+  {
+    Key: '2',
+    Value: '报价',
+  },
+  {
+    Key: '3',
+    Value: '合同',
+  },
+  {
+    Key: '4',
+    Value: '订单',
+  },
+];
+
 export const flagType = [
   {
     Key: '0',
@@ -49,7 +68,7 @@ export const flagType = [
 export const emailSendType = [
   {
     Key: 'TI_Z027',
-    Value: '供应商询价单',
+    Value: '采购询价单',
   },
   {
     Key: 'TI_Z029',
@@ -68,7 +87,7 @@ export const baseType = [
   },
   {
     Key: 'TI_Z027',
-    Value: '供应商询价单',
+    Value: '采购询价单',
   },
   {
     Key: 'TI_Z029',
@@ -87,7 +106,7 @@ export const transferBaseType = [
   },
   {
     Key: 'TI_Z027',
-    Value: '供应商询价单',
+    Value: '采购询价单',
   },
   {
     Key: 'TI_Z029',

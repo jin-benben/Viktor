@@ -2,7 +2,7 @@
 
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Row, Col, Card, Form, Input, Modal, Button, message, Popconfirm } from 'antd';
+import { Row, Col, Card, Form, Input, Modal, Button, message, Popconfirm, Icon } from 'antd';
 import StandardTable from '@/components/StandardTable';
 
 import { validatorEmail } from '@/utils/utils';
@@ -115,16 +115,18 @@ class Emails extends PureComponent {
     },
     {
       title: '备注',
-      width: 100,
+      width: 200,
       dataIndex: 'Comment',
     },
 
     {
       title: '操作',
-      width: 100,
+      width: 50,
       render: (text, record) => (
         <Popconfirm title="确定要删除吗?" onConfirm={() => this.handleDelete(record.Code)}>
-          <a href="javascript:;">删除</a>
+          <a href="javascript:;">
+            <Icon type="delete" theme="twoTone" />
+          </a>
         </Popconfirm>
       ),
     },
@@ -310,7 +312,7 @@ class Emails extends PureComponent {
     return (
       <Fragment>
         <Card bordered={false}>
-          <div className="tableList">
+          <div className="tableList" style={{ with: 600 }}>
             <div className="tableListForm">{this.renderSimpleForm()}</div>
             <StandardTable
               loading={loading}
