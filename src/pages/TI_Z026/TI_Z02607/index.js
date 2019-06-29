@@ -313,7 +313,7 @@ class orderLine extends PureComponent {
     },
     {
       title: '采购员',
-      width: 80,
+      width: 120,
       dataIndex: 'Purchaser',
       align: 'center',
       render: text => {
@@ -325,7 +325,7 @@ class orderLine extends PureComponent {
     },
     {
       title: '处理人',
-      width: 80,
+      width: 120,
       dataIndex: 'Processor',
       render: val => {
         const {

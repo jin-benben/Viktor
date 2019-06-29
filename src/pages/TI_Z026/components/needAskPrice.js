@@ -4,6 +4,7 @@ import moment from 'moment';
 import { connect } from 'dva';
 import { Form, Modal, message, Table } from 'antd';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
+import MDMCommonality from '@/components/Select';
 import { purchaserRule, confirmRule } from '../service';
 import { getName } from '@/utils/utils';
 
@@ -29,14 +30,27 @@ class OrderLine extends React.Component {
     },
     {
       title: '采购员',
-      width: 120,
+      width: 150,
       dataIndex: 'Purchaser',
       align: 'center',
-      render: text => {
+      render: (text, record, index) => {
         const {
           global: { Purchaser },
         } = this.props;
-        return <span>{getName(Purchaser, text)}</span>;
+        if (!record.lastIndex) {
+          return (
+            <div style={{ width: 120 }}>
+              <MDMCommonality
+                onChange={value => {
+                  this.rowSelectChange(value, record, index);
+                }}
+                initialValue={text}
+                data={Purchaser}
+              />
+            </div>
+          );
+        }
+        return '';
       },
     },
     {
@@ -214,7 +228,7 @@ class OrderLine extends React.Component {
             dataSource={data}
             pagination={false}
             rowKey="Key"
-            scroll={{ x: 1220, y: 600 }}
+            scroll={{ x: 1350, y: 600 }}
             rowSelection={{
               onChange: this.onSelectRow,
               selectedRowKeys,

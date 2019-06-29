@@ -110,7 +110,7 @@ class SKUDetail extends Component {
       type: 'global/getMDMCommonality',
       payload: {
         Content: {
-          CodeList: ['Purchaser'],
+          CodeList: ['Purchaser', 'TI_Z042'],
         },
       },
     });
@@ -187,6 +187,9 @@ class SKUDetail extends Component {
     const { formVals } = this.state;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
+      const sHSCode = fieldsValue.HSCode.Code || formVals.HSCode;
+      // eslint-disable-next-line no-param-reassign
+      delete fieldsValue.HSCode;
       dispatch({
         type: 'skuDetail/update',
         payload: {
@@ -195,6 +198,7 @@ class SKUDetail extends Component {
               {
                 ...formVals,
                 ...fieldsValue,
+                HSCode: sHSCode,
                 PutawayDateTime: fieldsValue.PutawayDateTime
                   ? fieldsValue.PutawayDateTime.format('YYYY-MM-DD')
                   : '',
@@ -262,7 +266,7 @@ class SKUDetail extends Component {
   render() {
     const {
       form: { getFieldDecorator },
-      global: { Purchaser },
+      global: { Purchaser, TI_Z042 },
       skuDetail: { spuList, fhscodeList, hscodeList },
     } = this.props;
 
@@ -341,7 +345,7 @@ class SKUDetail extends Component {
               <FormItem key="ManLocation" {...this.formLayout} label="产地">
                 {getFieldDecorator('ManLocation', {
                   initialValue: formVals.ManLocation,
-                })(<Input placeholder="请输入产地" />)}
+                })(<MDMCommonality data={TI_Z042} initialValue={formVals.ManLocation} />)}
               </FormItem>
             </Col>
           </Row>

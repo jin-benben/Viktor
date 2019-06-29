@@ -39,7 +39,7 @@ class InquiryEdit extends PureComponent {
     },
     {
       title: '行状态',
-      width: 200,
+      width: 140,
       dataIndex: 'LineStatus',
       align: 'center',
       render: (text, record) =>

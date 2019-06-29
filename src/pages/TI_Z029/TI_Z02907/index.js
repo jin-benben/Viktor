@@ -216,9 +216,10 @@ class SalesQuotationSku extends PureComponent {
       align: 'center',
       dataIndex: 'InquiryLineTotal',
       render: (text, record) => (
-        <span>{`${text}${record.Currency ? `(${record.Currency})` : ''}-${
-          record.InquiryLineTotalLocal
-        }`}
+        <span>
+          {`${text}${record.Currency ? `(${record.Currency})` : ''}-${
+            record.InquiryLineTotalLocal
+          }`}
         </span>
       ),
     },

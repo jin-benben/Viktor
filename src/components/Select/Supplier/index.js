@@ -133,9 +133,9 @@ class SupplierSelect extends PureComponent {
           </Select>
           {value.key && keyType === 'Code' ? (
             <Button
-              href={`/main/TI_Z006/detail?Code=${value.label}`}
+              href={`/main/TI_Z007/detail?Code=${value.label}`}
               target="_blank"
-              title="编辑客户"
+              title="编辑供应商"
               className={styles.edit}
               type="link"
               shape="circle"

@@ -3,7 +3,7 @@ import { connect } from 'dva';
 import router from 'umi/router';
 import moment from 'moment';
 import Link from 'umi/link';
-import { Row, Col, Card, Form, Input, Button, Divider, Select, DatePicker, Icon,Tag } from 'antd';
+import { Row, Col, Card, Form, Input, Button, Divider, Select, DatePicker, Icon, Tag } from 'antd';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import StandardTable from '@/components/StandardTable';
 import DocEntryFrom from '@/components/DocEntryFrom';
@@ -64,11 +64,7 @@ class SalesQuotation extends PureComponent {
               <Tag color="red">已关闭</Tag>
             ) : (
               <Fragment>
-                {text === 'C' ? (
-                  <Tag color="green">已合同</Tag>
-                ) : (
-                  <Tag color="gold">未合同</Tag>
-                )}
+                {text === 'C' ? <Tag color="green">已合同</Tag> : <Tag color="gold">未合同</Tag>}
               </Fragment>
             )}
           </Fragment>

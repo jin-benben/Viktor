@@ -252,7 +252,7 @@ class AddSKU extends Component {
             initialValue={text}
             data={hscodeList}
             onChange={hsCode => {
-              this.codeChange(hsCode, record, index, 'HSCode');
+              this.hsCodeChange(hsCode, record, index);
             }}
           />
         );
@@ -369,6 +369,14 @@ class AddSKU extends Component {
     row.Name = `${row.BrandName}  ${row.ProductName}  ${row.ManufactureNO}  ${row.Parameters}  ${
       row.Package
     }`;
+    const { TI_Z00901 } = this.state;
+    TI_Z00901[index] = row;
+    this.setState({ TI_Z00901 });
+  };
+
+  hsCodeChange = (value, row, index) => {
+    // eslint-disable-next-line no-param-reassign
+    row.HSCode = value.Code;
     const { TI_Z00901 } = this.state;
     TI_Z00901[index] = row;
     this.setState({ TI_Z00901 });

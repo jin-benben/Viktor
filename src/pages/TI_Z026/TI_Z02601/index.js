@@ -455,9 +455,11 @@ class InquiryEdit extends React.Component {
         record.lastIndex ? (
           ''
         ) : (
-          <span>{`${text}${record.Currency ? `(${record.Currency})` : ''}-${
-            record.InquiryLineTotalLocal
-          }`}</span>
+          <span>
+            {`${text}${record.Currency ? `(${record.Currency})` : ''}-${
+              record.InquiryLineTotalLocal
+            }`}
+          </span>
         ),
     },
     {
