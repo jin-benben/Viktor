@@ -448,11 +448,17 @@ class InquiryEdit extends React.Component {
     },
     {
       title: '询行总计',
-      width: 100,
+      width: 150,
       align: 'center',
       dataIndex: 'InquiryLineTotal',
       render: (text, record) =>
-        record.lastIndex ? '' : <span>{`${text}-${record.InquiryLineTotalLocal}`}</span>,
+        record.lastIndex ? (
+          ''
+        ) : (
+          <span>{`${text}${record.Currency ? `(${record.Currency})` : ''}-${
+            record.InquiryLineTotalLocal
+          }`}</span>
+        ),
     },
     {
       title: '询价备注',
@@ -472,7 +478,7 @@ class InquiryEdit extends React.Component {
       dataIndex: 'InquiryDueDate',
       align: 'center',
       render: (text, record) =>
-        record.lastIndex ? null : <span>{moment(text).format('YYYY-MM-DD')}</span>,
+        record.lastIndex ? null : <span>{text ? moment(text).format('YYYY-MM-DD') : ''}</span>,
     },
     {
       title: '产地',

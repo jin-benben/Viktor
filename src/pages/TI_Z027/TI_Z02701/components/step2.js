@@ -2,10 +2,12 @@
 import React, { Component } from 'react';
 import moment from 'moment';
 import { connect } from 'dva';
+import Link from 'umi/link';
 import { DatePicker, Select, Input } from 'antd';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import StandardTable from '@/components/StandardTable';
 import MDMCommonality from '@/components/Select/index';
+import { getName } from '@/utils/utils';
 
 const { Option } = Select;
 @connect(({ global }) => ({
@@ -179,102 +181,82 @@ class SelectionLine extends Component {
     submitStepParent(selectedRows);
   };
 
-  expandedRowRender = record => {
+  expandedRowRender = recordF => {
     const columns = [
       {
-        title: '客户参考号',
-        width: 150,
-        dataIndex: 'NumAtCard',
-      },
-      {
-        title: 'SKU',
-        width: 80,
+        title: '物料',
         dataIndex: 'SKU',
-      },
-      {
-        title: '产品描述',
-        dataIndex: 'SKUName',
-        render: text => (
-          <Ellipsis tooltip lines={1}>
-            {text}
-          </Ellipsis>
-        ),
-      },
-      {
-        title: '品牌',
-        width: 80,
-        dataIndex: 'BrandName',
-      },
-      {
-        title: '名称',
-        width: 100,
-        dataIndex: 'ProductName',
-        render: text => (
-          <Ellipsis tooltip lines={1}>
-            {text}
-          </Ellipsis>
-        ),
-      },
-      {
-        title: '外文名称',
-        dataIndex: 'ForeignName',
-        width: 100,
-        render: text => (
-          <Ellipsis tooltip lines={1}>
-            {text}
-          </Ellipsis>
-        ),
-      },
-      {
-        title: '型号',
-        width: 100,
-        dataIndex: 'ManufactureNO',
-        render: text => (
-          <Ellipsis tooltip lines={1}>
-            {text}
-          </Ellipsis>
-        ),
-      },
-      {
-        title: '参数',
-        width: 100,
-        dataIndex: 'Parameters',
-        render: text => (
-          <Ellipsis tooltip lines={1}>
-            {text}
-          </Ellipsis>
-        ),
-      },
-      {
-        title: '包装',
-        width: 100,
-        dataIndex: 'Package',
-        render: text => (
-          <Ellipsis tooltip lines={1}>
-            {text}
-          </Ellipsis>
-        ),
+        align: 'center',
+        width: 300,
+        render: (text, record) =>
+          record.lastIndex ? (
+            ''
+          ) : (
+            <Ellipsis tooltip lines={1}>
+              {text ? (
+                <Link target="_blank" to={`/main/product/TI_Z009/TI_Z00903?Code${text}`}>
+                  {text}-
+                </Link>
+              ) : (
+                ''
+              )}
+              {record.SKUName}
+            </Ellipsis>
+          ),
       },
       {
         title: '数量',
-        width: 80,
+        width: 100,
         dataIndex: 'Quantity',
-      },
-      {
-        title: '单位',
-        width: 80,
-        dataIndex: 'Unit',
+        align: 'center',
+        render: (text, record) => <span>{`${text}-${record.Unit}`}</span>,
       },
       {
         title: '要求交期',
-        dataIndex: 'DueDate',
         width: 100,
+        inputType: 'date',
+        dataIndex: 'DueDate',
+        align: 'center',
         render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
       },
+
       {
-        title: '行备注',
-        width: 80,
-        dataIndex: 'LineComment',
+        title: '销售员',
+        width: 100,
+        dataIndex: 'Owner',
+        render: text => {
+          const {
+            global: { Saler },
+          } = this.props;
+          return <span>{getName(Saler, text)}</span>;
+        },
+      },
+      {
+        title: '采购员',
+        width: 100,
+        dataIndex: 'Purchaser',
+        render: text => {
+          const {
+            global: { Purchaser },
+          } = this.props;
+          return <span>{getName(Purchaser, text)}</span>;
+        },
+      },
+      {
+        title: '处理人',
+        width: 100,
+        dataIndex: 'Processor',
+        render: val => {
+          const {
+            global: { TI_Z004 },
+          } = this.props;
+          return <span>{getName(TI_Z004, val)}</span>;
+        },
+      },
+      {
+        title: '转移备注',
+        width: 100,
+        dataIndex: 'TransferComment',
         render: text => (
           <Ellipsis tooltip lines={1}>
             {text}
@@ -282,18 +264,54 @@ class SelectionLine extends Component {
         ),
       },
       {
-        title: '单号',
-        width: 100,
-        dataIndex: 'DocEntry',
+        title: '仓库',
+        width: 120,
+        dataIndex: 'WhsCode',
+        render: text => {
+          const {
+            global: { WhsCode },
+          } = this.props;
+          return <span>{getName(WhsCode, text)}</span>;
+        },
       },
       {
-        title: '行号',
-        width: 50,
-        dataIndex: 'LineID',
+        title: '交易公司',
+        width: 150,
+        dataIndex: 'CompanyCode',
+        render: text => {
+          const {
+            global: { Company },
+          } = this.props;
+          return (
+            <Ellipsis tooltip lines={1}>
+              {getName(Company, text)}
+            </Ellipsis>
+          );
+        },
+      },
+      {
+        title: '行备注',
+        width: 100,
+        dataIndex: 'Comment',
+        render: text => (
+          <Ellipsis tooltip lines={1}>
+            {text}
+          </Ellipsis>
+        ),
+      },
+      {
+        title: '客户参考号',
+        width: 100,
+        dataIndex: 'NumAtCard',
+        render: text => (
+          <Ellipsis tooltip lines={1}>
+            {text}
+          </Ellipsis>
+        ),
       },
     ];
 
-    return <StandardTable data={{ list: record.TI_Z02702 }} columns={columns} />;
+    return <StandardTable data={{ list: recordF.TI_Z02702 }} columns={columns} />;
   };
 
   render() {

@@ -2,7 +2,7 @@ import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
 import Link from 'umi/link';
-import { Row, DatePicker, Col, Card, Form, Input, Button } from 'antd';
+import { Row, DatePicker, Col, Card, Form, Input, Button, Tag } from 'antd';
 import StandardTable from '@/components/StandardTable';
 
 const { RangePicker } = DatePicker;
@@ -53,7 +53,9 @@ class DDMessage extends PureComponent {
       title: '推送状态',
       dataIndex: 'Status',
       width: 80,
-      render: val => <span>{val === '1' ? '成功' : '失败'}</span>,
+      render: val => (
+        <span>{val === '2' ? <Tag color="blue">成功</Tag> : <Tag color="red">失败</Tag>}</span>
+      ),
     },
     {
       title: '创建时间',

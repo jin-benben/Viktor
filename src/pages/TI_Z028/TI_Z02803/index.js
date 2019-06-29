@@ -35,24 +35,28 @@ class TI_Z02803 extends PureComponent {
       title: '单据日期',
       dataIndex: 'DocDate',
       align: 'center',
+      width: 100,
       render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
     {
       title: '有效期日期',
       dataIndex: 'ToDate',
+      width: 100,
       align: 'center',
       render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
     {
       title: '创建日期',
       dataIndex: 'CreateDate',
+      width: 100,
       align: 'center',
       render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
     {
-      title: '所有人',
+      title: '采购员',
       align: 'center',
       dataIndex: 'Owner',
+      width: 100,
       render: text => {
         const {
           global: { Purchaser },
@@ -62,12 +66,14 @@ class TI_Z02803 extends PureComponent {
     },
     {
       title: '询价总计',
+      width: 100,
       align: 'center',
       dataIndex: 'InquiryDocTotal',
     },
     {
       title: '备注',
       align: 'center',
+      width: 100,
       dataIndex: 'Comment',
     },
   ];
@@ -190,7 +196,6 @@ class TI_Z02803 extends PureComponent {
               )}
             </FormItem>
           </Col>
-
           <Col md={2} sm={24}>
             <FormItem key="searchBtn" {...searchFormItemLayout}>
               <span className="submitButtons">

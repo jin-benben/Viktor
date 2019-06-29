@@ -3,6 +3,7 @@ import React, { Fragment } from 'react';
 import { connect } from 'dva';
 import { Row, Col, Form, Input, Card, Switch, Tabs, Button, message, Popconfirm } from 'antd';
 import router from 'umi/router';
+import Link from 'umi/link';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import StandardTable from '@/components/StandardTable';
 import BrandModal from '@/components/Modal/Brand';
@@ -11,6 +12,7 @@ import PrintHistory from '@/components/Order/PrintHistory';
 import SupplierAsk from '@/components/Order/TI_Z027';
 import LinkMan from '../components/linkman';
 import MDMCommonality from '@/components/Select';
+import MyIcon from '@/components/MyIcon';
 
 const { TabPane } = Tabs;
 
@@ -63,12 +65,8 @@ class CompanyEdit extends React.Component {
               this.handleUpdateModalVisible(true, record, 'LinkManmodalVisible', 'linkManVal')
             }
           >
-            修改
+            <MyIcon type="iconedit" />
           </a>
-          {/* <Divider type="vertical" />
-          <Popconfirm title="确定要删除吗?" onConfirm={() => this.handleDelete(record.key)}>
-            <a href="javascript:;">删除</a>
-          </Popconfirm> */}
         </Fragment>
       ),
     },
@@ -84,13 +82,21 @@ class CompanyEdit extends React.Component {
       title: '品牌名称',
       width: 200,
       dataIndex: 'BrandName',
+      render: (text, record) => (
+        <Link target="_blank" to={`/main/product/TI_Z005/detail?Code=${record.Brand}`}>
+          {text}
+        </Link>
+      ),
     },
     {
       title: '操作',
       width: 50,
       render: (text, record) => (
         <Popconfirm title="确定要删除吗?" onConfirm={() => this.handleDelete(record.Brand)}>
-          <a href="javascript:;">删除</a>
+          <a href="javascript:;">
+            {' '}
+            <MyIcon type="iconshanchu" />
+          </a>
         </Popconfirm>
       ),
     },

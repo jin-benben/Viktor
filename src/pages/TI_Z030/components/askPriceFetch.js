@@ -67,12 +67,6 @@ class orderLine extends PureComponent {
       render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
     {
-      title: '创建日期',
-      width: 100,
-      dataIndex: 'CreateDate',
-      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
-    },
-    {
       title: 'SKU',
       width: 80,
       dataIndex: 'SKU',
@@ -171,7 +165,7 @@ class orderLine extends PureComponent {
 
     {
       title: '销售员',
-      width: 80,
+      width: 120,
       dataIndex: 'Owner',
       render: text => {
         const {
@@ -182,7 +176,7 @@ class orderLine extends PureComponent {
     },
     {
       title: '采购员',
-      width: 80,
+      width: 120,
       dataIndex: 'Purchaser',
       render: text => {
         const {

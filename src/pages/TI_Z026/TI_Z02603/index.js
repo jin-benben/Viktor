@@ -50,7 +50,11 @@ class InquiryEdit extends PureComponent {
             ) : (
               <Fragment>
                 <Tag color="green">{getName(lineStatus, text)}</Tag>
-                {record.PLineStatus === 'O' ? <Tag color="green">已确认</Tag> : ''}
+                {record.PLineStatus === 'C' ? (
+                  <Tag color="green">已确认</Tag>
+                ) : (
+                  <Tag color="gold">未确认</Tag>
+                )}
                 {record.IsInquiry === 'Y' ? <Tag color="green">需询价</Tag> : ''}
               </Fragment>
             )}
@@ -109,11 +113,17 @@ class InquiryEdit extends PureComponent {
     },
     {
       title: '询行总计',
-      width: 100,
+      width: 150,
       align: 'center',
       dataIndex: 'InquiryLineTotal',
       render: (text, record) =>
-        record.lastIndex ? '' : <span>{`${text}-${record.InquiryLineTotalLocal}`}</span>,
+        record.lastIndex ? (
+          ''
+        ) : (
+          <span>{`${text}${record.Currency ? `(${record.Currency})` : ''}-${
+            record.InquiryLineTotalLocal
+          }`}</span>
+        ),
     },
     {
       title: '询价备注',
@@ -133,7 +143,7 @@ class InquiryEdit extends PureComponent {
       dataIndex: 'InquiryDueDate',
       align: 'center',
       render: (text, record) =>
-        record.lastIndex ? null : <span>{moment(text).format('YYYY-MM-DD')}</span>,
+        record.lastIndex ? null : <span>{text ? moment(text).format('YYYY-MM-DD') : ''}</span>,
     },
     {
       title: '名称(外)',
@@ -153,6 +163,12 @@ class InquiryEdit extends PureComponent {
       width: 100,
       dataIndex: 'Package',
       align: 'center',
+      render: (text, record) =>
+        record.lastIndex ? null : (
+          <Ellipsis tooltip lines={1}>
+            {text} {record.ForeignParameters}
+          </Ellipsis>
+        ),
     },
     {
       title: '产地',
@@ -176,6 +192,14 @@ class InquiryEdit extends PureComponent {
         } = this.props;
         return record.lastIndex ? null : <span>{getName(HS, text)}</span>;
       },
+    },
+    {
+      title: '税率',
+      width: 80,
+      dataIndex: 'HSVatRate',
+      align: 'center',
+      render: (text, record) =>
+        record.lastIndex ? '' : <span>{`${text}-${record.HSVatRateOther}`}</span>,
     },
     {
       title: '要求名称',
@@ -208,7 +232,7 @@ class InquiryEdit extends PureComponent {
       dataIndex: 'DueDate',
       align: 'center',
       render: (val, record) =>
-        record.lastIndex ? '' : <span>{moment(val).format('YYYY-MM-DD')}</span>,
+        record.lastIndex ? '' : <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
     },
     {
       title: '仓库',
@@ -224,7 +248,7 @@ class InquiryEdit extends PureComponent {
     },
     {
       title: '采购员',
-      width: 80,
+      width: 120,
       dataIndex: 'Purchaser',
       align: 'center',
       render: (text, record) => {
@@ -299,6 +323,7 @@ class InquiryEdit extends PureComponent {
       title: '操作',
       fixed: 'right',
       align: 'center',
+      width: 80,
       render: (text, record, index) =>
         record.lastIndex ? null : (
           <Fragment>
@@ -578,7 +603,7 @@ class InquiryEdit extends PureComponent {
             <StandardTable
               data={{ list: newdata }}
               rowKey="LineID"
-              scroll={{ x: 2750 }}
+              scroll={{ x: 2950 }}
               columns={this.skuColumns}
             />
           </TabPane>

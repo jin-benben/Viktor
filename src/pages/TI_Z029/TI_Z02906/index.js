@@ -3,11 +3,10 @@ import { connect } from 'dva';
 import router from 'umi/router';
 import moment from 'moment';
 import Link from 'umi/link';
-import { Row, Col, Card, Form, Input, Button, Divider, Select, DatePicker, Icon } from 'antd';
+import { Row, Col, Card, Form, Input, Button, Divider, Select, DatePicker, Icon,Tag } from 'antd';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import StandardTable from '@/components/StandardTable';
 import DocEntryFrom from '@/components/DocEntryFrom';
-import MyTag from '@/components/Tag';
 import Organization from '@/components/Organization/multiple';
 import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
 import { getName } from '@/utils/utils';
@@ -54,18 +53,26 @@ class SalesQuotation extends PureComponent {
       render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
     {
-      title: '单据状态',
-      dataIndex: 'Status',
+      title: '状态',
       width: 80,
-      render: (text, record) => (
-        <Fragment>
-          {record.Closed === 'Y' ? (
-            <MyTag type="关闭" value="Y" />
-          ) : (
-            <MyTag type="报价" value={record.DocStatus} />
-          )}
-        </Fragment>
-      ),
+      dataIndex: 'LineStatus',
+      align: 'center',
+      render: (text, record) =>
+        record.lastIndex ? null : (
+          <Fragment>
+            {record.Closed === 'Y' ? (
+              <Tag color="red">已关闭</Tag>
+            ) : (
+              <Fragment>
+                {text === 'C' ? (
+                  <Tag color="green">已合同</Tag>
+                ) : (
+                  <Tag color="gold">未合同</Tag>
+                )}
+              </Fragment>
+            )}
+          </Fragment>
+        ),
     },
     {
       title: '客户',
@@ -98,12 +105,12 @@ class SalesQuotation extends PureComponent {
       title: '送货地址',
       dataIndex: 'address',
       render: (text, record) => (
-        <span>{`${record.Province}/${record.City}/${record.Area}/${record.Address}`}</span>
+        <span>{`${record.Province}${record.City}${record.Area}${record.Address}`}</span>
       ),
     },
     {
-      title: '所有人',
-      width: 80,
+      title: '销售员',
+      width: 120,
       dataIndex: 'Owner',
       render: text => {
         const {
@@ -358,7 +365,6 @@ class SalesQuotation extends PureComponent {
       SalesQuotation: { SalesQuotationList, pagination },
       loading,
     } = this.props;
-    const tableWidth = document.body.offsetWidth < 1800 ? 1500 : 0;
     return (
       <Fragment>
         <Card bordered={false}>
@@ -369,7 +375,7 @@ class SalesQuotation extends PureComponent {
               data={{ list: SalesQuotationList }}
               pagination={pagination}
               rowKey="DocEntry"
-              scroll={{ x: tableWidth }}
+              scroll={{ x: 1600 }}
               columns={this.columns}
               onChange={this.handleStandardTableChange}
             />

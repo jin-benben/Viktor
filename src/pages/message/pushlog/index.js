@@ -2,7 +2,7 @@ import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
 import Link from 'umi/link';
-import { Row, DatePicker, Col, Card, Form, Input, Button } from 'antd';
+import { Row, DatePicker, Col, Card, Form, Input, Button, Tag } from 'antd';
 import StandardTable from '@/components/StandardTable';
 
 const { RangePicker } = DatePicker;
@@ -37,7 +37,7 @@ class PushMessage extends PureComponent {
     },
     {
       title: '推送渠道',
-      width: 200,
+      width: 100,
       dataIndex: 'NotificationChannel',
     },
 
@@ -45,18 +45,15 @@ class PushMessage extends PureComponent {
       title: '推送状态',
       dataIndex: 'Status',
       width: 80,
-      render: val => <span>{val === '1' ? '成功' : '失败'}</span>,
+      render: val => (
+        <span>{val === '2' ? <Tag color="blue">成功</Tag> : <Tag color="red">失败</Tag>}</span>
+      ),
     },
     {
       title: '创建时间',
       dataIndex: 'CreateDate',
       width: 150,
       render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>,
-    },
-    {
-      title: '创建用户',
-      width: 80,
-      dataIndex: 'CreateUser',
     },
   ];
 
@@ -167,7 +164,6 @@ class PushMessage extends PureComponent {
       pushMessage: { pushMessageList, pagination },
       loading,
     } = this.props;
-    const tablewidth = document.body.offsetWidth < 1550 ? 1500 : 0;
     return (
       <Fragment>
         <Card bordered={false}>
@@ -178,7 +174,7 @@ class PushMessage extends PureComponent {
               data={{ list: pushMessageList }}
               pagination={pagination}
               rowKey="Code"
-              scroll={{ y: 600, x: tablewidth }}
+              scroll={{ x: 900 }}
               columns={this.columns}
               onChange={this.handleStandardTableChange}
             />

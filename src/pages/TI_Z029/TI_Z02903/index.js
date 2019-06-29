@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
 import { connect } from 'dva';
-import { Card, Tabs, Button, Icon, message, Dropdown, Menu, Collapse, Empty } from 'antd';
+import { Card, Tabs, Button, Icon, message, Dropdown, Menu, Collapse, Empty, Tag } from 'antd';
 import moment from 'moment';
 import router from 'umi/router';
 import Link from 'umi/link';
@@ -8,7 +8,6 @@ import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import DescriptionList from 'ant-design-pro/lib/DescriptionList';
 import StandardTable from '@/components/StandardTable';
-import MyTag from '@/components/Tag';
 import CancelOrder from '@/components/Modal/CancelOrder';
 import OrderPrint from '@/components/Modal/OrderPrint';
 import NeedAskPrice from '../components/needAskPrice';
@@ -41,116 +40,243 @@ class InquiryEdit extends React.Component {
         record.lastIndex ? <span style={{ fontWeight: 'bolder' }}>合计</span> : text,
     },
     {
-      title: 'SKU',
+      title: '行状态',
+      width: 140,
+      dataIndex: 'LineStatus',
+      align: 'center',
+      render: (text, record) =>
+        record.lastIndex ? null : (
+          <Fragment>
+            {record.Closed === 'Y' ? (
+              <Tag color="red">已关闭</Tag>
+            ) : (
+              <Fragment>
+                {record.ApproveSts === 'Y' ? (
+                  <Tag color="green">已审核</Tag>
+                ) : (
+                  <Tag color="gold">未审核</Tag>
+                )}
+                {text === 'C' ? <Tag color="green">已合同</Tag> : <Tag color="gold">未合同</Tag>}
+              </Fragment>
+            )}
+          </Fragment>
+        ),
+    },
+    {
+      title: '物料',
       dataIndex: 'SKU',
       align: 'center',
-      width: 80,
-    },
-    {
-      title: '产品描述',
-      dataIndex: 'SKUName',
-      width: 200,
-      align: 'center',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
-    {
-      title: '品牌',
-      width: 80,
-      align: 'center',
-      dataIndex: 'BrandName',
-    },
-    {
-      title: '名称',
-      dataIndex: 'ProductName',
-      width: 150,
-      align: 'center',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
-    {
-      title: '型号',
-      width: 150,
-      dataIndex: 'ManufactureNO',
-      align: 'center',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
-    {
-      title: '参数',
-      width: 150,
-      dataIndex: 'Parameters',
-      align: 'center',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
-    {
-      title: '包装',
-      width: 150,
-      dataIndex: 'Package',
-      align: 'center',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
-    {
-      title: '单位',
-      width: 80,
-      dataIndex: 'Unit',
-
-      align: 'center',
+      width: 300,
+      render: (text, record) =>
+        record.lastIndex ? (
+          ''
+        ) : (
+          <Ellipsis tooltip lines={1}>
+            {text ? (
+              <Link target="_blank" to={`/main/product/TI_Z009/TI_Z00903?Code${text}`}>
+                {text}-
+              </Link>
+            ) : (
+              ''
+            )}
+            {record.SKUName}
+          </Ellipsis>
+        ),
     },
     {
       title: '数量',
-      width: 80,
-
+      width: 100,
       dataIndex: 'Quantity',
-
+      align: 'center',
+      render: (text, record) => (record.lastIndex ? '' : <span>{`${text}-${record.Unit}`}</span>),
+    },
+    {
+      title: '建议价格',
+      width: 100,
+      dataIndex: 'AdvisePrice',
       align: 'center',
     },
     {
       title: '价格',
-      width: 100,
+      width: 80,
       dataIndex: 'Price',
       align: 'center',
     },
     {
       title: '行总计',
-      width: 120,
+      width: 100,
       align: 'center',
       dataIndex: 'LineTotal',
       render: (text, record) =>
         record.lastIndex ? <span style={{ fontWeight: 'bolder' }}>{text}</span> : text,
     },
     {
-      title: '建议价',
+      title: '总费用',
       width: 100,
-      dataIndex: 'AdvisePrice',
       align: 'center',
+      dataIndex: 'OtherTotal',
+    },
+    {
+      title: '费用备注',
+      width: 100,
+      align: 'center',
+      dataIndex: 'OtherComment',
+      render: (text, record) =>
+        record.lastIndex ? null : (
+          <Ellipsis tooltip lines={1}>
+            {text}
+          </Ellipsis>
+        ),
+    },
+    {
+      title: '行利润',
+      width: 100,
+      align: 'center',
+      dataIndex: 'ProfitLineTotal',
     },
     {
       title: '要求交期',
       width: 100,
-      inputType: 'date',
       dataIndex: 'DueDate',
       align: 'center',
       render: (val, record) =>
         record.lastIndex ? '' : <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
+    {
+      title: '询价价格',
+      width: 120,
+      dataIndex: 'InquiryPrice',
+      align: 'center',
+      render: (text, record) =>
+        record.lastIndex ? '' : <span>{`${text}-${record.Currency || ''}-${record.DocRate}`}</span>,
+    },
+    {
+      title: '询行总计',
+      width: 150,
+      align: 'center',
+      dataIndex: 'InquiryLineTotal',
+      render: (text, record) =>
+        record.lastIndex ? (
+          ''
+        ) : (
+          <span>{`${text}${record.Currency ? `(${record.Currency})` : ''}-${
+            record.InquiryLineTotalLocal
+          }`}
+          </span>
+        ),
+    },
+    {
+      title: '询价备注',
+      dataIndex: 'InquiryComment',
+      width: 100,
+      align: 'center',
+      render: (text, record) =>
+        record.lastIndex ? null : (
+          <Ellipsis tooltip lines={1}>
+            {text}
+          </Ellipsis>
+        ),
+    },
+    {
+      title: '询价交期',
+      width: 100,
+      dataIndex: 'InquiryDueDate',
+      align: 'center',
+      render: (text, record) =>
+        record.lastIndex ? null : <span>{moment(text).format('YYYY-MM-DD')}</span>,
+    },
+    {
+      title: '采购员',
+      width: 120,
+      dataIndex: 'Purchaser',
+      align: 'center',
+      render: (text, record) => {
+        const {
+          global: { Purchaser },
+        } = this.props;
+        return record.lastIndex ? null : <span>{getName(Purchaser, text)}</span>;
+      },
+    },
+    {
+      title: '产地',
+      width: 80,
+      dataIndex: 'ManLocation',
+      align: 'center',
+      render: (text, record) => {
+        const {
+          global: { TI_Z042 },
+        } = this.props;
+        return record.lastIndex ? null : <span>{getName(TI_Z042, text)}</span>;
+      },
+    },
+    {
+      title: 'HS编码',
+      width: 100,
+      dataIndex: 'HSCode',
+      render: (text, record) => {
+        const {
+          global: { HS },
+        } = this.props;
+        return record.lastIndex ? null : <span>{getName(HS, text)}</span>;
+      },
+    },
+    {
+      title: '税率',
+      width: 80,
+      dataIndex: 'HSVatRate',
+      align: 'center',
+      render: (text, record) =>
+        record.lastIndex ? '' : <span>{`${text}-${record.HSVatRateOther}`}</span>,
+    },
+    {
+      title: '重量',
+      width: 80,
+      dataIndex: 'Rweight',
+      align: 'center',
+    },
+    {
+      title: '国外运费',
+      width: 80,
+      dataIndex: 'ForeignFreight',
+      align: 'center',
+    },
+    {
+      title: '备注',
+      dataIndex: 'LineComment',
+      width: 100,
+      align: 'center',
+      render: (text, record) =>
+        record.lastIndex ? null : (
+          <Ellipsis tooltip lines={1}>
+            {text} {record.ForeignParameters}
+          </Ellipsis>
+        ),
+    },
+    {
+      title: '包装',
+      width: 100,
+      dataIndex: 'Package',
+      align: 'center',
+      render: (text, record) =>
+        record.lastIndex ? null : (
+          <Ellipsis tooltip lines={1}>
+            {text} {record.ForeignParameters}
+          </Ellipsis>
+        ),
+    },
+    {
+      title: '名称(外)',
+      dataIndex: 'ForeignName',
+      width: 100,
+      align: 'center',
+      render: (text, record) =>
+        record.lastIndex ? null : (
+          <Ellipsis tooltip lines={1}>
+            {text} {record.ForeignParameters}
+          </Ellipsis>
+        ),
+    },
+
     {
       title: '仓库',
       width: 100,
@@ -160,114 +286,20 @@ class InquiryEdit extends React.Component {
         const {
           global: { WhsCode },
         } = this.props;
-        return record.lastIndex ? '' : <span>{getName(WhsCode, text)}</span>;
+        return record.lastIndex ? null : <span>{getName(WhsCode, text)}</span>;
       },
     },
     {
-      title: '产地',
+      title: '要求名称',
       width: 80,
-      dataIndex: 'ManLocation',
+      dataIndex: 'CustomerName',
       align: 'center',
-      render: text => {
-        const {
-          global: { TI_Z042 },
-        } = this.props;
-        return <span>{getName(TI_Z042, text)}</span>;
-      },
-    },
-    {
-      title: 'HS编码',
-      width: 100,
-      dataIndex: 'HSCode',
-      render: text => {
-        const {
-          global: { HS },
-        } = this.props;
-        return <span>{getName(HS, text)}</span>;
-      },
-    },
-    {
-      title: '报关税率',
-      width: 80,
-      dataIndex: 'HSVatRate',
-      align: 'center',
-    },
-    {
-      title: '附加税率',
-      width: 80,
-      dataIndex: 'HSVatRateOther',
-      align: 'center',
-    },
-    {
-      title: '询价最终价',
-      width: 100,
-      dataIndex: 'InquiryPrice',
-      align: 'center',
-    },
-    {
-      title: '询价币种',
-      width: 80,
-      dataIndex: 'Currency',
-      align: 'center',
-      render: (text, record) => {
-        const {
-          global: { Curr },
-        } = this.props;
-        return record.lastIndex ? '' : <span>{getName(Curr, text)}</span>;
-      },
-    },
-    {
-      title: '单据汇率',
-      width: 80,
-      dataIndex: 'DocRate',
-      align: 'center',
-    },
-    {
-      title: '最终交期',
-      width: 100,
-      dataIndex: 'InquiryDueDate',
-      align: 'center',
-      render: (val, record) =>
-        record.lastIndex ? '' : <span>{moment(val).format('YYYY-MM-DD')}</span>,
-    },
-    {
-      title: '采购员',
-      width: 80,
-      dataIndex: 'Purchaser',
-      align: 'center',
-      render: (text, record) => {
-        const {
-          global: { Purchaser },
-        } = this.props;
-        return record.lastIndex ? '' : <span>{getName(Purchaser, text)}</span>;
-      },
-    },
-    {
-      title: '询价备注',
-      dataIndex: 'InquiryComment',
-      width: 100,
-      align: 'center',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
-    {
-      title: '询价行总计',
-      width: 120,
-      align: 'center',
-      dataIndex: 'InquiryLineTotal',
       render: (text, record) =>
-        record.lastIndex ? <span style={{ fontWeight: 'bolder' }}>{text}</span> : text,
-    },
-    {
-      title: '询价行总计(本币)',
-      width: 150,
-      align: 'center',
-      dataIndex: 'InquiryLineTotalLocal',
-      render: (text, record) =>
-        record.lastIndex ? <span style={{ fontWeight: 'bolder' }}>{text}</span> : text,
+        record.lastIndex ? null : (
+          <Ellipsis tooltip lines={1}>
+            {text} {record.ForeignParameters}
+          </Ellipsis>
+        ),
     },
     {
       title: '客询价单',
@@ -278,6 +310,34 @@ class InquiryEdit extends React.Component {
           <Link target="_blank" to={`/sellabout/TI_Z026/detail?DocEntry=${record.BaseEntry}`}>
             {`${val}-${record.BaseLineID}`}
           </Link>
+        ),
+    },
+    {
+      title: '销合单号',
+      width: 100,
+      align: 'center',
+      dataIndex: 'ContractEntry',
+      render: (text, recond) =>
+        text ? (
+          <Link target="_blank" to={`/sellabout/TI_Z030/detail?DocEntry=${text}`}>
+            {`${text}-${recond.ContractLine}`}
+          </Link>
+        ) : (
+          ''
+        ),
+    },
+    {
+      title: '销订单号',
+      width: 100,
+      align: 'center',
+      dataIndex: 'SoEntry',
+      render: (text, recond) =>
+        text ? (
+          <Link target="_blank" to={`/sellabout/orderdetail?DocEntry=${text}`}>
+            {`${text}-${recond.SoLine}`}
+          </Link>
+        ) : (
+          ''
         ),
     },
     {
@@ -615,9 +675,15 @@ class InquiryEdit extends React.Component {
           <Description term="客户参考号">{formVals.NumAtCard}</Description>
           <Description term="单据状态">
             {formVals.Closed === 'Y' ? (
-              <MyTag type="关闭" value="Y" />
+              <Tag color="red">已关闭</Tag>
             ) : (
-              <MyTag type="确认" value={formVals.DocStatus} />
+              <Fragment>
+                {formVals.DocStatus === 'C' ? (
+                  <Tag color="green">已合同</Tag>
+                ) : (
+                  <Tag color="gold">未合同</Tag>
+                )}
+              </Fragment>
             )}
           </Description>
           {formVals.Closed === 'N' ? null : (
@@ -632,7 +698,7 @@ class InquiryEdit extends React.Component {
             <StandardTable
               data={{ list: newdata }}
               rowKey="LineID"
-              scroll={{ x: 3000, y: 600 }}
+              scroll={{ x: 3200 }}
               columns={this.skuColumns}
             />
           </TabPane>

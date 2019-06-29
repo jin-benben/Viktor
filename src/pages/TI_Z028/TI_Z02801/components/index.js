@@ -41,53 +41,7 @@ class OrderPreview extends Component {
     },
     {
       title: '产品描述',
-      width: 150,
       dataIndex: 'SKUName',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
-    {
-      title: '品牌',
-      width: 80,
-      dataIndex: 'BrandName',
-    },
-    {
-      title: '名称',
-      width: 100,
-      dataIndex: 'ProductName',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
-    {
-      title: '型号',
-      width: 100,
-      dataIndex: 'ManufactureNO',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
-    {
-      title: '参数',
-      width: 100,
-      dataIndex: 'Parameters',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
-    {
-      title: '包装',
-      width: 100,
-      dataIndex: 'Package',
       render: text => (
         <Ellipsis tooltip lines={1}>
           {text}

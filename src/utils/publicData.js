@@ -67,6 +67,10 @@ export const flagType = [
 
 export const emailSendType = [
   {
+    Key: 'OPOR',
+    Value: '采购订单',
+  },
+  {
     Key: 'TI_Z027',
     Value: '采购询价单',
   },

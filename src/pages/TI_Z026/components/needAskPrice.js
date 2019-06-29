@@ -28,6 +28,18 @@ class OrderLine extends React.Component {
       render: (text, record) => <span>{`${text}-${record.LineID}`}</span>,
     },
     {
+      title: '采购员',
+      width: 120,
+      dataIndex: 'Purchaser',
+      align: 'center',
+      render: text => {
+        const {
+          global: { Purchaser },
+        } = this.props;
+        return <span>{getName(Purchaser, text)}</span>;
+      },
+    },
+    {
       title: '物料',
       dataIndex: 'SKU',
       align: 'center',
@@ -202,7 +214,7 @@ class OrderLine extends React.Component {
             dataSource={data}
             pagination={false}
             rowKey="Key"
-            scroll={{ x: 1100, y: 600 }}
+            scroll={{ x: 1220, y: 600 }}
             rowSelection={{
               onChange: this.onSelectRow,
               selectedRowKeys,

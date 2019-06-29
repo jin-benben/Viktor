@@ -166,7 +166,6 @@ class SupplierAsk extends Component {
     select.map((item, lineIndex) => {
       const {
         SKU,
-        Owner,
         SKUName,
         BrandName,
         ProductName,
@@ -192,9 +191,13 @@ class SupplierAsk extends Component {
         PhoneNO,
         Email,
         ContactsID,
-        CompanyCode,
         linkmanList,
+        WhsCode,
+        Processor,
+        TransferComment,
+        CompanyCode,
         Purchaser,
+        Owner,
       } = item;
       const ToDate = moment()
         .add('30', 'day')
@@ -250,6 +253,13 @@ class SupplierAsk extends Component {
               Price: 0,
               InquiryDueDate: '',
               LineTotal,
+              WhsCode,
+              Comment,
+              Processor,
+              TransferComment,
+              CompanyCode,
+              Purchaser,
+              Owner,
             },
           ],
         });
@@ -273,6 +283,13 @@ class SupplierAsk extends Component {
           Price: 0,
           InquiryDueDate: '',
           LineTotal,
+          WhsCode,
+          Comment,
+          Processor,
+          TransferComment,
+          CompanyCode,
+          Purchaser,
+          Owner,
         });
       }
     });
@@ -402,7 +419,6 @@ class SupplierAsk extends Component {
             columns={this.resultColumns}
           />
         </div>
-
         <OrderModal data={selectedRows} {...parentMethods} modalVisible={modalVisible} />
         <FooterToolbar>{this.footerBtn()}</FooterToolbar>
       </Card>

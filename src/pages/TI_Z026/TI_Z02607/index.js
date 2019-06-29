@@ -84,12 +84,12 @@ class orderLine extends PureComponent {
             ) : (
               <Fragment>
                 <Tag color="green">{getName(lineStatus, text)}</Tag>
-                {record.PDocStatus === 'O' ? (
+                {record.PDocStatus === 'C' ? (
                   <Tag color="green">已确认</Tag>
                 ) : (
                   <Tag color="gold">未确认</Tag>
                 )}
-                {record.SDocStatus === 'O' ? (
+                {record.SDocStatus === 'C' ? (
                   <Tag color="green">已报价</Tag>
                 ) : (
                   <Tag color="gold">未报价</Tag>
@@ -97,27 +97,6 @@ class orderLine extends PureComponent {
               </Fragment>
             )}
           </Fragment>
-        ),
-    },
-    {
-      title: '物料',
-      dataIndex: 'SKU',
-      align: 'center',
-      width: 300,
-      render: (text, record) =>
-        record.lastIndex ? (
-          ''
-        ) : (
-          <Ellipsis tooltip lines={1}>
-            {text ? (
-              <Link target="_blank" to={`/main/product/TI_Z009/TI_Z00903?Code${text}`}>
-                {text}-
-              </Link>
-            ) : (
-              ''
-            )}
-            {record.SKUName}
-          </Ellipsis>
         ),
     },
     {
@@ -213,11 +192,17 @@ class orderLine extends PureComponent {
     },
     {
       title: '询行总计',
-      width: 100,
+      width: 150,
       align: 'center',
       dataIndex: 'InquiryLineTotal',
       render: (text, record) =>
-        record.lastIndex ? '' : <span>{`${text}-${record.InquiryLineTotalLocal}`}</span>,
+        record.lastIndex ? (
+          ''
+        ) : (
+          <span>{`${text}${record.Currency ? `(${record.Currency})` : ''}-${
+            record.InquiryLineTotalLocal
+          }`}</span>
+        ),
     },
     {
       title: '询价备注',
@@ -240,7 +225,7 @@ class orderLine extends PureComponent {
         record.lastIndex ? null : <span>{moment(text).format('YYYY-MM-DD')}</span>,
     },
     {
-      title: '名称(wai)',
+      title: '名称(外)',
       width: 100,
       dataIndex: 'ForeignName',
       render: (text, record) => (

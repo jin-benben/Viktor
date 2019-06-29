@@ -67,40 +67,37 @@ class orderLine extends PureComponent {
       render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
     {
-      title: 'SKU',
-      width: 80,
+      title: '物料',
       dataIndex: 'SKU',
+      align: 'center',
+      width: 300,
+      render: (text, record) =>
+        record.lastIndex ? (
+          ''
+        ) : (
+          <Ellipsis tooltip lines={1}>
+            {text ? (
+              <Link target="_blank" to={`/main/product/TI_Z009/TI_Z00903?Code${text}`}>
+                {text}-
+              </Link>
+            ) : (
+              ''
+            )}
+            {record.SKUName}
+          </Ellipsis>
+        ),
     },
     {
-      title: '产品描述',
-      width: 150,
-      dataIndex: 'SKUName',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {' '}
-          {text}{' '}
-        </Ellipsis>
-      ),
-    },
-    {
-      title: '品牌',
-      width: 80,
-      dataIndex: 'BrandName',
-    },
-    {
-      title: '名称',
+      title: '名称(外)',
+      dataIndex: 'ForeignName',
       width: 100,
-      dataIndex: 'ProductName',
-    },
-    {
-      title: '型号',
-      width: 100,
-      dataIndex: 'ManufactureNO',
-    },
-    {
-      title: '参数',
-      width: 100,
-      dataIndex: 'Parameters',
+      align: 'center',
+      render: (text, record) =>
+        record.lastIndex ? null : (
+          <Ellipsis tooltip lines={1}>
+            {text} {record.ForeignParameters}
+          </Ellipsis>
+        ),
     },
     {
       title: '包装',
@@ -157,7 +154,7 @@ class orderLine extends PureComponent {
     },
     {
       title: '采购员',
-      width: 80,
+      width: 120,
       dataIndex: 'Purchaser',
       render: text => {
         const {
@@ -172,8 +169,8 @@ class orderLine extends PureComponent {
       dataIndex: 'NumAtCard',
     },
     {
-      title: '所有人',
-      width: 80,
+      title: '销售员',
+      width: 120,
       dataIndex: 'Owner',
       render: text => {
         const {
@@ -181,45 +178,6 @@ class orderLine extends PureComponent {
         } = this.props;
         return <span>{getName(Saler, text)}</span>;
       },
-    },
-    {
-      title: '销报单号',
-      width: 100,
-      dataIndex: 'QuoteEntry',
-      render: (text, recond) =>
-        text ? (
-          <Link target="_blank" to={`/sellabout/TI_Z029/detail?DocEntry=${text}`}>
-            {`${text}-${recond.QuoteLine}`}
-          </Link>
-        ) : (
-          ''
-        ),
-    },
-    {
-      title: '销合单号',
-      width: 100,
-      dataIndex: 'ContractEntry',
-      render: (text, recond) =>
-        text ? (
-          <Link target="_blank" to={`/sellabout/TI_Z030/detail?DocEntry=${text}`}>
-            {`${text}-${recond.ContractLine}`}
-          </Link>
-        ) : (
-          ''
-        ),
-    },
-    {
-      title: '销订单号',
-      width: 100,
-      dataIndex: 'SoEntry',
-      render: (text, recond) =>
-        text ? (
-          <Link target="_blank" to={`/sellabout/orderdetail?DocEntry=${text}`}>
-            {`${text}-${recond.SoLine}`}
-          </Link>
-        ) : (
-          ''
-        ),
     },
   ];
 
@@ -434,7 +392,7 @@ class orderLine extends PureComponent {
             data={{ list: orderLineList }}
             pagination={pagination}
             rowKey="Key"
-            scroll={{ x: 2300, y: 500 }}
+            scroll={{ x: 1850, y: 500 }}
             columns={columns}
             rowSelection={{
               onSelectRow: this.onSelectRow,

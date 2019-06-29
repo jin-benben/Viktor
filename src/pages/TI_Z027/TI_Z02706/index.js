@@ -118,7 +118,7 @@ class supplierQuotation extends PureComponent {
     },
     {
       title: '采购员',
-      width: 80,
+      width: 120,
       dataIndex: 'Owner',
       render: text => {
         const {

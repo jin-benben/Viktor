@@ -557,7 +557,12 @@ export default [
             name: '应收发票',
             path: '/confrmBatch/OINV',
             component: './OINV',
-          }
+          },
+          // {
+          //   name: '批次审核',
+          //   path: '/confrmBatch/batchApprove',
+          //   component: './batchApprove',
+          // }
         ]  
       },
      

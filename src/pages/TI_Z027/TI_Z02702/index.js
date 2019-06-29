@@ -74,13 +74,17 @@ class InquiryEdit extends React.Component {
         ),
     },
     {
-      title: '名称',
-      dataIndex: 'ProductName',
-      inputType: 'textArea',
+      title: '物料名称',
+      dataIndex: 'SKUName',
       width: 150,
-      editable: true,
       align: 'center',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
+
     {
       title: '名称(外)',
       dataIndex: 'ForeignName',
@@ -148,16 +152,21 @@ class InquiryEdit extends React.Component {
     {
       title: '国外运费',
       width: 80,
+      editable: true,
+      inputType: 'text',
       dataIndex: 'ForeignFreight',
       align: 'center',
     },
     {
       title: '销行备注',
-      dataIndex: 'SLineComment',
-      inputType: 'textArea',
+      dataIndex: 'BaseLineComment',
       width: 100,
-      editable: true,
       align: 'center',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '采总计',
@@ -207,7 +216,14 @@ class InquiryEdit extends React.Component {
           />
         ),
     },
-
+    {
+      title: '名称',
+      dataIndex: 'ProductName',
+      inputType: 'textArea',
+      width: 150,
+      editable: true,
+      align: 'center',
+    },
     {
       title: '型号',
       width: 130,
@@ -950,7 +966,7 @@ class InquiryEdit extends React.Component {
             <EditableFormTable
               rowChange={this.rowChange}
               rowKey="LineID"
-              scroll={{ x: 2700 }}
+              scroll={{ x: 2800 }}
               columns={this.skuColumns}
               data={newdata}
             />

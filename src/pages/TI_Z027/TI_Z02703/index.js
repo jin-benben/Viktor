@@ -1,6 +1,18 @@
 import React, { Fragment } from 'react';
 import { connect } from 'dva';
-import { Card, Tabs, Modal, Button, Icon, message, Dropdown, Menu, Collapse, Empty } from 'antd';
+import {
+  Card,
+  Tabs,
+  Modal,
+  Button,
+  Icon,
+  message,
+  Dropdown,
+  Menu,
+  Collapse,
+  Empty,
+  Tag,
+} from 'antd';
 import moment from 'moment';
 import router from 'umi/router';
 import Link from 'umi/link';
@@ -39,100 +51,70 @@ class InquiryEdit extends React.Component {
         record.lastIndex ? <span style={{ fontWeight: 'bolder' }}>合计</span> : text,
     },
     {
-      title: 'SKU',
+      title: '行状态',
+      width: 150,
+      dataIndex: 'LineStatus',
+      align: 'center',
+      render: (text, record) =>
+        record.lastIndex ? null : (
+          <Fragment>
+            {record.Closed === 'Y' ? (
+              <Tag color="red">已关闭</Tag>
+            ) : (
+              <Fragment>
+                {record.PriceRStatus === 'C' ? (
+                  <Tag color="green">已确认</Tag>
+                ) : (
+                  <Tag color="gold">未确认</Tag>
+                )}
+                {record.text === 'C' ? (
+                  <Tag color="green">已报价</Tag>
+                ) : (
+                  <Tag color="gold">未报价</Tag>
+                )}
+              </Fragment>
+            )}
+          </Fragment>
+        ),
+    },
+    {
+      title: '物料',
       dataIndex: 'SKU',
       align: 'center',
-      width: 80,
-    },
-    {
-      title: '产品描述',
-      dataIndex: 'SKUName',
-      width: 200,
-      align: 'center',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
-    {
-      title: '品牌',
       width: 100,
-      align: 'center',
-      dataIndex: 'BrandName',
+      render: (text, record) =>
+        record.lastIndex ? (
+          ''
+        ) : (
+          <Ellipsis tooltip lines={1}>
+            {text ? (
+              <Link target="_blank" to={`/main/product/TI_Z009/TI_Z00903?Code${text}`}>
+                {text}-
+              </Link>
+            ) : (
+              ''
+            )}
+            {record.SKUName}
+          </Ellipsis>
+        ),
     },
     {
-      title: '名称',
-      dataIndex: 'ProductName',
+      title: '名称(外)',
       width: 100,
-      align: 'center',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
-    {
-      title: '型号',
-      width: 100,
-      dataIndex: 'ManufactureNO',
-      align: 'center',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
-    {
-      title: '参数',
-      width: 100,
-      dataIndex: 'Parameters',
-      align: 'center',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
-    {
-      title: '包装',
-      width: 100,
-      dataIndex: 'Package',
-      align: 'center',
+      dataIndex: 'ForeignName',
+      render: (text, record) =>
+        record.lastIndex ? null : (
+          <Ellipsis tooltip lines={1}>
+            {text}-{record.ForeignParameters}
+          </Ellipsis>
+        ),
     },
     {
       title: '数量',
-      width: 80,
+      width: 100,
       dataIndex: 'Quantity',
       align: 'center',
-    },
-    {
-      title: '产地',
-      width: 80,
-      dataIndex: 'ManLocation',
-      align: 'center',
-      render: text => {
-        const {
-          global: { TI_Z042 },
-        } = this.props;
-        return <span>{getName(TI_Z042, text)}</span>;
-      },
-    },
-    {
-      title: '单位',
-      width: 80,
-
-      dataIndex: 'Unit',
-
-      align: 'center',
-    },
-    {
-      title: '要求交期',
-      width: 100,
-      dataIndex: 'DueDate',
-      align: 'center',
-      render: (val, record) =>
-        record.lastIndex ? '' : <span>{moment(val).format('YYYY-MM-DD')}</span>,
+      render: (text, record) => (record.lastIndex ? '' : <span>{`${text}-${record.Unit}`}</span>),
     },
     {
       title: '价格',
@@ -142,7 +124,7 @@ class InquiryEdit extends React.Component {
     },
     {
       title: '询价交期',
-      width: 100,
+      width: 120,
       dataIndex: 'InquiryDueDate',
       align: 'center',
       render: (val, record) =>
@@ -153,6 +135,24 @@ class InquiryEdit extends React.Component {
       dataIndex: 'LineComment',
       width: 100,
       align: 'center',
+    },
+    {
+      title: '重量',
+      width: 80,
+      dataIndex: 'Rweight',
+      align: 'center',
+    },
+    {
+      title: '国外运费',
+      width: 80,
+      dataIndex: 'ForeignFreight',
+      align: 'center',
+    },
+    {
+      title: '销行备注',
+      dataIndex: 'BaseLineComment',
+      width: 100,
+      align: 'center',
       render: text => (
         <Ellipsis tooltip lines={1}>
           {text}
@@ -160,31 +160,48 @@ class InquiryEdit extends React.Component {
       ),
     },
     {
-      title: '总计',
-      width: 100,
+      title: '采总计',
+      width: 120,
       align: 'center',
       dataIndex: 'LineTotal',
-      render: (text, record) =>
-        record.lastIndex ? <span style={{ fontWeight: 'bolder' }}>{text}</span> : text,
     },
     {
       title: '本币总计',
       width: 100,
       align: 'center',
       dataIndex: 'InquiryLineTotalLocal',
-      render: (text, record) =>
-        record.lastIndex ? <span style={{ fontWeight: 'bolder' }}>{text}</span> : text,
+    },
+    {
+      title: '要求交期',
+      width: 100,
+      dataIndex: 'DueDate',
+      align: 'center',
+      render: (val, record) =>
+        record.lastIndex ? '' : <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
     {
       title: '客询价单',
       width: 80,
       dataIndex: 'BaseEntry',
+      align: 'center',
       render: (val, record) =>
         record.lastIndex ? null : (
           <Link target="_blank" to={`/sellabout/TI_Z026/detail?DocEntry=${record.BaseEntry}`}>
             {`${val}-${record.BaseLineID}`}
           </Link>
         ),
+    },
+    {
+      title: '上一次价格',
+      width: 100,
+      dataIndex: 'LastPrice',
+      align: 'center',
+    },
+    {
+      title: '转移单号',
+      width: 100,
+      dataIndex: 'TransferEntry',
+      align: 'center',
     },
     {
       title: '操作',
@@ -428,7 +445,13 @@ class InquiryEdit extends React.Component {
     const transferParentMethods = {
       handleModalVisible: this.handleModalVisible,
     };
-
+    let tablwidth = 0;
+    this.skuColumns.map(item => {
+      if (item.width) {
+        tablwidth += item.width;
+      }
+    });
+    console.log(tablwidth);
     return (
       <Card bordered={false}>
         <DescriptionList style={{ marginBottom: 24 }}>
@@ -477,7 +500,7 @@ class InquiryEdit extends React.Component {
             <StandardTable
               data={{ list: newdata }}
               rowKey="LineID"
-              scroll={{ x: 1830 }}
+              scroll={{ x: 1800 }}
               columns={this.skuColumns}
             />
           </TabPane>

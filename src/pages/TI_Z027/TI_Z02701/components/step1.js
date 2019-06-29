@@ -3,7 +3,19 @@
 import React, { Fragment } from 'react';
 
 import moment from 'moment';
-import { Row, Col, Form, Input, Table, Button, DatePicker, Checkbox, message, Icon } from 'antd';
+import {
+  Row,
+  Col,
+  Form,
+  Input,
+  Table,
+  Button,
+  DatePicker,
+  Checkbox,
+  message,
+  Icon,
+  Tag,
+} from 'antd';
 import { connect } from 'dva';
 import Link from 'umi/link';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
@@ -82,26 +94,24 @@ class NeedTabl extends React.Component {
       width: 100,
       render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
-    // {
-    //   title: '行状态',
-    //   width: 200,
-    //   dataIndex: 'LineStatus',
-    //   align: 'center',
-    //   render: (text, record) =>
-    //     record.lastIndex ? null : (
-    //       <Fragment>
-    //         {record.Closed === 'Y' ? (
-    //           <Tag color="red">已关闭</Tag>
-    //         ) : (
-    //           <Fragment>
-    //             <Tag color="green">{getName(lineStatus, text)}</Tag>
-    //             {record.PDocStatus === 'O' ? <Tag color="green">已确认</Tag> : <Tag color="gold">未确认</Tag>}
-    //             {record.SDocStatus === 'O' ? <Tag color="green">已报价</Tag> :<Tag color="gold">未报价</Tag>}
-    //           </Fragment>
-    //         )}
-    //       </Fragment>
-    //     ),
-    // },
+    {
+      title: '行状态',
+      width: 80,
+      dataIndex: 'InquiryStatus',
+      align: 'center',
+      render: (text, record) =>
+        record.lastIndex ? null : (
+          <Fragment>
+            {record.Closed === 'Y' ? (
+              <Tag color="red">已关闭</Tag>
+            ) : (
+              <Fragment>
+                {text === 'C' ? <Tag color="green">已询价</Tag> : <Tag color="gold">未询价</Tag>}
+              </Fragment>
+            )}
+          </Fragment>
+        ),
+    },
     {
       title: '物料',
       dataIndex: 'SKU',
@@ -359,7 +369,7 @@ class NeedTabl extends React.Component {
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={4} sm={24}>
-            <FormItem key="SearchText">
+            <FormItem key="SearchText" label="关键字">
               {getFieldDecorator('SearchText')(<Input placeholder="请输入关键字" />)}
             </FormItem>
           </Col>
@@ -371,7 +381,7 @@ class NeedTabl extends React.Component {
             </FormItem>
           </Col>
           <Col md={4} sm={24}>
-            <FormItem key="Owner" {...formLayout} label="销售员">
+            <FormItem key="Owner" {...formLayout} label="采购员">
               {getFieldDecorator('Owner')(<SalerPurchaser />)}
             </FormItem>
           </Col>
@@ -392,9 +402,9 @@ class NeedTabl extends React.Component {
                 </FormItem>
               </Col>
               <Col md={4} sm={24}>
-                <FormItem {...formLayout}>
+                <FormItem {...formLayout} label="销售员">
                   {getFieldDecorator('Purchaser')(
-                    <MDMCommonality placeholder="采购员" data={Purchaser} />
+                    <MDMCommonality placeholder="销售员" data={Purchaser} />
                   )}
                 </FormItem>
               </Col>
@@ -443,7 +453,7 @@ class NeedTabl extends React.Component {
             dataSource={orderLineList}
             rowKey="Key"
             pagination={pagination}
-            scroll={{ x: 1850, y: 600 }}
+            scroll={{ x: 1920, y: 600 }}
             rowSelection={{
               onChange: this.onSelectRow,
               selectedRowKeys,

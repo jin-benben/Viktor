@@ -10,10 +10,11 @@ import {
   Form,
   Input,
   Button,
-  Divider,
+  Tooltip,
   Select,
   DatePicker,
   Icon,
+  Tag,
   message,
 } from 'antd';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
@@ -23,9 +24,7 @@ import MDMCommonality from '@/components/Select';
 import DocEntryFrom from '@/components/DocEntryFrom';
 import Organization from '@/components/Organization/multiple';
 import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
-import MyTag from '@/components/Tag';
 import Transfer from '@/components/Transfer';
-import { getName } from '@/utils/utils';
 
 const { RangePicker } = DatePicker;
 
@@ -54,13 +53,15 @@ class supplierQuotationSku extends PureComponent {
     },
     {
       title: '客询价单',
-      width: 100,
+      width: 80,
       dataIndex: 'BaseEntry',
-      render: (text, recond) => (
-        <Link target="_blank" to={`/sellabout/TI_Z026/detail?DocEntry=${text}`}>
-          {`${text}-${recond.BaseLineID}`}
-        </Link>
-      ),
+      align: 'center',
+      render: (val, record) =>
+        record.lastIndex ? null : (
+          <Link target="_blank" to={`/sellabout/TI_Z026/detail?DocEntry=${record.BaseEntry}`}>
+            {`${val}-${record.BaseLineID}`}
+          </Link>
+        ),
     },
     {
       title: '单据日期',
@@ -69,24 +70,31 @@ class supplierQuotationSku extends PureComponent {
       render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
     {
-      title: '创建日期',
-      dataIndex: 'CreateDate',
-      width: 100,
-      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
-    },
-    {
-      title: '单据状态',
-      dataIndex: 'Status',
-      width: 80,
-      render: (text, record) => (
-        <Fragment>
-          {record.Closed === 'Y' ? (
-            <MyTag type="关闭" value="Y" />
-          ) : (
-            <MyTag type="询价" value={record.LineStatus} />
-          )}
-        </Fragment>
-      ),
+      title: '行状态',
+      width: 150,
+      dataIndex: 'LineStatus',
+      align: 'center',
+      render: (text, record) =>
+        record.lastIndex ? null : (
+          <Fragment>
+            {record.Closed === 'Y' ? (
+              <Tag color="red">已关闭</Tag>
+            ) : (
+              <Fragment>
+                {record.PriceRStatus === 'C' ? (
+                  <Tag color="green">已确认</Tag>
+                ) : (
+                  <Tag color="gold">未确认</Tag>
+                )}
+                {record.text === 'C' ? (
+                  <Tag color="green">已报价</Tag>
+                ) : (
+                  <Tag color="gold">未报价</Tag>
+                )}
+              </Fragment>
+            )}
+          </Fragment>
+        ),
     },
     {
       title: '供应商',
@@ -102,143 +110,139 @@ class supplierQuotationSku extends PureComponent {
       title: '联系人',
       width: 100,
       dataIndex: 'Contacts',
-    },
-    {
-      title: '联系方式',
-      width: 120,
-      dataIndex: 'contact',
       render: (text, record) => (
-        <Ellipsis tooltip lines={1}>
-          {' '}
-          {record.CellphoneNO}
-          {record.PhoneNO ? <Divider type="vertical" /> : null}
-          {record.PhoneNO}
-        </Ellipsis>
+        <Tooltip
+          title={
+            <Fragment>
+              {record.CellphoneNO}
+              <br />
+              {record.Email}
+              <br />
+              {record.PhoneNO}
+            </Fragment>
+          }
+        >
+          {text}
+        </Tooltip>
       ),
     },
     {
-      title: 'SKU',
+      title: '物料',
       dataIndex: 'SKU',
+      align: 'center',
       width: 100,
+      render: (text, record) =>
+        record.lastIndex ? (
+          ''
+        ) : (
+          <Ellipsis tooltip lines={1}>
+            {text ? (
+              <Link target="_blank" to={`/main/product/TI_Z009/TI_Z00903?Code${text}`}>
+                {text}-
+              </Link>
+            ) : (
+              ''
+            )}
+            {record.SKUName}
+          </Ellipsis>
+        ),
     },
     {
-      title: '产品描述',
-      width: 150,
-      dataIndex: 'SKUName',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
-    {
-      title: '品牌',
+      title: '名称(外)',
       width: 100,
-      dataIndex: 'BrandName',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
-    {
-      title: '名称',
-      width: 150,
-      dataIndex: 'ProductName',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
-    {
-      title: '型号',
-      width: 100,
-      dataIndex: 'ManufactureNO',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
-    {
-      title: '参数',
-      width: 100,
-      dataIndex: 'Parameters',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
-    {
-      title: '包装',
-      width: 100,
-      dataIndex: 'Package',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
+      dataIndex: 'ForeignName',
+      render: (text, record) =>
+        record.lastIndex ? null : (
+          <Ellipsis tooltip lines={1}>
+            {text}-{record.ForeignParameters}
+          </Ellipsis>
+        ),
     },
     {
       title: '数量',
-      width: 60,
+      width: 100,
       dataIndex: 'Quantity',
+      align: 'center',
+      render: (text, record) => (record.lastIndex ? '' : <span>{`${text}-${record.Unit}`}</span>),
     },
     {
-      title: '单位',
-      width: 60,
-      dataIndex: 'Unit',
+      title: '价格',
+      width: 100,
+      dataIndex: 'Price',
+      align: 'center',
+    },
+    {
+      title: '询价交期',
+      width: 120,
+      dataIndex: 'InquiryDueDate',
+      align: 'center',
+      render: (val, record) =>
+        record.lastIndex ? '' : <span>{moment(val).format('YYYY-MM-DD')}</span>,
+    },
+    {
+      title: '行备注',
+      dataIndex: 'LineComment',
+      width: 100,
+      align: 'center',
+    },
+    {
+      title: '重量',
+      width: 80,
+      dataIndex: 'Rweight',
+      align: 'center',
+    },
+    {
+      title: '国外运费',
+      width: 80,
+      dataIndex: 'ForeignFreight',
+      align: 'center',
+    },
+    {
+      title: '销行备注',
+      dataIndex: 'BaseLineComment',
+      width: 100,
+      align: 'center',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
+    },
+    {
+      title: '采总计',
+      width: 120,
+      align: 'center',
+      dataIndex: 'LineTotal',
+    },
+    {
+      title: '本币总计',
+      width: 100,
+      align: 'center',
+      dataIndex: 'InquiryLineTotalLocal',
     },
     {
       title: '要求交期',
       width: 100,
       dataIndex: 'DueDate',
-      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
+      align: 'center',
+      render: (val, record) =>
+        record.lastIndex ? '' : <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
     {
-      title: '价格',
-      width: 80,
-      dataIndex: 'Price',
-    },
-    {
-      title: '询价交期',
+      title: '上一次价格',
       width: 100,
-      dataIndex: 'InquiryDueDate',
-      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
+      dataIndex: 'LastPrice',
+      align: 'center',
     },
     {
-      title: '行备注',
+      title: '客户参考号',
       width: 100,
-      dataIndex: 'LineComment',
+      dataIndex: 'NumAtCard',
       render: text => (
         <Ellipsis tooltip lines={1}>
           {text}
         </Ellipsis>
       ),
-    },
-    {
-      title: '采购员',
-      width: 80,
-      dataIndex: 'Owner',
-      render: text => {
-        const {
-          global: { Purchaser },
-        } = this.props;
-        return <span>{getName(Purchaser, text)}</span>;
-      },
-    },
-    {
-      title: '销售员',
-      dataIndex: 'Saler',
-      width: 80,
-      render: text => {
-        const {
-          global: { Saler },
-        } = this.props;
-        return <span>{getName(Saler, text)}</span>;
-      },
     },
   ];
 
@@ -457,6 +461,13 @@ class supplierQuotationSku extends PureComponent {
     const transferParentMethods = {
       handleModalVisible: this.handleModalVisible,
     };
+    //    let tablwidth=0;
+    // this.columns.map(item=>{
+    //   if(item.width){
+    //     tablwidth+=item.width
+    //   }
+    // })
+    // console.log(tablwidth)
     return (
       <Fragment>
         <Card bordered={false}>
@@ -467,7 +478,7 @@ class supplierQuotationSku extends PureComponent {
               data={{ list: supplierQuotationSkuList }}
               pagination={pagination}
               rowKey="Key"
-              scroll={{ x: 2300, y: 700 }}
+              scroll={{ x: 2100, y: 700 }}
               rowSelection={{
                 type: 'radio',
                 onSelectRow: this.onSelectRow,

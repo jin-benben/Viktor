@@ -106,6 +106,7 @@ class ClientAsk extends PureComponent {
     {
       title: '客户',
       dataIndex: 'CardName',
+      width: 300,
       render: (text, recond) => (
         <Link target="_blank" to={`/sellabout/TI_Z029/detail?DocEntry=${recond.CardCode}`}>
           {`${recond.CardCode}-${text}`}
@@ -114,6 +115,7 @@ class ClientAsk extends PureComponent {
     },
     {
       title: '物料',
+      width: 300,
       dataIndex: 'SKUName',
       render: (text, recond) =>
         recond.SKU ? (
@@ -400,7 +402,7 @@ class ClientAsk extends PureComponent {
               pagination={pagination}
               rowKey="key"
               columns={this.columns}
-              scroll={{ x: 1500, y: 800 }}
+              scroll={{ x: 1800, y: 800 }}
               onChange={this.handleStandardTableChange}
             />
           </div>

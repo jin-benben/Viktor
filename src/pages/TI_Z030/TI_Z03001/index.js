@@ -24,20 +24,21 @@ import {
   Dropdown,
   Empty,
   Menu,
+  Tag,
 } from 'antd';
 import moment from 'moment';
 import round from 'lodash/round';
 import router from 'umi/router';
 import Link from 'umi/link';
+import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
+import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import CancelOrder from '@/components/Modal/CancelOrder';
 import StandardTable from '@/components/StandardTable';
 import EditableFormTable from '@/components/EditableFormTable';
-import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import OrderAttachUpload from '@/components/Modal/OrderAttachUpload';
 import AskPriceFetch from '../components/askPriceFetch';
 import Brand from '@/components/Brand';
 import MDMCommonality from '@/components/Select';
-import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import NeedAskPrice from '../components/needAskPrice';
 import SKUModal from '@/components/Modal/SKU';
 import CompanySelect from '@/components/Company/index';
@@ -87,25 +88,14 @@ class AgreementEdit extends React.Component {
           />
         ),
     },
-    // {
-    //   title: '产品描述',
-    //   dataIndex: 'SKUName',
-    //   width: 100,
-    //   align: 'center',
-    //   render: text => (
-    //     <Ellipsis tooltip lines={1}>
-    //       {text}
-    //     </Ellipsis>
-    //   ),
-    // },
     {
       title: '品牌',
-      width: 100,
+      width: 120,
       align: 'center',
       dataIndex: 'BrandName',
       render: (text, record, index) =>
         record.lastIndex ? null : (
-          <div style={{ width: 90 }}>
+          <div style={{ width: 110 }}>
             <Brand
               initialValue={record.BrandName}
               keyType="Name"
@@ -119,14 +109,6 @@ class AgreementEdit extends React.Component {
     {
       title: '名称',
       dataIndex: 'ProductName',
-      inputType: 'textArea',
-      width: 150,
-      editable: true,
-      align: 'center',
-    },
-    {
-      title: '外文名称',
-      dataIndex: 'ForeignName',
       inputType: 'textArea',
       width: 150,
       editable: true,
@@ -149,18 +131,10 @@ class AgreementEdit extends React.Component {
       align: 'center',
     },
     {
-      title: '规格(外)',
-      width: 150,
-      dataIndex: 'ForeignParameters',
-      inputType: 'textArea',
-      editable: true,
-      align: 'center',
-    },
-    {
-      title: '包装',
-      width: 150,
-      dataIndex: 'Package',
-      inputType: 'textArea',
+      title: '单位',
+      width: 80,
+      inputType: 'text',
+      dataIndex: 'Unit',
       editable: true,
       align: 'center',
     },
@@ -173,16 +147,116 @@ class AgreementEdit extends React.Component {
       align: 'center',
     },
     {
-      title: '单位',
+      title: '建议价格',
+      width: 100,
+      dataIndex: 'AdvisePrice',
+      align: 'center',
+    },
+    {
+      title: '价格',
       width: 80,
       inputType: 'text',
-      dataIndex: 'Unit',
+      dataIndex: 'Price',
       editable: true,
       align: 'center',
     },
     {
+      title: '行总计',
+      width: 100,
+      align: 'center',
+      dataIndex: 'LineTotal',
+      render: (text, record) =>
+        record.lastIndex ? <span style={{ fontWeight: 'bolder' }}>{text}</span> : text,
+    },
+    {
+      title: '总费用',
+      width: 100,
+      align: 'center',
+      dataIndex: 'OtherTotal',
+    },
+    {
+      title: '费用备注',
+      width: 100,
+      align: 'center',
+      dataIndex: 'OtherComment',
+      render: (text, record) =>
+        record.lastIndex ? null : (
+          <Ellipsis tooltip lines={1}>
+            {text}
+          </Ellipsis>
+        ),
+    },
+    {
+      title: '行利润',
+      width: 100,
+      align: 'center',
+      dataIndex: 'ProfitLineTotal',
+    },
+    {
+      title: '要求交期',
+      width: 150,
+      inputType: 'date',
+      dataIndex: 'DueDate',
+      editable: true,
+      align: 'center',
+    },
+    {
+      title: '询价价格',
+      width: 120,
+      dataIndex: 'InquiryPrice',
+      align: 'center',
+      render: (text, record) =>
+        record.lastIndex ? '' : <span>{`${text}-${record.Currency || ''}-${record.DocRate}`}</span>,
+    },
+    {
+      title: '询行总计',
+      width: 150,
+      align: 'center',
+      dataIndex: 'InquiryLineTotal',
+      render: (text, record) =>
+        record.lastIndex ? (
+          ''
+        ) : (
+          <span>{`${text}${record.Currency ? `(${record.Currency})` : ''}-${
+            record.InquiryLineTotalLocal
+          }`}</span>
+        ),
+    },
+    {
+      title: '询价备注',
+      dataIndex: 'InquiryComment',
+      width: 100,
+      align: 'center',
+      render: (text, record) =>
+        record.lastIndex ? null : (
+          <Ellipsis tooltip lines={1}>
+            {text}
+          </Ellipsis>
+        ),
+    },
+    {
+      title: '询价交期',
+      width: 100,
+      dataIndex: 'InquiryDueDate',
+      align: 'center',
+      render: (text, record) =>
+        record.lastIndex ? null : <span>{moment(text).format('YYYY-MM-DD')}</span>,
+    },
+    {
+      title: '采购员',
+      width: 120,
+      dataIndex: 'Purchaser',
+      align: 'center',
+      render: (text, record) => {
+        const {
+          global: { Purchaser },
+        } = this.props;
+        return record.lastIndex ? null : <span>{getName(Purchaser, text)}</span>;
+      },
+    },
+    {
       title: '产地',
-      width: 80,
+      width: 100,
       dataIndex: 'ManLocation',
       align: 'center',
       render: (text, record, index) => {
@@ -226,58 +300,57 @@ class AgreementEdit extends React.Component {
       },
     },
     {
-      title: '报关税率',
+      title: '税率',
       width: 80,
       dataIndex: 'HSVatRate',
       align: 'center',
-    },
-    {
-      title: '附加税率',
-      width: 80,
-      dataIndex: 'HSVatRateOther',
-      align: 'center',
-    },
-    {
-      title: '要求名称',
-      width: 80,
-      inputType: 'textArea',
-      dataIndex: 'CustomerName',
-      editable: true,
-      align: 'center',
+      render: (text, record) =>
+        record.lastIndex ? '' : <span>{`${text}-${record.HSVatRateOther}`}</span>,
     },
     {
       title: '重量',
       width: 80,
       dataIndex: 'Rweight',
-      align: 'center',
       editable: true,
       inputType: 'text',
-    },
-    {
-      title: '国外运费',
-      width: 80,
-      dataIndex: 'ForeignFreight',
       align: 'center',
     },
     {
-      title: '价格',
-      width: 80,
-      inputType: 'text',
-      dataIndex: 'Price',
+      title: '备注',
+      dataIndex: 'LineComment',
+      inputType: 'textArea',
+      width: 150,
       editable: true,
       align: 'center',
     },
     {
-      title: '要求交期',
-      width: 120,
-      inputType: 'date',
-      dataIndex: 'DueDate',
+      title: '包装',
+      width: 150,
+      dataIndex: 'Package',
+      inputType: 'textArea',
       editable: true,
       align: 'center',
     },
+    {
+      title: '名称(外)',
+      dataIndex: 'ForeignName',
+      inputType: 'textArea',
+      width: 150,
+      editable: true,
+      align: 'center',
+    },
+    {
+      title: '规格(外)',
+      width: 150,
+      dataIndex: 'ForeignParameters',
+      inputType: 'textArea',
+      editable: true,
+      align: 'center',
+    },
+
     {
       title: '仓库',
-      width: 120,
+      width: 150,
       dataIndex: 'WhsCode',
       align: 'center',
       render: (text, record, index) => {
@@ -299,118 +372,117 @@ class AgreementEdit extends React.Component {
       },
     },
     {
-      title: '备注',
-      dataIndex: 'LineComment',
-      width: 100,
-      inputType: 'text',
+      title: '要求名称',
+      width: 150,
+      inputType: 'textArea',
+      dataIndex: 'CustomerName',
       editable: true,
       align: 'center',
     },
     {
-      title: '建议价',
-      width: 100,
-      dataIndex: 'AdvisePrice',
-      align: 'center',
-    },
-    {
-      title: '询价最终价',
-      width: 120,
-      dataIndex: 'InquiryPrice',
-      align: 'center',
-    },
-    {
-      title: '询价币种',
-      width: 100,
-      dataIndex: 'Currency',
-      align: 'center',
-      render: text => {
-        const {
-          global: { Curr },
-        } = this.props;
-        return <span>{getName(Curr, text)}</span>;
-      },
-    },
-    {
-      title: '单据汇率',
+      title: '客询价单',
       width: 80,
-      inputType: 'text',
-      dataIndex: 'DocRate',
       align: 'center',
-    },
-    {
-      title: '询价返回时间',
-      width: 100,
-      dataIndex: 'InquiryDueDate',
-      align: 'center',
+      dataIndex: 'BaseEntry',
       render: (val, record) =>
-        record.lastIndex ? '' : <span>{moment(val).format('YYYY-MM-DD')}</span>,
+        record.lastIndex ? null : (
+          <Link target="_blank" to={`/sellabout/TI_Z026/detail?DocEntry=${record.BaseEntry}`}>
+            {`${val}-${record.BaseLineID}`}
+          </Link>
+        ),
     },
+  ];
+
+  skuColumns2 = [
+    ...this.skuColumns,
     {
-      title: '采购员',
-      width: 80,
-      dataIndex: 'Purchaser',
+      title: '操作',
+      fixed: 'right',
       align: 'center',
-      render: (text, record) => {
+      width: 80,
+      render: (text, record, index) => {
         const {
-          global: { Purchaser },
-        } = this.props;
-        return record.lastIndex ? '' : <span>{getName(Purchaser, text)}</span>;
+          formVals: { DocEntry },
+        } = this.state;
+        return record.lastIndex ? null : (
+          <Fragment>
+            <Icon
+              title="预览"
+              type="eye"
+              onClick={() => this.lookLineAttachment(record, index)}
+              style={{ color: '#08c', marginRight: 5 }}
+            />
+            {DocEntry ? (
+              <Icon
+                title="上传附件"
+                className="icons"
+                style={{ color: '#08c', marginRight: 5, marginLeft: 5 }}
+                type="cloud-upload"
+                onClick={() => this.skuLineAttachment(record, index, true)}
+              />
+            ) : (
+              ''
+            )}
+            <Icon
+              title="删除行"
+              className="icons"
+              type="delete"
+              theme="twoTone"
+              onClick={() => this.deleteSKULine(record, index)}
+            />
+          </Fragment>
+        );
       },
     },
+  ];
+
+  skuColumns1 = [
+    ...this.skuColumns,
     {
-      title: '询价备注',
-      dataIndex: 'InquiryComment',
-      width: 100,
+      title: '行状态',
+      width: 80,
+      dataIndex: 'LineStatus',
       align: 'center',
       render: (text, record) =>
-        record.lastIndex ? (
-          ''
-        ) : (
-          <Ellipsis tooltip lines={1}>
-            {' '}
-            {text}{' '}
-          </Ellipsis>
+        record.lastIndex ? null : (
+          <Fragment>
+            {record.Closed === 'Y' ? (
+              <Tag color="red">已关闭</Tag>
+            ) : (
+              <Fragment>
+                {text === 'C' ? <Tag color="green">已确认</Tag> : <Tag color="gold">未确认</Tag>}
+              </Fragment>
+            )}
+          </Fragment>
         ),
     },
     {
-      title: '询行总计',
+      title: '销报单号',
       width: 100,
       align: 'center',
-      dataIndex: 'InquiryLineTotal',
-      render: (text, record) =>
-        record.lastIndex ? <span style={{ fontWeight: 'bolder' }}>{text}</span> : text,
+      dataIndex: 'QuotationEntry',
+      render: (text, recond) =>
+        text ? (
+          <Link target="_blank" to={`/sellabout/TI_Z029/detail?DocEntry=${text}`}>
+            {`${text}-${recond.QuotationLineID}`}
+          </Link>
+        ) : (
+          ''
+        ),
     },
     {
-      title: '询行本总计',
+      title: '销订单号',
       width: 100,
       align: 'center',
-      dataIndex: 'InquiryLineTotalLocal',
-      render: (text, record) =>
-        record.lastIndex ? <span style={{ fontWeight: 'bolder' }}>{text}</span> : text,
-    },
-    {
-      title: '其他成本',
-      width: 80,
-      align: 'center',
-      dataIndex: 'OtherTotal',
-      render: (text, record) =>
-        record.lastIndex ? <span style={{ fontWeight: 'bolder' }}>{text}</span> : text,
-    },
-    {
-      title: '行利润',
-      width: 100,
-      align: 'center',
-      dataIndex: 'ProfitLineTotal',
-      render: (text, record) =>
-        record.lastIndex ? <span style={{ fontWeight: 'bolder' }}>{text}</span> : text,
-    },
-    {
-      title: '行总计',
-      width: 100,
-      align: 'center',
-      dataIndex: 'LineTotal',
-      render: (text, record) =>
-        record.lastIndex ? <span style={{ fontWeight: 'bolder' }}>{text}</span> : text,
+      dataIndex: 'SoEntry',
+      render: (text, recond) =>
+        text ? (
+          <Link target="_blank" to={`/sellabout/orderdetail?DocEntry=${text}`}>
+            {`${text}-${recond.SoLineID}`}
+          </Link>
+        ) : (
+          ''
+        ),
     },
     {
       title: '操作',
@@ -1409,6 +1481,7 @@ class AgreementEdit extends React.Component {
       addloading,
       updateloading,
       detailloading,
+      location: { query },
     } = this.props;
     const {
       formVals,
@@ -1588,13 +1661,23 @@ class AgreementEdit extends React.Component {
         </Form>
         <Tabs tabBarExtraContent={this.rightButton(tabIndex)} onChange={this.tabChange}>
           <TabPane tab="物料" key="1">
-            <EditableFormTable
-              rowChange={this.rowChange}
-              rowKey="LineID"
-              scroll={{ x: 3700, y: 600 }}
-              columns={this.skuColumns}
-              data={newdata}
-            />
+            {query.DocEntry ? (
+              <EditableFormTable
+                rowChange={this.rowChange}
+                rowKey="LineID"
+                scroll={{ x: 4200 }}
+                columns={this.skuColumns1}
+                data={newdata}
+              />
+            ) : (
+              <EditableFormTable
+                rowChange={this.rowChange}
+                rowKey="LineID"
+                scroll={{ x: 3700 }}
+                columns={this.skuColumns2}
+                data={newdata}
+              />
+            )}
             <Row style={{ marginTop: 20 }} gutter={8}>
               <Col lg={10} md={12} sm={24}>
                 <FormItem key="Owner" {...this.formLayout} label="销售员">

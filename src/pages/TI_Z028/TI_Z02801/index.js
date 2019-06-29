@@ -59,102 +59,64 @@ class TI_Z02801 extends React.Component {
       width: 100,
       render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
-
     {
-      title: 'SKU',
-      width: 80,
+      title: '销售员',
+      width: 120,
+      dataIndex: 'Saler',
+      render: text => {
+        const {
+          global: { Saler },
+        } = this.props;
+        return <span>{getName(Saler, text)}</span>;
+      },
+    },
+    {
+      title: '物料',
       dataIndex: 'SKU',
+      align: 'center',
+      width: 300,
+      render: (text, record) =>
+        record.lastIndex ? (
+          ''
+        ) : (
+          <Ellipsis tooltip lines={1}>
+            {text ? (
+              <Link target="_blank" to={`/main/product/TI_Z009/TI_Z00903?Code${text}`}>
+                {text}-
+              </Link>
+            ) : (
+              ''
+            )}
+            {record.SKUName}
+          </Ellipsis>
+        ),
     },
     {
-      title: '产品描述',
-      width: 150,
-      dataIndex: 'SKUName',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
-    {
-      title: '品牌',
-      width: 80,
-      dataIndex: 'BrandName',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
-    {
-      title: '名称',
-      width: 100,
-      dataIndex: 'ProductName',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
-    {
-      title: '型号',
-      width: 100,
-      dataIndex: 'ManufactureNO',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
-    {
-      title: '参数',
-      width: 100,
-      dataIndex: 'Parameters',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
-    {
-      title: '外文名称',
+      title: '名称(外)',
       width: 100,
       dataIndex: 'ForeignName',
-      render: text => (
+      render: (text, record) => (
         <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
-    {
-      title: '规格(外)',
-      width: 100,
-      dataIndex: 'ForeignParameters',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
-    {
-      title: '包装',
-      width: 100,
-      dataIndex: 'Package',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
+          {text}-{record.ForeignParameters}
         </Ellipsis>
       ),
     },
     {
       title: '数量',
-      width: 80,
+      width: 100,
       dataIndex: 'Quantity',
+      align: 'center',
+      render: (text, record) => <span>{`${text}-${record.Unit}`}</span>,
     },
     {
-      title: '单位',
-      width: 80,
-      dataIndex: 'Unit',
+      title: '价格',
+      width: 120,
+      dataIndex: 'Price',
+      align: 'center',
+      render: (text, record) =>
+        record.lastIndex ? '' : <span>{`${text}-${record.Currency || ''}-${record.DocRate}`}</span>,
     },
+
     {
       title: '总/确认',
       width: 80,
@@ -168,30 +130,9 @@ class TI_Z02801 extends React.Component {
       ),
     },
     {
-      title: '行备注',
-      width: 100,
-      dataIndex: 'SLineComment',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
-    {
       title: '运费',
       width: 80,
       dataIndex: 'ForeignFreight',
-    },
-    {
-      title: '要求交期',
-      dataIndex: 'DueDate',
-      width: 100,
-      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
-    },
-    {
-      title: '采购价格',
-      width: 80,
-      dataIndex: 'Price',
     },
     {
       title: '采购交期',
@@ -199,7 +140,7 @@ class TI_Z02801 extends React.Component {
       render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
     {
-      title: '采购备注',
+      title: '备注',
       width: 100,
       dataIndex: 'LineComment',
       render: text => (
@@ -211,27 +152,16 @@ class TI_Z02801 extends React.Component {
     {
       title: '供应商',
       dataIndex: 'CardName',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
-    {
-      title: '创建日期',
-      width: 100,
-      dataIndex: 'CreateDate',
-      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
-    },
-    {
-      title: '销售员',
-      width: 80,
-      dataIndex: 'Saler',
-      render: text => {
-        const {
-          global: { Saler },
-        } = this.props;
-        return <span>{getName(Saler, text)}</span>;
-      },
-    },
+
     {
       title: '采购员',
-      width: 80,
+      width: 120,
       dataIndex: 'Purchaser',
       render: text => {
         const {
@@ -244,6 +174,11 @@ class TI_Z02801 extends React.Component {
       title: '客户参考号',
       width: 100,
       dataIndex: 'NumAtCard',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
   ];
 
@@ -585,6 +520,13 @@ class TI_Z02801 extends React.Component {
       handleSubmit: this.okHandle,
       handleModalVisible: this.handleModalVisible,
     };
+    let tab = 0;
+    columns.map(item => {
+      if (item.width) {
+        tab += item.width;
+      }
+    });
+    console.log(tab);
     return (
       <Fragment>
         <Card bordered={false}>
@@ -596,7 +538,7 @@ class TI_Z02801 extends React.Component {
               dataSource={orderLineList}
               pagination={pagination}
               rowKey="LineID"
-              scroll={{ x: 2500, y: 800 }}
+              scroll={{ x: 1500 }}
               rowSelection={{
                 onChange: this.onSelectRow,
                 selectedRowKeys,

@@ -258,7 +258,7 @@ class BrandList extends PureComponent {
     },
     {
       title: '采购员',
-      width: 80,
+      width: 120,
       dataIndex: 'Purchaser',
       render: text => {
         const {

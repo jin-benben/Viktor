@@ -1,13 +1,15 @@
+/* eslint-disable react/destructuring-assignment */
 /* eslint-disable array-callback-return */
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
-import { Row, Col, Card, Form, Input, Button, DatePicker } from 'antd';
+import { Row, Col, Card, Form, Input, Button, DatePicker, Icon, List } from 'antd';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import Link from 'umi/link';
 import StandardTable from '@/components/StandardTable';
 import MDMCommonality from '@/components/Select';
 import { getName } from '@/utils/utils';
+import styles from '../style.less';
 
 const { RangePicker } = DatePicker;
 const FormItem = Form.Item;
@@ -22,7 +24,7 @@ const FormItem = Form.Item;
 class TI_Z02804 extends PureComponent {
   columns = [
     {
-      title: '采询价单',
+      title: '单号',
       width: 80,
       dataIndex: 'DocEntry',
       render: (text, recond) => (
@@ -32,193 +34,88 @@ class TI_Z02804 extends PureComponent {
       ),
     },
     {
+      title: '单据日期',
+      dataIndex: 'PriceRDateTime',
+      width: 100,
+      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
+    },
+    {
       title: '客询价单',
       width: 80,
       dataIndex: 'BaseEntry',
-      render: (text, recond) => (
-        <Link target="_blank" to={`/sellabout/TI_Z026/detail?DocEntry=${text}`}>
-          {`${text}-${recond.BaseLineID}`}
+      render: (val, record) => (
+        <Link target="_blank" to={`/sellabout/TI_Z026/detail?DocEntry=${record.BaseEntry}`}>
+          {`${val}-${record.BaseLineID}`}
         </Link>
       ),
     },
     {
-      title: '销售员',
-      width: 80,
-      dataIndex: 'Saler',
-      render: text => {
-        const {
-          global: { Saler },
-        } = this.props;
-        return <span>{getName(Saler, text)}</span>;
-      },
-    },
-    {
-      title: '客户参考号',
-      width: 100,
-      dataIndex: 'NumAtCard',
-    },
-    {
-      title: 'SKU',
-      width: 80,
+      title: '物料',
       dataIndex: 'SKU',
+      align: 'center',
+      width: 300,
+      render: (text, record) =>
+        record.lastIndex ? (
+          ''
+        ) : (
+          <Ellipsis tooltip lines={1}>
+            {text ? (
+              <Link target="_blank" to={`/main/product/TI_Z009/TI_Z00903?Code${text}`}>
+                {text}-
+              </Link>
+            ) : (
+              ''
+            )}
+            {record.SKUName}
+          </Ellipsis>
+        ),
     },
     {
-      title: '产品描述',
-      width: 150,
-      dataIndex: 'SKUName',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {' '}
-          {text}{' '}
-        </Ellipsis>
-      ),
-    },
-    {
-      title: '品牌',
-      width: 80,
-      dataIndex: 'BrandName',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {' '}
-          {text}{' '}
-        </Ellipsis>
-      ),
-    },
-    {
-      title: '名称',
+      title: '名称(外)',
       width: 100,
-      dataIndex: 'ProductName',
-      render: text => (
+      dataIndex: 'ForeignName',
+      render: (text, record) => (
         <Ellipsis tooltip lines={1}>
-          {' '}
-          {text}{' '}
+          {text}-{record.ForeignParameters}
         </Ellipsis>
       ),
-    },
-    {
-      title: '型号',
-      width: 100,
-      dataIndex: 'ManufactureNO',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {' '}
-          {text}{' '}
-        </Ellipsis>
-      ),
-    },
-    {
-      title: '参数',
-      width: 100,
-      dataIndex: 'Parameters',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {' '}
-          {text}{' '}
-        </Ellipsis>
-      ),
-    },
-    {
-      title: '包装',
-      width: 100,
-      dataIndex: 'Package',
-    },
-    {
-      title: '采购员',
-      width: 80,
-      dataIndex: 'Purchaser',
-      render: text => {
-        const {
-          global: { Purchaser },
-        } = this.props;
-        return <span>{getName(Purchaser, text)}</span>;
-      },
     },
     {
       title: '数量',
-      width: 50,
-      dataIndex: 'Quantity',
-    },
-    {
-      title: '单位',
-      width: 50,
-      dataIndex: 'Unit',
-    },
-    {
-      title: '行备注',
       width: 100,
-      dataIndex: 'SLineComment',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
+      dataIndex: 'Quantity',
+      align: 'center',
+      render: (text, record) => <span>{`${text}-${record.Unit}`}</span>,
+    },
+    {
+      title: '价格',
+      width: 120,
+      dataIndex: 'Price',
+      align: 'center',
+      render: (text, record) =>
+        record.lastIndex ? '' : <span>{`${text}-${record.Currency || ''}-${record.DocRate}`}</span>,
+    },
+
+    {
+      title: '总/确认',
+      width: 80,
+      dataIndex: 'SubRowCount',
+      render: (val, record) => (
+        <span
+          style={{ color: `${record.SubRowCount !== record.PriceRStatusCount ? 'red' : '#666'}` }}
+        >
+          {`${record.SubRowCount}/${record.PriceRStatusCount}`}
+        </span>
       ),
     },
     {
-      title: '要求交期',
-      dataIndex: 'DueDate',
-      width: 100,
-      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
-    },
-    {
-      title: '采购价格',
+      title: '运费',
       width: 80,
-      dataIndex: 'Price',
+      dataIndex: 'ForeignFreight',
     },
     {
       title: '采购交期',
       width: 100,
-      dataIndex: 'InquiryDueDate',
-      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
-    },
-    {
-      title: '采购备注',
-      width: 100,
-      dataIndex: 'LineComment',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
-  ];
-
-  childColumns = [
-    {
-      title: '采询价单号',
-      width: 150,
-      dataIndex: 'PInquiryEntry',
-    },
-    {
-      title: '采询价单行',
-      width: 80,
-      dataIndex: 'PInquiryLineID',
-    },
-
-    {
-      title: '询价日期',
-      width: 100,
-      dataIndex: 'CreateDate',
-      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
-    },
-    {
-      title: '供应商',
-      width: 80,
-      dataIndex: 'CardName',
-    },
-    {
-      title: '价格',
-      width: 100,
-      dataIndex: 'ProductName',
-    },
-    {
-      title: '型号',
-      width: 100,
-      dataIndex: 'ManufactureNO',
-    },
-    {
-      title: '交期',
-      width: 100,
-      dataIndex: 'InquiryDueDate',
       render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
     {
@@ -232,10 +129,25 @@ class TI_Z02804 extends PureComponent {
       ),
     },
     {
-      title: '最优',
-      width: 80,
-      dataIndex: 'IsSelect',
-      render: val => <span>{val === 'Y' ? '是' : '否'}</span>,
+      title: '供应商',
+      dataIndex: 'CardName',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
+    },
+
+    {
+      title: '采购员',
+      width: 120,
+      dataIndex: 'Purchaser',
+      render: text => {
+        const {
+          global: { Purchaser },
+        } = this.props;
+        return <span>{getName(Purchaser, text)}</span>;
+      },
     },
   ];
 
@@ -261,7 +173,72 @@ class TI_Z02804 extends PureComponent {
   }
 
   expandedRowRender = record => (
-    <StandardTable data={{ list: record.TI_Z02803 }} columns={this.childColumns} />
+    <List
+      itemLayout="horizontal"
+      style={{ marginLeft: 60 }}
+      className={styles.askInfo}
+      dataSource={record.TI_Z02803}
+      renderItem={item => (
+        <List.Item key={item.Key}>
+          <List.Item.Meta
+            title={`${item.CardName}(${item.CardCode})`}
+            description={
+              <ul className={styles.itemInfo}>
+                <li>
+                  联系人：<span>{item.Contacts}</span>
+                </li>
+                <li>
+                  手机：<span>{item.CellphoneNO}</span>
+                </li>
+                <li>
+                  邮箱：<span>{item.Email}</span>
+                </li>
+                <li>
+                  备注：<span>{item.LineComment}</span>
+                </li>
+                <li>
+                  价格：<span>{item.Price}</span>
+                </li>
+                <li>
+                  交期：<span>{moment(item.InquiryDueDate).format('YYYY-MM-DD')}</span>
+                </li>
+                <li>
+                  询价返回时间：<span>{moment(item.PriceRDateTime).format('YYYY-MM-DD')}</span>
+                </li>
+                <li>
+                  询价单号：
+                  <Link
+                    target="_blank"
+                    style={{ marginLeft: 10 }}
+                    to={`/purchase/TI_Z027/update?DocEntry=${item.PInquiryEntry}`}
+                  >
+                    {item.PInquiryEntry}
+                  </Link>
+                </li>
+                <li>
+                  最优：
+                  <span>
+                    {item.IsSelect === 'Y' ? (
+                      <Icon type="smile" theme="twoTone" />
+                    ) : (
+                      <Icon type="frown" theme="twoTone" />
+                    )}
+                  </span>
+                </li>
+                <li>
+                  币种：
+                  <span>{getName(this.props.global.Curr, item.Currency)}</span>
+                </li>
+                <li>
+                  汇率：
+                  <span>{item.DocRate}</span>
+                </li>
+              </ul>
+            }
+          />
+        </List.Item>
+      )}
+    />
   );
 
   handleStandardTableChange = pagination => {
@@ -340,7 +317,7 @@ class TI_Z02804 extends PureComponent {
               )}
             </FormItem>
           </Col>
-          <Col md={4} sm={24}>
+          <Col md={6} sm={24}>
             <FormItem key="Purchaser" {...formLayout} label="采购员">
               {getFieldDecorator('Purchaser', { initialValue: currentUser.Owner })(
                 <MDMCommonality initialValue={currentUser.Owner} data={Purchaser} />
@@ -383,7 +360,7 @@ class TI_Z02804 extends PureComponent {
               data={{ list: orderList }}
               pagination={pagination}
               rowKey="Key"
-              scroll={{ x: 2250, y: 500 }}
+              scroll={{ x: 1500 }}
               expandedRowRender={this.expandedRowRender}
               columns={columns}
               onChange={this.handleStandardTableChange}
