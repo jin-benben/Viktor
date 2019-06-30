@@ -7,14 +7,13 @@ import StandardTable from '@/components/StandardTable';
 import Supplier from '@/components/Supplier';
 import Upload from '@/components/Upload';
 import MDMCommonality from '@/components/Select';
+import MyIcon from '@/components/MyIcon';
 import { getName } from '@/utils/utils';
-import {brandLevel} from '@/utils/publicData'
+import { brandLevel } from '@/utils/publicData';
 
 const { TextArea } = Input;
 const FormItem = Form.Item;
 const { Option } = Select;
-
-
 
 @connect(({ global }) => ({
   global,
@@ -95,9 +94,11 @@ class CreateForm extends PureComponent {
     const okHandle = () => {
       form.validateFields((err, fieldsValue) => {
         if (err) return;
+        console.log(err);
         form.resetFields();
         delete fieldsValue.Picture;
         if (
+          fieldsValue.WebSite &&
           fieldsValue.WebSite.indexOf('Http://') === -1 &&
           fieldsValue.WebSite.indexOf('Https://') === -1
         ) {
@@ -173,6 +174,7 @@ class CreateForm extends PureComponent {
           </FormItem>
           <FormItem key="Content" {...this.formLayout} label="品牌介绍">
             {getFieldDecorator('Content', {
+              rules: [{ required: true, message: '请输入名称！' }],
               initialValue: formVals.Content,
             })(<TextArea rows={4} placeholder="请输入介绍" />)}
           </FormItem>
@@ -275,7 +277,10 @@ class BrandList extends PureComponent {
       width: 100,
       render: (text, record) => (
         <Fragment>
-          <a onClick={() => this.handleUpdateModalVisible(true, record)}>修改</a>
+          <a onClick={() => this.handleUpdateModalVisible(true, record)}>
+            {' '}
+            <MyIcon type="iconedit" />
+          </a>
           <Divider type="vertical" />
           <a
             href={`/main/product/TI_Z009/TI_Z00902?BrandName=${record.Name}`}
@@ -483,7 +488,7 @@ class BrandList extends PureComponent {
               loading={loading}
               data={{ list: brandsList }}
               rowKey="Code"
-              scroll={{ x: 1300, y: 600 }}
+              scroll={{ x: 1500 }}
               pagination={pagination}
               columns={this.columns}
               onChange={this.handleStandardTableChange}

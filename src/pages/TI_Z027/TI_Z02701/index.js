@@ -38,7 +38,15 @@ class SupplierAsk extends Component {
       width: 100,
       render: (text, record) => {
         if (record.Status === '1') {
-          return <a href={`/purchase/TI_Z027/update?DocEntry=${text}`}>{text}</a>;
+          return (
+            <a
+              target="_blank"
+              rel="noopener noreferrer"
+              href={`/purchase/TI_Z027/update?DocEntry=${text}`}
+            >
+              {text}
+            </a>
+          );
         }
         return <span>{text}</span>;
       },
@@ -198,6 +206,7 @@ class SupplierAsk extends Component {
         CompanyCode,
         Purchaser,
         Owner,
+        BaseLineComment,
       } = item;
       const ToDate = moment()
         .add('30', 'day')
@@ -260,6 +269,7 @@ class SupplierAsk extends Component {
               CompanyCode,
               Purchaser,
               Owner,
+              BaseLineComment,
             },
           ],
         });
@@ -290,6 +300,7 @@ class SupplierAsk extends Component {
           CompanyCode,
           Purchaser,
           Owner,
+          BaseLineComment,
         });
       }
     });

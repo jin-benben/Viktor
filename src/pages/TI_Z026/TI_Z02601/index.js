@@ -444,7 +444,11 @@ class InquiryEdit extends React.Component {
       dataIndex: 'InquiryPrice',
       align: 'center',
       render: (text, record) =>
-        record.lastIndex ? '' : <span>{`${text}-${record.Currency || ''}-${record.DocRate}`}</span>,
+        record.lastIndex ? (
+          ''
+        ) : (
+          <span>{`${text || ''}(${record.Currency || ''})[${record.DocRate || ''}]`}</span>
+        ),
     },
     {
       title: '询行总计',
@@ -456,9 +460,9 @@ class InquiryEdit extends React.Component {
           ''
         ) : (
           <span>
-            {`${text}${record.Currency ? `(${record.Currency})` : ''}-${
-              record.InquiryLineTotalLocal
-            }`}
+            {`${text || ''}${
+              record.Currency ? `(${record.Currency})` : ''
+            }-${record.InquiryLineTotalLocal || ''}`}
           </span>
         ),
     },
@@ -1398,6 +1402,7 @@ class InquiryEdit extends React.Component {
         message.error(Object.values(err)[0].errors[0].message);
         return;
       }
+      delete fieldsValue.address;
       delete fieldsValue.CardCode;
       delete fieldsValue.CardName;
       dispatch({
@@ -1431,7 +1436,7 @@ class InquiryEdit extends React.Component {
         message.error(Object.values(err)[0].errors[0].message);
         return;
       }
-
+      delete fieldsValue.address;
       delete fieldsValue.CardCode;
       delete fieldsValue.CardName;
       dispatch({

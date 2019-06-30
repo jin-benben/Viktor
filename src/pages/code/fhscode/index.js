@@ -3,6 +3,7 @@ import { connect } from 'dva';
 import { Row, Col, Card, Form, Input, Modal, Button, message } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import EditableFormTable from '@/components/EditableFormTable';
+import MyIcon from '@/components/MyIcon';
 
 const FormItem = Form.Item;
 
@@ -135,20 +136,23 @@ class HSCode extends PureComponent {
   columns = [
     {
       title: '代码',
+      width: 100,
       dataIndex: 'Code',
     },
     {
       title: '名称',
+      width: 100,
       dataIndex: 'Name',
     },
     {
       title: '操作',
-
+      width: 100,
       render: (text, record) => (
         <Fragment>
-          <a onClick={() => this.handleUpdateModalVisible(true, record)}>修改</a>
-          {/* <Divider type="vertical" />
-          <a href="">删除</a> */}
+          <a onClick={() => this.handleUpdateModalVisible(true, record)}>
+            {' '}
+            <MyIcon type="iconedit" />
+          </a>
         </Fragment>
       ),
     },

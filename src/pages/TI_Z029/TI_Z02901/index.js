@@ -206,7 +206,11 @@ class TI_Z029Component extends React.Component {
       dataIndex: 'InquiryPrice',
       align: 'center',
       render: (text, record) =>
-        record.lastIndex ? '' : <span>{`${text}-${record.Currency || ''}-${record.DocRate}`}</span>,
+        record.lastIndex ? (
+          ''
+        ) : (
+          <span>{`${text || ''}(${record.Currency || ''})[${record.DocRate || ''}]`}</span>
+        ),
     },
     {
       title: '询行总计',
@@ -217,9 +221,11 @@ class TI_Z029Component extends React.Component {
         record.lastIndex ? (
           ''
         ) : (
-          <span>{`${text}${record.Currency ? `(${record.Currency})` : ''}-${
-            record.InquiryLineTotalLocal
-          }`}</span>
+          <span>
+            {`${text || ''}${
+              record.Currency ? `(${record.Currency})` : ''
+            }-${record.InquiryLineTotalLocal || ''}`}
+          </span>
         ),
     },
     {
@@ -1367,6 +1373,7 @@ class TI_Z029Component extends React.Component {
         return;
       }
       delete fieldsValue.CardCode;
+      delete fieldsValue.address;
       delete fieldsValue.CardName;
       dispatch({
         type: 'TI_Z029/add',
@@ -1405,6 +1412,7 @@ class TI_Z029Component extends React.Component {
         return;
       }
       delete fieldsValue.CardCode;
+      delete fieldsValue.address;
       delete fieldsValue.CardName;
       dispatch({
         type: 'TI_Z029/update',

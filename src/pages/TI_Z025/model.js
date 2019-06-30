@@ -1,0 +1,169 @@
+import {
+  uploadSearchRule,
+  uploadRule,
+  approveRule,
+  approveSearchRule,
+  searchRule,
+} from './service';
+
+export default {
+  namespace: 'batchManage',
+
+  state: {
+    batchList: [],
+    batchApproveList: [],
+    batchUploadList: [],
+    queryData: {
+      Content: {
+        SearchText: '',
+        SearchKey: '',
+      },
+      page: 1,
+      rows: 30,
+      sidx: 'Code',
+      sord: 'Desc',
+    },
+    queryData1: {
+      Content: {
+        ApproveBy: [],
+        Code: '',
+        ItemCode: '',
+      },
+      page: 1,
+      rows: 30,
+      sidx: 'Code',
+      sord: 'Desc',
+    },
+    queryData2: {
+      Content: {
+        SearchText: '',
+        SearchKey: '',
+      },
+      page: 1,
+      rows: 30,
+      sidx: 'Code',
+      sord: 'Desc',
+    },
+    pagination: {
+      showSizeChanger: true,
+      showTotal: total => `共 ${total} 条`,
+      pageSizeOptions: ['30', '60', '90'],
+      total: 0,
+      pageSize: 30,
+      current: 1,
+    },
+    pagination1: {
+      showSizeChanger: true,
+      showTotal: total => `共 ${total} 条`,
+      pageSizeOptions: ['30', '60', '90'],
+      total: 0,
+      pageSize: 30,
+      current: 1,
+    },
+    pagination2: {
+      showSizeChanger: true,
+      showTotal: total => `共 ${total} 条`,
+      pageSizeOptions: ['30', '60', '90'],
+      total: 0,
+      pageSize: 30,
+      current: 1,
+    },
+  },
+
+  effects: {
+    *fetch({ payload }, { call, put }) {
+      const response = yield call(searchRule, payload);
+      if (response && response.Status === 200) {
+        if (!response.Content) {
+          yield put({
+            type: 'save',
+            payload: {
+              batchList: [],
+            },
+          });
+        } else {
+          const { rows, records, page } = response.Content;
+          yield put({
+            type: 'save',
+            payload: {
+              batchList: rows,
+              pagination: {
+                total: records,
+                pageSize: payload.rows,
+                current: page,
+              },
+            },
+          });
+        }
+      }
+    },
+    *approvefetch({ payload }, { call, put }) {
+      const response = yield call(approveSearchRule, payload);
+      if (response && response.Status === 200) {
+        if (!response.Content) {
+          yield put({
+            type: 'save',
+            payload: {
+              batchApproveList: [],
+            },
+          });
+        } else {
+          const { rows, records, page } = response.Content;
+          yield put({
+            type: 'save',
+            payload: {
+              batchApproveList: rows,
+              pagination1: {
+                total: records,
+                pageSize: payload.rows,
+                current: page,
+              },
+            },
+          });
+        }
+      }
+    },
+    *approve({ payload, callback }, { call }) {
+      const response = yield call(approveRule, payload);
+      if (callback) callback(response);
+    },
+    *uploadfetch({ payload }, { call, put }) {
+      const response = yield call(uploadSearchRule, payload);
+      if (response && response.Status === 200) {
+        if (!response.Content) {
+          yield put({
+            type: 'save',
+            payload: {
+              batchUploadList: [],
+            },
+          });
+        } else {
+          const { rows, records, page } = response.Content;
+          yield put({
+            type: 'save',
+            payload: {
+              batchUploadList: rows,
+              pagination2: {
+                total: records,
+                pageSize: payload.rows,
+                current: page,
+              },
+            },
+          });
+        }
+      }
+    },
+    *upload({ payload, callback }, { call }) {
+      const response = yield call(uploadRule, payload);
+      if (callback) callback(response);
+    },
+  },
+  reducers: {
+    save(state, action) {
+      return {
+        ...state,
+        ...action.payload,
+      };
+    },
+  },
+};

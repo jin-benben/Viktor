@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Row, Col, Form, Input, Modal } from 'antd';
+import { Row, Col, Form, Input, Modal, Checkbox } from 'antd';
 import { chechEmail } from '@/utils/utils';
 
 const FormItem = Form.Item;
@@ -58,6 +58,7 @@ class LinkManFrom extends PureComponent {
       form.validateFields((err, fieldsValue) => {
         if (err) return;
         form.resetFields();
+        formVals.DefaultContacts = formVals.DefaultContacts ? 'T' : 'F';
         handleSubmit({ ...formVals, ...fieldsValue });
       });
     };
@@ -116,6 +117,16 @@ class LinkManFrom extends PureComponent {
                   rules: [{ required: true, message: '请输入电话' }],
                   initialValue: formVals.PhoneNO,
                 })(<Input placeholder="请输入电话" />)}
+              </FormItem>
+            </Col>
+          </Row>
+          <Row>
+            <Col span={12}>
+              <FormItem key="DefaultContacts" {...this.formLayout} label="默认地址">
+                {getFieldDecorator('DefaultContacts', {
+                  valuePropName: 'checked',
+                  initialValue: formVals.DefaultContacts === 'T',
+                })(<Checkbox />)}
               </FormItem>
             </Col>
           </Row>

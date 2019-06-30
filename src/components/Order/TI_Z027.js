@@ -223,7 +223,7 @@ class SupplierAsk extends PureComponent {
       const { pagination } = this.state;
       if (response.Content) {
         const { rows, records, page } = response.Content;
-       
+
         const orderList = rows.map(item => {
           const newItem = item;
           newItem.Currency = getName(Curr, newItem.Currency);
@@ -233,9 +233,9 @@ class SupplierAsk extends PureComponent {
           orderList,
           pagination: { ...pagination, total: records, current: page },
         });
-      }else{
+      } else {
         this.setState({
-          orderList:[],
+          orderList: [],
           pagination: { ...pagination, total: 0, current: 1 },
         });
       }

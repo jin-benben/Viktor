@@ -73,7 +73,6 @@ class orderLine extends PureComponent {
     },
     {
       title: '产品描述',
-      width: 150,
       dataIndex: 'SKUName',
       render: text => (
         <Ellipsis tooltip lines={1}>
@@ -82,32 +81,6 @@ class orderLine extends PureComponent {
         </Ellipsis>
       ),
     },
-    {
-      title: '品牌',
-      width: 80,
-      dataIndex: 'BrandName',
-    },
-    {
-      title: '名称',
-      width: 100,
-      dataIndex: 'ProductName',
-    },
-    {
-      title: '型号',
-      width: 100,
-      dataIndex: 'ManufactureNO',
-    },
-    {
-      title: '参数',
-      width: 100,
-      dataIndex: 'Parameters',
-    },
-    {
-      title: '包装',
-      width: 100,
-      dataIndex: 'Package',
-    },
-
     {
       title: '数量',
       width: 80,
@@ -405,7 +378,7 @@ class orderLine extends PureComponent {
             data={{ list: orderLineList }}
             pagination={pagination}
             rowKey="Key"
-            scroll={{ x: 2100, y: 500 }}
+            scroll={{ x: 1500, y: 500 }}
             columns={columns}
             rowSelection={{
               onSelectRow: this.onSelectRow,

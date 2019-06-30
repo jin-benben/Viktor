@@ -88,7 +88,7 @@ class InquiryEdit extends React.Component {
       width: 100,
       dataIndex: 'Quantity',
       align: 'center',
-      render: (text, record) => (record.lastIndex ? '' : <span>{`${text}-${record.Unit}`}</span>),
+      render: (text, record) => (record.lastIndex ? '' : <span>{`${text}(${record.Unit})`}</span>),
     },
     {
       title: '建议价格',
@@ -148,7 +148,11 @@ class InquiryEdit extends React.Component {
       dataIndex: 'InquiryPrice',
       align: 'center',
       render: (text, record) =>
-        record.lastIndex ? '' : <span>{`${text}-${record.Currency || ''}-${record.DocRate}`}</span>,
+        record.lastIndex ? (
+          ''
+        ) : (
+          <span>{`${text || ''}(${record.Currency || ''})[${record.DocRate || ''}]`}</span>
+        ),
     },
     {
       title: '询行总计',
@@ -160,9 +164,9 @@ class InquiryEdit extends React.Component {
           ''
         ) : (
           <span>
-            {`${text}${record.Currency ? `(${record.Currency})` : ''}-${
-              record.InquiryLineTotalLocal
-            }`}
+            {`${text || ''}${
+              record.Currency ? `(${record.Currency})` : ''
+            }-${record.InquiryLineTotalLocal || ''}`}
           </span>
         ),
     },

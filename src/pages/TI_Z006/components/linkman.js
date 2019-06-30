@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
-import { Row, Col, Form, Input, Modal, Select } from 'antd';
-import MDMCommonality from '@/components/Select';
 import { connect } from 'dva';
+import { Row, Col, Form, Input, Modal, Select, Checkbox } from 'antd';
+import MDMCommonality from '@/components/Select';
 import { validatorEmail, validatorPhone } from '@/utils/utils';
 
 const FormItem = Form.Item;
@@ -64,6 +64,7 @@ class LinkManFrom extends PureComponent {
       form.validateFields((err, fieldsValue) => {
         if (err) return;
         form.resetFields();
+        formVals.DefaultContacts = formVals.DefaultContacts ? 'T' : 'F';
         handleSubmit({ ...formVals, ...fieldsValue });
       });
     };
@@ -132,6 +133,16 @@ class LinkManFrom extends PureComponent {
                   rules: [{ required: true, message: '请选择销售' }],
                   initialValue: formVals.Saler,
                 })(<MDMCommonality initialValue={formVals.Saler} data={Saler} />)}
+              </FormItem>
+            </Col>
+          </Row>
+          <Row>
+            <Col span={12}>
+              <FormItem key="DefaultContacts" {...this.formLayout} label="默认地址">
+                {getFieldDecorator('DefaultContacts', {
+                  valuePropName: 'checked',
+                  initialValue: formVals.DefaultContacts === 'T',
+                })(<Checkbox />)}
               </FormItem>
             </Col>
           </Row>

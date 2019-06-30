@@ -447,6 +447,28 @@ export default [
             ]
           },
           {
+            name: '批次管理',
+            icon: 'iconjichu',
+            path: '/sellabout/batchApprove',
+            routes:[
+              {
+                name: '批次查询',
+                path: '/sellabout/batchApprove/search',
+                component: './TI_Z025/search',
+              },
+              {
+                name: '批次审核',
+                path: '/sellabout/batchApprove/approve',
+                component: './TI_Z025/approve',
+              },
+              {
+                name: '批次下载',
+                path: '/sellabout/batchApprove/download',
+                component: './TI_Z025/download',
+              },
+            ]
+          },
+          {
             name: '交易查询',
             icon: 'iconxunjia',
             path: '/sellabout/transaction',
@@ -558,11 +580,6 @@ export default [
             path: '/confrmBatch/OINV',
             component: './OINV',
           },
-          // {
-          //   name: '批次审核',
-          //   path: '/confrmBatch/batchApprove',
-          //   component: './batchApprove',
-          // }
         ]  
       },
      

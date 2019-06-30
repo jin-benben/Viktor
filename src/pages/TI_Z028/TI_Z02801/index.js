@@ -106,15 +106,14 @@ class TI_Z02801 extends React.Component {
       width: 100,
       dataIndex: 'Quantity',
       align: 'center',
-      render: (text, record) => <span>{`${text}-${record.Unit}`}</span>,
+      render: (text, record) => <span>{`${text}(${record.Unit})`}</span>,
     },
     {
       title: '价格',
       width: 120,
       dataIndex: 'Price',
       align: 'center',
-      render: (text, record) =>
-        record.lastIndex ? '' : <span>{`${text}-${record.Currency || ''}-${record.DocRate}`}</span>,
+      render: (text, record) => <span>{`${text}-${record.Currency || ''}-${record.DocRate}`}</span>,
     },
 
     {

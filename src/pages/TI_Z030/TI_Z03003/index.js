@@ -50,7 +50,7 @@ class InquiryEdit extends React.Component {
               <Tag color="red">已关闭</Tag>
             ) : (
               <Fragment>
-                {text === 'C' ? <Tag color="green">已确认</Tag> : <Tag color="gold">未确认</Tag>}
+                {text === 'C' ? <Tag color="green">已订单</Tag> : <Tag color="gold">未订单</Tag>}
               </Fragment>
             )}
           </Fragment>
@@ -82,7 +82,7 @@ class InquiryEdit extends React.Component {
       width: 100,
       dataIndex: 'Quantity',
       align: 'center',
-      render: (text, record) => (record.lastIndex ? '' : <span>{`${text}-${record.Unit}`}</span>),
+      render: (text, record) => (record.lastIndex ? '' : <span>{`${text}(${record.Unit})`}</span>),
     },
     {
       title: '建议价格',
@@ -142,7 +142,11 @@ class InquiryEdit extends React.Component {
       dataIndex: 'InquiryPrice',
       align: 'center',
       render: (text, record) =>
-        record.lastIndex ? '' : <span>{`${text}-${record.Currency || ''}-${record.DocRate}`}</span>,
+        record.lastIndex ? (
+          ''
+        ) : (
+          <span>{`${text || ''}(${record.Currency || ''})[${record.DocRate || ''}]`}</span>
+        ),
     },
     {
       title: '询行总计',
@@ -153,9 +157,11 @@ class InquiryEdit extends React.Component {
         record.lastIndex ? (
           ''
         ) : (
-          <span>{`${text}${record.Currency ? `(${record.Currency})` : ''}-${
-            record.InquiryLineTotalLocal
-          }`}</span>
+          <span>
+            {`${text || ''}${
+              record.Currency ? `(${record.Currency})` : ''
+            }-${record.InquiryLineTotalLocal || ''}`}
+          </span>
         ),
     },
     {
@@ -651,9 +657,9 @@ class InquiryEdit extends React.Component {
                   <Tag color="gold">未审核</Tag>
                 )}
                 {formVals.DocStatus === 'C' ? (
-                  <Tag color="green">已确认</Tag>
+                  <Tag color="green">已订单</Tag>
                 ) : (
-                  <Tag color="gold">未确认</Tag>
+                  <Tag color="gold">未订单</Tag>
                 )}
               </Fragment>
             )}

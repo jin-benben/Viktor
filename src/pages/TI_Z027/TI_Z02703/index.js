@@ -21,7 +21,6 @@ import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import DescriptionList from 'ant-design-pro/lib/DescriptionList';
 import StandardTable from '@/components/StandardTable';
 import CancelOrder from '@/components/Modal/CancelOrder';
-import MyTag from '@/components/Tag';
 import Emails from '@/components/Modal/Email';
 import Transfer from '@/components/Transfer';
 import OrderPrint from '@/components/Modal/OrderPrint';
@@ -114,7 +113,7 @@ class InquiryEdit extends React.Component {
       width: 100,
       dataIndex: 'Quantity',
       align: 'center',
-      render: (text, record) => (record.lastIndex ? '' : <span>{`${text}-${record.Unit}`}</span>),
+      render: (text, record) => <span>{`${text}(${record.Unit})`}</span>,
     },
     {
       title: '价格',
@@ -445,13 +444,6 @@ class InquiryEdit extends React.Component {
     const transferParentMethods = {
       handleModalVisible: this.handleModalVisible,
     };
-    let tablwidth = 0;
-    this.skuColumns.map(item => {
-      if (item.width) {
-        tablwidth += item.width;
-      }
-    });
-    console.log(tablwidth);
     return (
       <Card bordered={false}>
         <DescriptionList style={{ marginBottom: 24 }}>
@@ -485,10 +477,19 @@ class InquiryEdit extends React.Component {
           <Description term="客户参考号">{formVals.NumAtCard}</Description>
           <Description term="单据状态">
             {formVals.Closed === 'Y' ? (
-              <MyTag type="关闭" value="Y" />
+              <Tag color="red">已关闭</Tag>
             ) : (
               <Fragment>
-                <MyTag type="询价" value={formVals.DocStatus} />
+                {formVals.DocStatus === 'C' ? (
+                  <Tag color="green">已报价</Tag>
+                ) : (
+                  <Tag color="gold">未报价</Tag>
+                )}
+                {formVals.SendEmailStatus === 'C' ? (
+                  <Tag color="green">已发送</Tag>
+                ) : (
+                  <Tag color="gold">未发送</Tag>
+                )}
               </Fragment>
             )}
           </Description>

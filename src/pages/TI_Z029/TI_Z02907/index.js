@@ -129,28 +129,25 @@ class SalesQuotationSku extends PureComponent {
       dataIndex: 'SKU',
       align: 'center',
       width: 300,
-      render: (text, record) =>
-        record.lastIndex ? (
-          ''
-        ) : (
-          <Ellipsis tooltip lines={1}>
-            {text ? (
-              <Link target="_blank" to={`/main/product/TI_Z009/TI_Z00903?Code${text}`}>
-                {text}-
-              </Link>
-            ) : (
-              ''
-            )}
-            {record.SKUName}
-          </Ellipsis>
-        ),
+      render: (text, record) => (
+        <Ellipsis tooltip lines={1}>
+          {text ? (
+            <Link target="_blank" to={`/main/product/TI_Z009/TI_Z00903?Code${text}`}>
+              {text}-
+            </Link>
+          ) : (
+            ''
+          )}
+          {record.SKUName}
+        </Ellipsis>
+      ),
     },
     {
       title: '数量',
       width: 100,
       dataIndex: 'Quantity',
       align: 'center',
-      render: (text, record) => (record.lastIndex ? '' : <span>{`${text}-${record.Unit}`}</span>),
+      render: (text, record) => <span>{`${text}-${record.Unit}`}</span>,
     },
     {
       title: '建议价格',
@@ -208,20 +205,28 @@ class SalesQuotationSku extends PureComponent {
       width: 120,
       dataIndex: 'InquiryPrice',
       align: 'center',
-      render: (text, record) => <span>{`${text}-${record.Currency || ''}-${record.DocRate}`}</span>,
+      render: (text, record) =>
+        record.lastIndex ? (
+          ''
+        ) : (
+          <span>{`${text || ''}(${record.Currency || ''})[${record.DocRate || ''}]`}</span>
+        ),
     },
     {
       title: '询行总计',
       width: 150,
       align: 'center',
       dataIndex: 'InquiryLineTotal',
-      render: (text, record) => (
-        <span>
-          {`${text}${record.Currency ? `(${record.Currency})` : ''}-${
-            record.InquiryLineTotalLocal
-          }`}
-        </span>
-      ),
+      render: (text, record) =>
+        record.lastIndex ? (
+          ''
+        ) : (
+          <span>
+            {`${text || ''}${
+              record.Currency ? `(${record.Currency})` : ''
+            }-${record.InquiryLineTotalLocal || ''}`}
+          </span>
+        ),
     },
     {
       title: '询价备注',

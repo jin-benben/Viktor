@@ -238,9 +238,9 @@ class ClientAsk extends PureComponent {
           orderList: [...rows],
           pagination: { ...pagination, total: records, current: page },
         });
-      }else{
+      } else {
         this.setState({
-          orderList:[],
+          orderList: [],
           pagination: { ...pagination, total: 0, current: 1 },
         });
       }

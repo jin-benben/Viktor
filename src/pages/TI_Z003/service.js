@@ -35,3 +35,12 @@ export async function updateRule(params) {
     },
   });
 }
+
+export async function reloadRule() {
+  return request('/MDM/TI_Z003/TI_Z00305', {
+    method: 'POST',
+    data: {
+      Content: '',
+    },
+  });
+}

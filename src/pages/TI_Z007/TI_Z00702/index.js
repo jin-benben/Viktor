@@ -81,7 +81,7 @@ class SupplierSearch extends PureComponent {
     },
     {
       title: '类型',
-      width: 80,
+      width: 100,
       dataIndex: 'CardType',
       render: val => {
         const {

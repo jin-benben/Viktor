@@ -209,7 +209,7 @@ class SelectionLine extends Component {
         width: 100,
         dataIndex: 'Quantity',
         align: 'center',
-        render: (text, record) => <span>{`${text}-${record.Unit}`}</span>,
+        render: (text, record) => <span>{`${text}(${record.Unit})`}</span>,
       },
       {
         title: '要求交期',

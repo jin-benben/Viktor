@@ -414,7 +414,9 @@ class CompanyEdit extends PureComponent {
   };
 
   addLinkMan = () => {
-    const {global:{currentUser}}=this.props
+    const {
+      global: { currentUser },
+    } = this.props;
     this.setState({
       LinkManmodalVisible: true,
       linkManVal: {

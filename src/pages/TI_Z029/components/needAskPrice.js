@@ -98,7 +98,7 @@ class OrderLine extends PureComponent {
     },
     {
       title: '采购员',
-      width: 80,
+      width: 120,
       dataIndex: 'Purchaser',
       align: 'center',
       render: text => {

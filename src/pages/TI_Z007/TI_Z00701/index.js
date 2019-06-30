@@ -502,27 +502,24 @@ class CompanyEdit extends React.Component {
               </FormItem>
             </Col>
             <Col lg={8} md={12} sm={24}>
-              <FormItem key="CheckCompanyName" {...this.formLayout} label="支票汇款公司名称 ">
+              <FormItem key="CheckCompanyName" {...this.formLayout} label="支票收款公司名称 ">
                 {getFieldDecorator('CheckCompanyName', {
-                  rules: [{ required: true, message: '请输入支票汇款公司名称' }],
                   initialValue: formVals.CheckCompanyName,
                 })(<Input placeholder="请输入" />)}
               </FormItem>
             </Col>
             <Col lg={8} md={12} sm={24}>
-              <FormItem key="CheckAddreName" {...this.formLayout} label="支票汇款地址">
+              <FormItem key="CheckAddreName" {...this.formLayout} label="支票收款地址">
                 {getFieldDecorator('CheckAddreName', {
-                  rules: [{ required: true, message: '请输入支票汇款地址！' }],
                   initialValue: formVals.CheckAddreName,
-                })(<Input placeholder="请输入支票汇款地址" />)}
+                })(<Input placeholder="请输入支票收款地址" />)}
               </FormItem>
             </Col>
             <Col lg={8} md={12} sm={24}>
-              <FormItem key="CheckContacts" {...this.formLayout} label="支票汇款联系人">
+              <FormItem key="CheckContacts" {...this.formLayout} label="支票收款联系人">
                 {getFieldDecorator('CheckContacts', {
-                  rules: [{ required: true, message: '请输入支票汇款联系人！' }],
                   initialValue: formVals.CheckContacts,
-                })(<Input placeholder="请输入支票汇款联系人" />)}
+                })(<Input placeholder="请输入支票收款联系人" />)}
               </FormItem>
             </Col>
             <Col lg={8} md={12} sm={24}>

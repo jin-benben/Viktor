@@ -41,6 +41,7 @@ class InquiryEdit extends PureComponent {
       title: '行状态',
       dataIndex: 'LineStatus',
       align: 'center',
+      width: 180,
       render: (text, record) =>
         record.lastIndex ? null : (
           <Fragment>
@@ -95,20 +96,16 @@ class InquiryEdit extends PureComponent {
       align: 'center',
     },
     {
-      title: '行总计',
-      width: 100,
-      align: 'center',
-      dataIndex: 'LineTotal',
-      render: (text, record) =>
-        record.lastIndex ? <span style={{ fontWeight: 'bolder' }}>{text}</span> : text,
-    },
-    {
       title: '询价价格',
       width: 120,
       dataIndex: 'InquiryPrice',
       align: 'center',
       render: (text, record) =>
-        record.lastIndex ? '' : <span>{`${text}-${record.Currency || ''}-${record.DocRate}`}</span>,
+        record.lastIndex ? (
+          ''
+        ) : (
+          <span>{`${text || ''}(${record.Currency || ''})[${record.DocRate || ''}]`}</span>
+        ),
     },
     {
       title: '询行总计',
@@ -119,9 +116,11 @@ class InquiryEdit extends PureComponent {
         record.lastIndex ? (
           ''
         ) : (
-          <span>{`${text}${record.Currency ? `(${record.Currency})` : ''}-${
-            record.InquiryLineTotalLocal
-          }`}</span>
+          <span>
+            {`${text || ''}${
+              record.Currency ? `(${record.Currency})` : ''
+            }-${record.InquiryLineTotalLocal || ''}`}
+          </span>
         ),
     },
     {

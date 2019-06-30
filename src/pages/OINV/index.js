@@ -408,7 +408,9 @@ class OINVConfrim extends PureComponent {
   selectNeed = () => {
     const { selectedRows } = this.state;
     if (selectedRows.length) {
-      this.handleModalVisible(true);
+      this.setState({
+        modalVisible: true,
+      });
     } else {
       message.warning('请先选择');
     }

@@ -166,7 +166,7 @@ class orderLine extends PureComponent {
       width: 100,
       dataIndex: 'Quantity',
       align: 'center',
-      render: (text, record) => <span>{`${text}-${record.Unit}`}</span>,
+      render: (text, record) => <span>{`${text}(${record.Unit})`}</span>,
     },
     {
       title: '价格',
@@ -188,7 +188,11 @@ class orderLine extends PureComponent {
       dataIndex: 'InquiryPrice',
       align: 'center',
       render: (text, record) =>
-        record.lastIndex ? '' : <span>{`${text}-${record.Currency || ''}-${record.DocRate}`}</span>,
+        record.lastIndex ? (
+          ''
+        ) : (
+          <span>{`${text || ''}(${record.Currency || ''})[${record.DocRate || ''}]`}</span>
+        ),
     },
     {
       title: '询行总计',
@@ -199,9 +203,11 @@ class orderLine extends PureComponent {
         record.lastIndex ? (
           ''
         ) : (
-          <span>{`${text}${record.Currency ? `(${record.Currency})` : ''}-${
-            record.InquiryLineTotalLocal
-          }`}</span>
+          <span>
+            {`${text || ''}${
+              record.Currency ? `(${record.Currency})` : ''
+            }-${record.InquiryLineTotalLocal || ''}`}
+          </span>
         ),
     },
     {

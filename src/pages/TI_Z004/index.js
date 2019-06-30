@@ -547,6 +547,18 @@ class Staffs extends PureComponent {
     });
   };
 
+  reloadLocal = () => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'staffs/reload',
+      callback: response => {
+        if (response && response.Status === 200) {
+          message.success('刷新成功');
+        }
+      },
+    });
+  };
+
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
@@ -578,11 +590,14 @@ class Staffs extends PureComponent {
               </Button>
               <Button
                 icon="plus"
-                style={{ marginLeft: 8 }}
+                style={{ marginLeft: 8, marginRight: 8 }}
                 type="primary"
                 onClick={() => this.handleModalVisible(true)}
               >
                 新建
+              </Button>
+              <Button type="primary" onClick={this.reloadLocal}>
+                刷新缓存
               </Button>
             </span>
           </Col>

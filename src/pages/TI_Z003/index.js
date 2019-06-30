@@ -1,8 +1,9 @@
 /* eslint-disable no-script-url */
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Card, Tree, Form, Input, message, Modal, Select, Popover, Divider } from 'antd';
+import { Card, Tree, Form, Input, message, Modal, Select, Popover, Divider, Button } from 'antd';
 import router from 'umi/router';
+import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import { formLayout, formItemLayout } from '@/utils/publicData';
 
 const FormItem = Form.Item;
@@ -173,6 +174,18 @@ class Organization extends PureComponent {
     }
   };
 
+  reloadLocal = () => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'organization/reload',
+      callback: response => {
+        if (response && response.Status === 200) {
+          message.success('刷新成功');
+        }
+      },
+    });
+  };
+
   addOrg = tree => {
     const { dispatch } = this.props;
     dispatch({
@@ -252,6 +265,11 @@ class Organization extends PureComponent {
           ) : null}
           <CreateForm {...parentMethods} formVals={singleInfo} modalVisible={modalVisible} />
         </Card>
+        <FooterToolbar>
+          <Button type="primary" onClick={this.reloadLocal}>
+            刷新缓存
+          </Button>
+        </FooterToolbar>
       </div>
     );
   }

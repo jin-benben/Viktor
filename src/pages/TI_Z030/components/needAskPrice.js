@@ -77,7 +77,7 @@ class OrderLine extends PureComponent {
     },
     {
       title: '采购员',
-      width: 100,
+      width: 120,
       dataIndex: 'Purchaser',
       align: 'center',
       render: text => {
@@ -119,7 +119,7 @@ class OrderLine extends PureComponent {
       },
     },
     {
-      title: '销售建议价',
+      title: '价格',
       width: 120,
       dataIndex: 'Price',
       align: 'center',
@@ -127,14 +127,12 @@ class OrderLine extends PureComponent {
     {
       title: '询价备注',
       dataIndex: 'InquiryComment',
-
-      width: 150,
-
+      width: 100,
       align: 'center',
     },
     {
-      title: '销售行总计',
-      width: 150,
+      title: '销行总计',
+      width: 100,
       align: 'center',
       dataIndex: 'LineTotal',
     },
@@ -166,7 +164,7 @@ class OrderLine extends PureComponent {
             data={{ list: data }}
             rowKey="Key"
             columns={this.skuColumns}
-            scroll={{ x: 2000 }}
+            scroll={{ x: 2100 }}
             onChange={this.handleStandardTableChange}
           />
         </div>

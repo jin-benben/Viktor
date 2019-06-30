@@ -8,6 +8,7 @@ import {
   getDepartmentRule,
   getDepartmentTreeRule,
   getOSLPRule,
+  reloadRule,
 } from './service';
 
 export default {
@@ -106,6 +107,10 @@ export default {
     },
     *setLoading({ payload, callback }, { call }) {
       const response = yield call(setLoadingRule, payload);
+      if (callback) callback(response);
+    },
+    *reload({ callback }, { call }) {
+      const response = yield call(reloadRule);
       if (callback) callback(response);
     },
   },

@@ -24,7 +24,6 @@ import MDMCommonality from '@/components/Select';
 import DocEntryFrom from '@/components/DocEntryFrom';
 import Organization from '@/components/Organization/multiple';
 import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
-import Transfer from '@/components/Transfer';
 
 const { RangePicker } = DatePicker;
 
@@ -32,19 +31,17 @@ const FormItem = Form.Item;
 const { Option } = Select;
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ supplierQuotationSku, loading, global }) => ({
-  supplierQuotationSku,
+@connect(({ batchManage, loading, global }) => ({
+  batchManage,
   global,
-  loading: loading.models.supplierQuotationSku,
+  loading: loading.models.batchManage,
 }))
 @Form.create()
-class supplierQuotationSku extends PureComponent {
+class batchManage extends PureComponent {
   columns = [
     {
-      title: '单号',
-      width: 80,
-      fixed: 'left',
-      dataIndex: 'DocEntry',
+      title: '批次号',
+      dataIndex: 'Code',
       render: (text, recond) => (
         <Link target="_blank" to={`/purchase/TI_Z027/detail?DocEntry=${text}`}>
           {`${text}-${recond.LineID}`}
@@ -63,39 +60,26 @@ class supplierQuotationSku extends PureComponent {
           </Link>
         ),
     },
+
     {
-      title: '单据日期',
-      dataIndex: 'DocDate',
+      title: '审核日期',
+      dataIndex: 'ApproveDate',
       width: 100,
       render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
+
     {
-      title: '行状态',
-      width: 150,
-      dataIndex: 'LineStatus',
+      title: '审核状态',
+      width: 100,
+      dataIndex: 'ApproveSts',
       align: 'center',
-      render: (text, record) =>
-        record.lastIndex ? null : (
-          <Fragment>
-            {record.Closed === 'Y' ? (
-              <Tag color="red">已关闭</Tag>
-            ) : (
-              <Fragment>
-                {record.PriceRStatus === 'C' ? (
-                  <Tag color="green">已确认</Tag>
-                ) : (
-                  <Tag color="gold">未确认</Tag>
-                )}
-                {text === 'C' ? <Tag color="green">已报价</Tag> : <Tag color="gold">未报价</Tag>}
-              </Fragment>
-            )}
-          </Fragment>
-        ),
+      render: text =>
+        text === 'Y' ? <Tag color="green">已通过</Tag> : <Tag color="gold">未通过</Tag>,
     },
     {
-      title: '供应商',
+      title: '批次附件数',
       width: 100,
-      dataIndex: 'CardName',
+      dataIndex: 'AttachmentCount',
       render: text => (
         <Ellipsis tooltip lines={1}>
           {text}
@@ -103,9 +87,9 @@ class supplierQuotationSku extends PureComponent {
       ),
     },
     {
-      title: '联系人',
+      title: '物料代码',
       width: 100,
-      dataIndex: 'Contacts',
+      dataIndex: 'ItemCode',
       render: (text, record) => (
         <Tooltip
           title={
@@ -123,121 +107,16 @@ class supplierQuotationSku extends PureComponent {
       ),
     },
     {
-      title: '物料',
-      dataIndex: 'SKU',
-      align: 'center',
+      title: 'CreateDate',
+      dataIndex: 'ApproveDate',
       width: 100,
-      render: (text, record) =>
-        record.lastIndex ? (
-          ''
-        ) : (
-          <Ellipsis tooltip lines={1}>
-            {text ? (
-              <Link target="_blank" to={`/main/product/TI_Z009/TI_Z00903?Code${text}`}>
-                {text}-
-              </Link>
-            ) : (
-              ''
-            )}
-            {record.SKUName}
-          </Ellipsis>
-        ),
-    },
-    {
-      title: '名称(外)',
-      width: 100,
-      dataIndex: 'ForeignName',
-      render: (text, record) =>
-        record.lastIndex ? null : (
-          <Ellipsis tooltip lines={1}>
-            {text}-{record.ForeignParameters}
-          </Ellipsis>
-        ),
-    },
-    {
-      title: '数量',
-      width: 100,
-      dataIndex: 'Quantity',
-      align: 'center',
-      render: (text, record) => <span>{`${text}(${record.Unit})`}</span>,
-    },
-    {
-      title: '价格',
-      width: 100,
-      dataIndex: 'Price',
-      align: 'center',
-    },
-    {
-      title: '询价交期',
-      width: 120,
-      dataIndex: 'InquiryDueDate',
-      align: 'center',
       render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
     {
-      title: '行备注',
-      dataIndex: 'LineComment',
+      title: '审核日期',
+      dataIndex: 'UpdateDate',
       width: 100,
-      align: 'center',
-    },
-    {
-      title: '重量',
-      width: 80,
-      dataIndex: 'Rweight',
-      align: 'center',
-    },
-    {
-      title: '国外运费',
-      width: 80,
-      dataIndex: 'ForeignFreight',
-      align: 'center',
-    },
-    {
-      title: '销行备注',
-      dataIndex: 'BaseLineComment',
-      width: 100,
-      align: 'center',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
-    {
-      title: '采总计',
-      width: 120,
-      align: 'center',
-      dataIndex: 'LineTotal',
-    },
-    {
-      title: '本币总计',
-      width: 100,
-      align: 'center',
-      dataIndex: 'InquiryLineTotalLocal',
-    },
-    {
-      title: '要求交期',
-      width: 100,
-      dataIndex: 'DueDate',
-      align: 'center',
-      render: (val, record) =>
-        record.lastIndex ? '' : <span>{moment(val).format('YYYY-MM-DD')}</span>,
-    },
-    {
-      title: '上一次价格',
-      width: 100,
-      dataIndex: 'LastPrice',
-      align: 'center',
-    },
-    {
-      title: '客户参考号',
-      width: 100,
-      dataIndex: 'NumAtCard',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
+      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
   ];
 
@@ -251,10 +130,10 @@ class supplierQuotationSku extends PureComponent {
   componentDidMount() {
     const {
       dispatch,
-      supplierQuotationSku: { queryData },
+      batchManage: { queryData },
     } = this.props;
     dispatch({
-      type: 'supplierQuotationSku/fetch',
+      type: 'batchManage/fetch',
       payload: {
         ...queryData,
       },
@@ -275,10 +154,10 @@ class supplierQuotationSku extends PureComponent {
   handleStandardTableChange = pagination => {
     const {
       dispatch,
-      supplierQuotationSku: { queryData },
+      batchManage: { queryData },
     } = this.props;
     dispatch({
-      type: 'supplierQuotationSku/fetch',
+      type: 'batchManage/fetch',
       payload: {
         ...queryData,
         page: pagination.current,
@@ -307,7 +186,7 @@ class supplierQuotationSku extends PureComponent {
         ...fieldsValue.orderNo,
       };
       dispatch({
-        type: 'supplierQuotationSku/fetch',
+        type: 'batchManage/fetch',
         payload: {
           Content: {
             SearchText: '',
@@ -449,7 +328,7 @@ class supplierQuotationSku extends PureComponent {
 
   render() {
     const {
-      supplierQuotationSku: { supplierQuotationSkuList, pagination },
+      batchManage: { batchList, pagination },
       loading,
     } = this.props;
     const { transferModalVisible, transferLine } = this.state;
@@ -470,10 +349,10 @@ class supplierQuotationSku extends PureComponent {
             <div className="tableListForm">{this.renderSimpleForm()}</div>
             <StandardTable
               loading={loading}
-              data={{ list: supplierQuotationSkuList }}
+              data={{ list: batchList }}
               pagination={pagination}
-              rowKey="Key"
-              scroll={{ x: 2100, y: 700 }}
+              rowKey="Code"
+              scroll={{ x: 1000 }}
               rowSelection={{
                 type: 'radio',
                 onSelectRow: this.onSelectRow,
@@ -492,19 +371,10 @@ class supplierQuotationSku extends PureComponent {
           >
             新建
           </Button>
-          <Button type="primary" onClick={this.toTransfer}>
-            转移
-          </Button>
-          <Transfer
-            SourceEntry={transferLine.DocEntry}
-            SourceType="TI_Z027"
-            modalVisible={transferModalVisible}
-            {...transferParentMethods}
-          />
         </FooterToolbar>
       </Fragment>
     );
   }
 }
 
-export default supplierQuotationSku;
+export default batchManage;

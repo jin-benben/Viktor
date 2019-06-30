@@ -1,7 +1,7 @@
 /* eslint-disable array-callback-return */
 /* eslint-disable no-param-reassign */
 import React, { Component, Fragment } from 'react';
-import { Card, Icon, Button, message, Select } from 'antd';
+import { Card, Icon, Button, message, Select, notification, List, Tag } from 'antd';
 import { connect } from 'dva';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
@@ -139,14 +139,14 @@ class AddSKU extends Component {
     },
     {
       title: '销售价格',
-      width: 80,
+      width: 100,
       inputType: 'text',
       dataIndex: 'SPrice',
       editable: true,
     },
     {
       title: '采购价格',
-      width: 80,
+      width: 100,
       inputType: 'text',
       dataIndex: 'PPrice',
       editable: true,
@@ -408,7 +408,24 @@ class AddSKU extends Component {
       },
       callback: response => {
         if (response && response.Status === 200) {
-          message.success('添加成功');
+          const dataList = response.Content.TI_Z00901;
+          notification.open({
+            message: '添加提示',
+            icon: <Icon type="smile" style={{ color: '#108ee9' }} />,
+            description: (
+              <List
+                bordered
+                dataSource={dataList}
+                renderItem={item => (
+                  <List.Item>
+                    {item.Code}
+                    {item.Name}
+                    {item.Status === 1 ? <Tag color="blue">成功</Tag> : <Tag color="red">失败</Tag>}
+                  </List.Item>
+                )}
+              />
+            ),
+          });
           this.setState({ TI_Z00901: [] });
         }
       },
@@ -606,7 +623,7 @@ class AddSKU extends Component {
         <EditableFormTable
           rowChange={this.rowChange}
           rowKey="LineID"
-          scroll={{ x: 2800 }}
+          scroll={{ x: 2900 }}
           rowSelection={{
             onChange: this.onSelectRow,
           }}

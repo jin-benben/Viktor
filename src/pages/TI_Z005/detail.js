@@ -12,7 +12,7 @@ import OdlnordnFetch from '@/components/Order/OdlnordnFetch';
 import OinvorinFetch from '@/components/Order/OinvorinFetch';
 import OrderFetch from '@/components/Order/OrderFetch';
 import { getName } from '@/utils/utils';
-import {brandLevel} from '@/utils/publicData'
+import { brandLevel } from '@/utils/publicData';
 
 const { TabPane } = Tabs;
 

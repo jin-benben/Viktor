@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Row, Form, Input, Modal, Select } from 'antd';
+import { Row, Form, Input, Modal, Select, Checkbox } from 'antd';
 import Address from '@/components/Address';
 import { validatorPhone } from '@/utils/utils';
 
@@ -60,6 +60,7 @@ class AddressInfo extends PureComponent {
       form.validateFields((err, fieldsValue) => {
         if (err) return;
         form.resetFields();
+        formVals.DefaultContacts = formVals.DefaultContacts ? 'T' : 'F';
         handleSubmit({ ...formVals, ...fieldsValue });
       });
     };
@@ -108,6 +109,14 @@ class AddressInfo extends PureComponent {
                 rules: [{ required: true, message: '请输入详细地址！' }],
                 initialValue: formVals.Address,
               })(<TextArea placeholder="请输入详细地址" />)}
+            </FormItem>
+          </Row>
+          <Row>
+            <FormItem key="DefaultContacts" {...this.formLayout} label="默认地址">
+              {getFieldDecorator('DefaultContacts', {
+                valuePropName: 'checked',
+                initialValue: formVals.DefaultContacts === 'T',
+              })(<Checkbox />)}
             </FormItem>
           </Row>
         </Form>

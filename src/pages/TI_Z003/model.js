@@ -1,4 +1,4 @@
-import { queryRule, addRule, updateRule, querySingleRule } from './service';
+import { queryRule, addRule, updateRule, querySingleRule, reloadRule } from './service';
 
 export default {
   namespace: 'organization',
@@ -67,6 +67,10 @@ export default {
         type: 'save',
         payload: response,
       });
+      if (callback) callback(response);
+    },
+    *reload({ callback }, { call }) {
+      const response = yield call(reloadRule);
       if (callback) callback(response);
     },
   },

@@ -63,6 +63,15 @@ export async function getDepartmentRule(params) {
   });
 }
 
+export async function reloadRule() {
+  return request('/MDM/TI_Z004/TI_Z00409', {
+    method: 'POST',
+    data: {
+      Content: '',
+    },
+  });
+}
+
 export async function getDepartmentTreeRule() {
   return request(`/MDM/TI_Z003/TI_Z00302`, {
     method: 'POST',

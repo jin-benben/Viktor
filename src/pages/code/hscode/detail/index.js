@@ -1,10 +1,10 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Row, Col, Card, Form, Input, Modal, Button, message } from 'antd';
-import StandardTable from '@/components/StandardTable';
+import { Card, Form, Input, Modal, Button, message } from 'antd';
 import DescriptionList from 'ant-design-pro/lib/DescriptionList';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import MDMCommonality from '@/components/Select';
+import StandardTable from '@/components/StandardTable';
 
 const FormItem = Form.Item;
 const { Description } = DescriptionList;
@@ -13,16 +13,6 @@ const { Description } = DescriptionList;
   global,
 }))
 class CreateForm extends React.Component {
-  // static getDerivedStateFromProps(nextProps, preState) {
-  //   if(nextProps.origin!==preState.origin){
-  //     return {
-  //       origin:nextProps.origin
-  //     }
-  //   }
-
-  //   return null;
-  // }
-
   okHandle = () => {
     const { handleSubmit, form, origin } = this.props;
     form.validateFields((err, fieldsValue) => {
@@ -117,15 +107,6 @@ class HSCode extends PureComponent {
     {
       title: '特殊税率',
       dataIndex: 'U_VatRateOther',
-    },
-    {
-      title: '操作',
-
-      render: (text, record) => (
-        <Fragment>
-          <a href="">修改</a>
-        </Fragment>
-      ),
     },
   ];
 

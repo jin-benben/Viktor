@@ -1,8 +1,7 @@
 import React, { PureComponent } from 'react';
-
+import { connect } from 'dva';
 import { Row, Col, Form, Input, Modal, Button, message } from 'antd';
 import StandardTable from '@/components/StandardTable';
-import { connect } from 'dva';
 import request from '@/utils/request';
 
 const FormItem = Form.Item;
