@@ -50,6 +50,29 @@ export const lineStatus = [
   },
 ];
 
+export const brandLevel = [
+  {
+    Key: '1',
+    Value: '优势',
+  },
+  {
+    Key: '2',
+    Value: '可询价',
+  },
+  {
+    Key: '3',
+    Value: '国外不询价',
+  },
+  {
+    Key: '4',
+    Value: '国内询价',
+  },
+  {
+    Key: '5',
+    Value: '都不询价',
+  },
+];
+
 export const flagType = [
   {
     Key: '0',

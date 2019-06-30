@@ -172,12 +172,17 @@ class ClientAsk extends PureComponent {
       },
     });
     if (response && response.Status === 200) {
+      const { pagination } = this.state;
       if (response.Content) {
         const { rows, records, page } = response.Content;
-        const { pagination } = this.state;
         this.setState({
           orderList: [...rows],
           pagination: { ...pagination, total: records, current: page },
+        });
+      }else{
+        this.setState({
+          orderList:[],
+          pagination: { ...pagination, total: 0, current: 1 },
         });
       }
     }
@@ -280,7 +285,7 @@ class ClientAsk extends PureComponent {
               loading={loading}
               data={{ list: orderList }}
               pagination={pagination}
-              rowKey="LineID"
+              rowKey="DocEntry"
               columns={this.columns}
               scroll={{ x: 1800, y: 800 }}
               onChange={this.handleStandardTableChange}

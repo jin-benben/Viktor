@@ -3,12 +3,11 @@ import { connect } from 'dva';
 import router from 'umi/router';
 import Link from 'umi/link';
 import moment from 'moment';
-import { Row, Col, Card, Form, Input, Button, Divider, Select, DatePicker, Icon } from 'antd';
+import { Row, Col, Card, Form, Input, Button, Divider, Select, DatePicker, Icon,Tag } from 'antd';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import StandardTable from '@/components/StandardTable';
 import DocEntryFrom from '@/components/DocEntryFrom';
-import MyTag from '@/components/Tag';
 import Organization from '@/components/Organization/multiple';
 import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
 import { getName } from '@/utils/utils';
@@ -56,14 +55,21 @@ class supplierQuotation extends PureComponent {
     },
     {
       title: '单据状态',
-      dataIndex: 'Status',
+      dataIndex: 'DocStatus',
       width: 100,
-      render: (text, record) => (
+      render: (text, record) =>
+      record.lastIndex ? null : (
         <Fragment>
           {record.Closed === 'Y' ? (
-            <MyTag type="关闭" value="Y" />
+            <Tag color="red">已关闭</Tag>
           ) : (
-            <MyTag type="询价" value={record.DocStatus} />
+            <Fragment>
+              {text === 'C' ? (
+                <Tag color="green">已报价</Tag>
+              ) : (
+                <Tag color="gold">未报价</Tag>
+              )}
+            </Fragment>
           )}
         </Fragment>
       ),

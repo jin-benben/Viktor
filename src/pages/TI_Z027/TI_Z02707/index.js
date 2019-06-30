@@ -86,7 +86,7 @@ class supplierQuotationSku extends PureComponent {
                 ) : (
                   <Tag color="gold">未确认</Tag>
                 )}
-                {record.text === 'C' ? (
+                {text === 'C' ? (
                   <Tag color="green">已报价</Tag>
                 ) : (
                   <Tag color="gold">未报价</Tag>

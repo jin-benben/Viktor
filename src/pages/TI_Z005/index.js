@@ -8,25 +8,13 @@ import Supplier from '@/components/Supplier';
 import Upload from '@/components/Upload';
 import MDMCommonality from '@/components/Select';
 import { getName } from '@/utils/utils';
+import {brandLevel} from '@/utils/publicData'
 
 const { TextArea } = Input;
 const FormItem = Form.Item;
 const { Option } = Select;
 
-const brandLevel = [
-  {
-    Key: '1',
-    Value: '优势',
-  },
-  {
-    Key: '2',
-    Value: '可询价',
-  },
-  {
-    Key: '3',
-    Value: '国外不询价',
-  },
-];
+
 
 @connect(({ global }) => ({
   global,

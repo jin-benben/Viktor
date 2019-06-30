@@ -414,6 +414,7 @@ class CompanyEdit extends PureComponent {
   };
 
   addLinkMan = () => {
+    const {global:{currentUser}}=this.props
     this.setState({
       LinkManmodalVisible: true,
       linkManVal: {
@@ -422,7 +423,7 @@ class CompanyEdit extends PureComponent {
         PhoneNO: '',
         Email: '',
         Position: '',
-        Saler: '',
+        Saler: currentUser.Owner,
         CompanyCode: '',
       },
     });
@@ -440,7 +441,6 @@ class CompanyEdit extends PureComponent {
         City: '',
         AreaID: '',
         Area: '',
-
         Address: '',
         UserName: '',
         ReceiverPhone: '',

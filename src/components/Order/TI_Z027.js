@@ -77,7 +77,7 @@ class SupplierAsk extends PureComponent {
     {
       title: '单据状态',
       dataIndex: 'LineStatus',
-      width: 120,
+      width: 140,
       render: (text, record) => (
         <Fragment>
           {record.Closed === 'Y' ? (
@@ -122,25 +122,25 @@ class SupplierAsk extends PureComponent {
         ),
     },
     {
-      title: '数量(单位)',
+      title: '数量',
       width: 100,
       dataIndex: 'Quantity',
       render: (text, recond) => <span> {`${text}(${recond.Unit})`}</span>,
     },
     {
-      title: '价格(币种)',
+      title: '价格',
       width: 100,
       dataIndex: 'Price',
       render: (text, recond) => <span> {`${text}(${recond.Currency})`}</span>,
     },
     {
-      title: '币种(汇率)',
+      title: '币种',
       width: 100,
       dataIndex: 'Currency',
       render: (text, recond) => <span> {`${text}(${recond.DocRate})`}</span>,
     },
     {
-      title: '行总计(币种)',
+      title: '行总计',
       width: 100,
       dataIndex: 'LineTotal',
       render: (text, recond) => <span> {`${text}(${recond.Currency})`}</span>,
@@ -220,9 +220,10 @@ class SupplierAsk extends PureComponent {
       },
     });
     if (response && response.Status === 200) {
+      const { pagination } = this.state;
       if (response.Content) {
         const { rows, records, page } = response.Content;
-        const { pagination } = this.state;
+       
         const orderList = rows.map(item => {
           const newItem = item;
           newItem.Currency = getName(Curr, newItem.Currency);
@@ -231,6 +232,11 @@ class SupplierAsk extends PureComponent {
         this.setState({
           orderList,
           pagination: { ...pagination, total: records, current: page },
+        });
+      }else{
+        this.setState({
+          orderList:[],
+          pagination: { ...pagination, total: 0, current: 1 },
         });
       }
     }

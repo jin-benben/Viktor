@@ -456,7 +456,11 @@ class InquiryEdit extends React.Component {
       <Card bordered={false}>
         <DescriptionList style={{ marginBottom: 24 }}>
           <Description term="单号">{formVals.DocEntry}</Description>
-          <Description term="客户">{`${formVals.CardName}(${formVals.CardCode})`}</Description>
+          <Description term="供应商">
+            <Link to={`/main/TI_Z007/detail?Code=${formVals.CardCode}`}>
+              {`${formVals.CardName}(${formVals.CardCode})`}
+            </Link>
+          </Description>
           <Description term="单据日期">{moment(formVals.DocDate).format('YYYY-MM-DD')}</Description>
           <Description term="创建日期">
             {moment(formVals.CreateDate).format('YYYY-MM-DD')}

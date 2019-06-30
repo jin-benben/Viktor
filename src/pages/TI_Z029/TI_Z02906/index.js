@@ -55,7 +55,7 @@ class SalesQuotation extends PureComponent {
     {
       title: '状态',
       width: 80,
-      dataIndex: 'LineStatus',
+      dataIndex: 'DocStatus',
       align: 'center',
       render: (text, record) =>
         record.lastIndex ? null : (

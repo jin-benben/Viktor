@@ -12,24 +12,12 @@ import OdlnordnFetch from '@/components/Order/OdlnordnFetch';
 import OinvorinFetch from '@/components/Order/OinvorinFetch';
 import OrderFetch from '@/components/Order/OrderFetch';
 import { getName } from '@/utils/utils';
+import {brandLevel} from '@/utils/publicData'
 
 const { TabPane } = Tabs;
 
 const { Description } = DescriptionList;
-const brandLevel = [
-  {
-    Key: '1',
-    Value: '优势',
-  },
-  {
-    Key: '2',
-    Value: '可询价',
-  },
-  {
-    Key: '3',
-    Value: '国外不询价',
-  },
-];
+
 @connect(({ brands, loading, global }) => ({
   brands,
   global,

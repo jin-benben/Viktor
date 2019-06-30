@@ -251,7 +251,7 @@ class CompanyEdit extends React.Component {
       },
       callback: response => {
         if (response && response.Status === 200) {
-          message.success('添加成功');
+          message.success('删除成功');
           this.handleModalVisible(false);
           this.getDetail();
         }
@@ -312,7 +312,7 @@ class CompanyEdit extends React.Component {
         callback: response => {
           if (response && response.Status === 200) {
             message.success('添加成功');
-            router.push(`/main/TI_Z006/detail?Code=${response.Content.Code}`);
+            router.push(`/main/TI_Z007/detail?Code=${response.Content.Code}`);
           }
         },
       });

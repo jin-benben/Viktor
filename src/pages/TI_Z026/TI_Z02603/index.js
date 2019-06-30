@@ -39,7 +39,6 @@ class InquiryEdit extends PureComponent {
     },
     {
       title: '行状态',
-      width: 140,
       dataIndex: 'LineStatus',
       align: 'center',
       render: (text, record) =>
@@ -555,7 +554,11 @@ class InquiryEdit extends PureComponent {
       <Card bordered={false} loading={loading}>
         <DescriptionList style={{ marginBottom: 24 }}>
           <Description term="单号">{formVals.DocEntry}</Description>
-          <Description term="客户">{`${formVals.CardName}(${formVals.CardCode})`}</Description>
+          <Description term="客户">
+            <Link to={`/main/TI_Z006/detail?Code=${formVals.CardCode}`}>
+              {`${formVals.CardName}(${formVals.CardCode})`}
+            </Link>
+          </Description>
           <Description term="单据日期">{moment(formVals.DocDate).format('YYYY-MM-DD')}</Description>
           <Description term="创建日期">
             {moment(formVals.CreateDate).format('YYYY-MM-DD')}
@@ -603,7 +606,7 @@ class InquiryEdit extends PureComponent {
             <StandardTable
               data={{ list: newdata }}
               rowKey="LineID"
-              scroll={{ x: 2950 }}
+              scroll={{ x: 3000 }}
               columns={this.skuColumns}
             />
           </TabPane>
