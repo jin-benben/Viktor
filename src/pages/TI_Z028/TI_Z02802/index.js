@@ -33,13 +33,13 @@ class TI_Z02802 extends PureComponent {
       title: '单据日期',
       dataIndex: 'DocDate',
       width: 120,
-      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
+      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
     },
     {
       title: '创建日期',
       width: 120,
       dataIndex: 'CreateDate',
-      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
+      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
     },
     {
       title: '销售员',
@@ -163,7 +163,7 @@ class TI_Z02802 extends PureComponent {
       title: '要求交期',
       dataIndex: 'DueDate',
       width: 120,
-      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
+      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
     },
     {
       title: '采购价格',
@@ -174,7 +174,7 @@ class TI_Z02802 extends PureComponent {
       title: '采购交期',
       width: 120,
       dataIndex: 'InquiryDueDate',
-      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
+      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
     },
     {
       title: '采购备注',
@@ -214,7 +214,7 @@ class TI_Z02802 extends PureComponent {
       title: '询价日期',
       width: 100,
       dataIndex: 'CreateDate',
-      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
+      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
     },
     {
       title: '供应商',
@@ -235,7 +235,7 @@ class TI_Z02802 extends PureComponent {
       title: '交期',
       width: 100,
       dataIndex: 'InquiryDueDate',
-      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
+      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
     },
     {
       title: '备注',

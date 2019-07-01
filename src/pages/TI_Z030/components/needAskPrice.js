@@ -37,35 +37,6 @@ class OrderLine extends PureComponent {
     {
       title: '产品描述',
       dataIndex: 'SKUName',
-      width: 200,
-
-      align: 'center',
-    },
-    {
-      title: '品牌',
-      width: 100,
-      align: 'center',
-      dataIndex: 'BrandName',
-    },
-    {
-      title: '名称',
-      dataIndex: 'ProductName',
-
-      width: 150,
-
-      align: 'center',
-    },
-    {
-      title: '型号',
-      width: 150,
-      dataIndex: 'ManufactureNO',
-      align: 'center',
-    },
-    {
-      title: '参数',
-      width: 150,
-      dataIndex: 'Parameters',
-
       align: 'center',
     },
     {
@@ -101,14 +72,14 @@ class OrderLine extends PureComponent {
     },
     {
       title: '要求交期',
-      width: 150,
+      width: 100,
       dataIndex: 'DueDate',
       align: 'center',
-      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
+      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
     },
     {
       title: '仓库',
-      width: 150,
+      width: 100,
       dataIndex: 'WhsCode',
       align: 'center',
       render: text => {
@@ -164,7 +135,7 @@ class OrderLine extends PureComponent {
             data={{ list: data }}
             rowKey="Key"
             columns={this.skuColumns}
-            scroll={{ x: 2100 }}
+            scroll={{ x: 1400 }}
             onChange={this.handleStandardTableChange}
           />
         </div>

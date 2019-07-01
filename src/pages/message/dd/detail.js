@@ -1,10 +1,9 @@
 import React, { PureComponent, Fragment } from 'react';
-import { Card, Tabs } from 'antd';
+import { Card, Tabs, Tag } from 'antd';
 import { connect } from 'dva';
 import DescriptionList from 'ant-design-pro/lib/DescriptionList';
 import PageLoading from '@/components/PageLoading';
 import StandardTable from '@/components/StandardTable';
-import MyTag from '@/components/Tag';
 import styles from '../style.less';
 
 const { Description } = DescriptionList;
@@ -84,7 +83,13 @@ class PrintDetailPage extends PureComponent {
               <Description term="消息模板">{ddMessageDetail.MsgTemplate}</Description>
               <Description term="主题">{ddMessageDetail.Title}</Description>
               <Description term="发送状态">
-                <MyTag type="成功" value={ddMessageDetail.Status === '1' ? 'Y' : 'N'} />
+                <span>
+                  {ddMessageDetail.Status === '2' ? (
+                    <Tag color="blue">成功</Tag>
+                  ) : (
+                    <Tag color="red">失败</Tag>
+                  )}
+                </span>
               </Description>
             </DescriptionList>
             <Tabs defaultActiveKey="1">

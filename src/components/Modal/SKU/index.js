@@ -17,16 +17,16 @@ class SKUModal extends PureComponent {
         SearchKey: 'Name',
       },
       page: 1,
-      rows: 30,
+      rows: 20,
       sidx: 'Code',
       sord: 'Desc',
     },
     pagination: {
       showSizeChanger: true,
       showTotal: total => `共 ${total} 条`,
-      pageSizeOptions: ['30', '60', '90'],
+      pageSizeOptions: ['20', '40', '60'],
       total: 0,
-      pageSize: 30,
+      pageSize: 20,
       current: 1,
     },
   };
@@ -142,7 +142,7 @@ class SKUModal extends PureComponent {
           ...fieldsValue,
         },
         page: 1,
-        rows: 30,
+        rows: 20,
         sidx: 'Code',
         sord: 'Desc',
       };
@@ -211,7 +211,7 @@ class SKUModal extends PureComponent {
             data={{ list: staffsList }}
             rowKey="Code"
             pagination={pagination}
-            scroll={{ y: 300 }}
+            scroll={{ y: 200 }}
             columns={this.columns}
             rowSelection={{
               type: 'radio',

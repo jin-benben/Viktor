@@ -1,10 +1,9 @@
 import React, { PureComponent, Fragment } from 'react';
-import { Card, Tabs } from 'antd';
+import { Card, Tabs, Tag } from 'antd';
 import { connect } from 'dva';
 import DescriptionList from 'ant-design-pro/lib/DescriptionList';
 import PageLoading from '@/components/PageLoading';
 import StandardTable from '@/components/StandardTable';
-import MyTag from '@/components/Tag';
 import styles from '../style.less';
 
 const { Description } = DescriptionList;
@@ -81,7 +80,13 @@ class PushDetailPage extends PureComponent {
               <Description term="推送渠道">{pushMessageDetail.NotificationChannel}</Description>
               <Description term="异常信息 ">{pushMessageDetail.ErrorString}</Description>
               <Description term="发送状态">
-                <MyTag type="成功" value={pushMessageDetail.Status === '1' ? 'Y' : 'N'} />
+                <span>
+                  {pushMessageDetail.Status === '2' ? (
+                    <Tag color="blue">成功</Tag>
+                  ) : (
+                    <Tag color="red">失败</Tag>
+                  )}
+                </span>
               </Description>
             </DescriptionList>
             <Tabs defaultActiveKey="1">

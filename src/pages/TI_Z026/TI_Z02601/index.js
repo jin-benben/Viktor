@@ -21,6 +21,7 @@ import {
   Dropdown,
   Menu,
   Tag,
+  Badge,
 } from 'antd';
 import moment from 'moment';
 import round from 'lodash/round';
@@ -301,12 +302,14 @@ class InquiryEdit extends React.Component {
         } = this.state;
         return record.lastIndex ? null : (
           <Fragment>
-            <Icon
-              title="预览"
-              type="eye"
-              onClick={() => this.lookLineAttachment(record, index)}
-              style={{ color: '#08c', marginRight: 5 }}
-            />
+            <Badge count={record.TI_Z02604.length} showZero className="attachBadge">
+              <Icon
+                title="预览"
+                type="eye"
+                onClick={() => this.lookLineAttachment(record, index)}
+                style={{ color: '#08c', marginRight: 5 }}
+              />
+            </Badge>
             {DocEntry ? (
               <Icon
                 title="上传附件"
@@ -443,12 +446,11 @@ class InquiryEdit extends React.Component {
       width: 120,
       dataIndex: 'InquiryPrice',
       align: 'center',
-      render: (text, record) =>
-        record.lastIndex ? (
-          ''
-        ) : (
-          <span>{`${text || ''}(${record.Currency || ''})[${record.DocRate || ''}]`}</span>
-        ),
+      render: (text, record) => {
+        if (!record.lastIndex) return '';
+        if (!text) return '';
+        return <span>{`${text || ''}(${record.Currency || ''})[${record.DocRate || ''}]`}</span>;
+      },
     },
     {
       title: '询行总计',

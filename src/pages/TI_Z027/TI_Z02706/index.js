@@ -45,13 +45,13 @@ class supplierQuotation extends PureComponent {
       title: '单据日期',
       width: 100,
       dataIndex: 'DocDate',
-      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
+      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
     },
     {
       title: '创建日期',
       width: 100,
       dataIndex: 'CreateDate',
-      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
+      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
     },
     {
       title: '单据状态',
@@ -154,7 +154,7 @@ class supplierQuotation extends PureComponent {
       title: '有效日期',
       width: 100,
       dataIndex: 'ToDate',
-      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
+      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
     },
   ];
 

@@ -37,7 +37,7 @@ class TI_Z02804 extends PureComponent {
       title: '单据日期',
       dataIndex: 'PriceRDateTime',
       width: 100,
-      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
+      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
     },
     {
       title: '客询价单',
@@ -116,7 +116,7 @@ class TI_Z02804 extends PureComponent {
     {
       title: '采购交期',
       width: 100,
-      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
+      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
     },
     {
       title: '备注',

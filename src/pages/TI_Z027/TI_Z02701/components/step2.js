@@ -217,7 +217,7 @@ class SelectionLine extends Component {
         inputType: 'date',
         dataIndex: 'DueDate',
         align: 'center',
-        render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
+        render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
       },
 
       {

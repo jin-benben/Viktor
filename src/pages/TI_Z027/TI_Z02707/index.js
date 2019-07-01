@@ -67,7 +67,7 @@ class supplierQuotationSku extends PureComponent {
       title: '单据日期',
       dataIndex: 'DocDate',
       width: 100,
-      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
+      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
     },
     {
       title: '行状态',
@@ -172,7 +172,7 @@ class supplierQuotationSku extends PureComponent {
       width: 120,
       dataIndex: 'InquiryDueDate',
       align: 'center',
-      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
+      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
     },
     {
       title: '行备注',
@@ -221,7 +221,7 @@ class supplierQuotationSku extends PureComponent {
       dataIndex: 'DueDate',
       align: 'center',
       render: (val, record) =>
-        record.lastIndex ? '' : <span>{moment(val).format('YYYY-MM-DD')}</span>,
+        record.lastIndex ? '' : <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
     },
     {
       title: '上一次价格',

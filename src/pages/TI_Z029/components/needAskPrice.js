@@ -38,46 +38,7 @@ class OrderLine extends PureComponent {
     {
       title: '产品描述',
       dataIndex: 'SKUName',
-      width: 100,
-      align: 'center',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
-    {
-      title: '品牌',
-      width: 100,
-      align: 'center',
-      dataIndex: 'BrandName',
-    },
-    {
-      title: '名称',
-      dataIndex: 'ProductName',
-      width: 150,
-      align: 'center',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
-    {
-      title: '型号',
-      width: 100,
-      dataIndex: 'ManufactureNO',
-      align: 'center',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
-    {
-      title: '参数',
-      width: 100,
-      dataIndex: 'Parameters',
+      width: 300,
       align: 'center',
       render: text => (
         <Ellipsis tooltip lines={1}>
@@ -131,7 +92,7 @@ class OrderLine extends PureComponent {
       width: 100,
       dataIndex: 'DueDate',
       align: 'center',
-      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
+      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
     },
     {
       title: '仓库',
@@ -144,12 +105,6 @@ class OrderLine extends PureComponent {
         } = this.props;
         return <span>{getName(WhsCode, text)}</span>;
       },
-    },
-    {
-      title: '建议价',
-      width: 100,
-      dataIndex: 'AdvisePrice',
-      align: 'center',
     },
     {
       title: '询价备注',
@@ -215,7 +170,7 @@ class OrderLine extends PureComponent {
             pagination={false}
             rowKey={rowKey || 'Key'}
             columns={this.skuColumns}
-            scroll={{ x: 1800 }}
+            scroll={{ x: 1400 }}
             rowSelection={{
               onChange: this.onSelectRow,
               selectedRowKeys,

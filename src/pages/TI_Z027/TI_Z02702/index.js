@@ -20,6 +20,7 @@ import {
   Collapse,
   Select,
   Empty,
+  Badge,
 } from 'antd';
 import moment from 'moment';
 import Link from 'umi/link';
@@ -297,12 +298,14 @@ class InquiryEdit extends React.Component {
       render: (text, record, index) =>
         record.lastIndex ? null : (
           <Fragment>
-            <Icon
-              title="预览"
-              type="eye"
-              onClick={() => this.lookLineAttachment(record, index)}
-              style={{ color: '#08c', marginRight: 5 }}
-            />
+            <Badge count={record.TI_Z02604.length} showZero className="attachBadge">
+              <Icon
+                title="预览"
+                type="eye"
+                onClick={() => this.lookLineAttachment(record, index)}
+                style={{ color: '#08c', marginRight: 5 }}
+              />
+            </Badge>
             <Icon
               title="上传附件"
               className="icons"

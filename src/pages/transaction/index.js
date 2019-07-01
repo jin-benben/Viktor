@@ -34,7 +34,7 @@ class TransactionSearch extends PureComponent {
       title: '单据日期',
       dataIndex: 'DocDate',
       width: 100,
-      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
+      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
     },
     {
       title: '单据状态',
@@ -136,7 +136,7 @@ class TransactionSearch extends PureComponent {
       title: '单据日期',
       dataIndex: 'DocDate',
       width: 100,
-      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
+      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
     },
     {
       title: '单据状态',
@@ -241,7 +241,7 @@ class TransactionSearch extends PureComponent {
       title: '单据日期',
       dataIndex: 'DocDate',
       width: 100,
-      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
+      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
     },
     {
       title: '客户',
@@ -287,7 +287,7 @@ class TransactionSearch extends PureComponent {
       title: '发货时间',
       dataIndex: 'U_DeliverDate',
       width: 100,
-      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
+      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
     },
     {
       title: '快递单号',

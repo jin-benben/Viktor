@@ -92,7 +92,7 @@ class NeedTabl extends React.Component {
       title: '单据日期',
       dataIndex: 'DocDate',
       width: 100,
-      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
+      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
     },
     {
       title: '行状态',
@@ -146,7 +146,7 @@ class NeedTabl extends React.Component {
       inputType: 'date',
       dataIndex: 'DueDate',
       align: 'center',
-      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
+      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
     },
 
     {

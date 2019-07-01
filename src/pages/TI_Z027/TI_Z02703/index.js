@@ -12,6 +12,7 @@ import {
   Collapse,
   Empty,
   Tag,
+  Badge,
 } from 'antd';
 import moment from 'moment';
 import router from 'umi/router';
@@ -66,11 +67,7 @@ class InquiryEdit extends React.Component {
                 ) : (
                   <Tag color="gold">未确认</Tag>
                 )}
-                {record.text === 'C' ? (
-                  <Tag color="green">已报价</Tag>
-                ) : (
-                  <Tag color="gold">未报价</Tag>
-                )}
+                {text === 'C' ? <Tag color="green">已报价</Tag> : <Tag color="gold">未报价</Tag>}
               </Fragment>
             )}
           </Fragment>
@@ -113,7 +110,7 @@ class InquiryEdit extends React.Component {
       width: 100,
       dataIndex: 'Quantity',
       align: 'center',
-      render: (text, record) => <span>{`${text}(${record.Unit})`}</span>,
+      render: (text, record) => (record.lastIndex ? '' : <span>{`${text}(${record.Unit})`}</span>),
     },
     {
       title: '价格',
@@ -127,7 +124,7 @@ class InquiryEdit extends React.Component {
       dataIndex: 'InquiryDueDate',
       align: 'center',
       render: (val, record) =>
-        record.lastIndex ? '' : <span>{moment(val).format('YYYY-MM-DD')}</span>,
+        record.lastIndex ? '' : <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
     },
     {
       title: '行备注',
@@ -176,7 +173,7 @@ class InquiryEdit extends React.Component {
       dataIndex: 'DueDate',
       align: 'center',
       render: (val, record) =>
-        record.lastIndex ? '' : <span>{moment(val).format('YYYY-MM-DD')}</span>,
+        record.lastIndex ? '' : <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
     },
     {
       title: '客询价单',
@@ -210,12 +207,14 @@ class InquiryEdit extends React.Component {
       render: (text, record, index) =>
         record.lastIndex ? null : (
           <Fragment>
-            <Icon
-              title="预览"
-              type="eye"
-              onClick={() => this.lookLineAttachment(record, index)}
-              style={{ color: '#08c', marginRight: 5 }}
-            />
+            <Badge count={record.TI_Z02604.length} showZero className="attachBadge">
+              <Icon
+                title="预览"
+                type="eye"
+                onClick={() => this.lookLineAttachment(record, index)}
+                style={{ color: '#08c', marginRight: 5 }}
+              />
+            </Badge>
           </Fragment>
         ),
     },

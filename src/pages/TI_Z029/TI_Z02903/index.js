@@ -1,6 +1,18 @@
 import React, { Fragment } from 'react';
 import { connect } from 'dva';
-import { Card, Tabs, Button, Icon, message, Dropdown, Menu, Collapse, Empty, Tag } from 'antd';
+import {
+  Card,
+  Tabs,
+  Button,
+  Icon,
+  message,
+  Dropdown,
+  Menu,
+  Collapse,
+  Empty,
+  Tag,
+  Badge,
+} from 'antd';
 import moment from 'moment';
 import router from 'umi/router';
 import Link from 'umi/link';
@@ -140,19 +152,18 @@ class InquiryEdit extends React.Component {
       dataIndex: 'DueDate',
       align: 'center',
       render: (val, record) =>
-        record.lastIndex ? '' : <span>{moment(val).format('YYYY-MM-DD')}</span>,
+        record.lastIndex ? '' : <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
     },
     {
       title: '询价价格',
       width: 120,
       dataIndex: 'InquiryPrice',
       align: 'center',
-      render: (text, record) =>
-        record.lastIndex ? (
-          ''
-        ) : (
-          <span>{`${text || ''}(${record.Currency || ''})[${record.DocRate || ''}]`}</span>
-        ),
+      render: (text, record) => {
+        if (!record.lastIndex) return '';
+        if (!text) return '';
+        return <span>{`${text || ''}(${record.Currency || ''})[${record.DocRate || ''}]`}</span>;
+      },
     },
     {
       title: '询行总计',
@@ -357,12 +368,14 @@ class InquiryEdit extends React.Component {
       render: (text, record, index) =>
         record.lastIndex ? null : (
           <Fragment>
-            <Icon
-              title="预览"
-              type="eye"
-              onClick={() => this.lookLineAttachment(record, index)}
-              style={{ color: '#08c', marginRight: 5 }}
-            />
+            <Badge count={record.TI_Z02604.length} showZero className="attachBadge">
+              <Icon
+                title="预览"
+                type="eye"
+                onClick={() => this.lookLineAttachment(record, index)}
+                style={{ color: '#08c', marginRight: 5 }}
+              />
+            </Badge>
           </Fragment>
         ),
     },
@@ -589,7 +602,7 @@ class InquiryEdit extends React.Component {
       callback: response => {
         if (response && response.Status === 200) {
           message.success('提交成功');
-
+          this.getDetail();
           this.setState({ needmodalVisible: false });
         }
       },

@@ -69,7 +69,7 @@ class orderLine extends PureComponent {
       title: '单据日期',
       dataIndex: 'DocDate',
       width: 100,
-      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
+      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
     },
     {
       title: '行状态',
@@ -187,28 +187,23 @@ class orderLine extends PureComponent {
       width: 120,
       dataIndex: 'InquiryPrice',
       align: 'center',
-      render: (text, record) =>
-        record.lastIndex ? (
-          ''
-        ) : (
-          <span>{`${text || ''}(${record.Currency || ''})[${record.DocRate || ''}]`}</span>
-        ),
+      render: (text, record) => {
+        if (!text) return '';
+        return <span>{`${text || ''}(${record.Currency || ''})[${record.DocRate || ''}]`}</span>;
+      },
     },
     {
       title: '询行总计',
       width: 150,
       align: 'center',
       dataIndex: 'InquiryLineTotal',
-      render: (text, record) =>
-        record.lastIndex ? (
-          ''
-        ) : (
-          <span>
-            {`${text || ''}${
-              record.Currency ? `(${record.Currency})` : ''
-            }-${record.InquiryLineTotalLocal || ''}`}
-          </span>
-        ),
+      render: (text, record) => (
+        <span>
+          {`${text || ''}${
+            record.Currency ? `(${record.Currency})` : ''
+          }-${record.InquiryLineTotalLocal || ''}`}
+        </span>
+      ),
     },
     {
       title: '询价备注',
@@ -228,7 +223,7 @@ class orderLine extends PureComponent {
       dataIndex: 'InquiryDueDate',
       align: 'center',
       render: (text, record) =>
-        record.lastIndex ? null : <span>{moment(text).format('YYYY-MM-DD')}</span>,
+        record.lastIndex ? null : <span>{text ? moment(text).format('YYYY-MM-DD') : ''}</span>,
     },
     {
       title: '名称(外)',
@@ -303,7 +298,7 @@ class orderLine extends PureComponent {
       inputType: 'date',
       dataIndex: 'DueDate',
       align: 'center',
-      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
+      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
     },
     {
       title: '仓库',

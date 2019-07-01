@@ -1,5 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
+import Link from 'umi/link';
 import moment from 'moment';
 import {
   Row,
@@ -7,7 +8,7 @@ import {
   Card,
   Form,
   Button,
-  Divider,
+  Tooltip,
   Select,
   DatePicker,
   Icon,
@@ -57,15 +58,15 @@ class salerConfrim extends PureComponent {
       width: 80,
       fixed: 'left',
       dataIndex: 'DocEntry',
-      // render: (text, recond) => (
-      //   <Link to={`/sellabout/TI_Z026/detail?DocEntry=${text}`}>{`${text}-${recond.LineID}`}</Link>
-      // ),
+      render: text => (
+        <Link to={`/sellabout/odlnordnDetail?DocEntry==${text}&ObjType=15`}>{text}</Link>
+      ),
     },
     {
       title: '单据日期',
       dataIndex: 'DocDate',
       width: 100,
-      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
+      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
     },
 
     {
@@ -81,26 +82,23 @@ class salerConfrim extends PureComponent {
     },
     {
       title: '联系人',
-      width: 80,
-      dataIndex: 'Contacts',
-    },
-    {
-      title: '联系方式',
       width: 100,
-      dataIndex: 'contact',
+      dataIndex: 'Contacts',
       render: (text, record) => (
-        <Ellipsis tooltip lines={1}>
-          {' '}
-          {record.CellphoneNO}
-          {record.PhoneNO ? <Divider type="vertical" /> : null}
-          {record.PhoneNO}
-        </Ellipsis>
+        <Tooltip
+          title={
+            <Fragment>
+              {record.CellphoneNO}
+              <br />
+              {record.Email}
+              <br />
+              {record.PhoneNO}
+            </Fragment>
+          }
+        >
+          {text}
+        </Tooltip>
       ),
-    },
-    {
-      title: '邮箱',
-      width: 200,
-      dataIndex: 'Email',
     },
     {
       title: '交易公司',
@@ -127,7 +125,7 @@ class salerConfrim extends PureComponent {
       title: '发货时间',
       width: 100,
       dataIndex: 'DeliverDate',
-      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
+      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
     },
     {
       title: '发货人',
@@ -165,7 +163,7 @@ class salerConfrim extends PureComponent {
     {
       title: '销售员',
       dataIndex: 'SlpCode',
-      width: 80,
+      width: 120,
       render: val => {
         const {
           global: { Saler },
@@ -619,7 +617,7 @@ class salerConfrim extends PureComponent {
               data={{ list: orderLineList }}
               pagination={pagination}
               rowKey="DocEntry"
-              scroll={{ x: 1700, y: 500 }}
+              scroll={{ x: 1800, y: 500 }}
               columns={columns}
               rowSelection={{
                 onSelectRow: this.onSelectRow,

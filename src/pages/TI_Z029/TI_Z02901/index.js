@@ -25,6 +25,7 @@ import {
   Collapse,
   Empty,
   Tag,
+  Badge,
 } from 'antd';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import moment from 'moment';
@@ -205,12 +206,11 @@ class TI_Z029Component extends React.Component {
       width: 120,
       dataIndex: 'InquiryPrice',
       align: 'center',
-      render: (text, record) =>
-        record.lastIndex ? (
-          ''
-        ) : (
-          <span>{`${text || ''}(${record.Currency || ''})[${record.DocRate || ''}]`}</span>
-        ),
+      render: (text, record) => {
+        if (!record.lastIndex) return '';
+        if (!text) return '';
+        return <span>{`${text || ''}(${record.Currency || ''})[${record.DocRate || ''}]`}</span>;
+      },
     },
     {
       title: '询行总计',
@@ -319,6 +319,14 @@ class TI_Z029Component extends React.Component {
       dataIndex: 'Rweight',
       editable: true,
       inputType: 'text',
+      align: 'center',
+    },
+    {
+      title: '国外运费',
+      width: 80,
+      editable: true,
+      inputType: 'text',
+      dataIndex: 'ForeignFreight',
       align: 'center',
     },
     {
@@ -489,7 +497,7 @@ class TI_Z029Component extends React.Component {
       render: (text, recond) =>
         text ? (
           <Link target="_blank" to={`/sellabout/orderdetail?DocEntry=${text}`}>
-            {`${text}-${recond.SoLineID}`}
+            {`${text}-${recond.SoLine}`}
           </Link>
         ) : (
           ''
@@ -506,12 +514,14 @@ class TI_Z029Component extends React.Component {
         } = this.state;
         return record.lastIndex ? null : (
           <Fragment>
-            <Icon
-              title="预览"
-              type="eye"
-              onClick={() => this.lookLineAttachment(record, index)}
-              style={{ color: '#08c', marginRight: 5 }}
-            />
+            <Badge count={record.TI_Z02604.length} showZero className="attachBadge">
+              <Icon
+                title="预览"
+                type="eye"
+                onClick={() => this.lookLineAttachment(record, index)}
+                style={{ color: '#08c', marginRight: 5 }}
+              />
+            </Badge>
             {DocEntry ? (
               <Icon
                 title="上传附件"
@@ -1478,7 +1488,7 @@ class TI_Z029Component extends React.Component {
       callback: response => {
         if (response && response.Status === 200) {
           message.success('提交成功');
-
+          this.getDetail();
           this.setState({ needmodalVisible: false });
         }
       },

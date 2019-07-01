@@ -1,10 +1,8 @@
 import React, { PureComponent, Fragment } from 'react';
-import { Card, Tabs } from 'antd';
+import { Card, Tabs, Tag } from 'antd';
 import { connect } from 'dva';
 import DescriptionList from 'ant-design-pro/lib/DescriptionList';
 import PageLoading from '@/components/PageLoading';
-
-import MyTag from '@/components/Tag';
 import styles from '../style.less';
 
 const { Description } = DescriptionList;
@@ -53,7 +51,13 @@ class WXDetailPage extends PureComponent {
               <Description term="微信OpenId">{wxMessageDetail.OpenId}</Description>
               <Description term="微信消息ID">{wxMessageDetail.Msgid}</Description>
               <Description term="发送状态">
-                <MyTag type="成功" value={wxMessageDetail.Status === '1' ? 'Y' : 'N'} />
+                <span>
+                  {wxMessageDetail.Status === '2' ? (
+                    <Tag color="blue">成功</Tag>
+                  ) : (
+                    <Tag color="red">失败</Tag>
+                  )}
+                </span>
               </Description>
             </DescriptionList>
             <Tabs defaultActiveKey="1">

@@ -25,6 +25,7 @@ import {
   Empty,
   Menu,
   Tag,
+  Badge,
 } from 'antd';
 import moment from 'moment';
 import round from 'lodash/round';
@@ -205,12 +206,11 @@ class AgreementEdit extends React.Component {
       width: 120,
       dataIndex: 'InquiryPrice',
       align: 'center',
-      render: (text, record) =>
-        record.lastIndex ? (
-          ''
-        ) : (
-          <span>{`${text || ''}(${record.Currency || ''})[${record.DocRate || ''}]`}</span>
-        ),
+      render: (text, record) => {
+        if (!record.lastIndex) return '';
+        if (!text) return '';
+        return <span>{`${text || ''}(${record.Currency || ''})[${record.DocRate || ''}]`}</span>;
+      },
     },
     {
       title: '询行总计',
@@ -246,7 +246,7 @@ class AgreementEdit extends React.Component {
       dataIndex: 'InquiryDueDate',
       align: 'center',
       render: (text, record) =>
-        record.lastIndex ? null : <span>{moment(text).format('YYYY-MM-DD')}</span>,
+        record.lastIndex ? null : <span>{text ? moment(text).format('YYYY-MM-DD') : ''}</span>,
     },
     {
       title: '采购员',
@@ -319,6 +319,14 @@ class AgreementEdit extends React.Component {
       dataIndex: 'Rweight',
       editable: true,
       inputType: 'text',
+      align: 'center',
+    },
+    {
+      title: '国外运费',
+      width: 80,
+      editable: true,
+      inputType: 'text',
+      dataIndex: 'ForeignFreight',
       align: 'center',
     },
     {
@@ -501,12 +509,14 @@ class AgreementEdit extends React.Component {
         } = this.state;
         return record.lastIndex ? null : (
           <Fragment>
-            <Icon
-              title="预览"
-              type="eye"
-              onClick={() => this.lookLineAttachment(record, index)}
-              style={{ color: '#08c', marginRight: 5 }}
-            />
+            <Badge count={record.TI_Z02604.length} showZero className="attachBadge">
+              <Icon
+                title="预览"
+                type="eye"
+                onClick={() => this.lookLineAttachment(record, index)}
+                style={{ color: '#08c', marginRight: 5 }}
+              />
+            </Badge>
             {DocEntry ? (
               <Icon
                 title="上传附件"

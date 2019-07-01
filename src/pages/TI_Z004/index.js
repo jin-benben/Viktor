@@ -369,13 +369,13 @@ class Staffs extends PureComponent {
       title: '入职时间',
       width: 100,
       dataIndex: 'EntryTime',
-      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
+      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
     },
     {
       title: '离职时间',
       width: 100,
       dataIndex: 'ResignationTime',
-      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
+      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
     },
     {
       title: '操作',

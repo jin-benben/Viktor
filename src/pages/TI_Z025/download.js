@@ -58,13 +58,13 @@ class BatchUpload extends PureComponent {
       title: '创建日期',
       dataIndex: 'CreateDate',
       width: 100,
-      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
+      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
     },
     {
       title: '更新日期',
       dataIndex: 'UpdateDate',
       width: 100,
-      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
+      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
     },
   ];
 
@@ -181,7 +181,7 @@ class BatchUpload extends PureComponent {
             </FormItem>
           </Col>
           <Col md={6} sm={24}>
-            <FormItem key="ApproveBy" {...formLayout} label="销售员">
+            <FormItem key="ApproveBy" {...formLayout} label="审批人">
               {getFieldDecorator('ApproveBy')(
                 <Select
                   showArrow={false}
@@ -229,7 +229,7 @@ class BatchUpload extends PureComponent {
               loading={searchLoading}
               dataSource={batchUploadList}
               pagination={pagination}
-              rowKey="Code"
+              rowKey="key"
               scroll={{ x: 1000, y: 600 }}
               rowSelection={{
                 selectedRowKeys,

@@ -1,6 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Card, Tabs, Modal, Button, Icon, message, Dropdown, Menu, Tag } from 'antd';
+import { Card, Tabs, Modal, Button, Icon, message, Dropdown, Menu, Tag, Badge } from 'antd';
 import moment from 'moment';
 import router from 'umi/router';
 import Link from 'umi/link';
@@ -100,12 +100,11 @@ class InquiryEdit extends PureComponent {
       width: 120,
       dataIndex: 'InquiryPrice',
       align: 'center',
-      render: (text, record) =>
-        record.lastIndex ? (
-          ''
-        ) : (
-          <span>{`${text || ''}(${record.Currency || ''})[${record.DocRate || ''}]`}</span>
-        ),
+      render: (text, record) => {
+        if (!record.lastIndex) return '';
+        if (!text) return '';
+        return <span>{`${text || ''}(${record.Currency || ''})[${record.DocRate || ''}]`}</span>;
+      },
     },
     {
       title: '询行总计',
@@ -329,16 +328,14 @@ class InquiryEdit extends PureComponent {
       render: (text, record, index) =>
         record.lastIndex ? null : (
           <Fragment>
-            {record.TI_Z02604.length ? (
+            <Badge count={record.TI_Z02604.length} showZero className="attachBadge">
               <Icon
                 title="预览"
                 type="eye"
                 onClick={() => this.lookLineAttachment(record, index)}
                 style={{ color: '#08c', marginRight: 5 }}
               />
-            ) : (
-              <span />
-            )}
+            </Badge>
           </Fragment>
         ),
     },

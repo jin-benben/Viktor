@@ -5,7 +5,6 @@ import moment from 'moment';
 import DescriptionList from 'ant-design-pro/lib/DescriptionList';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import StandardTable from '@/components/StandardTable';
-import MyTag from '@/components/Tag';
 import Attachment from '@/components/Attachment/other';
 import { getName } from '@/utils/utils';
 
@@ -21,10 +20,12 @@ class InquiryEdit extends PureComponent {
   skuColumns = [
     {
       title: '物料代码',
+      width: 80,
       dataIndex: 'ItemCode',
     },
     {
       title: '物料名称',
+      width: 300,
       dataIndex: 'ItemName',
       render: text => (
         <Ellipsis tooltip lines={1}>
@@ -34,23 +35,28 @@ class InquiryEdit extends PureComponent {
     },
     {
       title: '单位',
+      width: 80,
       dataIndex: 'InvntryUom',
     },
     {
       title: '数量',
+      width: 80,
       dataIndex: 'Quantity',
     },
 
     {
       title: '含税价格',
+      width: 80,
       dataIndex: 'PriceAfVAT',
     },
     {
       title: '行总计',
+      width: 80,
       dataIndex: 'LineTotal',
     },
     {
       title: '行备注',
+      width: 200,
       dataIndex: 'FreeTxt',
       render: text => (
         <Ellipsis tooltip lines={1}>
@@ -61,6 +67,7 @@ class InquiryEdit extends PureComponent {
     {
       title: '操作',
       align: 'center',
+      width: 80,
       render: (text, record, index) =>
         record.lastIndex ? null : (
           <Fragment>
@@ -212,7 +219,7 @@ class InquiryEdit extends PureComponent {
           <Description term="客户参考号">{oinvorinDetailInfo.NumAtCard}</Description>
           <Description term="单据状态">
             {oinvorinDetailInfo.CANCELED === 'Y' ? (
-              <MyTag type="关闭" value="Y" />
+              <Tag color="red">已关闭</Tag>
             ) : (
               <Fragment>
                 {oinvorinDetailInfo.DocStatus === 'O' ? (
@@ -220,10 +227,10 @@ class InquiryEdit extends PureComponent {
                 ) : (
                   <Tag color="green">已清</Tag>
                 )}
-                {oinvorinDetailInfo.U_DeliverSts === 'Y' ? (
+                {oinvorinDetailInfo.U_DeliverSts === 'N' ? (
                   <Tag color="gold">未发货</Tag>
                 ) : (
-                  <Tag color="green">已发火</Tag>
+                  <Tag color="green">已发货</Tag>
                 )}
               </Fragment>
             )}
@@ -231,7 +238,12 @@ class InquiryEdit extends PureComponent {
         </DescriptionList>
         <Tabs>
           <TabPane tab="物料" key="1">
-            <StandardTable data={{ list: newdata }} rowKey="key" columns={this.skuColumns} />
+            <StandardTable
+              data={{ list: newdata }}
+              scroll={{ x: 1200 }}
+              rowKey="key"
+              columns={this.skuColumns}
+            />
           </TabPane>
           <TabPane tab="附件" key="3">
             <Attachment dataSource={oinvorinDetailInfo.DocEnclosure} iscan />

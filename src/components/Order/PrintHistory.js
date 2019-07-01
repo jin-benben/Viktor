@@ -92,7 +92,7 @@ class ClientAsk extends PureComponent {
       title: '创建日期',
       width: 100,
       dataIndex: 'CreateDate',
-      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
+      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
     },
     {
       title: '内容模板',

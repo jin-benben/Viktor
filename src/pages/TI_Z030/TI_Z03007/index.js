@@ -68,7 +68,7 @@ class AgreementLine extends PureComponent {
       title: '单据日期',
       width: 100,
       dataIndex: 'DocDate',
-      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
+      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
     },
     {
       title: '客户',
@@ -177,35 +177,30 @@ class AgreementLine extends PureComponent {
       width: 100,
       dataIndex: 'DueDate',
       align: 'center',
-      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
+      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
     },
     {
       title: '询价价格',
       width: 120,
       dataIndex: 'InquiryPrice',
       align: 'center',
-      render: (text, record) =>
-        record.lastIndex ? (
-          ''
-        ) : (
-          <span>{`${text || ''}(${record.Currency || ''})[${record.DocRate || ''}]`}</span>
-        ),
+      render: (text, record) => {
+        if (!text) return '';
+        return <span>{`${text || ''}(${record.Currency || ''})[${record.DocRate || ''}]`}</span>;
+      },
     },
     {
       title: '询行总计',
       width: 150,
       align: 'center',
       dataIndex: 'InquiryLineTotal',
-      render: (text, record) =>
-        record.lastIndex ? (
-          ''
-        ) : (
-          <span>
-            {`${text || ''}${
-              record.Currency ? `(${record.Currency})` : ''
-            }-${record.InquiryLineTotalLocal || ''}`}
-          </span>
-        ),
+      render: (text, record) => (
+        <span>
+          {`${text || ''}${
+            record.Currency ? `(${record.Currency})` : ''
+          }-${record.InquiryLineTotalLocal || ''}`}
+        </span>
+      ),
     },
     {
       title: '询价备注',
@@ -223,7 +218,7 @@ class AgreementLine extends PureComponent {
       width: 100,
       dataIndex: 'InquiryDueDate',
       align: 'center',
-      render: text => <span>{moment(text).format('YYYY-MM-DD')}</span>,
+      render: text => <span>{text ? moment(text).format('YYYY-MM-DD') : ''}</span>,
     },
     {
       title: '采购员',
@@ -564,7 +559,7 @@ class AgreementLine extends PureComponent {
                   icon="plus"
                   style={{ marginLeft: 8 }}
                   type="primary"
-                  onClick={() => router.push('/TI_Z030/edit')}
+                  onClick={() => router.push('/sellabout/TI_Z030/add')}
                 >
                   新建
                 </Button>
