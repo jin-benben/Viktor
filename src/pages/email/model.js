@@ -1,4 +1,11 @@
-import { queryRule, querySingleRule, getSendRule, saveSendRule, sendEmailRule } from './service';
+import {
+  queryRule,
+  querySingleRule,
+  getSendRule,
+  saveSendRule,
+  sendEmailRule,
+  sendTestRule,
+} from './service';
 
 export default {
   namespace: 'sendEmail',
@@ -80,6 +87,10 @@ export default {
     },
     *saveSend({ payload, callback }, { call }) {
       const response = yield call(saveSendRule, payload);
+      if (callback) callback(response);
+    },
+    *sendTest({ payload, callback }, { call }) {
+      const response = yield call(sendTestRule, payload);
       if (callback) callback(response);
     },
     *saveAgainSend({ payload, callback }, { call }) {

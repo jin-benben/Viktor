@@ -16,51 +16,14 @@ export default {
     queryData: {
       Content: {
         SearchText: '',
-        SearchKey: '',
       },
       page: 1,
       rows: 30,
       sidx: 'Code',
       sord: 'Desc',
     },
-    queryData1: {
-      Content: {
-        ApproveBy: [],
-        Code: '',
-        ItemCode: '',
-      },
-      page: 1,
-      rows: 30,
-      sidx: 'Code',
-      sord: 'Desc',
-    },
-    queryData2: {
-      Content: {
-        SearchText: '',
-        SearchKey: '',
-      },
-      page: 1,
-      rows: 30,
-      sidx: 'Code',
-      sord: 'Desc',
-    },
+
     pagination: {
-      showSizeChanger: true,
-      showTotal: total => `共 ${total} 条`,
-      pageSizeOptions: ['30', '60', '90'],
-      total: 0,
-      pageSize: 30,
-      current: 1,
-    },
-    pagination1: {
-      showSizeChanger: true,
-      showTotal: total => `共 ${total} 条`,
-      pageSizeOptions: ['30', '60', '90'],
-      total: 0,
-      pageSize: 30,
-      current: 1,
-    },
-    pagination2: {
       showSizeChanger: true,
       showTotal: total => `共 ${total} 条`,
       pageSizeOptions: ['30', '60', '90'],
@@ -113,7 +76,7 @@ export default {
             type: 'save',
             payload: {
               batchApproveList: rows,
-              pagination1: {
+              pagination: {
                 total: records,
                 pageSize: payload.rows,
                 current: page,
@@ -143,7 +106,7 @@ export default {
             type: 'save',
             payload: {
               batchUploadList: rows,
-              pagination2: {
+              pagination: {
                 total: records,
                 pageSize: payload.rows,
                 current: page,

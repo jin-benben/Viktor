@@ -57,7 +57,7 @@ class PrintPage extends PureComponent {
     const { BaseEntry, BaseType, HtmlTemplateCode, PaperHTMLString } = sendDetail;
 
     form.validateFields((err, fieldsValue) => {
-      const { HtmlString, Title, ToList, CCList, From } = fieldsValue;
+      const { HtmlString, Title, ToList, CCList, BccList, From } = fieldsValue;
       if (err) return;
       const sendData = {
         BaseEntry,
@@ -68,6 +68,7 @@ class PrintPage extends PureComponent {
         ToList,
         Title,
         CCList,
+        BccList,
         EmailTemplateCode: Code,
         EmailTemplateName: Name,
       };
@@ -105,6 +106,48 @@ class PrintPage extends PureComponent {
           },
         });
       }
+    });
+  };
+
+  sendEmailTestHandle = () => {
+    const {
+      dispatch,
+      location: { query },
+      form,
+    } = this.props;
+    const { sendDetail } = this.state;
+    const { Code, Name } = query;
+    const { BaseEntry, BaseType, HtmlTemplateCode, PaperHTMLString } = sendDetail;
+
+    form.validateFields((err, fieldsValue) => {
+      const { HtmlString, Title, ToList, From } = fieldsValue;
+      if (err) return;
+      const sendData = {
+        BaseEntry,
+        BaseType,
+        Body: `${PaperHTMLString + HtmlString}</div>`,
+        HtmlTemplateCode,
+        From,
+        ToList,
+        Title,
+        CCList: '',
+        BccList: '',
+        EmailTemplateCode: Code,
+        EmailTemplateName: Name,
+      };
+      dispatch({
+        type: 'sendEmail/sendTest',
+        payload: {
+          Content: {
+            ...sendData,
+          },
+        },
+        callback: response => {
+          if (response && response.Status === 200) {
+            message.success('发送成功');
+          }
+        },
+      });
     });
   };
 
@@ -157,6 +200,15 @@ class PrintPage extends PureComponent {
             </FormItem>
           </Row>
           <Row>
+            <FormItem key="BccList" {...formLayout} label="密抄邮箱">
+              {getFieldDecorator('BccList', {
+                // rules: [{ required: true, message: '请输入密抄邮箱！' }],
+                initialValue: sendDetail.BccList,
+              })(<Input placeholder="请输入密抄邮箱" />)}
+            </FormItem>
+          </Row>
+
+          <Row>
             <FormItem key="Title" {...formLayout} label="主题">
               {getFieldDecorator('Title', {
                 rules: [{ required: true, message: '请输入主题！' }],
@@ -189,10 +241,13 @@ class PrintPage extends PureComponent {
               完成
             </Button>
           )}
-
           <Button onClick={this.sendEmailHandle} type="primary">
             保存并发送
           </Button>
+          <Button onClick={this.sendEmailTestHandle} type="primary">
+            发送测试
+          </Button>
+          (发送测试，请注意收件人邮箱)
         </FooterToolbar>
       </Card>
     );

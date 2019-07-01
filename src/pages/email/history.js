@@ -261,7 +261,7 @@ class PrintHistory extends PureComponent {
               data={{ list: sendEmailList }}
               pagination={pagination}
               rowKey="DocEntry"
-              scroll={{ x: 1800, y: 600 }}
+              scroll={{ x: 1900, y: 600 }}
               columns={this.columns}
               onRow={this.handleOnRow}
               onChange={this.handleStandardTableChange}

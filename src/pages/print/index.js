@@ -49,6 +49,7 @@ class PrintPage extends Component {
       print: { printDetail },
       location: { query },
     } = this.props;
+
     const {
       BaseEntry,
       BaseType,

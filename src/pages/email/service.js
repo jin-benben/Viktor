@@ -18,6 +18,15 @@ export async function querySingleRule(params) {
   });
 }
 
+export async function sendTestRule(params) {
+  return request('/Report/TI_Z047/TI_Z04705', {
+    method: 'POST',
+    data: {
+      ...params,
+    },
+  });
+}
+
 export async function saveSendRule(params) {
   return request('/Report/TI_Z047/TI_Z04701', {
     method: 'POST',

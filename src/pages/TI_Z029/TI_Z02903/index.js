@@ -222,7 +222,11 @@ class InquiryEdit extends React.Component {
         const {
           global: { HS },
         } = this.props;
-        return record.lastIndex ? null : <span>{getName(HS, text)}</span>;
+        return record.lastIndex ? null : (
+          <Ellipsis tooltip lines={1}>
+            {getName(HS, text)}
+          </Ellipsis>
+        );
       },
     },
     {

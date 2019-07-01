@@ -1,31 +1,8 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import router from 'umi/router';
-import Link from 'umi/link';
 import moment from 'moment';
-import {
-  Row,
-  Col,
-  Card,
-  Form,
-  Input,
-  Button,
-  Tooltip,
-  Select,
-  DatePicker,
-  Icon,
-  Tag,
-  message,
-} from 'antd';
+import { Row, Col, Card, Form, Select, Button, Tooltip, message, Table } from 'antd';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
-import Ellipsis from 'ant-design-pro/lib/Ellipsis';
-import StandardTable from '@/components/StandardTable';
-import MDMCommonality from '@/components/Select';
-import DocEntryFrom from '@/components/DocEntryFrom';
-import Organization from '@/components/Organization/multiple';
-import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
-
-const { RangePicker } = DatePicker;
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -34,61 +11,40 @@ const { Option } = Select;
 @connect(({ batchManage, loading, global }) => ({
   batchManage,
   global,
-  loading: loading.models.batchManage,
+  searchLoading: loading.effects['batchManage/approvefetch'],
+  approveLoading: loading.effects['batchManage/approve'],
 }))
 @Form.create()
-class batchManage extends PureComponent {
+class BatchUpload extends PureComponent {
   columns = [
     {
       title: '批次号',
       dataIndex: 'Code',
-      render: (text, recond) => (
-        <Link target="_blank" to={`/purchase/TI_Z027/detail?DocEntry=${text}`}>
-          {`${text}-${recond.LineID}`}
-        </Link>
-      ),
+      width: 200,
     },
     {
-      title: '客询价单',
+      title: '附件数',
       width: 80,
-      dataIndex: 'BaseEntry',
-      align: 'center',
-      render: (val, record) =>
-        record.lastIndex ? null : (
-          <Link target="_blank" to={`/sellabout/TI_Z026/detail?DocEntry=${record.BaseEntry}`}>
-            {`${val}-${record.BaseLineID}`}
-          </Link>
-        ),
-    },
-
-    {
-      title: '审核日期',
-      dataIndex: 'ApproveDate',
-      width: 100,
-      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
-    },
-
-    {
-      title: '审核状态',
-      width: 100,
-      dataIndex: 'ApproveSts',
-      align: 'center',
-      render: text =>
-        text === 'Y' ? <Tag color="green">已通过</Tag> : <Tag color="gold">未通过</Tag>,
-    },
-    {
-      title: '批次附件数',
-      width: 100,
       dataIndex: 'AttachmentCount',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
+      align: 'center',
+    },
+    {
+      title: '附件',
+      width: 300,
+      dataIndex: 'Image',
+      render: (text, record) =>
+        record.TI_Z02502.map(item => (
+          <img
+            key={item.AttachmentPath}
+            style={{ width: 50, height: 50 }}
+            src={item.AttachmentPath}
+            alt="主图"
+          />
+        )),
     },
     {
       title: '物料代码',
-      width: 100,
+      width: 80,
       dataIndex: 'ItemCode',
       render: (text, record) => (
         <Tooltip
@@ -107,13 +63,13 @@ class batchManage extends PureComponent {
       ),
     },
     {
-      title: 'CreateDate',
-      dataIndex: 'ApproveDate',
+      title: '创建日期',
+      dataIndex: 'CreateDate',
       width: 100,
       render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
     {
-      title: '审核日期',
+      title: '更新日期',
       dataIndex: 'UpdateDate',
       width: 100,
       render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
@@ -121,10 +77,8 @@ class batchManage extends PureComponent {
   ];
 
   state = {
-    expandForm: false,
     selectedRows: [],
-    transferModalVisible: false,
-    transferLine: '',
+    selectedRowKeys: [],
   };
 
   componentDidMount() {
@@ -133,7 +87,7 @@ class batchManage extends PureComponent {
       batchManage: { queryData },
     } = this.props;
     dispatch({
-      type: 'batchManage/fetch',
+      type: 'batchManage/approvefetch',
       payload: {
         ...queryData,
       },
@@ -142,12 +96,9 @@ class batchManage extends PureComponent {
       type: 'global/getMDMCommonality',
       payload: {
         Content: {
-          CodeList: ['Saler', 'Company', 'Purchaser'],
+          CodeList: ['Saler'],
         },
       },
-    });
-    dispatch({
-      type: 'global/getAuthority',
     });
   }
 
@@ -157,7 +108,7 @@ class batchManage extends PureComponent {
       batchManage: { queryData },
     } = this.props;
     dispatch({
-      type: 'batchManage/fetch',
+      type: 'batchManage/approvefetch',
       payload: {
         ...queryData,
         page: pagination.current,
@@ -173,69 +124,73 @@ class batchManage extends PureComponent {
 
     form.validateFields((err, fieldsValue) => {
       if (err) return;
-      let DocDateFrom;
-      let DocDateTo;
-      if (fieldsValue.dateArr) {
-        DocDateFrom = moment(fieldsValue.dateArr[0]).format('YYYY-MM-DD');
-        DocDateTo = moment(fieldsValue.dateArr[1]).format('YYYY-MM-DD');
-      }
-      const queryData = {
-        ...fieldsValue,
-        DocDateFrom,
-        DocDateTo,
-        ...fieldsValue.orderNo,
-      };
+
       dispatch({
-        type: 'batchManage/fetch',
+        type: 'batchManage/approvefetch',
         payload: {
           Content: {
             SearchText: '',
-            SearchKey: 'Name',
-            ...queryData,
+            ...fieldsValue,
           },
           page: 1,
           rows: 30,
-          sidx: 'DocEntry',
+          sidx: 'Code',
           sord: 'Desc',
         },
       });
     });
   };
 
-  toggleForm = () => {
-    // 是否展开
-    const { expandForm } = this.state;
-    this.setState({
-      expandForm: !expandForm,
+  onSelectRow = (selectedRowKeys, selectedRows) => {
+    this.setState({ selectedRows: [...selectedRows], selectedRowKeys: [...selectedRowKeys] });
+  };
+
+  // eslint-disable-next-line consistent-return
+  approveHandle = ApproveSts => {
+    const { dispatch } = this.props;
+    const { selectedRows } = this.state;
+    if (!selectedRows.length) return false;
+    const Code = selectedRows.map(item => item.Code);
+    dispatch({
+      type: 'batchManage/approve',
+      payload: {
+        Content: {
+          Code,
+          ApproveSts,
+        },
+      },
+      callback: response => {
+        if (response && response.Status === 200) {
+          if (ApproveSts === 'Y') message.success('审批通过');
+          if (ApproveSts === 'N') message.success('已驳回');
+          dispatch({
+            type: 'batchManage/approvefetch',
+            payload: {
+              Content: {
+                SearchText: '',
+              },
+              page: 1,
+              rows: 30,
+              sidx: 'Code',
+              sord: 'Desc',
+            },
+          });
+          this.setState({
+            selectedRows: [],
+            selectedRowKeys: [],
+          });
+        }
+      },
     });
   };
 
-  onSelectRow = selectedRows => {
-    this.setState({ selectedRows: [...selectedRows] });
-  };
-
-  toTransfer = () => {
-    const { selectedRows } = this.state;
-    if (selectedRows.length) {
-      this.setState({
-        transferLine: selectedRows[0],
-        transferModalVisible: true,
-      });
-    } else {
-      message.warning('请先选择转移的行');
-    }
-  };
-
-  handleModalVisible = flag => {
-    this.setState({ transferModalVisible: !!flag });
-  };
+  uploadHandle = () => {};
 
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
       global: { Saler },
     } = this.props;
-    const { expandForm } = this.state;
     const formLayout = {
       labelCol: { span: 8 },
       wrapperCol: { span: 16 },
@@ -243,81 +198,31 @@ class batchManage extends PureComponent {
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={4} sm={24}>
-            <FormItem key="SearchText" {...formLayout}>
-              {getFieldDecorator('SearchText')(<Input placeholder="请输入关键字" />)}
-            </FormItem>
-          </Col>
           <Col md={5} sm={24}>
-            <FormItem label="日期" {...formLayout}>
-              {getFieldDecorator('dateArr', { rules: [{ type: 'array' }] })(
-                <RangePicker style={{ width: '100%' }} />
-              )}
-            </FormItem>
-          </Col>
-          <Col md={5} sm={24}>
-            <FormItem key="Owner" {...formLayout} label="采购员">
-              {getFieldDecorator('Owner')(<SalerPurchaser />)}
-            </FormItem>
-          </Col>
-          <Col md={5} sm={24}>
-            <FormItem key="LineStatus" {...formLayout} label="确认状态">
-              {getFieldDecorator('LineStatus')(
-                <Select placeholder="请选择">
-                  <Option value="1">已报价</Option>
-                  <Option value="2">未报价</Option>
+            <FormItem key="SlpCode" {...formLayout} label="销售员">
+              {getFieldDecorator('SlpCode')(
+                <Select
+                  showArrow={false}
+                  mode="multiple"
+                  placeholder="选择名称"
+                  filterOption={false}
+                  style={{ width: '100%' }}
+                >
+                  {Saler.map(option => (
+                    <Option key={option.Key} value={option.Key}>
+                      {option.Value}
+                    </Option>
+                  ))}
                 </Select>
               )}
             </FormItem>
           </Col>
-          {expandForm ? (
-            <Fragment>
-              <Col md={5} sm={24}>
-                <FormItem key="DeptList" {...this.formLayout} label="部门">
-                  {getFieldDecorator('DeptList')(<Organization />)}
-                </FormItem>
-              </Col>
-              <Col md={4} sm={24}>
-                <FormItem key="Closed" {...formLayout}>
-                  {getFieldDecorator('Closed')(
-                    <Select placeholder="请选择关闭状态">
-                      <Option value="Y">已关闭</Option>
-                      <Option value="N">未关闭</Option>
-                    </Select>
-                  )}
-                </FormItem>
-              </Col>
-              <Col md={5} sm={24}>
-                <FormItem key="orderNo" {...formLayout} label="单号">
-                  {getFieldDecorator('orderNo', {
-                    initialValue: { DocEntryFrom: '', DocEntryTo: '' },
-                  })(<DocEntryFrom />)}
-                </FormItem>
-              </Col>
-              <Col md={5} sm={24}>
-                <FormItem label="销售" {...formLayout}>
-                  {getFieldDecorator('Saler')(<MDMCommonality data={Saler} />)}
-                </FormItem>
-              </Col>
-            </Fragment>
-          ) : null}
-          <Col md={5} sm={24}>
+          <Col md={3} sm={24}>
             <FormItem key="searchBtn">
               <span className="submitButtons">
                 <Button type="primary" htmlType="submit">
                   查询
                 </Button>
-                <a style={{ marginLeft: 8 }} onClick={this.toggleForm}>
-                  {expandForm ? (
-                    <span>
-                      收起 <Icon type="up" />
-                    </span>
-                  ) : (
-                    <span>
-                      展开 <Icon type="down" />
-                    </span>
-                  )}
-                </a>
               </span>
             </FormItem>
           </Col>
@@ -328,34 +233,24 @@ class batchManage extends PureComponent {
 
   render() {
     const {
-      batchManage: { batchList, pagination },
-      loading,
+      batchManage: { batchApproveList, pagination },
+      searchLoading,
     } = this.props;
-    const { transferModalVisible, transferLine } = this.state;
-    const transferParentMethods = {
-      handleModalVisible: this.handleModalVisible,
-    };
-    //    let tablwidth=0;
-    // this.columns.map(item=>{
-    //   if(item.width){
-    //     tablwidth+=item.width
-    //   }
-    // })
-    // console.log(tablwidth)
+    const { selectedRowKeys } = this.state;
     return (
       <Fragment>
         <Card bordered={false}>
           <div className="tableList">
             <div className="tableListForm">{this.renderSimpleForm()}</div>
-            <StandardTable
-              loading={loading}
-              data={{ list: batchList }}
+            <Table
+              loading={searchLoading}
+              dataSource={batchApproveList}
               pagination={pagination}
               rowKey="Code"
-              scroll={{ x: 1000 }}
+              scroll={{ x: 1000, y: 600 }}
               rowSelection={{
-                type: 'radio',
-                onSelectRow: this.onSelectRow,
+                selectedRowKeys,
+                onChange: this.onSelectRow,
               }}
               columns={this.columns}
               onChange={this.handleStandardTableChange}
@@ -363,13 +258,11 @@ class batchManage extends PureComponent {
           </div>
         </Card>
         <FooterToolbar>
-          <Button
-            icon="plus"
-            style={{ marginLeft: 8 }}
-            type="primary"
-            onClick={() => router.push('/purchase/TI_Z027/edit')}
-          >
-            新建
+          <Button type="primary" onClick={() => this.approveHandle('Y')}>
+            通过
+          </Button>
+          <Button type="danger" onClick={() => this.approveHandle('N')}>
+            驳回
           </Button>
         </FooterToolbar>
       </Fragment>
@@ -377,4 +270,4 @@ class batchManage extends PureComponent {
   }
 }
 
-export default batchManage;
+export default BatchUpload;

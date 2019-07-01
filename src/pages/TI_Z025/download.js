@@ -1,20 +1,18 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import router from 'umi/router';
-import Link from 'umi/link';
 import moment from 'moment';
-import { Row, Col, Card, Form, Input, Button, Tooltip, Tag, message } from 'antd';
+import { Row, Col, Card, Form, Input, Button, Tooltip, Select, Table } from 'antd';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
-import Ellipsis from 'ant-design-pro/lib/Ellipsis';
-import StandardTable from '@/components/StandardTable';
 
 const FormItem = Form.Item;
+const { Option } = Select;
 
 /* eslint react/no-multi-comp:0 */
 @connect(({ batchManage, loading, global }) => ({
   batchManage,
   global,
-  loading: loading.models.batchManage,
+  searchLoading: loading.effects['batchManage/uploadfetch'],
+  uploadLoading: loading.effects['batchManage/upload'],
 }))
 @Form.create()
 class BatchUpload extends PureComponent {
@@ -22,6 +20,7 @@ class BatchUpload extends PureComponent {
     {
       title: '批次号',
       dataIndex: 'Code',
+      width: 200,
     },
     {
       title: '附件描述',
@@ -32,7 +31,7 @@ class BatchUpload extends PureComponent {
     {
       title: '附件',
       width: 100,
-      dataIndex: 'AttachmentCount',
+      dataIndex: 'AttachmentPath',
       render: val => (val ? <img style={{ width: 50, height: 50 }} src={val} alt="主图" /> : ''),
     },
     {
@@ -71,17 +70,26 @@ class BatchUpload extends PureComponent {
 
   state = {
     selectedRows: [],
+    selectedRowKeys: [],
   };
 
   componentDidMount() {
     const {
       dispatch,
-      batchManage: { queryData1 },
+      batchManage: { queryData },
     } = this.props;
     dispatch({
       type: 'batchManage/uploadfetch',
       payload: {
-        ...queryData1,
+        ...queryData,
+      },
+    });
+    dispatch({
+      type: 'global/getMDMCommonality',
+      payload: {
+        Content: {
+          CodeList: ['TI_Z004'],
+        },
       },
     });
   }
@@ -89,12 +97,12 @@ class BatchUpload extends PureComponent {
   handleStandardTableChange = pagination => {
     const {
       dispatch,
-      batchManage: { queryData1 },
+      batchManage: { queryData },
     } = this.props;
     dispatch({
-      type: 'batchManage/fetch',
+      type: 'batchManage/uploadfetch',
       payload: {
-        ...queryData1,
+        ...queryData,
         page: pagination.current,
         rows: pagination.pageSize,
       },
@@ -110,7 +118,7 @@ class BatchUpload extends PureComponent {
       if (err) return;
 
       dispatch({
-        type: 'batchManage/fetch',
+        type: 'batchManage/uploadfetch',
         payload: {
           Content: {
             SearchText: '',
@@ -125,15 +133,35 @@ class BatchUpload extends PureComponent {
     });
   };
 
-  onSelectRow = selectedRows => {
-    this.setState({ selectedRows: [...selectedRows] });
+  onSelectRow = (selectedRowKeys, selectedRows) => {
+    this.setState({ selectedRows: [...selectedRows], selectedRowKeys: [...selectedRowKeys] });
   };
 
-  uploadHandle = () => {};
+  // eslint-disable-next-line consistent-return
+  uploadHandle = () => {
+    const { selectedRows } = this.state;
+    const { dispatch } = this.props;
+    if (!selectedRows.length) return false;
+    const AttachmentCode = selectedRows.map(item => item.Code);
+    dispatch({
+      type: 'batchManage/upload',
+      payload: {
+        Content: {
+          AttachmentCode,
+        },
+      },
+      callback: response => {
+        if (response && response.Status === 200) {
+          window.open(response.Content.Url);
+        }
+      },
+    });
+  };
 
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
+      global: { TI_Z004 },
     } = this.props;
     const formLayout = {
       labelCol: { span: 8 },
@@ -143,12 +171,35 @@ class BatchUpload extends PureComponent {
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={4} sm={24}>
-            <FormItem key="SearchText" {...formLayout}>
-              {getFieldDecorator('SearchText')(<Input placeholder="请输入关键字" />)}
+            <FormItem key="Code" {...formLayout}>
+              {getFieldDecorator('Code')(<Input placeholder="请输入批次号" />)}
             </FormItem>
           </Col>
-
-          <Col md={5} sm={24}>
+          <Col md={4} sm={24}>
+            <FormItem key="ItemCode" {...formLayout}>
+              {getFieldDecorator('ItemCode')(<Input placeholder="请输入物料代码" />)}
+            </FormItem>
+          </Col>
+          <Col md={6} sm={24}>
+            <FormItem key="ApproveBy" {...formLayout} label="销售员">
+              {getFieldDecorator('ApproveBy')(
+                <Select
+                  showArrow={false}
+                  mode="multiple"
+                  placeholder="选择名称"
+                  filterOption={false}
+                  style={{ width: '100%' }}
+                >
+                  {TI_Z004.map(option => (
+                    <Option key={option.Key} value={option.Key}>
+                      {option.Value}
+                    </Option>
+                  ))}
+                </Select>
+              )}
+            </FormItem>
+          </Col>
+          <Col md={3} sm={24}>
             <FormItem key="searchBtn">
               <span className="submitButtons">
                 <Button type="primary" htmlType="submit">
@@ -164,24 +215,25 @@ class BatchUpload extends PureComponent {
 
   render() {
     const {
-      batchManage: { batchList, pagination },
-      loading,
+      batchManage: { batchUploadList, pagination },
+      searchLoading,
+      uploadLoading,
     } = this.props;
-
+    const { selectedRowKeys } = this.state;
     return (
       <Fragment>
         <Card bordered={false}>
           <div className="tableList">
             <div className="tableListForm">{this.renderSimpleForm()}</div>
-            <StandardTable
-              loading={loading}
-              data={{ list: batchList }}
+            <Table
+              loading={searchLoading}
+              dataSource={batchUploadList}
               pagination={pagination}
               rowKey="Code"
-              scroll={{ x: 1000 }}
+              scroll={{ x: 1000, y: 600 }}
               rowSelection={{
-                type: 'radio',
-                onSelectRow: this.onSelectRow,
+                selectedRowKeys,
+                onChange: this.onSelectRow,
               }}
               columns={this.columns}
               onChange={this.handleStandardTableChange}
@@ -189,7 +241,7 @@ class BatchUpload extends PureComponent {
           </div>
         </Card>
         <FooterToolbar>
-          <Button type="primary" onClick={this.uploadHandle}>
+          <Button type="primary" loading={uploadLoading} onClick={this.uploadHandle}>
             下载
           </Button>
         </FooterToolbar>

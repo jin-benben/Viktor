@@ -1,7 +1,7 @@
 import request from '@/utils/request';
 
 export async function uploadSearchRule(params) {
-  return request(`/OMS/TI_Z025/TI_Z02507`, {
+  return request(`/OMS/TI_Z025/TI_Z02506`, {
     method: 'POST',
     data: {
       ...params,
