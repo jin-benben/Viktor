@@ -680,8 +680,8 @@ class InquiryEdit extends React.Component {
           <Description term="创建日期">
             {moment(formVals.CreateDate).format('YYYY-MM-DD')}
           </Description>
-          <Description term="要求交期">{moment(formVals.DueDate).format('YYYY-MM-DD')}</Description>
-          <Description term="有效日期">{moment(formVals.ToDate).format('YYYY-MM-DD')}</Description>
+          <Description term="要求交期">{formVals.DueDate?moment(formVals.DueDate).format('YYYY-MM-DD'):''}</Description>
+          <Description term="有效日期">{formVals.ToDate?moment(formVals.ToDate).format('YYYY-MM-DD'):''}</Description>
           <Description term="联系人">{formVals.Contacts}</Description>
           <Description term="备注">{formVals.Comment}</Description>
           <Description term="创建人">
