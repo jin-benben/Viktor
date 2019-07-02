@@ -298,7 +298,11 @@ class InquiryEdit extends React.Component {
       render: (text, record, index) =>
         record.lastIndex ? null : (
           <Fragment>
-            <Badge count={record.TI_Z02604.length} showZero className="attachBadge">
+            <Badge
+              count={record.TI_Z02604 ? record.TI_Z02604.length : 0}
+              showZero
+              className="attachBadge"
+            >
               <Icon
                 title="预览"
                 type="eye"

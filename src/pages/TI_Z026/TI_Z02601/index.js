@@ -302,7 +302,11 @@ class InquiryEdit extends React.Component {
         } = this.state;
         return record.lastIndex ? null : (
           <Fragment>
-            <Badge count={record.TI_Z02604.length} showZero className="attachBadge">
+            <Badge
+              count={record.TI_Z02604 ? record.TI_Z02604.length : 0}
+              showZero
+              className="attachBadge"
+            >
               <Icon
                 title="预览"
                 type="eye"
@@ -447,7 +451,7 @@ class InquiryEdit extends React.Component {
       dataIndex: 'InquiryPrice',
       align: 'center',
       render: (text, record) => {
-        if (!record.lastIndex) return '';
+        if (record.lastIndex) return '';
         if (!text) return '';
         return <span>{`${text || ''}(${record.Currency || ''})[${record.DocRate || ''}]`}</span>;
       },
@@ -1518,7 +1522,8 @@ class InquiryEdit extends React.Component {
       } = info.file.response;
       const newArr = rows.map((item, index) => {
         const newItem = item;
-        item.LineID = LineID + index;
+        newItem.LineID = LineID + index;
+        newItem.TI_Z02604 = [];
         return newItem;
       });
       Object.assign(formVals, { TI_Z02602: [...newArr, ...formVals.TI_Z02602] });

@@ -73,7 +73,7 @@ class orderLine extends PureComponent {
     },
     {
       title: '行状态',
-      width: 200,
+      width: 250,
       dataIndex: 'LineStatus',
       align: 'center',
       render: (text, record) =>
@@ -93,6 +93,11 @@ class orderLine extends PureComponent {
                   <Tag color="green">已报价</Tag>
                 ) : (
                   <Tag color="gold">未报价</Tag>
+                )}
+                {record.IsInquiry === 'Y' ? (
+                  <Tag color="green">需询价</Tag>
+                ) : (
+                  <Tag color="gold">不需询价</Tag>
                 )}
               </Fragment>
             )}
@@ -444,7 +449,6 @@ class orderLine extends PureComponent {
         DocDateFrom,
         DocDateTo,
         ...fieldsValue.orderNo,
-        IsInquiry: fieldsValue.IsInquiry ? 'N' : 'Y',
       };
       dispatch({
         type: 'orderLine/fetch',
@@ -542,10 +546,14 @@ class orderLine extends PureComponent {
               {getFieldDecorator('Owner')(<SalerPurchaser />)}
             </FormItem>
           </Col>
-          <Col md={3} sm={24}>
-            <FormItem>
-              {getFieldDecorator('IsInquiry', { valuePropName: 'checked', initialValue: true })(
-                <Checkbox>无需报价</Checkbox>
+          <Col md={5} sm={24}>
+            <FormItem key="IsInquiry" {...formLayout} label="需询价">
+              {getFieldDecorator('IsInquiry')(
+                <Select style={{ width: '100%' }} placeholder="请选择">
+                  <Option value="Y">需询价</Option>
+                  <Option value="N">不需询价</Option>
+                  <Option value="">全部</Option>
+                </Select>
               )}
             </FormItem>
           </Col>
@@ -559,7 +567,7 @@ class orderLine extends PureComponent {
               <Col md={4} sm={24}>
                 <FormItem key="Closed" {...formLayout}>
                   {getFieldDecorator('Closed')(
-                    <Select placeholder="请选择关闭状态">
+                    <Select style={{ width: '100%' }} placeholder="请选择关闭状态">
                       <Option value="Y">已关闭</Option>
                       <Option value="N">未关闭</Option>
                     </Select>
@@ -577,7 +585,7 @@ class orderLine extends PureComponent {
               <Col md={5} sm={24}>
                 <FormItem key="PLineStatus" {...formLayout} label="询价状态">
                   {getFieldDecorator('PLineStatus')(
-                    <Select placeholder="请选择">
+                    <Select style={{ width: '100%' }} placeholder="请选择">
                       <Option value="C">已询价</Option>
                       <Option value="O">未询价</Option>
                     </Select>
@@ -643,7 +651,7 @@ class orderLine extends PureComponent {
               data={{ list: orderLineList }}
               pagination={pagination}
               rowKey="Key"
-              scroll={{ x: 3300, y: 500 }}
+              scroll={{ x: 3400, y: 500 }}
               columns={columns}
               rowSelection={{
                 onSelectRow: this.onSelectRow,

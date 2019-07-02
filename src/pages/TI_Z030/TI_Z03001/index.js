@@ -207,7 +207,7 @@ class AgreementEdit extends React.Component {
       dataIndex: 'InquiryPrice',
       align: 'center',
       render: (text, record) => {
-        if (!record.lastIndex) return '';
+        if (record.lastIndex) return '';
         if (!text) return '';
         return <span>{`${text || ''}(${record.Currency || ''})[${record.DocRate || ''}]`}</span>;
       },
@@ -509,7 +509,11 @@ class AgreementEdit extends React.Component {
         } = this.state;
         return record.lastIndex ? null : (
           <Fragment>
-            <Badge count={record.TI_Z02604.length} showZero className="attachBadge">
+            <Badge
+              count={record.TI_Z02604 ? record.TI_Z02604.length : 0}
+              showZero
+              className="attachBadge"
+            >
               <Icon
                 title="预览"
                 type="eye"

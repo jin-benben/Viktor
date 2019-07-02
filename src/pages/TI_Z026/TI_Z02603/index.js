@@ -101,7 +101,7 @@ class InquiryEdit extends PureComponent {
       dataIndex: 'InquiryPrice',
       align: 'center',
       render: (text, record) => {
-        if (!record.lastIndex) return '';
+        if (record.lastIndex) return '';
         if (!text) return '';
         return <span>{`${text || ''}(${record.Currency || ''})[${record.DocRate || ''}]`}</span>;
       },
@@ -272,7 +272,7 @@ class InquiryEdit extends PureComponent {
     },
     {
       title: '转移备注',
-      width: 100,
+      width: 150,
       dataIndex: 'TransferComment',
       render: (text, record) =>
         record.lastIndex ? null : (
@@ -563,8 +563,12 @@ class InquiryEdit extends PureComponent {
           <Description term="创建日期">
             {moment(formVals.CreateDate).format('YYYY-MM-DD')}
           </Description>
-          <Description term="要求交期">{formVals.DueDate?moment(formVals.DueDate).format('YYYY-MM-DD'):''}</Description>
-          <Description term="有效日期">{formVals.ToDate?moment(formVals.ToDate).format('YYYY-MM-DD'):''}</Description>
+          <Description term="要求交期">
+            {formVals.DueDate ? moment(formVals.DueDate).format('YYYY-MM-DD') : ''}
+          </Description>
+          <Description term="有效日期">
+            {formVals.ToDate ? moment(formVals.ToDate).format('YYYY-MM-DD') : ''}
+          </Description>
           <Description term="联系人">{formVals.Contacts}</Description>
           <Description term="备注">{formVals.Comment}</Description>
           <Description term="创建人">

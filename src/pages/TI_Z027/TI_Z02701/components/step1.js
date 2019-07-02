@@ -368,19 +368,19 @@ class NeedTabl extends React.Component {
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={4} sm={24}>
+          <Col md={6} sm={24}>
             <FormItem key="SearchText" label="关键字">
               {getFieldDecorator('SearchText')(<Input placeholder="请输入关键字" />)}
             </FormItem>
           </Col>
-          <Col md={7} sm={24}>
+          <Col md={6} sm={24}>
             <FormItem label="日期" {...formLayout}>
               {getFieldDecorator('dateArr', { rules: [{ type: 'array' }] })(
                 <RangePicker style={{ width: '100%' }} />
               )}
             </FormItem>
           </Col>
-          <Col md={4} sm={24}>
+          <Col md={6} sm={24}>
             <FormItem key="Owner" {...formLayout} label="采购员">
               {getFieldDecorator('Owner')(<SalerPurchaser />)}
             </FormItem>
@@ -396,12 +396,12 @@ class NeedTabl extends React.Component {
           </Col>
           {expandForm ? (
             <Fragment>
-              <Col md={5} sm={24}>
+              <Col md={6} sm={24}>
                 <FormItem key="DeptList" {...this.formLayout} label="部门">
                   {getFieldDecorator('DeptList')(<Organization />)}
                 </FormItem>
               </Col>
-              <Col md={4} sm={24}>
+              <Col md={6} sm={24}>
                 <FormItem {...formLayout} label="销售员">
                   {getFieldDecorator('Purchaser')(
                     <MDMCommonality placeholder="销售员" data={Purchaser} />
@@ -443,6 +443,7 @@ class NeedTabl extends React.Component {
       item.align = 'Center';
       return item;
     });
+    const height = document.body.offsetHeight - 56 - 64 - 56 - 24 - 32 - 30;
     return (
       <Fragment>
         <div className={styles.tableList}>
@@ -453,7 +454,7 @@ class NeedTabl extends React.Component {
             dataSource={orderLineList}
             rowKey="Key"
             pagination={pagination}
-            scroll={{ x: 1920, y: 600 }}
+            scroll={{ x: 1920, y: height }}
             rowSelection={{
               onChange: this.onSelectRow,
               selectedRowKeys,

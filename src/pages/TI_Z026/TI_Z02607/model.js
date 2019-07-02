@@ -8,7 +8,7 @@ export default {
     queryData: {
       Content: {
         SearchText: '',
-        IsInquiry: 'N',
+        IsInquiry: '',
         SearchKey: '',
         QueryType: '1',
       },
@@ -44,6 +44,9 @@ export default {
             type: 'save',
             payload: {
               orderLineList: rows,
+              queryData: {
+                ...payload,
+              },
               pagination: {
                 total: records,
                 pageSize: payload.rows,

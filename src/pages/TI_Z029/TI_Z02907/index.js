@@ -202,7 +202,7 @@ class SalesQuotationSku extends PureComponent {
       dataIndex: 'InquiryPrice',
       align: 'center',
       render: (text, record) => {
-        if (!record.lastIndex) return '';
+        if (record.lastIndex) return '';
         if (!text) return '';
         return <span>{`${text || ''}(${record.Currency || ''})[${record.DocRate || ''}]`}</span>;
       },

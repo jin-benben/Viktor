@@ -194,7 +194,6 @@ class PrintPage extends PureComponent {
           <Row>
             <FormItem key="CCList" {...formLayout} label="抄送人">
               {getFieldDecorator('CCList', {
-                rules: [{ required: true, message: '请输入抄送人！' }],
                 initialValue: sendDetail.CCList,
               })(<Input placeholder="请输入抄送人" />)}
             </FormItem>
