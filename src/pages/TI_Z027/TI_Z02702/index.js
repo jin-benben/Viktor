@@ -1117,7 +1117,6 @@ class InquiryEdit extends React.Component {
             style={{ marginRight: 10 }}
             type="primary"
             href={`/purchase/TI_Z027/detail?DocEntry=${formVals.DocEntry}`}
-            target="_blank"
           >
             详情
           </Button>

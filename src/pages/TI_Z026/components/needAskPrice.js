@@ -23,7 +23,6 @@ class OrderLine extends React.Component {
     {
       title: '单号',
       dataIndex: 'DocEntry',
-      fixed: 'left',
       width: 80,
       align: 'center',
       render: (text, record) => <span>{`${text}-${record.LineID}`}</span>,

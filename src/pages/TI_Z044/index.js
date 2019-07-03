@@ -143,6 +143,9 @@ class PrintTemplate extends PureComponent {
       printTemplate: { queryData },
     } = this.props;
     const { isadd } = this.state;
+    this.setState({
+      templatdetail: { ...fieldsValue },
+    });
     if (isadd) {
       dispatch({
         type: 'printTemplate/add',

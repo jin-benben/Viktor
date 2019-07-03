@@ -243,10 +243,10 @@ class PrintPage extends PureComponent {
           <Button onClick={this.sendEmailHandle} type="primary">
             保存并发送
           </Button>
-          <Button onClick={this.sendEmailTestHandle} type="primary">
+          {/* <Button onClick={this.sendEmailTestHandle} type="primary">
             发送测试
           </Button>
-          (发送测试，请注意收件人邮箱)
+          (发送测试，请注意收件人邮箱) */}
         </FooterToolbar>
       </Card>
     );

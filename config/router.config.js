@@ -163,6 +163,7 @@ export default [
               },
               {
                 name: '详情',
+                hideInMenu: true,
                 path: '/base/TI_Z049/detail',
                 component: './TI_Z049/TI_Z04901',
               },

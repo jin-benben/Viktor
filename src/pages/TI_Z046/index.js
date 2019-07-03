@@ -151,6 +151,9 @@ class EmailSendTemplate extends PureComponent {
       emailSendTemplate: { queryData },
     } = this.props;
     const { isadd } = this.state;
+    this.setState({
+      templatdetail: { ...fieldsValue },
+    });
     if (isadd) {
       dispatch({
         type: 'emailSendTemplate/add',

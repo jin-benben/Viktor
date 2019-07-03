@@ -80,6 +80,7 @@ class PrintTemplateDetail extends PureComponent {
         width={960}
         destroyOnClose
         title="编辑模板"
+        maskClosable={false}
         visible={modalVisible}
         onOk={okHandle}
         onCancel={() => handleModalVisible()}

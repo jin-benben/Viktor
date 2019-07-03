@@ -116,6 +116,15 @@ class AgreementEdit extends React.Component {
       align: 'center',
     },
     {
+      title: '名称(外)',
+      dataIndex: 'ForeignName',
+      inputType: 'textArea',
+      width: 150,
+      editable: true,
+      align: 'center',
+    },
+
+    {
       title: '型号',
       width: 150,
       dataIndex: 'ManufactureNO',
@@ -123,6 +132,15 @@ class AgreementEdit extends React.Component {
       editable: true,
       align: 'center',
     },
+    {
+      title: '规格(外)',
+      width: 150,
+      dataIndex: 'ForeignParameters',
+      inputType: 'textArea',
+      editable: true,
+      align: 'center',
+    },
+
     {
       title: '参数',
       width: 150,
@@ -341,22 +359,6 @@ class AgreementEdit extends React.Component {
       title: '包装',
       width: 150,
       dataIndex: 'Package',
-      inputType: 'textArea',
-      editable: true,
-      align: 'center',
-    },
-    {
-      title: '名称(外)',
-      dataIndex: 'ForeignName',
-      inputType: 'textArea',
-      width: 150,
-      editable: true,
-      align: 'center',
-    },
-    {
-      title: '规格(外)',
-      width: 150,
-      dataIndex: 'ForeignParameters',
       inputType: 'textArea',
       editable: true,
       align: 'center',

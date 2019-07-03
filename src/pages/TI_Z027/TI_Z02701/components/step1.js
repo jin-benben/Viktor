@@ -30,9 +30,8 @@ import request from '@/utils/request';
 const { RangePicker } = DatePicker;
 
 const FormItem = Form.Item;
-@connect(({ global, loading }) => ({
+@connect(({ global }) => ({
   global,
-  loading: loading.global,
 }))
 @Form.create()
 class NeedTabl extends React.Component {
@@ -250,16 +249,35 @@ class NeedTabl extends React.Component {
   }
 
   fetchOrder = async params => {
+    this.setState({
+      loading: true,
+    });
     const response = await request('/OMS/TI_Z026/TI_Z02607', {
       method: 'POST',
       data: {
         ...params,
       },
     });
-    if (response && response.Status !== 200) {
-      return;
+    this.setState({
+      loading: false,
+    });
+    if (response && response.Status === 200) {
+      if (response.Content) {
+        const { pagination } = this.state;
+        const { page, rows } = params;
+        this.setState({
+          orderLineList: response.Content.rows,
+          pagination: {
+            ...pagination,
+            pageSize: rows,
+            current: page,
+            total: response.Content.records,
+          },
+        });
+      } else {
+        this.setState({ orderLineList: response.Content ? response.Content.rows : [] });
+      }
     }
-    this.setState({ orderLineList: response.Content ? response.Content.rows : [] });
   };
 
   handleStandardTableChange = params => {
@@ -436,8 +454,7 @@ class NeedTabl extends React.Component {
   }
 
   render() {
-    const { pagination, orderLineList, selectedRowKeys } = this.state;
-    const { loading } = this.props;
+    const { pagination, orderLineList, selectedRowKeys, loading } = this.state;
     const columns = this.columns.map(item => {
       // eslint-disable-next-line no-param-reassign
       item.align = 'Center';

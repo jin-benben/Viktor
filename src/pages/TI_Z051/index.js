@@ -47,6 +47,7 @@ class CreateForm extends PureComponent {
         width={640}
         destroyOnClose
         title="邮箱编辑"
+        maskClosable={false}
         visible={modalVisible}
         onOk={this.okHandle}
         onCancel={() => handleModalVisible()}
@@ -214,6 +215,9 @@ class Emails extends PureComponent {
   handleSubmit = fieldsValue => {
     const { dispatch } = this.props;
     const { method, queryData } = this.state;
+    this.setState({
+      formValues: { ...fieldsValue },
+    });
     if (method === 'A') {
       dispatch({
         type: 'email/add',

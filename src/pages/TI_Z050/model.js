@@ -1,10 +1,10 @@
 import { queryRule, removeRule, addRule, updateRule } from './service';
 
 export default {
-  namespace: 'email',
+  namespace: 'transfer',
 
   state: {
-    emailList: [],
+    transferList: [],
 
     pagination: {
       showSizeChanger: true,
@@ -24,7 +24,7 @@ export default {
           yield put({
             type: 'save',
             payload: {
-              emailList: [],
+              transferList: [],
             },
           });
         } else {
@@ -32,7 +32,7 @@ export default {
           yield put({
             type: 'save',
             payload: {
-              emailList: rows,
+              transferList: rows,
               pagination: {
                 total: records,
                 pageSize: payload.rows,

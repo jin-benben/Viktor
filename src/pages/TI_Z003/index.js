@@ -1,103 +1,22 @@
 /* eslint-disable no-script-url */
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Card, Tree, Form, Input, message, Modal, Select, Popover, Divider, Button } from 'antd';
+import { Card, Tree, message, Popover, Divider, Button } from 'antd';
 import router from 'umi/router';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
-import { formLayout, formItemLayout } from '@/utils/publicData';
+import CreateForm from './components';
 
-const FormItem = Form.Item;
 const { TreeNode } = Tree;
-const { Option } = Select;
-const { TextArea } = Input;
 
-const CreateForm = Form.create()(props => {
-  const {
-    form: { getFieldDecorator },
-    form,
-    formVals,
-    modalVisible,
-    handleModalVisible,
-    handleSubmit,
-  } = props;
-  const okHandle = () => {
-    form.validateFields((err, fieldsValue) => {
-      if (err) return;
-      form.resetFields();
-      handleSubmit({ ...formVals, ...fieldsValue });
-    });
-  };
-  return (
-    <Modal
-      width={640}
-      destroyOnClose
-      title="部门编辑"
-      visible={modalVisible}
-      onOk={okHandle}
-      onCancel={() => handleModalVisible()}
-    >
-      <Form {...formItemLayout}>
-        {/* <FormItem key="FatherCode" {...formLayout} label="父级代码">
-            {getFieldDecorator('FatherCode', {
-              initialValue: formVals.FatherCode,
-            })(<Input disabled />)}
-          </FormItem> */}
-        <FormItem key="Level" {...formLayout} label="层级">
-          {getFieldDecorator('Level', {
-            initialValue: formVals.Level,
-          })(
-            <Select placeholder="级别" disabled>
-              <Option value={1}>一级</Option>
-              <Option value={2}>二级</Option>
-              <Option value={3}>三级</Option>
-            </Select>
-          )}
-        </FormItem>
-        <FormItem key="Type" {...formLayout} label="类型">
-          {getFieldDecorator('Type', {
-            initialValue: formVals.Type,
-          })(
-            <Select placeholder="类型">
-              <Option value="1">交易公司</Option>
-              <Option value="2">部门</Option>
-            </Select>
-          )}
-        </FormItem>
-        <FormItem key="Code" {...formLayout} label="部门ID">
-          {getFieldDecorator('Code', {
-            // rules: [{ required: true, message: '请输入部门ID！' }],
-            initialValue: formVals.Code,
-          })(<Input placeholder="请输入部门ID！" />)}
-        </FormItem>
-        <FormItem key="Name" {...formLayout} label="名称">
-          {getFieldDecorator('Name', {
-            //  rules: [{ required: true, message: '请输入名称！' }],
-            initialValue: formVals.Name,
-          })(<Input placeholder="请输入名称！" />)}
-        </FormItem>
-        <FormItem key="备注" {...formLayout} label="备注">
-          {getFieldDecorator('Comment', {
-            initialValue: formVals.Comment,
-          })(<TextArea placeholder="请输入备注！" />)}
-        </FormItem>
-      </Form>
-    </Modal>
-  );
-});
-/* eslint react/no-multi-comp:0 */
 @connect(({ organization, loading }) => ({
   organization,
   loading,
 }))
-@Form.create()
 class Organization extends PureComponent {
-  constructor(props) {
-    super(props);
-    this.state = {
-      modalVisible: false,
-      method: 'A',
-    };
-  }
+  state = {
+    modalVisible: false,
+    method: 'A',
+  };
 
   componentDidMount() {
     const { dispatch } = this.props;
@@ -126,15 +45,15 @@ class Organization extends PureComponent {
   handleSubmit = fieldsValue => {
     const { dispatch } = this.props;
     const { method } = this.state;
-    if (method === 'A') {
-      dispatch({
-        type: 'organization/save',
-        payload: {
-          singleInfo: {
-            ...fieldsValue,
-          },
+    dispatch({
+      type: 'organization/save',
+      payload: {
+        singleInfo: {
+          ...fieldsValue,
         },
-      });
+      },
+    });
+    if (method === 'A') {
       dispatch({
         type: 'organization/add',
         payload: {

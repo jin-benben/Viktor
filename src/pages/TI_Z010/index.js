@@ -82,6 +82,7 @@ class CreateForm extends React.Component {
       <Modal
         width={640}
         destroyOnClose
+        maskClosable={false}
         title="分类编辑"
         visible={modalVisible}
         onOk={okHandle}

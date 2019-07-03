@@ -17,14 +17,16 @@ export default {
     },
   },
   effects: {
-    *fetch({ payload }, { call, put }) {
-      const response = yield call(queryRule, payload);
-      yield put({
-        type: 'save',
-        payload: {
-          treeData: response.Content,
-        },
-      });
+    *fetch(_, { call, put }) {
+      const response = yield call(queryRule);
+      if (response && response.Status === 200) {
+        yield put({
+          type: 'save',
+          payload: {
+            treeData: response.Content,
+          },
+        });
+      }
     },
     *single({ payload }, { call, put }) {
       const { method, Content } = payload;
@@ -53,20 +55,12 @@ export default {
         });
       }
     },
-    *add({ payload, callback }, { call, put }) {
+    *add({ payload, callback }, { call }) {
       const response = yield call(addRule, payload);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
       if (callback) callback(response);
     },
-    *update({ payload, callback }, { call, put }) {
+    *update({ payload, callback }, { call }) {
       const response = yield call(updateRule, payload);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
       if (callback) callback(response);
     },
     *reload({ callback }, { call }) {

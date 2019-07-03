@@ -56,6 +56,7 @@ class CreateForm extends PureComponent {
         destroyOnClose
         title="员工编辑"
         okText="保存"
+        maskClosable={false}
         visible={modalVisible}
         onOk={okHandle}
         onCancel={() => handleModalVisible()}
@@ -496,6 +497,9 @@ class Staffs extends PureComponent {
   handleSubmit = fieldsValue => {
     const { dispatch } = this.props;
     const { method, queryData } = this.state;
+    this.setState({
+      formValues: { ...fieldsValue },
+    });
     if (method === 'A') {
       dispatch({
         type: 'staffs/add',

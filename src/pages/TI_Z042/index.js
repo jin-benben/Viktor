@@ -3,6 +3,7 @@ import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import { Row, Col, Card, Form, Input, Modal, Button, Divider, Popconfirm, message } from 'antd';
 import StandardTable from '@/components/StandardTable';
+import MyIcon from '@/components/MyIcon';
 
 const FormItem = Form.Item;
 const { TextArea } = Input;
@@ -45,6 +46,7 @@ class CreateForm extends PureComponent {
       <Modal
         width={640}
         destroyOnClose
+        maskClosable={false}
         title="产地编辑"
         okText="保存"
         visible={modalVisible}
@@ -112,30 +114,39 @@ class Staffs extends PureComponent {
   columns = [
     {
       title: '产地ID',
+      width: 100,
       dataIndex: 'Code',
       align: 'center',
     },
     {
       title: '名称',
+      width: 200,
       dataIndex: 'Name',
       align: 'center',
     },
 
     {
       title: '备注',
+      width: 100,
       dataIndex: 'Comment',
       align: 'center',
     },
 
     {
       title: '操作',
-
+      width: 100,
       render: (text, record) => (
         <Fragment>
-          <a onClick={() => this.handleUpdateModalVisible(true, record)}>修改</a>
+          <a onClick={() => this.handleUpdateModalVisible(true, record)}>
+            {' '}
+            <MyIcon type="iconedit" />
+          </a>
           <Divider type="vertical" />
           <Popconfirm title="确定要删除吗?" onConfirm={() => this.handleDelete(record.Code)}>
-            <a href="javascript:;">删除</a>
+            <a href="javascript:;">
+              {' '}
+              <MyIcon type="iconshanchu" />
+            </a>
           </Popconfirm>
         </Fragment>
       ),
@@ -224,6 +235,9 @@ class Staffs extends PureComponent {
   handleSubmit = fieldsValue => {
     const { dispatch } = this.props;
     const { method, queryData } = this.state;
+    this.setState({
+      formValues: { ...fieldsValue },
+    });
     if (method === 'A') {
       dispatch({
         type: 'manLocation/add',

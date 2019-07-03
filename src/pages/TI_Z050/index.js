@@ -44,6 +44,7 @@ class CreateForm extends PureComponent {
       <Modal
         width={640}
         destroyOnClose
+        maskClosable={false}
         title="转移分类编辑"
         visible={modalVisible}
         onOk={this.okHandle}
@@ -72,9 +73,9 @@ class CreateForm extends PureComponent {
   }
 }
 /* eslint react/no-multi-comp:0 */
-@connect(({ email, loading }) => ({
-  email,
-  loading: loading.models.email,
+@connect(({ transfer, loading }) => ({
+  transfer,
+  loading: loading.models.transfer,
 }))
 @Form.create()
 class Emails extends PureComponent {
@@ -127,7 +128,7 @@ class Emails extends PureComponent {
     const { dispatch } = this.props;
     const { queryData } = this.state;
     dispatch({
-      type: 'email/fetch',
+      type: 'transfer/fetch',
       payload: {
         ...queryData,
       },
@@ -139,7 +140,7 @@ class Emails extends PureComponent {
     const { dispatch } = this.props;
     const { queryData } = this.state;
     dispatch({
-      type: 'email/remove',
+      type: 'transfer/remove',
       payload: {
         Content: {
           Code,
@@ -149,7 +150,7 @@ class Emails extends PureComponent {
         if (response && response.Status === 200) {
           message.success('删除成功');
           dispatch({
-            type: 'email/fetch',
+            type: 'transfer/fetch',
             payload: {
               ...queryData,
             },
@@ -163,7 +164,7 @@ class Emails extends PureComponent {
     const { dispatch } = this.props;
     const { queryData } = this.state;
     dispatch({
-      type: 'email/fetch',
+      type: 'transfer/fetch',
       payload: {
         ...queryData,
         page: pagination.current,
@@ -179,7 +180,7 @@ class Emails extends PureComponent {
     form.validateFields((err, fieldsValue) => {
       if (err) return;
       dispatch({
-        type: 'email/fetch',
+        type: 'transfer/fetch',
         payload: {
           Content: {
             ...queryData.Content,
@@ -205,9 +206,12 @@ class Emails extends PureComponent {
   handleSubmit = fieldsValue => {
     const { dispatch } = this.props;
     const { method, queryData } = this.state;
+    this.setState({
+      formValues: { ...fieldsValue },
+    });
     if (method === 'A') {
       dispatch({
-        type: 'email/add',
+        type: 'transfer/add',
         payload: {
           Content: {
             ...fieldsValue,
@@ -218,7 +222,7 @@ class Emails extends PureComponent {
             this.handleModalVisible(false);
             message.success('添加成功');
             dispatch({
-              type: 'email/fetch',
+              type: 'transfer/fetch',
               payload: {
                 ...queryData,
               },
@@ -228,7 +232,7 @@ class Emails extends PureComponent {
       });
     } else {
       dispatch({
-        type: 'email/update',
+        type: 'transfer/update',
         payload: {
           Content: {
             ...fieldsValue,
@@ -239,7 +243,7 @@ class Emails extends PureComponent {
             this.handleModalVisible(false);
             message.success('更新成功');
             dispatch({
-              type: 'email/fetch',
+              type: 'transfer/fetch',
               payload: {
                 ...queryData,
               },
@@ -292,7 +296,7 @@ class Emails extends PureComponent {
 
   render() {
     const {
-      email: { emailList, pagination },
+      transfer: { transferList, pagination },
       loading,
     } = this.props;
     const { modalVisible, formValues } = this.state;
@@ -307,7 +311,7 @@ class Emails extends PureComponent {
             <div className="tableListForm">{this.renderSimpleForm()}</div>
             <StandardTable
               loading={loading}
-              data={{ list: emailList }}
+              data={{ list: transferList }}
               rowKey="Code"
               pagination={pagination}
               columns={this.columns}

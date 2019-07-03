@@ -122,6 +122,7 @@ class CreateForm extends PureComponent {
         width={640}
         destroyOnClose
         title="品牌编辑"
+        maskClosable={false}
         visible={modalVisible}
         onOk={okHandle}
         onCancel={() => handleModalVisible()}
@@ -327,7 +328,6 @@ class BrandList extends PureComponent {
     const { dispatch, form } = this.props;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
-
       dispatch({
         type: 'brands/fetch',
         payload: {
@@ -380,6 +380,13 @@ class BrandList extends PureComponent {
     }
     delete fieldsValue.purchaser;
     delete fieldsValue.supplier;
+    this.setState({
+      formValues: {
+        ...fieldsValue,
+        ...supplier,
+        ...purchaser,
+      },
+    });
     if (method === 'A') {
       dispatch({
         type: 'brands/add',
