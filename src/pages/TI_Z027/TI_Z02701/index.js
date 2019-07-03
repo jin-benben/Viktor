@@ -189,7 +189,7 @@ class SupplierAsk extends Component {
         Key,
         DueDate,
         LineTotal,
-        Comment,
+        LineComment,
         DocEntry,
         ForeignParameters,
         LineID,
@@ -206,7 +206,6 @@ class SupplierAsk extends Component {
         CompanyCode,
         Purchaser,
         Owner,
-        BaseLineComment,
       } = item;
       const ToDate = moment()
         .add('30', 'day')
@@ -240,7 +239,6 @@ class SupplierAsk extends Component {
           TI_Z02702: [
             {
               LineID: lineIndex + 1,
-              LineComment: Comment,
               BaseEntry: DocEntry,
               BaseLineID: LineID,
               Saler: Owner,
@@ -263,20 +261,18 @@ class SupplierAsk extends Component {
               InquiryDueDate: '',
               LineTotal,
               WhsCode,
-              Comment,
               Processor,
               TransferComment,
               CompanyCode,
               Purchaser,
               Owner,
-              BaseLineComment,
+              BaseLineComment: LineComment,
             },
           ],
         });
       } else {
         lineList[hasSupplier].TI_Z02702.push({
           LineID: lineIndex + 1,
-          LineComment: Comment,
           BaseEntry: DocEntry,
           BaseLineID: LineID,
           Saler: Owner,
@@ -294,13 +290,12 @@ class SupplierAsk extends Component {
           InquiryDueDate: '',
           LineTotal,
           WhsCode,
-          Comment,
           Processor,
           TransferComment,
           CompanyCode,
           Purchaser,
           Owner,
-          BaseLineComment,
+          BaseLineComment: LineComment,
         });
       }
     });

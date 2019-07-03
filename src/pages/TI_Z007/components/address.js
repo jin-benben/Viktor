@@ -60,7 +60,8 @@ class AddressInfo extends PureComponent {
       form.validateFields((err, fieldsValue) => {
         if (err) return;
         form.resetFields();
-        formVals.DefaultContacts = formVals.DefaultContacts ? 'T' : 'F';
+        // eslint-disable-next-line no-param-reassign
+        fieldsValue.DefaultContacts = fieldsValue.DefaultContacts ? 'T' : 'F';
         handleSubmit({ ...formVals, ...fieldsValue });
       });
     };

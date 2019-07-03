@@ -27,7 +27,10 @@ class Staffs extends PureComponent {
       !prevState.data.length
     ) {
       return {
-        value: nextProps.initialValue.key ? nextProps.initialValue : prevState.value,
+        value:
+          nextProps.initialValue.key && !prevState.value.key
+            ? nextProps.initialValue
+            : prevState.value,
         data: nextProps.global.SupplierList,
       };
     }
@@ -70,6 +73,7 @@ class Staffs extends PureComponent {
 
     const { onChange } = this.props;
     if (onChange) {
+      console.log(value);
       onChange(value);
     }
   };

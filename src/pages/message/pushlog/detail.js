@@ -24,6 +24,9 @@ class PushDetailPage extends PureComponent {
       title: '状态',
       width: 80,
       dataIndex: 'LineSts',
+      render: val => (
+        <span>{val === '2' ? <Tag color="blue">成功</Tag> : <Tag color="red">失败</Tag>}</span>
+      ),
     },
     {
       title: '推送标题',

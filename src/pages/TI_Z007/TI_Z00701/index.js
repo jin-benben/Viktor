@@ -262,6 +262,9 @@ class CompanyEdit extends React.Component {
   handleLinkmanSubmit = fields => {
     const { dispatch } = this.props;
     const { formVals } = this.state;
+    this.setState({
+      linkManVal: { ...fields },
+    });
     dispatch({
       type: 'supplierEdit/linkman',
       payload: {

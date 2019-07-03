@@ -38,7 +38,6 @@ class StandardTable extends PureComponent {
   }
 
   componentDidMount() {
-    console.log(this.tabledom);
     this.setState({
       height: document.body.offsetHeight - 56 - 64 - 56 - 24 - 32 - 30,
     });

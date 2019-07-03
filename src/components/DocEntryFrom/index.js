@@ -3,46 +3,19 @@ import { Input } from 'antd';
 
 const InputGroup = Input.Group;
 class DocEntryInput extends PureComponent {
-  static getDerivedStateFromProps(nextProps) {
-    // Should be a controlled component.
-    if ('value' in nextProps) {
-      return {
-        ...(nextProps.value || {}),
-      };
-    }
-    return null;
-  }
-
-  constructor(props) {
-    super(props);
-
-    const value = props.value || {};
-    this.state = {
-      DocEntryFrom: value.DocEntryFrom || Number,
-      DocEntryTo: value.DocEntryTo || Number,
-    };
-  }
+  state = {
+    DocEntryFrom: '',
+    DocEntryTo: '',
+  };
 
   handleDocEntryFromChange = e => {
-    const DocEntryFrom = parseInt(e.target.value || 0, 10);
-    if (Number.isNaN(DocEntryFrom)) {
-      return;
-    }
-    if (!('value' in this.props)) {
-      this.setState({ DocEntryFrom });
-    }
-    this.triggerChange({ DocEntryFrom });
+    this.setState({ DocEntryFrom: e.target.value });
+    this.triggerChange({ DocEntryFrom: e.target.value });
   };
 
   handleDocEntryToChange = e => {
-    const DocEntryTo = parseInt(e.target.value || 0, 10);
-    if (Number.isNaN(DocEntryTo)) {
-      return;
-    }
-    if (!('value' in this.props)) {
-      this.setState({ DocEntryTo });
-    }
-    this.triggerChange({ DocEntryTo });
+    this.setState({ DocEntryTo: e.target.value });
+    this.triggerChange({ DocEntryTo: e.target.value });
   };
 
   triggerChange = changedValue => {

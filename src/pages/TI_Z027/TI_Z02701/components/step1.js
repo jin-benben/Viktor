@@ -141,12 +141,14 @@ class NeedTabl extends React.Component {
       render: (text, record) => <span>{`${text}(${record.Unit})`}</span>,
     },
     {
-      title: '要求交期',
+      title: '行备注',
       width: 100,
-      inputType: 'date',
-      dataIndex: 'DueDate',
-      align: 'center',
-      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
+      dataIndex: 'LineComment',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
 
     {
@@ -219,14 +221,12 @@ class NeedTabl extends React.Component {
       },
     },
     {
-      title: '行备注',
+      title: '要求交期',
       width: 100,
-      dataIndex: 'Comment',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
+      inputType: 'date',
+      dataIndex: 'DueDate',
+      align: 'center',
+      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
     },
     {
       title: '客户参考号',

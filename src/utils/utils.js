@@ -19,16 +19,16 @@ export function chechEmail(email) {
 
 export function requestUrl(url) {
   if (url.indexOf('/MDM') !== -1) {
-    return url.replace(/\/MDM/i, 'http://47.104.65.49:8002');
+    return url.replace(/\/MDM/i, 'http://apimdm.wktmro.com');
   }
   if (url.indexOf('/OMS') !== -1) {
-    return url.replace(/\/OMS/i, 'http://47.104.65.49:8001');
+    return url.replace(/\/OMS/i, 'http://apioms.wktmro.com');
   }
   if (url.indexOf('/Login') !== -1) {
-    return url.replace(/\/Login/i, 'http://47.104.65.49:8083');
+    return url.replace(/\/Login/i, 'http://apilogin.wktmro.com');
   }
   if (url.indexOf('/Report') !== -1) {
-    return url.replace(/\/Report/i, 'http://47.104.65.49:8086');
+    return url.replace(/\/Report/i, 'http://printandreport.wktmro.com');
   }
   return url;
 }

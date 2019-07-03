@@ -8,11 +8,13 @@ class EditableCell extends PureComponent {
   getInput = (dataIndex, record) => {
     const { inputType } = this.props;
     const defaultValue = record[dataIndex];
+
     switch (inputType) {
       case 'date':
+        console.log(defaultValue);
         return (
           <DatePicker
-            defaultValue={defaultValue ? moment(defaultValue, 'YYYY-MM-DD') : null}
+            value={defaultValue ? moment(defaultValue, 'YYYY-MM-DD') : null}
             onChange={(date, dateString) => this.dateChange(dateString, dataIndex, record)}
           />
         );

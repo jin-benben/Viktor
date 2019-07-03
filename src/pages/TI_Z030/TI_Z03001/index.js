@@ -405,6 +405,20 @@ class AgreementEdit extends React.Component {
           </Link>
         ),
     },
+    {
+      title: '销报单号',
+      width: 100,
+      align: 'center',
+      dataIndex: 'QuotationEntry',
+      render: (text, recond) =>
+        text ? (
+          <Link target="_blank" to={`/sellabout/TI_Z029/detail?DocEntry=${text}`}>
+            {`${text}-${recond.QuotationLineID}`}
+          </Link>
+        ) : (
+          ''
+        ),
+    },
   ];
 
   skuColumns2 = [
@@ -468,20 +482,6 @@ class AgreementEdit extends React.Component {
               </Fragment>
             )}
           </Fragment>
-        ),
-    },
-    {
-      title: '销报单号',
-      width: 100,
-      align: 'center',
-      dataIndex: 'QuotationEntry',
-      render: (text, recond) =>
-        text ? (
-          <Link target="_blank" to={`/sellabout/TI_Z029/detail?DocEntry=${text}`}>
-            {`${text}-${recond.QuotationLineID}`}
-          </Link>
-        ) : (
-          ''
         ),
     },
     {
@@ -1667,15 +1667,11 @@ class AgreementEdit extends React.Component {
               </FormItem>
             </Col>
             <Col lg={10} md={12} sm={24}>
-              <FormItem key="OrderType" {...this.formLayout} label="订单类型">
-                {getFieldDecorator('OrderType', {
-                  initialValue: formVals.OrderType,
-                  rules: [{ required: true, message: '请选择订单类型！' }],
-                })(
-                  <Select placeholder="请选择订单类型">
-                    <Option value="1">正常订单</Option>
-                  </Select>
-                )}
+              <FormItem key="DueDate" {...this.formLayout} label="要求交期">
+                {getFieldDecorator('DueDate', {
+                  initialValue: formVals.DueDate ? moment(formVals.DueDate, 'YYYY-MM-DD') : null,
+                  rules: [{ required: true, message: '请选择要求交期！' }],
+                })(<DatePicker style={{ width: '100%' }} />)}
               </FormItem>
             </Col>
           </Row>
@@ -1770,7 +1766,18 @@ class AgreementEdit extends React.Component {
                   })(<Input placeholder="请输入详细地址！" />)}
                 </FormItem>
               </Col>
-
+              <Col lg={8} md={12} sm={24}>
+                <FormItem key="OrderType" {...this.formLayout} label="订单类型">
+                  {getFieldDecorator('OrderType', {
+                    initialValue: formVals.OrderType,
+                    rules: [{ required: true, message: '请选择订单类型！' }],
+                  })(
+                    <Select placeholder="请选择订单类型">
+                      <Option value="1">正常订单</Option>
+                    </Select>
+                  )}
+                </FormItem>
+              </Col>
               <Col lg={8} md={12} sm={24}>
                 <FormItem key="CompanyCode" {...this.formLayout} label="交易公司">
                   {getFieldDecorator('CompanyCode', {
@@ -1790,14 +1797,6 @@ class AgreementEdit extends React.Component {
                       <Option value="N">否</Option>
                     </Select>
                   )}
-                </FormItem>
-              </Col>
-              <Col lg={8} md={12} sm={24}>
-                <FormItem key="DueDate" {...this.formLayout} label="要求交期">
-                  {getFieldDecorator('DueDate', {
-                    initialValue: formVals.DueDate ? moment(formVals.DueDate, 'YYYY-MM-DD') : null,
-                    rules: [{ required: true, message: '请选择要求交期！' }],
-                  })(<DatePicker style={{ width: '100%' }} />)}
                 </FormItem>
               </Col>
             </Row>

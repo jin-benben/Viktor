@@ -1473,6 +1473,22 @@ class TI_Z029Component extends React.Component {
     });
   };
 
+  dueDateChange = val => {
+    const { formVals } = this.state;
+    const newArr = formVals.TI_Z02902.map(item => {
+      const newitem = item;
+      if (!newitem.DueDate) {
+        newitem.DueDate = val.format('YYYY-MM-DD');
+        return newitem;
+      }
+      return newitem;
+    });
+    Object.assign(formVals, { TI_Z02602: newArr, DueDate: val.format('YYYY-MM-DD') });
+    this.setState({
+      formVals,
+    });
+  };
+
   // 发送需询价
   submitNeedLine = select => {
     const { dispatch } = this.props;
@@ -1701,7 +1717,7 @@ class TI_Z029Component extends React.Component {
                 {getFieldDecorator('DueDate', {
                   initialValue: formVals.DueDate ? moment(formVals.DueDate, 'YYYY-MM-DD') : null,
                   rules: [{ required: true, message: '请选择要求交期！' }],
-                })(<DatePicker style={{ width: '100%' }} />)}
+                })(<DatePicker onChange={this.dueDateChange} style={{ width: '100%' }} />)}
               </FormItem>
             </Col>
           </Row>

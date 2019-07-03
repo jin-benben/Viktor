@@ -3,12 +3,11 @@ import { connect } from 'dva';
 import router from 'umi/router';
 import Link from 'umi/link';
 import moment from 'moment';
-import { Row, Col, Card, Form, Input, Button, Select, DatePicker, Icon, Tooltip } from 'antd';
+import { Row, Col, Card, Form, Input, Button, Select, DatePicker, Icon, Tooltip, Tag } from 'antd';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import StandardTable from '@/components/StandardTable';
 import DocEntryFrom from '@/components/DocEntryFrom';
-import MyTag from '@/components/Tag';
 import Organization from '@/components/Organization/multiple';
 import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
 import { getName } from '@/utils/utils';
@@ -55,16 +54,30 @@ class inquiryListPage extends PureComponent {
     },
     {
       title: '单据状态',
+      width: 220,
       dataIndex: 'Status',
-      width: 150,
+      align: 'center',
       render: (text, record) => (
         <Fragment>
           {record.Closed === 'Y' ? (
-            <MyTag type="关闭" value="Y" />
+            <Tag color="red">已关闭</Tag>
           ) : (
             <Fragment>
-              <MyTag type="报价" value={record.SDocStatus} />
-              <MyTag type="询价" value={record.PDocStatus} />
+              {record.IsInquiry === 'Y' ? (
+                <Tag color="green">需询价</Tag>
+              ) : (
+                <Tag color="gold">不需询价</Tag>
+              )}
+              {record.PDocStatus === 'C' ? (
+                <Tag color="green">采已确认</Tag>
+              ) : (
+                <Tag color="gold">采未确认</Tag>
+              )}
+              {record.SDocStatus === 'C' ? (
+                <Tag color="green">已报价</Tag>
+              ) : (
+                <Tag color="gold">未报价</Tag>
+              )}
             </Fragment>
           )}
         </Fragment>
@@ -319,6 +332,16 @@ class inquiryListPage extends PureComponent {
                 </FormItem>
               </Col>
               <Col md={5} sm={24}>
+                <FormItem key="PDocStatus" {...formLayout} label="询价确认状态">
+                  {getFieldDecorator('PDocStatus')(
+                    <Select placeholder="请选择">
+                      <Option value="C">已确认</Option>
+                      <Option value="O">未确认</Option>
+                    </Select>
+                  )}
+                </FormItem>
+              </Col>
+              <Col md={5} sm={24}>
                 <FormItem key="IsInquiry" {...formLayout} label="需询价">
                   {getFieldDecorator('IsInquiry')(
                     <Select placeholder="请选择">
@@ -372,7 +395,7 @@ class inquiryListPage extends PureComponent {
               pagination={pagination}
               rowKey="DocEntry"
               columns={this.columns}
-              scroll={{ x: 1500, y: 800 }}
+              scroll={{ x: 1700 }}
               onChange={this.handleStandardTableChange}
             />
           </div>

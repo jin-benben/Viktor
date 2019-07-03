@@ -269,6 +269,9 @@ class CompanyEdit extends PureComponent {
   handleLinkmanSubmit = fields => {
     const { dispatch } = this.props;
     const { formVals } = this.state;
+    this.setState({
+      linkManVal: { ...fields },
+    });
     dispatch({
       type: 'companyEdit/linkman',
       payload: {
@@ -292,6 +295,9 @@ class CompanyEdit extends PureComponent {
     const { formVals } = this.state;
     // eslint-disable-next-line no-param-reassign
     delete fields.address;
+    this.setState({
+      addressVal: { ...fields },
+    });
     dispatch({
       type: 'companyEdit/address',
       payload: {

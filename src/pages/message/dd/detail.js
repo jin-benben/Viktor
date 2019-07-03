@@ -4,14 +4,16 @@ import { connect } from 'dva';
 import DescriptionList from 'ant-design-pro/lib/DescriptionList';
 import PageLoading from '@/components/PageLoading';
 import StandardTable from '@/components/StandardTable';
+import { getName } from '@/utils/utils';
 import styles from '../style.less';
 
 const { Description } = DescriptionList;
 const { TabPane } = Tabs;
 
-@connect(({ ddMessage, loading }) => ({
+@connect(({ ddMessage, loading, global }) => ({
   ddMessage,
   loading,
+  global,
 }))
 class PrintDetailPage extends PureComponent {
   columns = [
@@ -21,14 +23,26 @@ class PrintDetailPage extends PureComponent {
     },
     {
       title: '状态',
+      width: 200,
       dataIndex: 'LineSts',
+      render: val => (
+        <span>{val === '2' ? <Tag color="blue">成功</Tag> : <Tag color="red">失败</Tag>}</span>
+      ),
     },
     {
       title: '接收用户',
+      width: 200,
       dataIndex: 'Touser',
+      render: val => {
+        const {
+          global: { TI_Z004 },
+        } = this.props;
+        return <span style={{ fontSize: 13 }}>{getName(TI_Z004, val)}</span>;
+      },
     },
     {
       title: '异步任务id',
+      width: 200,
       dataIndex: 'Task_id',
     },
   ];
@@ -40,10 +54,15 @@ class PrintDetailPage extends PureComponent {
     },
     {
       title: '状态',
+      width: 200,
       dataIndex: 'LineSts',
+      render: val => (
+        <span>{val === '2' ? <Tag color="blue">成功</Tag> : <Tag color="red">失败</Tag>}</span>
+      ),
     },
     {
       title: '异步任务id',
+      width: 200,
       dataIndex: 'Task_id',
     },
   ];
@@ -63,6 +82,14 @@ class PrintDetailPage extends PureComponent {
         },
       });
     }
+    dispatch({
+      type: 'global/getMDMCommonality',
+      payload: {
+        Content: {
+          CodeList: ['TI_Z004'],
+        },
+      },
+    });
   }
 
   render() {

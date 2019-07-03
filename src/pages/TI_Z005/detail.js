@@ -239,7 +239,6 @@ class BrandDetail extends PureComponent {
           <Description term="官网">{formVals.WebSite}</Description>
           <Description term="简写">{formVals.Abbreviate}</Description>
           <Description term="级别">{getName(brandLevel, formVals.BrandLevel)}</Description>
-          <Description term="品牌介绍">{formVals.Content}</Description>
           <Description term="品牌主图">
             {formVals.Picture ? (
               <img style={{ width: 50, height: 50 }} src={formVals.Picture} alt="" />
@@ -249,6 +248,9 @@ class BrandDetail extends PureComponent {
           </Description>
         </DescriptionList>
         <Tabs animated={false}>
+          <TabPane tab="品牌介绍" key="1">
+            {formVals.Content}
+          </TabPane>
           <TabPane tab="品牌供应商" key="2">
             {formVals.Name ? <BrandSupplier BrandName={formVals.Name} /> : ''}
           </TabPane>

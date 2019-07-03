@@ -63,7 +63,8 @@ class AddressInfo extends PureComponent {
         const { address } = fieldsValue;
         // eslint-disable-next-line no-param-reassign
         delete fieldsValue.address;
-        formVals.DefaultContacts = formVals.DefaultContacts ? 'T' : 'F';
+        // eslint-disable-next-line no-param-reassign
+        fieldsValue.DefaultContacts = fieldsValue.DefaultContacts ? 'T' : 'F';
         handleSubmit({ ...formVals, ...fieldsValue, ...address });
       });
     };

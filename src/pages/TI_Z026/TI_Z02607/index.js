@@ -10,7 +10,6 @@ import {
   Button,
   Select,
   DatePicker,
-  Checkbox,
   Icon,
   Tooltip,
   message,
@@ -186,6 +185,17 @@ class orderLine extends PureComponent {
       dataIndex: 'LineTotal',
       render: (text, record) =>
         record.lastIndex ? <span style={{ fontWeight: 'bolder' }}>{text}</span> : text,
+    },
+    {
+      title: '行备注',
+      width: 100,
+      dataIndex: 'LineComment',
+      align: 'center',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '询价价格',
@@ -406,7 +416,7 @@ class orderLine extends PureComponent {
       type: 'global/getMDMCommonality',
       payload: {
         Content: {
-          CodeList: ['Saler', 'Purchaser', 'TI_Z042', 'HS', 'WhsCode'],
+          CodeList: ['Saler', 'Purchaser', 'TI_Z042', 'TI_Z004', 'HS', 'WhsCode'],
         },
       },
     });
@@ -651,7 +661,7 @@ class orderLine extends PureComponent {
               data={{ list: orderLineList }}
               pagination={pagination}
               rowKey="Key"
-              scroll={{ x: 3400, y: 500 }}
+              scroll={{ x: 3500, y: 500 }}
               columns={columns}
               rowSelection={{
                 onSelectRow: this.onSelectRow,

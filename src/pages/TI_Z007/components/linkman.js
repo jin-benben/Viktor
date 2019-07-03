@@ -58,7 +58,8 @@ class LinkManFrom extends PureComponent {
       form.validateFields((err, fieldsValue) => {
         if (err) return;
         form.resetFields();
-        formVals.DefaultContacts = formVals.DefaultContacts ? 'T' : 'F';
+        // eslint-disable-next-line no-param-reassign
+        fieldsValue.DefaultContacts = fieldsValue.DefaultContacts ? 'T' : 'F';
         handleSubmit({ ...formVals, ...fieldsValue });
       });
     };
@@ -104,7 +105,6 @@ class LinkManFrom extends PureComponent {
             <Col span={12}>
               <FormItem key="Position" {...this.formLayout} label="职位">
                 {getFieldDecorator('Position', {
-                  rules: [{ required: true, message: '请输入职位' }],
                   initialValue: formVals.Position,
                 })(<Input placeholder="请输入职位" />)}
               </FormItem>
@@ -122,7 +122,7 @@ class LinkManFrom extends PureComponent {
           </Row>
           <Row>
             <Col span={12}>
-              <FormItem key="DefaultContacts" {...this.formLayout} label="默认地址">
+              <FormItem key="DefaultContacts" {...this.formLayout} label="默认联系人">
                 {getFieldDecorator('DefaultContacts', {
                   valuePropName: 'checked',
                   initialValue: formVals.DefaultContacts === 'T',

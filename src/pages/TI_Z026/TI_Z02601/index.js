@@ -543,7 +543,7 @@ class InquiryEdit extends React.Component {
       dataIndex: 'HSVatRate',
       align: 'center',
       render: (text, record) =>
-        record.lastIndex ? '' : <span>{`${text}-${record.HSVatRateOther}`}</span>,
+        record.lastIndex ? '' : <span>{`${text || 0}-${record.HSVatRateOther || 0}`}</span>,
     },
     {
       title: '要求名称',
@@ -1514,7 +1514,7 @@ class InquiryEdit extends React.Component {
       return;
     }
     if (info.file.response.Status === 200) {
-      const { formVals } = this.state;
+      const { formVals, DefaultWhsCode } = this.state;
       const last = formVals.TI_Z02602[formVals.TI_Z02602.length - 1];
       const LineID = last ? last.LineID + 1 : 1;
       const {
@@ -1523,6 +1523,12 @@ class InquiryEdit extends React.Component {
       const newArr = rows.map((item, index) => {
         const newItem = item;
         newItem.LineID = LineID + index;
+        newItem.SKUName = `${newItem.BrandName}  ${newItem.ProductName}  ${
+          newItem.ManufactureNO
+        }  ${newItem.Parameters}  ${newItem.Package}`;
+        newItem.WhsCode = DefaultWhsCode;
+        newItem.HSVatRate = 0;
+        newItem.HSVatRateOther = 0;
         newItem.TI_Z02604 = [];
         return newItem;
       });
@@ -1531,6 +1537,22 @@ class InquiryEdit extends React.Component {
     } else {
       message.warning(info.file.response.MessageString);
     }
+  };
+
+  dueDateChange = val => {
+    const { formVals } = this.state;
+    const newArr = formVals.TI_Z02602.map(item => {
+      const newitem = item;
+      if (!newitem.DueDate) {
+        newitem.DueDate = val.format('YYYY-MM-DD');
+        return newitem;
+      }
+      return newitem;
+    });
+    Object.assign(formVals, { TI_Z02602: newArr, DueDate: val.format('YYYY-MM-DD') });
+    this.setState({
+      formVals,
+    });
   };
 
   render() {
@@ -1595,6 +1617,8 @@ class InquiryEdit extends React.Component {
         LineTotal: formVals.DocTotal,
       });
     }
+
+    console.log(formVals);
 
     return (
       <Card bordered={false} loading={detailLoading}>
@@ -1811,7 +1835,7 @@ class InquiryEdit extends React.Component {
                 <FormItem key="DueDate" {...this.formLayout} label="要求交期">
                   {getFieldDecorator('DueDate', {
                     initialValue: formVals.DueDate ? moment(formVals.DueDate, 'YYYY-MM-DD') : null,
-                  })(<DatePicker style={{ width: '100%' }} />)}
+                  })(<DatePicker onChange={this.dueDateChange} style={{ width: '100%' }} />)}
                 </FormItem>
               </Col>
             </Row>
