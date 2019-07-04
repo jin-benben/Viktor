@@ -30,7 +30,7 @@ class Staffs extends PureComponent {
     if (!prevState.initialValue) {
       return {
         value: nextProps.initialValue.key ? nextProps.initialValue : { key: '', label: '' },
-        data: nextProps.global.SupplierList,
+        data: prevState.data.length?prevState.data:nextProps.global.SupplierList,
       };
     }
     return null;
