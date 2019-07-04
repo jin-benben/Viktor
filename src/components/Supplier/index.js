@@ -17,20 +17,19 @@ class Staffs extends PureComponent {
       data: [],
       value: { key: '', label: '' },
       fetching: false,
+      initialValue: false,
     };
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    if (
-      (nextProps.initialValue.key !== undefined &&
-        nextProps.initialValue.key !== prevState.value.key) ||
-      !prevState.data.length
-    ) {
+    if (prevState.initialValue) {
       return {
-        value:
-          nextProps.initialValue.key && !prevState.value.key
-            ? nextProps.initialValue
-            : prevState.value,
+        value: prevState.value,
+      };
+    }
+    if (!prevState.initialValue) {
+      return {
+        value: nextProps.initialValue.key ? nextProps.initialValue : { key: '', label: '' },
         data: nextProps.global.SupplierList,
       };
     }
@@ -69,11 +68,10 @@ class Staffs extends PureComponent {
     this.setState({
       value,
       fetching: false,
+      initialValue: true,
     });
-
     const { onChange } = this.props;
     if (onChange) {
-      console.log(value);
       onChange(value);
     }
   };

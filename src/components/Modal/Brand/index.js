@@ -1,8 +1,7 @@
 import React, { PureComponent } from 'react';
 
-import { Row, Col, Form, Input, Modal, Button, message } from 'antd';
+import { Row, Col, Form, Input, Modal, Button, message, Table } from 'antd';
 import { connect } from 'dva';
-import StandardTable from '@/components/StandardTable';
 import request from '@/utils/request';
 
 const FormItem = Form.Item;
@@ -43,6 +42,7 @@ class BrandModal extends PureComponent {
     },
     {
       title: '品牌名称',
+      width: 100,
       dataIndex: 'Name',
     },
   ];
@@ -66,7 +66,7 @@ class BrandModal extends PureComponent {
     }
   };
 
-  onSelectRow = selectedRows => {
+  onSelectRow = (selectedRowKeys, selectedRows) => {
     this.setState({ selectedRows: [...selectedRows] });
   };
 
@@ -109,12 +109,19 @@ class BrandModal extends PureComponent {
       },
     });
     if (response && response.Status === 200) {
+      const { pagination } = this.state;
       if (response.Content) {
         const { rows, records, page } = response.Content;
-        const { pagination } = this.state;
         this.setState({
           brandList: [...rows],
+          queryData: { ...params },
           pagination: { ...pagination, total: records, current: page },
+        });
+      } else {
+        this.setState({
+          brandList: [],
+          queryData: { ...params },
+          pagination: { ...pagination, total: 0 },
         });
       }
     }
@@ -151,22 +158,22 @@ class BrandModal extends PureComponent {
       <Modal
         width={960}
         destroyOnClose
-        title="客户选择"
+        title="品牌选择"
         visible={modalVisible}
         onOk={this.okHandle}
         onCancel={() => handleModalVisible()}
       >
         <div className="tableList">
           <div className="tableListForm">{this.renderSimpleForm()}</div>
-          <StandardTable
+          <Table
             loading={loading}
-            data={{ list: brandList }}
+            dataSource={brandList}
             rowKey="Code"
             scroll={{ y: 400 }}
             pagination={pagination}
             columns={this.columns}
             rowSelection={{
-              onSelectRow: this.onSelectRow,
+              onChange: this.onSelectRow,
             }}
             onChange={this.handleStandardTableChange}
           />

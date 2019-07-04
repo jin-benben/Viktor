@@ -20,14 +20,17 @@ class authorityGroup extends PureComponent {
   columns = [
     {
       title: '成员ID',
+      width: 100,
       dataIndex: 'EmployeeCode',
     },
     {
       title: '成员姓名',
+      width: 100,
       dataIndex: 'EmployeeName',
     },
     {
       title: '删除',
+      width: 100,
       dataIndex: 'contact',
       render: (text, record, index) => (
         // eslint-disable-next-line no-script-url
@@ -96,30 +99,16 @@ class authorityGroup extends PureComponent {
   addEmployee = rows => {
     // 添加行
     const { employeeList, authorityGroupDetail } = this.state;
-    const isnull = employeeList.length === 0;
-    if (isnull) {
-      rows.map(item => {
+    rows.map(item => {
+      const index = employeeList.findIndex(employee => employee.EmployeeCode === item.Code);
+      if (index === -1) {
         employeeList.push({
           EmployeeCode: item.Code,
           EmployeeName: item.Name,
           Code: authorityGroupDetail.Code,
         });
-      });
-    } else {
-      rows.map(item => {
-        if (!isnull) {
-          employeeList.map(employee => {
-            if (item.Code !== employee.EmployeeCode) {
-              employeeList.push({
-                EmployeeCode: item.Code,
-                EmployeeName: item.Name,
-                Code: authorityGroupDetail.Code,
-              });
-            }
-          });
-        }
-      });
-    }
+      }
+    });
     this.setState({ employeeList: [...employeeList] });
     this.handleModalVisible(false);
   };

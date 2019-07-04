@@ -3,6 +3,7 @@ import { connect } from 'dva';
 import router from 'umi/router';
 import Link from 'umi/link';
 import { Row, Col, Card, Form, Input, Button } from 'antd';
+import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import StandardTable from '@/components/StandardTable';
 import Brand from '@/components/Brand';
 import { getName } from '@/utils/utils';
@@ -30,22 +31,42 @@ class SupplierSearch extends PureComponent {
     },
     {
       title: '供应商名称',
-      width: 200,
       dataIndex: 'Name',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '开户行',
-      width: 200,
+      width: 100,
       dataIndex: 'OpeningBank',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '账号',
-      width: 200,
+      width: 100,
       dataIndex: 'BankAccount',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '地址',
+      width: 150,
       dataIndex: 'Laddress',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '电话',
@@ -56,6 +77,11 @@ class SupplierSearch extends PureComponent {
       title: '信用代码',
       width: 200,
       dataIndex: 'CreditCode',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '交易币种',
@@ -70,13 +96,17 @@ class SupplierSearch extends PureComponent {
     },
     {
       title: '交易主体',
-      width: 100,
+      width: 250,
       dataIndex: 'CompanyCode',
       render: val => {
         const {
           global: { Company },
         } = this.props;
-        return <span>{getName(Company, val)}</span>;
+        return (
+          <Ellipsis tooltip lines={1}>
+            {getName(Company, val)}
+          </Ellipsis>
+        );
       },
     },
     {

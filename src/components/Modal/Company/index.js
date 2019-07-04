@@ -109,12 +109,19 @@ class CompanyModal extends PureComponent {
       },
     });
     if (response && response.Status === 200) {
+      const { pagination } = this.state;
       if (response.Content) {
         const { rows, records, page } = response.Content;
-        const { pagination } = this.state;
         this.setState({
           companyList: [...rows],
+          queryData: { ...params },
           pagination: { ...pagination, total: records, current: page },
+        });
+      } else {
+        this.setState({
+          companyList: [],
+          queryData: { ...params },
+          pagination: { ...pagination, total: 0 },
         });
       }
     }

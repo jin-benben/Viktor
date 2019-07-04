@@ -4,7 +4,9 @@ export default {
   namespace: 'authorityGroupAdd',
 
   state: {
-    authorityGroupDetail: {},
+    authorityGroupDetail: {
+      TI_Z01402: [],
+    },
   },
 
   effects: {

@@ -9,7 +9,7 @@ const FormItem = Form.Item;
 @Form.create()
 class SKUModal extends PureComponent {
   state = {
-    staffsList: [],
+    skuList: [],
     selectedRows: [],
     queryData: {
       Content: {
@@ -151,6 +151,7 @@ class SKUModal extends PureComponent {
   };
 
   getSKU = async params => {
+    const { pagination } = this.state;
     const response = await request('/MDM/TI_Z009/TI_Z00902', {
       method: 'POST',
       data: {
@@ -160,10 +161,16 @@ class SKUModal extends PureComponent {
     if (response && response.Status === 200) {
       if (response.Content) {
         const { rows, records, page } = response.Content;
-        const { pagination } = this.state;
         this.setState({
-          staffsList: [...rows],
+          skuList: [...rows],
+          queryData: { ...params },
           pagination: { ...pagination, total: records, current: page },
+        });
+      } else {
+        this.setState({
+          skuList: [],
+          queryData: { ...params },
+          pagination: { ...pagination, total: 0 },
         });
       }
     }
@@ -194,7 +201,7 @@ class SKUModal extends PureComponent {
   }
 
   render() {
-    const { loading, pagination, staffsList } = this.state;
+    const { loading, pagination, skuList } = this.state;
     const { modalVisible, handleModalVisible } = this.props;
     return (
       <Modal
@@ -208,7 +215,7 @@ class SKUModal extends PureComponent {
           <div className="tableListForm">{this.renderSimpleForm()}</div>
           <StandardTable
             loading={loading}
-            data={{ list: staffsList }}
+            data={{ list: skuList }}
             rowKey="Code"
             pagination={pagination}
             scroll={{ y: 200 }}

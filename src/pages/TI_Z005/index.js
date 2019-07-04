@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Row, Col, Card, Form, Input, Modal, Button, message, Divider, Select } from 'antd';
+import { Row, Col, Card, Form, Input, Modal, Button, message, Divider, Select, Icon } from 'antd';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import StandardTable from '@/components/StandardTable';
 import Supplier from '@/components/Supplier';
@@ -23,7 +23,9 @@ class CreateForm extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
+      clearn: false,
       formVals: {
+        Code: '',
         CardCode: '',
         CardName: '',
       },
@@ -57,7 +59,12 @@ class CreateForm extends PureComponent {
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    if (nextProps.formVals !== prevState.formVals) {
+    if (prevState.clearn) {
+      return {
+        formVals: prevState.formVals,
+      };
+    }
+    if (nextProps.formVals !== prevState.formVals && !prevState.clearn) {
       return {
         formVals: nextProps.formVals,
       };
@@ -68,6 +75,18 @@ class CreateForm extends PureComponent {
   changePicture = ({ FilePath, FilePathX }) => {
     const { formVals } = this.props;
     Object.assign(formVals, { Picture: FilePath, Picture_List: FilePathX });
+  };
+
+  cleanSupplier = () => {
+    const { formVals } = this.state;
+    this.setState({
+      clearn: true,
+      formVals: {
+        ...formVals,
+        CardCode: '',
+        CardName: '',
+      },
+    });
   };
 
   render() {
@@ -94,28 +113,10 @@ class CreateForm extends PureComponent {
     const okHandle = () => {
       form.validateFields((err, fieldsValue) => {
         if (err) return;
-        console.log(err);
-        form.resetFields();
         delete fieldsValue.Picture;
-        if (
-          fieldsValue.WebSite &&
-          fieldsValue.WebSite.indexOf('Http://') === -1 &&
-          fieldsValue.WebSite.indexOf('Https://') === -1
-        ) {
-          fieldsValue.WebSite = fieldsValue.prefix + fieldsValue.WebSite;
-        }
-        delete fieldsValue.prefix;
         handleSubmit({ ...formVals, ...fieldsValue });
       });
     };
-    const prefixSelector = getFieldDecorator('prefix', {
-      initialValue: 'Http://',
-    })(
-      <Select style={{ width: 90 }}>
-        <Option value="Http://">Http://</Option>
-        <Option value="Https://">Https://</Option>
-      </Select>
-    );
 
     return (
       <Modal
@@ -140,7 +141,12 @@ class CreateForm extends PureComponent {
               initialValue: formVals.Purchaser,
             })(<MDMCommonality initialValue={formVals.Purchaser} data={Purchaser} />)}
           </FormItem>
-          <FormItem key="supplier" {...this.formLayout} label="默认供应商">
+          <FormItem
+            key="supplier"
+            {...this.formLayout}
+            label="默认供应商"
+            style={{ position: 'relative' }}
+          >
             {getFieldDecorator('supplier', {
               initialValue: { key: formVals.CardCode, label: formVals.CardName },
             })(
@@ -149,11 +155,18 @@ class CreateForm extends PureComponent {
                 labelInValue
               />
             )}
+            <Icon
+              onClick={this.cleanSupplier}
+              type="delete"
+              theme="twoTone"
+              style={{ position: 'absolute', right: -26, top: 3 }}
+            />
           </FormItem>
+
           <FormItem key="WebSite" {...this.formLayout} label="官网">
             {getFieldDecorator('WebSite', {
               initialValue: formVals.WebSite,
-            })(<Input addonBefore={prefixSelector} placeholder="请输入官网！" />)}
+            })(<Input placeholder="请输入官网！" />)}
           </FormItem>
           <FormItem key="Abbreviate" {...this.formLayout} label="简写">
             {getFieldDecorator('Abbreviate', {
@@ -276,6 +289,7 @@ class BrandList extends PureComponent {
     {
       title: '操作',
       width: 100,
+      fixed: 'right',
       render: (text, record) => (
         <Fragment>
           <a onClick={() => this.handleUpdateModalVisible(true, record)}>

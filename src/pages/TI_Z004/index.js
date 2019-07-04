@@ -26,8 +26,10 @@ import { formLayout, formItemLayout, roleType } from '@/utils/publicData';
 const FormItem = Form.Item;
 const { Option } = Select;
 const { TextArea } = Input;
-@connect(({ global }) => ({
+@connect(({ global, loading }) => ({
   global,
+  addloading: loading.effects['staffs/add'],
+  updateloading: loading.effects['staffs/update'],
 }))
 @Form.create()
 class CreateForm extends PureComponent {
@@ -41,6 +43,8 @@ class CreateForm extends PureComponent {
       modalVisible,
       handleModalVisible,
       handleSubmit,
+      updateloading,
+      addloading,
     } = this.props;
     const okHandle = () => {
       form.validateFields((err, fieldsValue) => {
@@ -50,9 +54,11 @@ class CreateForm extends PureComponent {
         handleSubmit({ ...formVals, ...fieldsValue });
       });
     };
+    const loading = method === 'A' ? addloading : updateloading;
     return (
       <Modal
         width={960}
+        confirmLoading={loading}
         destroyOnClose
         title="员工编辑"
         okText="保存"
@@ -114,6 +120,20 @@ class CreateForm extends PureComponent {
                   rules: [{ required: true, message: '请输入职位' }],
                   initialValue: formVals.Position,
                 })(<Input placeholder="请输入职位" />)}
+              </FormItem>
+            </Col>
+            <Col span={12}>
+              <FormItem key="Fax" {...formLayout} label="传真">
+                {getFieldDecorator('Fax', {
+                  initialValue: formVals.Fax,
+                })(<Input placeholder="请输入传真" />)}
+              </FormItem>
+            </Col>
+            <Col span={12}>
+              <FormItem key="Tel" {...formLayout} label="电话">
+                {getFieldDecorator('Tel', {
+                  initialValue: formVals.Tel,
+                })(<Input placeholder="请输入电话" />)}
               </FormItem>
             </Col>
             <Col span={12}>
@@ -316,6 +336,16 @@ class Staffs extends PureComponent {
       title: '职位',
       width: 100,
       dataIndex: 'Position',
+    },
+    {
+      title: '电话',
+      width: 150,
+      dataIndex: 'Tel',
+    },
+    {
+      title: '传真',
+      width: 150,
+      dataIndex: 'Fax',
     },
     {
       title: '性别',
@@ -638,7 +668,7 @@ class Staffs extends PureComponent {
               loading={loading}
               data={{ list: staffsList }}
               rowKey="Code"
-              scroll={{ x: 1900, y: 600 }}
+              scroll={{ x: 2100, y: 600 }}
               pagination={pagination}
               columns={this.columns}
               onChange={this.handleStandardTableChange}

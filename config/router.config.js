@@ -10,6 +10,9 @@ export default [
         hideInMenu: true,
         component: './users/login',
       },
+      {
+        component: './exception/404',
+      },
     ],
   },
   {
@@ -144,6 +147,9 @@ export default [
                 path: '/base/TI_Z014/TI_Z004',
                 component: './TI_Z004/set',
               },
+              {
+                component: './exception/404',
+              },
             ]
           },
           {
@@ -167,6 +173,9 @@ export default [
                 path: '/base/TI_Z049/detail',
                 component: './TI_Z049/TI_Z04901',
               },
+              {
+                component: './exception/404',
+              },
             ]
           },
           {
@@ -180,6 +189,9 @@ export default [
             path: '/base/TI_Z046',
             icon:"iconemail",
             component: './TI_Z046',
+          },
+          {
+            component: './exception/404',
           },
         ]
       },
@@ -237,7 +249,10 @@ export default [
                       hideInMenu: true,
                       path: '/main/product/TI_Z009/TI_Z00903',
                       component: './TI_Z009/TI_Z00903',
-                    }
+                    },
+                    {
+                      component: './exception/404',
+                    },
                    
                   ]
                 },
@@ -255,7 +270,10 @@ export default [
                       name: 'SPU查询',
                       path: '/main/product/TI_Z011/TI_Z01102',
                       component: './TI_Z011/search.js',
-                    }
+                    },
+                    {
+                      component: './exception/404',
+                    },
                   ]
                 },
                 {
@@ -278,10 +296,15 @@ export default [
                       name: '国外海关编码',
                       path: '/main/product/code/fhscode',
                       component: './code/fhscode',
-                    }
+                    },
+                    {
+                      component: './exception/404',
+                    },
                   ]
                 },
-               
+                {
+                  component: './exception/404',
+                },
               ]
             },
             {
@@ -304,6 +327,9 @@ export default [
                   name: '供应商详情',
                   hideInMenu: true,
                   component: './TI_Z007/TI_Z00701',
+                },
+                {
+                  component: './exception/404',
                 },
               ],
             },
@@ -328,7 +354,13 @@ export default [
                   hideInMenu: true,
                   component: './TI_Z006/TI_Z00601',
                 },
+                {
+                  component: './exception/404',
+                },
               ],
+            },
+            {
+              component: './exception/404',
             },
         ]
       }, 
@@ -373,7 +405,10 @@ export default [
                 path: '/sellabout/TI_Z026/TI_Z02602',
                 hideInMenu: true,
                 component: './TI_Z026/TI_Z02601',
-              }
+              },
+              {
+                component: './exception/404',
+              },
             ]
           },
           
@@ -409,7 +444,9 @@ export default [
                 path: '/sellabout/TI_Z029/detail',
                 component: './TI_Z029/TI_Z02903',
               },
-              
+              {
+                component: './exception/404',
+              },
             ]
           },
           {
@@ -444,7 +481,9 @@ export default [
                 path: '/sellabout/TI_Z030/update',
                 component: './TI_Z030/TI_Z03001',
               },
-             
+              {
+                component: './exception/404',
+              },
             ]
           },
           {
@@ -466,6 +505,9 @@ export default [
                 name: '批次下载',
                 path: '/sellabout/batchApprove/download',
                 component: './TI_Z025/download',
+              },
+              {
+                component: './exception/404',
               },
             ]
           },
@@ -493,7 +535,9 @@ export default [
             path: '/sellabout/oinvorinDetail',
             component: './transaction/oinvorinDetail',
           },
-          
+          {
+            component: './exception/404',
+          },
         ]
       }, 
       {
@@ -532,8 +576,10 @@ export default [
                 hideInMenu: true,
                 path: '/purchase/TI_Z027/detail',
                 component: './TI_Z027/TI_Z02703',
-              }
-             
+              },
+              {
+                component: './exception/404',
+              },
             ]
           },
           {
@@ -561,7 +607,10 @@ export default [
                 path: '/purchase/TI_Z028/TI_Z02802',
                 hideInMenu: true,
                 component: './TI_Z028/TI_Z02802',
-              }
+              },
+              {
+                component: './exception/404',
+              },
             ]
           },
         ]
@@ -580,6 +629,9 @@ export default [
             name: '应收发票',
             path: '/confrmBatch/OINV',
             component: './OINV',
+          },
+          {
+            component: './exception/404',
           },
         ]  
       },
@@ -644,6 +696,9 @@ export default [
             name: '微信绑定',
             component: './message/wxbind',
           },
+          {
+            component: './exception/404',
+          },
         ],
       },
      
@@ -667,9 +722,15 @@ export default [
             name: '500',
             path: '/exception/500',
             component: './exception/500',
-          }
+          },
+          {
+            component: './exception/404',
+          },
         ]
       },
     ],
+  },
+  {
+    component: './exception/404',
   },
 ]
