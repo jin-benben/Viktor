@@ -46,8 +46,11 @@ class batchManage extends PureComponent {
       width: 100,
       dataIndex: 'ApproveSts',
       align: 'center',
-      render: text =>
-        text === 'Y' ? <Tag color="green">已通过</Tag> : <Tag color="gold">未通过</Tag>,
+      render: text => {
+        if (!text) return '';
+        if (text === 'Y') return <Tag color="green">已通过</Tag>;
+        return <Tag color="gold">未通过</Tag>;
+      },
     },
     {
       title: '批次附件数',

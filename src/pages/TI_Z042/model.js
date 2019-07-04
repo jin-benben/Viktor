@@ -5,7 +5,6 @@ export default {
 
   state: {
     staffsList: [],
-
     pagination: {
       showSizeChanger: true,
       showTotal: total => `共 ${total} 条`,
@@ -18,7 +17,6 @@ export default {
 
   effects: {
     *fetch({ payload }, { call, put }) {
-      console.log(payload);
       const response = yield call(queryRule, payload);
       if (response && response.Status === 200) {
         if (!response.Content) {
@@ -26,6 +24,9 @@ export default {
             type: 'save',
             payload: {
               manLocationList: [],
+              pagination: {
+                total: 0,
+              },
             },
           });
         } else {

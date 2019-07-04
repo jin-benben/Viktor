@@ -17,10 +17,6 @@ const FormItem = Form.Item;
 }))
 @Form.create()
 class TemplateSearch extends PureComponent {
-  state = {
-    expandForm: false,
-  };
-
   columns = [
     {
       title: '代码',
@@ -39,13 +35,13 @@ class TemplateSearch extends PureComponent {
     },
     {
       title: '模板类型',
-      dataIndex: 'PrintType',
+      dataIndex: 'Type',
       width: 100,
       render: text => <span>{getName(templateType, text)}</span>,
     },
     {
       title: '备注',
-      width: 100,
+      width: 200,
       dataIndex: 'Comment',
     },
   ];
@@ -102,33 +98,19 @@ class TemplateSearch extends PureComponent {
     });
   };
 
-  toggleForm = () => {
-    // 是否展开
-    const { expandForm } = this.state;
-    this.setState({
-      expandForm: !expandForm,
-    });
-  };
-
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
     } = this.props;
 
-    const formLayout = {
-      labelCol: { span: 8 },
-      wrapperCol: { span: 16 },
-    };
-
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={4} sm={24}>
-            <FormItem key="SearchText" {...formLayout}>
+            <FormItem key="SearchText">
               {getFieldDecorator('SearchText')(<Input placeholder="请输入关键字" />)}
             </FormItem>
           </Col>
-
           <Col md={5} sm={24}>
             <FormItem key="searchBtn">
               <span className="submitButtons">

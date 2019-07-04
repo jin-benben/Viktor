@@ -34,6 +34,12 @@ export default {
             type: 'save',
             payload: {
               hscodeList: [],
+              queryData: {
+                ...payload,
+              },
+              pagination: {
+                total: 0,
+              },
             },
           });
         } else {

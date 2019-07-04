@@ -34,6 +34,12 @@ export default {
             type: 'save',
             payload: {
               orderList: [],
+              pagination: {
+                total: 0,
+              },
+              queryData: {
+                ...payload,
+              },
             },
           });
         } else {
@@ -42,6 +48,9 @@ export default {
             type: 'save',
             payload: {
               orderList: rows,
+              queryData: {
+                ...payload,
+              },
               pagination: {
                 total: records,
                 pageSize: payload.rows,

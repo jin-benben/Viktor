@@ -35,6 +35,14 @@ export default {
             type: 'save',
             payload: {
               expressList: [],
+              pagination: {
+                total: 0,
+                pageSize: payload.rows,
+                current: 1,
+              },
+              queryData: {
+                ...payload,
+              },
             },
           });
         } else {
@@ -47,6 +55,9 @@ export default {
                 total: records,
                 pageSize: payload.rows,
                 current: page,
+              },
+              queryData: {
+                ...payload,
               },
             },
           });

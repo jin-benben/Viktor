@@ -19,7 +19,7 @@ import {
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import AddParameter from '../components/addParameter';
-import { templateType, parameterType } from '@/utils/publicData';
+import { templateType, parameterType, formItemLayout, formLayout } from '@/utils/publicData';
 import { getName } from '@/utils/utils';
 
 const FormItem = Form.Item;
@@ -117,10 +117,8 @@ class TemplateDetail extends Component {
 
   static getDerivedStateFromProps(nextProps, prevState) {
     if (nextProps.templateDetail.templatdetail !== prevState.templatdetail) {
-      const first = nextProps.templateDetail.templatdetail.TI_Z04902[0];
       return {
         templatdetail: nextProps.templateDetail.templatdetail,
-        activeKey: first ? first.ParameterCode : '',
       };
     }
     return null;
@@ -161,7 +159,6 @@ class TemplateDetail extends Component {
     const newArr = [...templatdetail.TI_Z04902];
     newArr.splice(index, 1);
     Object.assign(templatdetail, { TI_Z04902: [...newArr] });
-    console.log(templatdetail);
     this.setState({ templatdetail });
   };
 
@@ -267,19 +264,6 @@ class TemplateDetail extends Component {
     });
   };
 
-  // tab change
-  onChange = activeKey => {
-    this.setState({ activeKey });
-  };
-
-  onEdit = (targetKey, action) => {
-    this[action](targetKey);
-  };
-
-  remove = targetKey => {
-    console.log(targetKey);
-  };
-
   render() {
     const {
       form: { getFieldDecorator },
@@ -287,22 +271,6 @@ class TemplateDetail extends Component {
       updateloading,
     } = this.props;
     const { templatdetail, modalVisible, pane } = this.state;
-    const formItemLayout = {
-      labelCol: {
-        xs: { span: 24 },
-        sm: { span: 10 },
-      },
-      wrapperCol: {
-        xs: { span: 24 },
-        sm: { span: 14 },
-        md: { span: 10 },
-        lg: { span: 10 },
-      },
-    };
-    const formLayout = {
-      labelCol: { span: 8 },
-      wrapperCol: { span: 14 },
-    };
 
     const addParentMethods = {
       handleSubmit: this.addTabpane,

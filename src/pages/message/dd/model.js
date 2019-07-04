@@ -27,6 +27,9 @@ export default {
             type: 'save',
             payload: {
               ddMessageList: [],
+              pagination: {
+                total: 0,
+              },
             },
           });
         } else {

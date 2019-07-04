@@ -42,6 +42,12 @@ export default {
             type: 'save',
             payload: {
               batchList: [],
+              queryData: {
+                ...payload,
+              },
+              pagination: {
+                total: 0,
+              },
             },
           });
         } else {
@@ -68,6 +74,12 @@ export default {
             type: 'save',
             payload: {
               batchApproveList: [],
+              queryData: {
+                ...payload,
+              },
+              pagination: {
+                total: 0,
+              },
             },
           });
         } else {
@@ -98,6 +110,12 @@ export default {
             type: 'save',
             payload: {
               batchUploadList: [],
+              queryData: {
+                ...payload,
+              },
+              pagination: {
+                total: 0,
+              },
             },
           });
         } else {
@@ -106,6 +124,9 @@ export default {
             type: 'save',
             payload: {
               batchUploadList: rows,
+              queryData: {
+                ...payload,
+              },
               pagination: {
                 total: records,
                 pageSize: payload.rows,

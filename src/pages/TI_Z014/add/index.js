@@ -2,8 +2,8 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { Row, Col, Card, Form, Input, Button, Icon, message } from 'antd';
-import StandardTable from '@/components/StandardTable';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
+import StandardTable from '@/components/StandardTable';
 import StaffsModal from '@/components/Modal/Staffs';
 import { formLayout, formItemLayout } from '@/utils/publicData';
 

@@ -46,7 +46,7 @@ import CompanySelect from '@/components/Company/index';
 import HSCode from '@/components/HSCode';
 import PushLink from '@/components/PushLink';
 import Attachment from '@/components/Attachment';
-import { getName } from '@/utils/utils';
+import { getName, validatorPhone, validatorEmail } from '@/utils/utils';
 import { otherCostCColumns, baseType } from '@/utils/publicData';
 
 const { TextArea } = Input;
@@ -1721,23 +1721,23 @@ class AgreementEdit extends React.Component {
                 <FormItem key="CellphoneNO" {...this.formLayout} label="手机号码">
                   {getFieldDecorator('CellphoneNO', {
                     initialValue: formVals.CellphoneNO,
-                    rules: [{ required: true, message: '请输入手机号码！' }],
-                  })(<Input disabled placeholder="手机号码" />)}
+                    rules: [{ validator: validatorPhone }],
+                  })(<Input placeholder="手机号码" />)}
                 </FormItem>
               </Col>
               <Col lg={8} md={12} sm={24}>
                 <FormItem key="PhoneNO" {...this.formLayout} label="联系人电话">
                   {getFieldDecorator('PhoneNO', {
                     initialValue: formVals.PhoneNO,
-                  })(<Input disabled placeholder="电话号码" />)}
+                  })(<Input placeholder="电话号码" />)}
                 </FormItem>
               </Col>
               <Col lg={8} md={12} sm={24}>
                 <FormItem key="Email " {...this.formLayout} label="联系人邮箱">
                   {getFieldDecorator('Email', {
-                    rules: [{ validator: this.validatorEmail }],
+                    rules: [{ validator: validatorEmail }],
                     initialValue: formVals.Email,
-                  })(<Input disabled placeholder="请输入邮箱" />)}
+                  })(<Input placeholder="请输入邮箱" />)}
                 </FormItem>
               </Col>
               <Col lg={8} md={12} sm={24}>

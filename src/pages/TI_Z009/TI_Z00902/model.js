@@ -24,6 +24,9 @@ export default {
             type: 'save',
             payload: {
               skuList: [],
+              pagination: {
+                total: 0,
+              },
             },
           });
         } else {

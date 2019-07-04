@@ -201,16 +201,32 @@ class orderLine extends PureComponent {
   }
 
   fetchOrder = async params => {
+    const { pagination } = this.state;
     const response = await request('/OMS/TI_Z026/TI_Z02607', {
       method: 'POST',
       data: {
         ...params,
       },
     });
-    if (response.Status !== 200) {
-      return;
+    if (response && response.Status === 200) {
+      if (response.Content) {
+        const { rows, records } = response.Content;
+        this.setState({
+          orderLineList: rows,
+          pagination: {
+            ...pagination,
+            total: records,
+          },
+        });
+      } else {
+        this.setState({
+          orderLineList: [],
+          pagination: {
+            total: 0,
+          },
+        });
+      }
     }
-    this.setState({ orderLineList: response.Content ? response.Content.rows : [] });
   };
 
   handleStandardTableChange = pagination => {

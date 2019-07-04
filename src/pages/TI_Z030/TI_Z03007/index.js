@@ -82,7 +82,7 @@ class AgreementLine extends PureComponent {
     },
     {
       title: '联系人',
-      width: 100,
+      width: 150,
       dataIndex: 'Contacts',
       render: (text, record) => (
         <Tooltip
@@ -181,7 +181,7 @@ class AgreementLine extends PureComponent {
     },
     {
       title: '询价价格',
-      width: 120,
+      width: 150,
       dataIndex: 'InquiryPrice',
       align: 'center',
       render: (text, record) => {
@@ -191,7 +191,7 @@ class AgreementLine extends PureComponent {
     },
     {
       title: '询行总计',
-      width: 150,
+      width: 200,
       align: 'center',
       dataIndex: 'InquiryLineTotal',
       render: (text, record) => (
@@ -205,7 +205,7 @@ class AgreementLine extends PureComponent {
     {
       title: '询价备注',
       dataIndex: 'InquiryComment',
-      width: 100,
+      width: 120,
       align: 'center',
       render: text => (
         <Ellipsis tooltip lines={1}>
@@ -277,7 +277,7 @@ class AgreementLine extends PureComponent {
     {
       title: '备注',
       dataIndex: 'LineComment',
-      width: 100,
+      width: 120,
       align: 'center',
       render: (text, record) => (
         <Ellipsis tooltip lines={1}>
@@ -357,7 +357,6 @@ class AgreementLine extends PureComponent {
     },
     {
       title: '销订单号',
-      width: 100,
       align: 'center',
       dataIndex: 'SoEntry',
       render: (text, recond) =>
@@ -596,7 +595,7 @@ class AgreementLine extends PureComponent {
               loading={loading}
               data={{ list: agreementLineList }}
               pagination={pagination}
-              scroll={{ x: 3500 }}
+              scroll={{ x: 3600 }}
               rowKey="Key"
               columns={this.columns}
               onChange={this.handleStandardTableChange}

@@ -34,6 +34,12 @@ export default {
             type: 'save',
             payload: {
               templateList: [],
+              pagination: {
+                total: 0,
+              },
+              queryData: {
+                ...payload,
+              },
             },
           });
         } else {
@@ -46,6 +52,9 @@ export default {
                 total: records,
                 pageSize: payload.rows,
                 current: page,
+              },
+              queryData: {
+                ...payload,
               },
             },
           });

@@ -17,7 +17,7 @@ const FormItem = Form.Item;
   loading: loading.models.express,
 }))
 @Form.create()
-class PrintHistory extends PureComponent {
+class ExpressHistory extends PureComponent {
   columns = [
     {
       title: '单号',
@@ -33,7 +33,7 @@ class PrintHistory extends PureComponent {
     {
       title: '创建人',
       dataIndex: 'CreateUser',
-      width: 80,
+      width: 120,
       render: val => {
         const {
           global: { TI_Z004 },
@@ -54,7 +54,7 @@ class PrintHistory extends PureComponent {
     },
     {
       title: '收件人',
-      width: 80,
+      width: 120,
       dataIndex: 'RName',
     },
     {
@@ -71,7 +71,7 @@ class PrintHistory extends PureComponent {
     },
     {
       title: '发件人',
-      width: 80,
+      width: 120,
       dataIndex: 'SName',
     },
     {
@@ -261,4 +261,4 @@ class PrintHistory extends PureComponent {
   }
 }
 
-export default PrintHistory;
+export default ExpressHistory;

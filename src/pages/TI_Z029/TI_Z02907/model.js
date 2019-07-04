@@ -35,6 +35,12 @@ export default {
             type: 'save',
             payload: {
               SalesQuotationSkuList: [],
+              pagination: {
+                total: 0,
+              },
+              queryData: {
+                ...payload,
+              },
             },
           });
         } else {
@@ -43,6 +49,9 @@ export default {
             type: 'save',
             payload: {
               SalesQuotationSkuList: rows,
+              queryData: {
+                ...payload,
+              },
               pagination: {
                 total: records,
                 pageSize: payload.rows,

@@ -137,45 +137,7 @@ class AddSKU extends Component {
       dataIndex: 'Unit',
       editable: true,
     },
-    {
-      title: '销售价格',
-      width: 100,
-      inputType: 'text',
-      dataIndex: 'SPrice',
-      editable: true,
-    },
-    {
-      title: '采购价格',
-      width: 100,
-      inputType: 'text',
-      dataIndex: 'PPrice',
-      editable: true,
-    },
-    {
-      title: '产地',
-      width: 100,
-      dataIndex: 'ManLocation',
-      render: (text, record, index) => {
-        const {
-          global: { TI_Z042 },
-        } = this.props;
-        return (
-          <MDMCommonality
-            onChange={value => {
-              this.codeChange(value, record, index, 'ManLocation');
-            }}
-            initialValue={text}
-            data={TI_Z042}
-          />
-        );
-      },
-    },
-    {
-      title: '重量',
-      width: 80,
-      dataIndex: 'Rweight',
-      editable: true,
-    },
+
     {
       title: 'SPU编码',
       width: 150,
@@ -195,7 +157,6 @@ class AddSKU extends Component {
         );
       },
     },
-
     {
       title: '开票名称',
       width: 150,
@@ -277,6 +238,45 @@ class AddSKU extends Component {
           />
         );
       },
+    },
+    {
+      title: '销售价格',
+      width: 100,
+      inputType: 'text',
+      dataIndex: 'SPrice',
+      editable: true,
+    },
+    {
+      title: '采购价格',
+      width: 100,
+      inputType: 'text',
+      dataIndex: 'PPrice',
+      editable: true,
+    },
+    {
+      title: '产地',
+      width: 100,
+      dataIndex: 'ManLocation',
+      render: (text, record, index) => {
+        const {
+          global: { TI_Z042 },
+        } = this.props;
+        return (
+          <MDMCommonality
+            onChange={value => {
+              this.codeChange(value, record, index, 'ManLocation');
+            }}
+            initialValue={text}
+            data={TI_Z042}
+          />
+        );
+      },
+    },
+    {
+      title: '重量',
+      width: 80,
+      dataIndex: 'Rweight',
+      editable: true,
     },
     {
       title: '分类',

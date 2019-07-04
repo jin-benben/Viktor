@@ -3,7 +3,7 @@ import { connect } from 'dva';
 import router from 'umi/router';
 import Link from 'umi/link';
 import moment from 'moment';
-import { Row, Col, Card, Form, Input, Button, Divider, Select, DatePicker, Icon } from 'antd';
+import { Row, Col, Card, Form, Input, Button, Tooltip, Select, DatePicker, Icon } from 'antd';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import StandardTable from '@/components/StandardTable';
 import DocEntryFrom from '@/components/DocEntryFrom';
@@ -83,15 +83,23 @@ class agreementOrder extends PureComponent {
       dataIndex: 'NumAtCard',
     },
     {
-      title: '联系方式',
-      width: 200,
-      dataIndex: 'contact',
+      title: '联系人',
+      width: 150,
+      dataIndex: 'Contacts',
       render: (text, record) => (
-        <Ellipsis tooltip lines={1}>
-          {record.CellphoneNO}
-          {record.CellphoneNO ? <Divider type="vertical" /> : null}
-          {record.PhoneNO}
-        </Ellipsis>
+        <Tooltip
+          title={
+            <Fragment>
+              {record.CellphoneNO}
+              <br />
+              {record.Email}
+              <br />
+              {record.PhoneNO}
+            </Fragment>
+          }
+        >
+          {text}
+        </Tooltip>
       ),
     },
     {
@@ -99,12 +107,14 @@ class agreementOrder extends PureComponent {
       width: 300,
       dataIndex: 'address',
       render: (text, record) => (
-        <span>{`${record.Province}/${record.City}/${record.Area}/${record.Address}`}</span>
+        <Ellipsis tooltip lines={1}>
+          <span>{`${record.Province}/${record.City}/${record.Area}/${record.Address}`}</span>
+        </Ellipsis>
       ),
     },
     {
-      title: '所有人',
-      width: 100,
+      title: '销售员',
+      width: 120,
       dataIndex: 'Owner',
       render: text => {
         const {

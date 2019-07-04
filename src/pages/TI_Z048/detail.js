@@ -11,7 +11,7 @@ const { Description } = DescriptionList;
   express,
   loading,
 }))
-class PrintDetailPage extends PureComponent {
+class ExpressDetailPage extends PureComponent {
   state = {
     expressDetail: {},
   };
@@ -65,4 +65,4 @@ class PrintDetailPage extends PureComponent {
     );
   }
 }
-export default PrintDetailPage;
+export default ExpressDetailPage;

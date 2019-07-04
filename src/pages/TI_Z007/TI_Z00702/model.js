@@ -24,6 +24,12 @@ export default {
             type: 'save',
             payload: {
               supplierList: [],
+              queryData: {
+                ...payload,
+              },
+              pagination: {
+                total: 0,
+              },
             },
           });
         } else {
@@ -32,6 +38,9 @@ export default {
             type: 'save',
             payload: {
               supplierList: rows,
+              queryData: {
+                ...payload,
+              },
               pagination: {
                 total: records,
                 pageSize: payload.rows,

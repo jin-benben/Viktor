@@ -275,7 +275,12 @@ class NeedTabl extends React.Component {
           },
         });
       } else {
-        this.setState({ orderLineList: response.Content ? response.Content.rows : [] });
+        this.setState({
+          orderLineList: [],
+          pagination: {
+            total: 0,
+          },
+        });
       }
     }
   };
@@ -284,9 +289,8 @@ class NeedTabl extends React.Component {
     const { queryData, pagination } = this.state;
     const newdata = { ...queryData, page: params.current, rows: params.pageSize };
     Object.assign(pagination, { pageSize: params.pageSize });
-    this.setState({ queryData: newdata, pagination }, () => {
-      this.fetchOrder(newdata);
-    });
+    this.setState({ queryData: newdata, pagination });
+    this.fetchOrder(newdata);
   };
 
   toggleForm = () => {
@@ -349,6 +353,21 @@ class NeedTabl extends React.Component {
         ...fieldsValue.orderNo,
         InquiryStatus: fieldsValue.InquiryStatus && fieldsValue.InquiryStatus ? 'C' : 'O',
       };
+      this.setState({
+        queryData: {
+          Content: {
+            SearchText: '',
+            SearchKey: '',
+            InquiryStatus: 'O',
+            QueryType: '3',
+            ...queryData,
+          },
+          page: 1,
+          rows: 30,
+          sidx: 'DocEntry',
+          sord: 'Desc',
+        },
+      });
       this.fetchOrder({
         Content: {
           SearchText: '',

@@ -38,6 +38,11 @@ export default {
             type: 'save',
             payload: {
               staffsList: [],
+              pagination: {
+                total: 0,
+                pageSize: payload.rows,
+                current: payload.page,
+              },
             },
           });
         } else {
@@ -56,12 +61,8 @@ export default {
         }
       }
     },
-    *add({ payload, callback }, { call, put }) {
+    *add({ payload, callback }, { call }) {
       const response = yield call(addRule, payload);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
       if (callback) callback(response);
     },
     *update({ payload, callback }, { call }) {

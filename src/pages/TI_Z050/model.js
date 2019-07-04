@@ -25,6 +25,11 @@ export default {
             type: 'save',
             payload: {
               transferList: [],
+              pagination: {
+                total: 0,
+                pageSize: payload.rows,
+                current: 1,
+              },
             },
           });
         } else {

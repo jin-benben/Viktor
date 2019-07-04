@@ -102,7 +102,7 @@ class SalesQuotationSku extends PureComponent {
     },
     {
       title: '联系人',
-      width: 100,
+      width: 150,
       dataIndex: 'Contacts',
       render: (text, record) => (
         <Tooltip
@@ -122,9 +122,10 @@ class SalesQuotationSku extends PureComponent {
     },
     {
       title: '物料',
+      width: 300,
       dataIndex: 'SKU',
       align: 'center',
-      width: 300,
+
       render: (text, record) => (
         <Ellipsis tooltip lines={1}>
           {text ? (
@@ -198,18 +199,17 @@ class SalesQuotationSku extends PureComponent {
     },
     {
       title: '询价价格',
-      width: 120,
+      width: 150,
       dataIndex: 'InquiryPrice',
       align: 'center',
       render: (text, record) => {
-        if (record.lastIndex) return '';
         if (!text) return '';
         return <span>{`${text || ''}(${record.Currency || ''})[${record.DocRate || ''}]`}</span>;
       },
     },
     {
       title: '询行总计',
-      width: 150,
+      width: 200,
       align: 'center',
       dataIndex: 'InquiryLineTotal',
       render: (text, record) => (
@@ -375,7 +375,7 @@ class SalesQuotationSku extends PureComponent {
     },
     {
       title: '销订单号',
-      width: 100,
+
       align: 'center',
       dataIndex: 'SoEntry',
       render: (text, recond) =>
@@ -672,6 +672,14 @@ class SalesQuotationSku extends PureComponent {
     const transferParentMethods = {
       handleModalVisible: this.handleModalVisible,
     };
+
+    //   let tablwidth=0;
+    // this.columns.map(item=>{
+    //   if(item.width){
+    //     tablwidth+=item.width
+    //   }
+    // })
+    // console.log(tablwidth)
     return (
       <Fragment>
         <Card bordered={false}>
@@ -681,7 +689,7 @@ class SalesQuotationSku extends PureComponent {
               loading={loading}
               data={{ list: SalesQuotationSkuList }}
               pagination={pagination}
-              scroll={{ x: 3500 }}
+              scroll={{ x: 3620 }}
               rowKey="Key"
               columns={this.columns}
               rowSelection={{

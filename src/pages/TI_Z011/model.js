@@ -34,6 +34,12 @@ export default {
             type: 'save',
             payload: {
               spuList: [],
+              queryData: {
+                ...payload,
+              },
+              pagination: {
+                total: 0,
+              },
             },
           });
         } else {
@@ -42,6 +48,9 @@ export default {
             type: 'save',
             payload: {
               spuList: rows,
+              queryData: {
+                ...payload,
+              },
               pagination: {
                 total: records,
                 pageSize: payload.rows,

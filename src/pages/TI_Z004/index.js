@@ -304,12 +304,11 @@ class Staffs extends PureComponent {
     },
     {
       title: '手机号',
-      width: 150,
+      width: 120,
       dataIndex: 'Mobile',
     },
     {
       title: 'Email',
-      width: 200,
       dataIndex: 'Email',
       render: text => <span style={{ fontSize: 13 }}>{text}</span>,
     },
@@ -545,6 +544,14 @@ class Staffs extends PureComponent {
     }
   };
 
+  departmentChange = val => {
+    const { queryData } = this.state;
+    Object.assign(queryData.Content, { Department: val || '' });
+    this.setState({
+      queryData: { ...queryData },
+    });
+  };
+
   handleModalVisible = flag => {
     this.setState({
       modalVisible: !!flag,
@@ -586,7 +593,7 @@ class Staffs extends PureComponent {
             <FormItem key="Department" {...formLayout} label="部门">
               {getFieldDecorator('Department', {
                 initialValue: Department,
-              })(<Organization initialValue={Department} />)}
+              })(<Organization onChange={this.departmentChange} initialValue={Department} />)}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>

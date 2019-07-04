@@ -36,6 +36,12 @@ export default {
             type: 'save',
             payload: {
               orderLineList: [],
+              pagination: {
+                total: 0,
+              },
+              queryData: {
+                ...payload,
+              },
             },
           });
         } else {

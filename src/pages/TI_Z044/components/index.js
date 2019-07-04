@@ -1,7 +1,7 @@
 import React, { PureComponent, Fragment } from 'react';
 
 import { Row, Col, Modal, Form, Input, Select, Button } from 'antd';
-import { printType, printOrderType } from '@/utils/publicData';
+import { printType, formItemLayout, formLayout, printOrderType } from '@/utils/publicData';
 import HtmlTemplate from '@/components/Modal/HtmlTemplate';
 
 const FormItem = Form.Item;
@@ -44,26 +44,6 @@ class PrintTemplateDetail extends PureComponent {
       handleSubmit,
     } = this.props;
     const { templateVisible, templatdetail } = this.state;
-    const formItemLayout = {
-      labelCol: {
-        xs: { span: 24 },
-        sm: { span: 10 },
-      },
-      wrapperCol: {
-        xs: { span: 24 },
-        sm: { span: 14 },
-        md: { span: 10 },
-        lg: { span: 10 },
-      },
-    };
-    const formLayout = {
-      labelCol: { span: 8 },
-      wrapperCol: { span: 14 },
-    };
-    const TemplateformLayout = {
-      labelCol: { span: 4 },
-      wrapperCol: { span: 19 },
-    };
 
     const okHandle = () => {
       form.validateFields((err, fieldsValue) => {
@@ -147,10 +127,8 @@ class PrintTemplateDetail extends PureComponent {
                   })(<TextArea rows={2} placeholder="请输入备注" />)}
                 </FormItem>
               </Col>
-            </Row>
-            <Row gutter={8}>
-              <Col lg={20} md={20} sm={24}>
-                <FormItem key="HtmlTemplateCode" {...TemplateformLayout} label="模板内容">
+              <Col lg={10} md={12} sm={24}>
+                <FormItem key="HtmlTemplateCode" {...formLayout} label="模板内容">
                   <span>{templatdetail.HtmlTemplateCode}</span>
                   <Button
                     onClick={() => this.handleModal(true)}

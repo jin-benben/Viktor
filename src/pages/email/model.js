@@ -43,6 +43,12 @@ export default {
             type: 'save',
             payload: {
               sendEmailList: [],
+              queryData: {
+                ...payload,
+              },
+              pagination: {
+                total: 0,
+              },
             },
           });
         } else {
@@ -51,6 +57,9 @@ export default {
             type: 'save',
             payload: {
               sendEmailList: rows,
+              queryData: {
+                ...payload,
+              },
               pagination: {
                 total: records,
                 pageSize: payload.rows,

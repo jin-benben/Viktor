@@ -1,17 +1,15 @@
 /* eslint-disable no-script-url */
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-
 import { Row, Col, Card, Form, Input, Button, message } from 'antd';
-import StandardTable from '@/components/StandardTable';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
+import StandardTable from '@/components/StandardTable';
 import EditTemplate from './components';
 import { getName } from '@/utils/utils';
 import { printType, printOrderType } from '@/utils/publicData';
 
 const FormItem = Form.Item;
 
-/* eslint react/no-multi-comp:0 */
 @connect(({ printTemplate, loading, global }) => ({
   printTemplate,
   global,

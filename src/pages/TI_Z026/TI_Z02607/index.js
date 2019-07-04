@@ -83,15 +83,15 @@ class orderLine extends PureComponent {
             ) : (
               <Fragment>
                 <Tag color="green">{getName(lineStatus, text)}</Tag>
-                {record.PDocStatus === 'C' ? (
-                  <Tag color="green">已确认</Tag>
+                {record.PLineStatus === 'C' ? (
+                  <Tag color="green">采已确认</Tag>
                 ) : (
-                  <Tag color="gold">未确认</Tag>
+                  <Tag color="gold">采未确认</Tag>
                 )}
-                {record.SDocStatus === 'C' ? (
-                  <Tag color="green">已报价</Tag>
+                {record.SoLineStatus === 'C' ? (
+                  <Tag color="green">销已报价</Tag>
                 ) : (
-                  <Tag color="gold">未报价</Tag>
+                  <Tag color="gold">销未报价</Tag>
                 )}
                 {record.IsInquiry === 'Y' ? (
                   <Tag color="green">需询价</Tag>
@@ -114,7 +114,7 @@ class orderLine extends PureComponent {
     },
     {
       title: '联系人',
-      width: 100,
+      width: 150,
       dataIndex: 'Contacts',
       render: (text, record) => (
         <Tooltip
@@ -361,6 +361,16 @@ class orderLine extends PureComponent {
       ),
     },
     {
+      title: '采询状态',
+      width: 100,
+      dataIndex: 'InquiryStatus',
+      render: text => (
+        <span>
+          {text === 'C' ? <Tag color="green">采已询价</Tag> : <Tag color="gold">采未询价</Tag>}
+        </span>
+      ),
+    },
+    {
       title: '销报单号',
       width: 80,
       dataIndex: 'QuoteEntry',
@@ -584,7 +594,6 @@ class orderLine extends PureComponent {
                   )}
                 </FormItem>
               </Col>
-
               <Col md={5} sm={24}>
                 <FormItem key="orderNo" {...formLayout} label="单号">
                   {getFieldDecorator('orderNo', {
@@ -593,11 +602,34 @@ class orderLine extends PureComponent {
                 </FormItem>
               </Col>
               <Col md={5} sm={24}>
-                <FormItem key="PLineStatus" {...formLayout} label="询价状态">
-                  {getFieldDecorator('PLineStatus')(
+                <FormItem key="SLineStatus" {...formLayout} label="销报状态">
+                  {getFieldDecorator('SLineStatus')(
+                    <Select style={{ width: '100%' }} placeholder="请选择">
+                      <Option value="C">已报价</Option>
+                      <Option value="O">未报价</Option>
+                      <Option value="">全部</Option>
+                    </Select>
+                  )}
+                </FormItem>
+              </Col>
+              <Col md={5} sm={24}>
+                <FormItem key="InquiryStatus" {...formLayout} label="采询状态">
+                  {getFieldDecorator('InquiryStatus')(
                     <Select style={{ width: '100%' }} placeholder="请选择">
                       <Option value="C">已询价</Option>
                       <Option value="O">未询价</Option>
+                      <Option value="">全部</Option>
+                    </Select>
+                  )}
+                </FormItem>
+              </Col>
+              <Col md={5} sm={24}>
+                <FormItem key="PLineStatus" {...formLayout} label="采询确认状态">
+                  {getFieldDecorator('PLineStatus')(
+                    <Select style={{ width: '100%' }} placeholder="请选择">
+                      <Option value="C">已确认</Option>
+                      <Option value="O">未确认</Option>
+                      <Option value="">全部</Option>
                     </Select>
                   )}
                 </FormItem>
@@ -661,7 +693,7 @@ class orderLine extends PureComponent {
               data={{ list: orderLineList }}
               pagination={pagination}
               rowKey="Key"
-              scroll={{ x: 3500, y: 500 }}
+              scroll={{ x: 3700 }}
               columns={columns}
               rowSelection={{
                 onSelectRow: this.onSelectRow,

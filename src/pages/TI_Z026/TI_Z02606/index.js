@@ -74,9 +74,9 @@ class inquiryListPage extends PureComponent {
                 <Tag color="gold">采未确认</Tag>
               )}
               {record.SDocStatus === 'C' ? (
-                <Tag color="green">已报价</Tag>
+                <Tag color="green">销已报价</Tag>
               ) : (
-                <Tag color="gold">未报价</Tag>
+                <Tag color="gold">销未报价</Tag>
               )}
             </Fragment>
           )}
@@ -92,7 +92,6 @@ class inquiryListPage extends PureComponent {
         </Ellipsis>
       ),
     },
-
     {
       title: '联系人',
       width: 100,
@@ -288,6 +287,7 @@ class inquiryListPage extends PureComponent {
                 <Select placeholder="请选择">
                   <Option value="C">已报价</Option>
                   <Option value="O">未报价</Option>
+                  <Option value="">全部</Option>
                 </Select>
               )}
             </FormItem>
@@ -322,21 +322,12 @@ class inquiryListPage extends PureComponent {
                 </FormItem>
               </Col>
               <Col md={5} sm={24}>
-                <FormItem key="InquiryStatus" {...formLayout} label="询价状态">
-                  {getFieldDecorator('InquiryStatus')(
-                    <Select placeholder="请选择">
-                      <Option value="C">已询价</Option>
-                      <Option value="O">未询价</Option>
-                    </Select>
-                  )}
-                </FormItem>
-              </Col>
-              <Col md={5} sm={24}>
                 <FormItem key="PDocStatus" {...formLayout} label="询价确认状态">
                   {getFieldDecorator('PDocStatus')(
                     <Select placeholder="请选择">
                       <Option value="C">已确认</Option>
                       <Option value="O">未确认</Option>
+                      <Option value="">全部</Option>
                     </Select>
                   )}
                 </FormItem>

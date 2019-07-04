@@ -4,83 +4,65 @@ import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import { Row, Col, Card, Form, Input, Modal, Button, message, Popconfirm, Icon } from 'antd';
 import StandardTable from '@/components/StandardTable';
-
+import { formItemLayout, formLayout } from '@/utils/publicData';
 import { validatorEmail } from '@/utils/utils';
 
 const FormItem = Form.Item;
 const { TextArea } = Input;
-@Form.create()
-class CreateForm extends PureComponent {
-  okHandle = () => {
-    const { form, formVals, handleSubmit } = this.props;
+const CreateForm = Form.create()(props => {
+  const {
+    form: { getFieldDecorator },
+    form,
+    formVals,
+    modalVisible,
+    handleSubmit,
+    handleModalVisible,
+  } = props;
+  const okHandle = () => {
     form.validateFields((err, fieldsValue) => {
       if (err) return;
       form.resetFields();
       handleSubmit({ ...formVals, ...fieldsValue });
     });
   };
-
-  render() {
-    const {
-      form: { getFieldDecorator },
-      formVals,
-      modalVisible,
-      handleModalVisible,
-    } = this.props;
-    const formLayout = {
-      labelCol: { span: 7 },
-      wrapperCol: { span: 16 },
-    };
-    const formItemLayout = {
-      labelCol: {
-        xs: { span: 24 },
-        sm: { span: 7 },
-      },
-      wrapperCol: {
-        xs: { span: 24 },
-        sm: { span: 16 },
-        md: { span: 10 },
-      },
-    };
-    return (
-      <Modal
-        width={640}
-        destroyOnClose
-        title="邮箱编辑"
-        maskClosable={false}
-        visible={modalVisible}
-        onOk={this.okHandle}
-        onCancel={() => handleModalVisible()}
-      >
-        <Form {...formItemLayout}>
-          <Row>
-            <FormItem key="Code" {...formLayout} label="邮箱">
-              {getFieldDecorator('Code', {
-                rules: [{ validator: validatorEmail, required: true, message: '请输入邮箱！' }],
-                initialValue: formVals.Code,
-              })(<Input placeholder="请输入邮箱" />)}
-            </FormItem>
-          </Row>
-          <Row>
-            <FormItem key="EmailPassword" {...formLayout} label="邮箱密码">
-              {getFieldDecorator('EmailPassword', {
-                rules: [{ required: true, message: '请输入邮箱密码！' }],
-                initialValue: formVals.EmailPassword,
-              })(<Input placeholder="请输入邮箱" />)}
-            </FormItem>
-          </Row>
-          <Row>
-            <FormItem key="Comment" {...formLayout} label="备注">
-              {getFieldDecorator('Comment', {
-                initialValue: formVals.Comment,
-              })(<TextArea placeholder="请输入备注" />)}
-            </FormItem>
-          </Row>
-        </Form>
-      </Modal>
-    );
-  }
-}
+  return (
+    <Modal
+      width={640}
+      destroyOnClose
+      title="邮箱编辑"
+      maskClosable={false}
+      visible={modalVisible}
+      onOk={okHandle}
+      onCancel={() => handleModalVisible()}
+    >
+      <Form {...formItemLayout}>
+        <Row>
+          <FormItem key="Code" {...formLayout} label="邮箱">
+            {getFieldDecorator('Code', {
+              rules: [{ validator: validatorEmail, required: true, message: '请输入邮箱！' }],
+              initialValue: formVals.Code,
+            })(<Input placeholder="请输入邮箱" />)}
+          </FormItem>
+        </Row>
+        <Row>
+          <FormItem key="EmailPassword" {...formLayout} label="邮箱密码">
+            {getFieldDecorator('EmailPassword', {
+              rules: [{ required: true, message: '请输入邮箱密码！' }],
+              initialValue: formVals.EmailPassword,
+            })(<Input placeholder="请输入邮箱" />)}
+          </FormItem>
+        </Row>
+        <Row>
+          <FormItem key="Comment" {...formLayout} label="备注">
+            {getFieldDecorator('Comment', {
+              initialValue: formVals.Comment,
+            })(<TextArea placeholder="请输入备注" />)}
+          </FormItem>
+        </Row>
+      </Form>
+    </Modal>
+  );
+});
 /* eslint react/no-multi-comp:0 */
 @connect(({ email, loading }) => ({
   email,

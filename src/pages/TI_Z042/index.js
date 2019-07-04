@@ -4,6 +4,7 @@ import { connect } from 'dva';
 import { Row, Col, Card, Form, Input, Modal, Button, Divider, Popconfirm, message } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import MyIcon from '@/components/MyIcon';
+import { formItemLayout, formLayout } from '@/utils/publicData';
 
 const FormItem = Form.Item;
 const { TextArea } = Input;
@@ -27,21 +28,7 @@ class CreateForm extends PureComponent {
       handleModalVisible,
       method,
     } = this.props;
-    const formLayout = {
-      labelCol: { span: 7 },
-      wrapperCol: { span: 16 },
-    };
-    const formItemLayout = {
-      labelCol: {
-        xs: { span: 24 },
-        sm: { span: 7 },
-      },
-      wrapperCol: {
-        xs: { span: 24 },
-        sm: { span: 16 },
-        md: { span: 10 },
-      },
-    };
+
     return (
       <Modal
         width={640}
@@ -183,6 +170,18 @@ class Staffs extends PureComponent {
     const { queryData } = this.state;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
+      this.setState({
+        queryData: {
+          Content: {
+            ...queryData.Content,
+            ...fieldsValue,
+          },
+          page: 1,
+          rows: 30,
+          sidx: 'Code',
+          sord: 'Desc',
+        },
+      });
       dispatch({
         type: 'manLocation/fetch',
         payload: {

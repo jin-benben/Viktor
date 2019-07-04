@@ -4,13 +4,20 @@ import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import { Row, Col, Card, Form, Input, Modal, Button, message, Popconfirm, Icon } from 'antd';
 import StandardTable from '@/components/StandardTable';
+import { formItemLayout, formLayout } from '@/utils/publicData';
 
 const FormItem = Form.Item;
 
-@Form.create()
-class CreateForm extends PureComponent {
-  okHandle = () => {
-    const { form, formVals, handleSubmit } = this.props;
+const CreateForm = Form.create()(props => {
+  const {
+    form: { getFieldDecorator },
+    form,
+    formVals,
+    modalVisible,
+    handleSubmit,
+    handleModalVisible,
+  } = props;
+  const okHandle = () => {
     form.validateFields((err, fieldsValue) => {
       if (err) return;
       form.resetFields();
@@ -18,60 +25,37 @@ class CreateForm extends PureComponent {
     });
   };
 
-  render() {
-    const {
-      form: { getFieldDecorator },
-      formVals,
-      modalVisible,
-      handleModalVisible,
-    } = this.props;
-    const formLayout = {
-      labelCol: { span: 7 },
-      wrapperCol: { span: 16 },
-    };
-    const formItemLayout = {
-      labelCol: {
-        xs: { span: 24 },
-        sm: { span: 7 },
-      },
-      wrapperCol: {
-        xs: { span: 24 },
-        sm: { span: 16 },
-        md: { span: 10 },
-      },
-    };
-    return (
-      <Modal
-        width={640}
-        destroyOnClose
-        maskClosable={false}
-        title="转移分类编辑"
-        visible={modalVisible}
-        onOk={this.okHandle}
-        onCancel={() => handleModalVisible()}
-      >
-        <Form {...formItemLayout}>
-          <Row>
-            <FormItem key="Code" {...formLayout} label="代码">
-              {getFieldDecorator('Code', {
-                rules: [{ required: true, message: '请输入代码！' }],
-                initialValue: formVals.Code,
-              })(<Input placeholder="请输入代码" />)}
-            </FormItem>
-          </Row>
-          <Row>
-            <FormItem key="Name" {...formLayout} label="名称">
-              {getFieldDecorator('Name', {
-                rules: [{ required: true, message: '请输入名称！' }],
-                initialValue: formVals.Name,
-              })(<Input placeholder="请输入名称" />)}
-            </FormItem>
-          </Row>
-        </Form>
-      </Modal>
-    );
-  }
-}
+  return (
+    <Modal
+      width={640}
+      destroyOnClose
+      maskClosable={false}
+      title="转移分类编辑"
+      visible={modalVisible}
+      onOk={okHandle}
+      onCancel={() => handleModalVisible()}
+    >
+      <Form {...formItemLayout}>
+        <Row>
+          <FormItem key="Code" {...formLayout} label="代码">
+            {getFieldDecorator('Code', {
+              rules: [{ required: true, message: '请输入代码！' }],
+              initialValue: formVals.Code,
+            })(<Input placeholder="请输入代码" />)}
+          </FormItem>
+        </Row>
+        <Row>
+          <FormItem key="Name" {...formLayout} label="名称">
+            {getFieldDecorator('Name', {
+              rules: [{ required: true, message: '请输入名称！' }],
+              initialValue: formVals.Name,
+            })(<Input placeholder="请输入名称" />)}
+          </FormItem>
+        </Row>
+      </Form>
+    </Modal>
+  );
+});
 /* eslint react/no-multi-comp:0 */
 @connect(({ transfer, loading }) => ({
   transfer,
