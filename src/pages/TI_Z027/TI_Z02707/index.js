@@ -25,6 +25,7 @@ import DocEntryFrom from '@/components/DocEntryFrom';
 import Organization from '@/components/Organization/multiple';
 import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
 import Transfer from '@/components/Transfer';
+import { getName } from '@/utils/utils';
 
 const { RangePicker } = DatePicker;
 
@@ -179,6 +180,30 @@ class supplierQuotationSku extends PureComponent {
       dataIndex: 'LineComment',
       width: 100,
       align: 'center',
+    },
+    {
+      title: '采购员',
+      width: 120,
+      dataIndex: 'Owner',
+      align: 'center',
+      render: text => {
+        const {
+          global: { Purchaser },
+        } = this.props;
+        return <span>{getName(Purchaser, text)}</span>;
+      },
+    },
+    {
+      title: '销售员',
+      width: 120,
+      dataIndex: 'Saler',
+      align: 'center',
+      render: text => {
+        const {
+          global: { Saler },
+        } = this.props;
+        return <span>{getName(Saler, text)}</span>;
+      },
     },
     {
       title: '重量',
@@ -473,7 +498,7 @@ class supplierQuotationSku extends PureComponent {
               data={{ list: supplierQuotationSkuList }}
               pagination={pagination}
               rowKey="Key"
-              scroll={{ x: 2100, y: 700 }}
+              scroll={{ x: 2350, y: 700 }}
               rowSelection={{
                 type: 'radio',
                 onSelectRow: this.onSelectRow,

@@ -96,6 +96,28 @@ ol {
   margin-bottom: 4px;
 }
 
+.sordBox{
+   margin-left: 3px;
+  .sordBoxUp{
+    font-size: 12px;
+    position: absolute;
+    top: 10px;
+    color: #1890FF;
+    &.active{
+      color: #bfbfbf;
+    }
+  }
+  .sordBoxDowm{
+    font-size: 12px;
+    position: absolute;
+    top: 17px;
+    color: #bfbfbf;
+    &.active{
+      color: #1890FF
+    }
+  }
+}
+
 .textOverflowMulti(@line: 3, @bg: #fff) {
   overflow: hidden;
   position: relative;

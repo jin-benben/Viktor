@@ -168,6 +168,18 @@ class InquiryEdit extends React.Component {
       dataIndex: 'InquiryLineTotalLocal',
     },
     {
+      title: '销售员',
+      width: 120,
+      dataIndex: 'Saler',
+      align: 'center',
+      render: text => {
+        const {
+          global: { Saler },
+        } = this.props;
+        return <span>{getName(Saler, text)}</span>;
+      },
+    },
+    {
       title: '要求交期',
       width: 100,
       dataIndex: 'DueDate',
@@ -506,7 +518,7 @@ class InquiryEdit extends React.Component {
             <StandardTable
               data={{ list: newdata }}
               rowKey="LineID"
-              scroll={{ x: 1800 }}
+              scroll={{ x: 1900 }}
               columns={this.skuColumns}
             />
           </TabPane>

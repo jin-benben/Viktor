@@ -78,7 +78,21 @@ class NeedTabl extends React.Component {
       ),
     },
     {
-      title: '单号',
+      title: () => {
+        const {
+          queryData: { sord },
+        } = this.state;
+        const active = sord === 'Desc';
+        return (
+          <Fragment>
+            单号
+            <span className="sordBox">
+              <Icon className={`sordBoxUp ${active ? 'active' : ''}`} type="caret-up" />
+              <Icon className={`sordBoxDowm ${active ? 'active' : ''}`} type="caret-down" />
+            </span>
+          </Fragment>
+        );
+      },
       width: 100,
       dataIndex: 'DocEntry',
       render: (val, record) => (
@@ -86,6 +100,11 @@ class NeedTabl extends React.Component {
           {`${val}-${record.LineID}`}
         </Link>
       ),
+      onHeaderCell: column => ({
+        onClick: () => {
+          this.headerRowClick(column);
+        }, // 点击表头行
+      }),
     },
     {
       title: '单据日期',
@@ -112,23 +131,42 @@ class NeedTabl extends React.Component {
         ),
     },
     {
-      title: '物料',
-      dataIndex: 'SKU',
+      title: () => {
+        const {
+          queryData: { sord },
+        } = this.state;
+        const active = sord === 'Desc';
+        return (
+          <Fragment>
+            物料
+            <span className="sordBox">
+              <Icon className={`sordBoxUp ${active ? 'active' : ''}`} type="caret-up" />
+              <Icon className={`sordBoxDowm ${active ? 'active' : ''}`} type="caret-down" />
+            </span>
+          </Fragment>
+        );
+      },
+      dataIndex: 'SKUName',
       align: 'center',
       width: 300,
+      onHeaderCell: column => ({
+        onClick: () => {
+          this.headerRowClick(column);
+        }, // 点击表头行
+      }),
       render: (text, record) =>
         record.lastIndex ? (
           ''
         ) : (
           <Ellipsis tooltip lines={1}>
             {text ? (
-              <Link target="_blank" to={`/main/product/TI_Z009/TI_Z00903?Code${text}`}>
-                {text}-
+              <Link target="_blank" to={`/main/product/TI_Z009/TI_Z00903?Code${record.SKU}`}>
+                {record.SKU}-
               </Link>
             ) : (
               ''
             )}
-            {record.SKUName}
+            {text}
           </Ellipsis>
         ),
     },
@@ -286,10 +324,11 @@ class NeedTabl extends React.Component {
   };
 
   handleStandardTableChange = params => {
+    const { current, pageSize } = params;
     const { queryData, pagination } = this.state;
-    const newdata = { ...queryData, page: params.current, rows: params.pageSize };
-    Object.assign(pagination, { pageSize: params.pageSize });
-    this.setState({ queryData: newdata, pagination });
+    const newdata = { ...queryData, page: current, rows: pageSize };
+    Object.assign(pagination, { pageSize });
+    this.setState({ queryData: { ...newdata }, pagination });
     this.fetchOrder(newdata);
   };
 
@@ -299,6 +338,20 @@ class NeedTabl extends React.Component {
     this.setState({
       expandForm: !expandForm,
     });
+  };
+
+  // 点击表头
+  headerRowClick = column => {
+    const { dataIndex } = column;
+    const {
+      queryData,
+      queryData: { sord },
+    } = this.state;
+    Object.assign(queryData, { sidx: dataIndex, page: 1, sord: sord === 'Desc' ? 'Asc' : 'Desc' });
+    this.setState({
+      queryData: { ...queryData },
+    });
+    this.fetchOrder(queryData);
   };
 
   // change 客户
@@ -337,7 +390,7 @@ class NeedTabl extends React.Component {
     // 搜索
     e.preventDefault();
     const { form } = this.props;
-
+    const { queryData } = this.state;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
       let DocDateFrom;
@@ -346,41 +399,18 @@ class NeedTabl extends React.Component {
         DocDateFrom = moment(fieldsValue.dateArr[0]).format('YYYY-MM-DD');
         DocDateTo = moment(fieldsValue.dateArr[1]).format('YYYY-MM-DD');
       }
-      const queryData = {
+      const Content = {
         ...fieldsValue,
         DocDateFrom,
         DocDateTo,
         ...fieldsValue.orderNo,
         InquiryStatus: fieldsValue.InquiryStatus && fieldsValue.InquiryStatus ? 'C' : 'O',
       };
+      Object.assign(queryData.Content, { ...Content });
       this.setState({
-        queryData: {
-          Content: {
-            SearchText: '',
-            SearchKey: '',
-            InquiryStatus: 'O',
-            QueryType: '3',
-            ...queryData,
-          },
-          page: 1,
-          rows: 30,
-          sidx: 'DocEntry',
-          sord: 'Desc',
-        },
+        queryData: { ...queryData, page: 1, rows: 30 },
       });
-      this.fetchOrder({
-        Content: {
-          SearchText: '',
-          SearchKey: '',
-          InquiryStatus: 'O',
-          QueryType: '3',
-          ...queryData,
-        },
-        page: 1,
-        rows: 30,
-        sidx: 'DocEntry',
-        sord: 'Desc',
-      });
+      this.fetchOrder({ ...queryData, page: 1, rows: 30 });
     });
   };
 
@@ -474,11 +504,11 @@ class NeedTabl extends React.Component {
 
   render() {
     const { pagination, orderLineList, selectedRowKeys, loading } = this.state;
-    const columns = this.columns.map(item => {
-      // eslint-disable-next-line no-param-reassign
-      item.align = 'Center';
-      return item;
-    });
+    // const columns = this.columns.map(item => {
+    //   // eslint-disable-next-line no-param-reassign
+    //   item.align = 'Center';
+    //   return item;
+    // });
     const height = document.body.offsetHeight - 56 - 64 - 56 - 24 - 32 - 30;
     return (
       <Fragment>
@@ -496,7 +526,7 @@ class NeedTabl extends React.Component {
               selectedRowKeys,
             }}
             onChange={this.handleStandardTableChange}
-            columns={columns}
+            columns={this.columns}
           />
         </div>
       </Fragment>

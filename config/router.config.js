@@ -470,7 +470,7 @@ export default [
                 component: './TI_Z030/TI_Z03007',
               },
               {
-                name: '销售报价单详情',
+                name: '销售合同详情',
                 hideInMenu: true,
                 path: '/sellabout/TI_Z030/detail',
                 component: './TI_Z030/TI_Z03003',
@@ -613,6 +613,12 @@ export default [
               },
             ]
           },
+          {
+            name: '采购员修改',
+            icon: 'iconqueren',
+            path: '/purchase/TI_Z055',
+            component: './TI_Z055',
+          }  
         ]
       }, 
       {
