@@ -30,7 +30,6 @@ export default {
       pageSize: 30,
       current: 1,
     },
-    sendDetail: {},
     sendHistoryDetail: {},
   },
 
@@ -81,18 +80,9 @@ export default {
         });
       }
     },
-    *getEmail({ payload }, { call, put }) {
+    *getEmail({ payload, callback }, { call }) {
       const response = yield call(getSendRule, payload);
-      if (response && response.Status === 200) {
-        yield put({
-          type: 'save',
-          payload: {
-            sendDetail: {
-              ...response.Content,
-            },
-          },
-        });
-      }
+      if (callback) callback(response);
     },
     *saveSend({ payload, callback }, { call }) {
       const response = yield call(saveSendRule, payload);

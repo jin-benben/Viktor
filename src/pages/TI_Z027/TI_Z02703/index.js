@@ -242,33 +242,40 @@ class InquiryEdit extends React.Component {
     {
       title: '来源类型',
       align: 'center',
+      width: 100,
       dataIndex: 'BaseType',
-      render: text => <span>{text === '1' ? '正常订单' : '未知'}</span>,
+      render: text => <span>{getName(baseType, text)}</span>,
     },
     {
       title: '来源单号',
       align: 'center',
+      width: 100,
       dataIndex: 'BaseEntry',
     },
     {
       title: '附件代码',
       align: 'center',
+      width: 200,
       dataIndex: 'AttachmentCode',
+      render: text => <div style={{ wordWrap: 'break-word', wordBreak: 'break-all' }}>{text}</div>,
     },
     {
       title: '附件描述',
       align: 'center',
+      width: 100,
       dataIndex: 'AttachmentName',
     },
     {
       title: '附件路径',
       align: 'center',
+      width: 200,
       dataIndex: 'AttachmentPath',
       render: text => <div style={{ wordWrap: 'break-word', wordBreak: 'break-all' }}>{text}</div>,
     },
 
     {
       title: '操作',
+      width: 100,
       align: 'center',
       render: (text, record) => (
         <Fragment>
@@ -584,7 +591,7 @@ class InquiryEdit extends React.Component {
         </Tabs>
 
         <Modal
-          width={640}
+          width={960}
           destroyOnClose
           maskClosable={false}
           title="物料行附件"
