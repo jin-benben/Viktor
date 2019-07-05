@@ -7,6 +7,11 @@ export default {
     inquiryList: [],
     queryData: {
       Content: {
+        Owner: [],
+        PDocStatus: '',
+        SDocStatus: '',
+        IsInquiry: '',
+        Closed: 'N',
         SearchText: '',
         SearchKey: '',
       },

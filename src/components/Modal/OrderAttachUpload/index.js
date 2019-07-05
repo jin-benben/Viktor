@@ -64,6 +64,7 @@ class OrderAttachUpload extends PureComponent {
     return (
       <Modal
         width={640}
+        maskClosable={false}
         destroyOnClose
         title="上传附件"
         visible={modalVisible}

@@ -651,6 +651,7 @@ class salerConfrim extends PureComponent {
         <Modal
           width={960}
           destroyOnClose
+          maskClosable={false}
           title="确认选择"
           onCancel={() => this.handleModalVisible(false)}
           footer={null}

@@ -67,6 +67,7 @@ class LinkManFrom extends PureComponent {
       <Modal
         width={640}
         destroyOnClose
+        maskClosable={false}
         title="联系人编辑"
         visible={modalVisible}
         onOk={okHandle}

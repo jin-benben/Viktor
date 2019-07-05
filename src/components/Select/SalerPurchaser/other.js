@@ -9,11 +9,22 @@ const { Option } = Select;
 class SalerPurchaser extends PureComponent {
   state = {
     value: [],
+    isChange: false,
   };
+
+  static getDerivedStateFromProps(nextProps, prevState) {
+    if (!prevState.isChange) {
+      return {
+        value: nextProps.initialValue,
+      };
+    }
+    return null;
+  }
 
   handleChange = value => {
     this.setState({
       value,
+      isChange: true,
     });
     const { onChange } = this.props;
     if (onChange) {

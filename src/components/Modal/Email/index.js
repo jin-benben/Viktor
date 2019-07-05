@@ -202,6 +202,7 @@ class EmailModal extends PureComponent {
           width={960}
           destroyOnClose
           confirmLoading={loading}
+          maskClosable={false}
           title="邮件模板选择"
           visible={modalVisible}
           onOk={this.okHandle}

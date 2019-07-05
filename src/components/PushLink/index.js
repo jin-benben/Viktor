@@ -67,6 +67,7 @@ class PushModal extends PureComponent {
       <Modal
         width={640}
         destroyOnClose
+        maskClosable={false}
         title="选择推送人"
         visible={modalVisible}
         onOk={this.okHandle}

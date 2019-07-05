@@ -351,6 +351,7 @@ class OrderDetailPage extends PureComponent {
         </Tabs>
         <Modal
           width={960}
+          maskClosable={false}
           destroyOnClose
           title="物料行附件"
           visible={attachmentVisible}

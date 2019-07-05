@@ -209,6 +209,7 @@ class OrderPrint extends PureComponent {
         <Modal
           width={960}
           destroyOnClose
+          maskClosable={false}
           title="模板选择"
           visible={modalVisible}
           onOk={this.okHandle}

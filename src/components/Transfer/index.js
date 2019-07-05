@@ -338,6 +338,7 @@ class Transfer extends PureComponent {
         width={960}
         destroyOnClose
         title="转移"
+        maskClosable={false}
         visible={modalVisible}
         footer={null}
         onCancel={() => handleModalVisible(false)}

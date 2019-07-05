@@ -68,6 +68,7 @@ class CreateForm extends PureComponent {
       <Modal
         width={640}
         destroyOnClose
+        maskClosable={false}
         title="SPU修改"
         visible={modalVisible}
         onOk={okHandle}

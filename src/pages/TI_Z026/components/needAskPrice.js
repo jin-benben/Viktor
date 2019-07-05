@@ -216,6 +216,7 @@ class OrderLine extends React.Component {
       <Modal
         width={1200}
         destroyOnClose
+        maskClosable={false}
         title="确认选择"
         visible={modalVisible}
         onOk={this.okHandle}

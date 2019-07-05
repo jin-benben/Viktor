@@ -3,6 +3,7 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import Link from 'umi/link';
+import moment from 'moment';
 import router from 'umi/router';
 import { Row, Col, Card, Form, Input, Button, message, Icon, DatePicker, Select, Tag } from 'antd';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
@@ -36,6 +37,12 @@ class PurchaserChange extends PureComponent {
       ),
     },
     {
+      title: '单据日期',
+      width: 100,
+      dataIndex: 'DocDate',
+      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
+    },
+    {
       title: '询价状态',
       width: 80,
       dataIndex: 'LineStatus',
@@ -45,7 +52,7 @@ class PurchaserChange extends PureComponent {
     {
       title: '询价生成状态',
       width: 120,
-      dataIndex: 'PLineStatus',
+      dataIndex: 'InquiryStatus',
       align: 'center',
       render: text =>
         text === 'C' ? <Tag color="green">已生成</Tag> : <Tag color="gold">未生成</Tag>,
@@ -333,7 +340,7 @@ class PurchaserChange extends PureComponent {
               loading={loading}
               data={{ list: orderList }}
               rowKey="key"
-              scroll={{ x: 1000 }}
+              scroll={{ x: 1350 }}
               pagination={pagination}
               columns={this.columns}
               rowSelection={{

@@ -1617,9 +1617,6 @@ class InquiryEdit extends React.Component {
         LineTotal: formVals.DocTotal,
       });
     }
-
-    console.log(formVals);
-
     return (
       <Card bordered={false} loading={detailLoading}>
         <Form {...formItemLayout}>
@@ -1887,6 +1884,7 @@ class InquiryEdit extends React.Component {
         <Modal
           width={960}
           destroyOnClose
+          maskClosable={false}
           title="物料行附件"
           visible={attachmentVisible}
           onOk={() => this.handleModalVisible(false)}

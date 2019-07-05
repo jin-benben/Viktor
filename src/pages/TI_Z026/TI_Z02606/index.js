@@ -1,3 +1,5 @@
+/* eslint-disable prefer-destructuring */
+/* eslint-disable no-param-reassign */
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
@@ -66,7 +68,7 @@ class inquiryListPage extends PureComponent {
               {record.IsInquiry === 'Y' ? (
                 <Tag color="green">需询价</Tag>
               ) : (
-                <Tag color="gold">不需询价</Tag>
+                <Tag color="gold">不询价</Tag>
               )}
               {record.PDocStatus === 'C' ? (
                 <Tag color="green">采已确认</Tag>
@@ -173,9 +175,10 @@ class inquiryListPage extends PureComponent {
   componentDidMount() {
     const {
       dispatch,
+      global: { currentUser },
       inquiryFetch: { queryData },
     } = this.props;
-
+    Object.assign(queryData.Content, { Owner: [currentUser.Owner] });
     dispatch({
       type: 'inquiryFetch/fetch',
       payload: {
@@ -213,36 +216,40 @@ class inquiryListPage extends PureComponent {
   handleSearch = e => {
     // 搜索
     e.preventDefault();
-    const { dispatch, form } = this.props;
-
+    const {
+      dispatch,
+      form,
+      inquiryFetch: { queryData },
+    } = this.props;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
-      let DocDateFrom;
-      let DocDateTo;
+      let DocDateFrom = '';
+      let DocDateTo = '';
       if (fieldsValue.dateArr) {
         DocDateFrom = moment(fieldsValue.dateArr[0]).format('YYYY-MM-DD');
         DocDateTo = moment(fieldsValue.dateArr[1]).format('YYYY-MM-DD');
       }
-      // eslint-disable-next-line no-param-reassign
+      let DocEntryFroms = '';
+      let DocEntryTo = '';
+      if (fieldsValue.orderNo) {
+        DocEntryFroms = fieldsValue.orderNo.DocEntryFrom;
+        DocEntryTo = fieldsValue.orderNo.DocEntryTo;
+      }
+      delete fieldsValue.orderNo;
       delete fieldsValue.dateArr;
-      const queryData = {
+      const newQueryData = {
         ...fieldsValue,
         DocDateFrom,
         DocDateTo,
-        ...fieldsValue.orderNo,
+        DocEntryFrom: DocEntryFroms,
+        DocEntryTo,
       };
+      Object.assign(queryData.Content, { ...newQueryData });
+      Object.assign(queryData, { page: 1 });
       dispatch({
         type: 'inquiryFetch/fetch',
         payload: {
-          Content: {
-            SearchText: '',
-            SearchKey: 'Name',
-            ...queryData,
-          },
-          page: 1,
-          rows: 30,
-          sidx: 'DocEntry',
-          sord: 'Desc',
+          ...queryData,
         },
       });
     });
@@ -259,32 +266,37 @@ class inquiryListPage extends PureComponent {
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
+      inquiryFetch: { queryData },
     } = this.props;
     const { expandForm } = this.state;
     const formLayout = {
-      labelCol: { span: 8 },
-      wrapperCol: { span: 16 },
+      labelCol: { span: 9 },
+      wrapperCol: { span: 15 },
     };
-
+    const { PDocStatus, SDocStatus, IsInquiry, Closed, Owner } = queryData.Content;
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={4} sm={24}>
-            <FormItem key="SearchText" {...formLayout}>
+          <Col md={5} sm={24}>
+            <FormItem key="SearchText" {...formLayout} label="关键字">
               {getFieldDecorator('SearchText')(<Input placeholder="请输入关键字" />)}
             </FormItem>
           </Col>
           <Col md={5} sm={24}>
-            <FormItem label="日期" {...formLayout}>
-              {getFieldDecorator('dateArr', { rules: [{ type: 'array' }] })(
-                <RangePicker style={{ width: '100%' }} />
+            <FormItem key="PDocStatus" {...formLayout} label="采确状态">
+              {getFieldDecorator('PDocStatus', { initialValue: PDocStatus })(
+                <Select style={{ width: '100%' }} placeholder="请选择">
+                  <Option value="C">已确认</Option>
+                  <Option value="O">未确认</Option>
+                  <Option value="">全部</Option>
+                </Select>
               )}
             </FormItem>
           </Col>
           <Col md={5} sm={24}>
             <FormItem key="SDocStatus" {...formLayout} label="报价状态">
-              {getFieldDecorator('SDocStatus')(
-                <Select placeholder="请选择">
+              {getFieldDecorator('SDocStatus', { initialValue: SDocStatus })(
+                <Select style={{ width: '100%' }} placeholder="请选择">
                   <Option value="C">已报价</Option>
                   <Option value="O">未报价</Option>
                   <Option value="">全部</Option>
@@ -294,11 +306,34 @@ class inquiryListPage extends PureComponent {
           </Col>
           <Col md={5} sm={24}>
             <FormItem key="Owner" {...formLayout} label="销售员">
-              {getFieldDecorator('Owner')(<SalerPurchaser />)}
+              {getFieldDecorator('Owner', { initialValue: Owner })(
+                <SalerPurchaser initialValue={Owner} />
+              )}
             </FormItem>
           </Col>
           {expandForm ? (
             <Fragment>
+              <Col md={5} sm={24}>
+                <FormItem key="IsInquiry" {...formLayout} label="需询价">
+                  {getFieldDecorator('IsInquiry', { initialValue: IsInquiry })(
+                    <Select style={{ width: '100%' }} placeholder="请选择">
+                      <Option value="Y">需询价</Option>
+                      <Option value="N">不询价</Option>
+                      <Option value="">全部</Option>
+                    </Select>
+                  )}
+                </FormItem>
+              </Col>
+              <Col md={5} sm={24}>
+                <FormItem key="Closed" {...formLayout} label="关闭状态">
+                  {getFieldDecorator('Closed', { initialValue: Closed })(
+                    <Select style={{ width: '100%' }} placeholder="请选择关闭状态">
+                      <Option value="Y">已关闭</Option>
+                      <Option value="N">未关闭</Option>
+                    </Select>
+                  )}
+                </FormItem>
+              </Col>
               <Col md={5} sm={24}>
                 <FormItem key="orderNo" {...formLayout} label="单号">
                   {getFieldDecorator('orderNo', {
@@ -306,13 +341,10 @@ class inquiryListPage extends PureComponent {
                   })(<DocEntryFrom />)}
                 </FormItem>
               </Col>
-              <Col md={4} sm={24}>
-                <FormItem key="Closed" {...formLayout}>
-                  {getFieldDecorator('Closed')(
-                    <Select placeholder="请选择关闭状态">
-                      <Option value="Y">已关闭</Option>
-                      <Option value="N">未关闭</Option>
-                    </Select>
+              <Col md={5} sm={24}>
+                <FormItem label="日期" {...formLayout}>
+                  {getFieldDecorator('dateArr', { rules: [{ type: 'array' }] })(
+                    <RangePicker style={{ width: '100%' }} />
                   )}
                 </FormItem>
               </Col>
@@ -321,36 +353,14 @@ class inquiryListPage extends PureComponent {
                   {getFieldDecorator('DeptList')(<Organization />)}
                 </FormItem>
               </Col>
-              <Col md={5} sm={24}>
-                <FormItem key="PDocStatus" {...formLayout} label="询价确认状态">
-                  {getFieldDecorator('PDocStatus')(
-                    <Select placeholder="请选择">
-                      <Option value="C">已确认</Option>
-                      <Option value="O">未确认</Option>
-                      <Option value="">全部</Option>
-                    </Select>
-                  )}
-                </FormItem>
-              </Col>
-              <Col md={5} sm={24}>
-                <FormItem key="IsInquiry" {...formLayout} label="需询价">
-                  {getFieldDecorator('IsInquiry')(
-                    <Select placeholder="请选择">
-                      <Option value="Y">是</Option>
-                      <Option value="N">否</Option>
-                    </Select>
-                  )}
-                </FormItem>
-              </Col>
             </Fragment>
           ) : null}
-          <Col md={5} sm={24}>
+          <Col md={4} sm={24}>
             <FormItem key="searchBtn">
               <span className="submitButtons">
                 <Button type="primary" htmlType="submit">
                   查询
                 </Button>
-
                 <a style={{ marginLeft: 8 }} onClick={this.toggleForm}>
                   {expandForm ? (
                     <span>

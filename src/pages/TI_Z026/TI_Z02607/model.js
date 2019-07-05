@@ -8,6 +8,11 @@ export default {
     queryData: {
       Content: {
         SearchText: '',
+        Owner: [],
+        PLineStatus: '',
+        LineStatus: '',
+        InquiryStatus: '',
+        Closed: 'N',
         IsInquiry: '',
         SearchKey: '',
         QueryType: '1',

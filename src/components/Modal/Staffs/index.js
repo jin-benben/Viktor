@@ -151,6 +151,7 @@ class StaffsModal extends PureComponent {
       <Modal
         width={640}
         destroyOnClose
+        maskClosable={false}
         title="员工选择"
         visible={modalVisible}
         onOk={this.okHandle}

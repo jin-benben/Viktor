@@ -140,6 +140,7 @@ class OrderLine extends React.Component {
         width={1200}
         destroyOnClose
         title="确认选择"
+        maskClosable={false}
         visible={modalVisible}
         onOk={this.okHandle}
         onCancel={() => handleModalVisible()}

@@ -396,6 +396,7 @@ class orderLine extends PureComponent {
       <Modal
         width={1200}
         destroyOnClose
+        maskClosable={false}
         title="客户询价单物料查询"
         visible={modalVisible}
         onOk={this.okHandle}

@@ -72,6 +72,7 @@ class AddressInfo extends PureComponent {
       <Modal
         width={640}
         destroyOnClose
+        maskClosable={false}
         title="收货地址编辑"
         visible={modalVisible}
         onOk={okHandle}

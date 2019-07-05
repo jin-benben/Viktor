@@ -646,6 +646,7 @@ class OINVConfrim extends PureComponent {
           onCancel={() => this.handleModalVisible(false)}
           destroyOnClose
           title="确认选择"
+          maskClosable={false}
           footer={null}
           visible={modalVisible1}
         >

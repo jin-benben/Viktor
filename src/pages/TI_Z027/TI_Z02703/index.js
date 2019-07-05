@@ -586,6 +586,7 @@ class InquiryEdit extends React.Component {
         <Modal
           width={640}
           destroyOnClose
+          maskClosable={false}
           title="物料行附件"
           visible={attachmentVisible}
           onOk={() => this.handleModalVisible(false)}

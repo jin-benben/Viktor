@@ -73,6 +73,7 @@ class LinkManFrom extends PureComponent {
       <Modal
         width={640}
         destroyOnClose
+        maskClosable={false}
         title="联系人编辑"
         visible={modalVisible}
         onOk={okHandle}
@@ -139,7 +140,7 @@ class LinkManFrom extends PureComponent {
           </Row>
           <Row>
             <Col span={12}>
-              <FormItem key="DefaultContacts" {...this.formLayout} label="默认地址">
+              <FormItem key="DefaultContacts" {...this.formLayout} label="默认联系人">
                 {getFieldDecorator('DefaultContacts', {
                   valuePropName: 'checked',
                   initialValue: formVals.DefaultContacts === 'T',

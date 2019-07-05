@@ -162,6 +162,7 @@ class SupplierModal extends PureComponent {
       <Modal
         width={960}
         destroyOnClose
+        maskClosable={false}
         title="供应商选择"
         visible={modalVisible}
         onOk={this.okHandle}

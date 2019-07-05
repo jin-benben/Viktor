@@ -1,9 +1,9 @@
 import React, { PureComponent, Fragment } from 'react';
-import request from '@/utils/request';
-import CompanyModal from '@/components/Modal/Company';
 import { Select, Spin, Icon, Empty, Button } from 'antd';
 import debounce from 'lodash/debounce';
 import { connect } from 'dva';
+import request from '@/utils/request';
+import CompanyModal from '@/components/Modal/Company';
 import styles from './style.less';
 
 const { Option } = Select;

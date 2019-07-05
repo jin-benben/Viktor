@@ -51,6 +51,7 @@ class CreateForm extends React.Component {
       <Modal
         width={640}
         destroyOnClose
+        maskClosable={false}
         title="编辑"
         okText="保存"
         visible={modalVisible}

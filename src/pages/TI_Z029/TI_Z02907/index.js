@@ -74,9 +74,9 @@ class SalesQuotationSku extends PureComponent {
             ) : (
               <Fragment>
                 {record.ApproveSts === 'Y' ? (
-                  <Tag color="green">已审核</Tag>
+                  <Tag color="green">已发送</Tag>
                 ) : (
-                  <Tag color="gold">未审核</Tag>
+                  <Tag color="gold">未发送</Tag>
                 )}
                 {text === 'C' ? <Tag color="green">已合同</Tag> : <Tag color="gold">未合同</Tag>}
               </Fragment>

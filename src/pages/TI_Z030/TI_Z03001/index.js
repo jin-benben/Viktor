@@ -1921,6 +1921,7 @@ class AgreementEdit extends React.Component {
         <Modal
           width={960}
           destroyOnClose
+          maskClosable={false}
           title="行预览"
           visible={attachmentVisible}
           onOk={() => this.handleModalVisible(false)}

@@ -1,3 +1,5 @@
+/* eslint-disable prefer-destructuring */
+/* eslint-disable no-param-reassign */
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
@@ -88,15 +90,15 @@ class orderLine extends PureComponent {
                 ) : (
                   <Tag color="gold">采未确认</Tag>
                 )}
-                {record.SoLineStatus === 'C' ? (
-                  <Tag color="green">销已报价</Tag>
+                {record.InquiryStatus === 'C' ? (
+                  <Tag color="green">采已生成</Tag>
                 ) : (
-                  <Tag color="gold">销未报价</Tag>
+                  <Tag color="gold">采未生成</Tag>
                 )}
                 {record.IsInquiry === 'Y' ? (
                   <Tag color="green">需询价</Tag>
                 ) : (
-                  <Tag color="gold">不需询价</Tag>
+                  <Tag color="gold">不询价</Tag>
                 )}
               </Fragment>
             )}
@@ -112,37 +114,7 @@ class orderLine extends PureComponent {
         </Ellipsis>
       ),
     },
-    {
-      title: '联系人',
-      width: 150,
-      dataIndex: 'Contacts',
-      render: (text, record) => (
-        <Tooltip
-          title={
-            <Fragment>
-              {record.CellphoneNO}
-              <br />
-              {record.Email}
-              <br />
-              {record.PhoneNO}
-            </Fragment>
-          }
-        >
-          {text}
-        </Tooltip>
-      ),
-    },
 
-    {
-      title: '客户参考号',
-      width: 100,
-      dataIndex: 'NumAtCard',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
     {
       title: '物料',
       dataIndex: 'SKU',
@@ -164,7 +136,16 @@ class orderLine extends PureComponent {
           </Ellipsis>
         ),
     },
-
+    {
+      title: '名称(外)',
+      width: 100,
+      dataIndex: 'ForeignName',
+      render: (text, record) => (
+        <Ellipsis tooltip lines={1}>
+          {text}-{record.ForeignParameters}
+        </Ellipsis>
+      ),
+    },
     {
       title: '数量',
       width: 100,
@@ -240,16 +221,7 @@ class orderLine extends PureComponent {
       render: (text, record) =>
         record.lastIndex ? null : <span>{text ? moment(text).format('YYYY-MM-DD') : ''}</span>,
     },
-    {
-      title: '名称(外)',
-      width: 100,
-      dataIndex: 'ForeignName',
-      render: (text, record) => (
-        <Ellipsis tooltip lines={1}>
-          {text}-{record.ForeignParameters}
-        </Ellipsis>
-      ),
-    },
+
     {
       title: '包装',
       width: 100,
@@ -326,6 +298,36 @@ class orderLine extends PureComponent {
         } = this.props;
         return <span>{getName(WhsCode, text)}</span>;
       },
+    },
+    {
+      title: '联系人',
+      width: 150,
+      dataIndex: 'KHContacts',
+      render: (text, record) => (
+        <Tooltip
+          title={
+            <Fragment>
+              {record.CellphoneNO}
+              <br />
+              {record.Email}
+              <br />
+              {record.PhoneNO}
+            </Fragment>
+          }
+        >
+          {text}
+        </Tooltip>
+      ),
+    },
+    {
+      title: '客户参考号',
+      width: 100,
+      dataIndex: 'NumAtCard',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '采购员',
@@ -414,8 +416,10 @@ class orderLine extends PureComponent {
   componentDidMount() {
     const {
       dispatch,
+      global: { currentUser },
       orderLine: { queryData },
     } = this.props;
+    Object.assign(queryData.Content, { Owner: [currentUser.Owner] });
     dispatch({
       type: 'orderLine/fetch',
       payload: {
@@ -453,8 +457,11 @@ class orderLine extends PureComponent {
   handleSearch = e => {
     // 搜索
     e.preventDefault();
-    const { dispatch, form } = this.props;
-
+    const {
+      dispatch,
+      form,
+      orderLine: { queryData },
+    } = this.props;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
       let DocDateFrom;
@@ -463,26 +470,31 @@ class orderLine extends PureComponent {
         DocDateFrom = moment(fieldsValue.dateArr[0]).format('YYYY-MM-DD');
         DocDateTo = moment(fieldsValue.dateArr[1]).format('YYYY-MM-DD');
       }
-
-      const queryData = {
+      let DocEntryFroms = '';
+      let DocEntryTo = '';
+      if (fieldsValue.orderNo) {
+        DocEntryFroms = fieldsValue.orderNo.DocEntryFrom;
+        DocEntryTo = fieldsValue.orderNo.DocEntryTo;
+      }
+      delete fieldsValue.orderNo;
+      delete fieldsValue.dateArr;
+      const newQueryData = {
         ...fieldsValue,
         DocDateFrom,
         DocDateTo,
+        DocEntryFrom: DocEntryFroms,
+        DocEntryTo,
         ...fieldsValue.orderNo,
+        InquiryCfmDate: fieldsValue.InquiryCfmDate
+          ? fieldsValue.InquiryCfmDate.format('YYYY-MM-DD')
+          : '',
       };
+      Object.assign(queryData.Content, { ...newQueryData });
+      Object.assign(queryData, { page: 1 });
       dispatch({
         type: 'orderLine/fetch',
         payload: {
-          Content: {
-            QueryType: '1',
-            SearchText: '',
-            SearchKey: 'Name',
-            ...queryData,
-          },
-          page: 1,
-          rows: 30,
-          sidx: 'DocEntry',
-          sord: 'Desc',
+          ...queryData,
         },
       });
     });
@@ -539,25 +551,30 @@ class orderLine extends PureComponent {
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
+      orderLine: { queryData },
     } = this.props;
     const { expandForm } = this.state;
     const formLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 18 },
     };
-
+    const { Closed } = queryData.Content;
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={4} sm={24}>
-            <FormItem key="SearchText" {...formLayout}>
+          <Col md={5} sm={24}>
+            <FormItem key="SearchText" {...formLayout} label="关键字">
               {getFieldDecorator('SearchText')(<Input placeholder="请输入关键字" />)}
             </FormItem>
           </Col>
           <Col md={5} sm={24}>
-            <FormItem label="日期" {...formLayout}>
-              {getFieldDecorator('dateArr', { rules: [{ type: 'array' }] })(
-                <RangePicker style={{ width: '100%' }} />
+            <FormItem key="PLineStatus" {...formLayout} label="采确状态">
+              {getFieldDecorator('PLineStatus')(
+                <Select style={{ width: '100%' }} placeholder="请选择">
+                  <Option value="C">已确认</Option>
+                  <Option value="O">未确认</Option>
+                  <Option value="">全部</Option>
+                </Select>
               )}
             </FormItem>
           </Col>
@@ -567,30 +584,61 @@ class orderLine extends PureComponent {
             </FormItem>
           </Col>
           <Col md={5} sm={24}>
-            <FormItem key="IsInquiry" {...formLayout} label="需询价">
-              {getFieldDecorator('IsInquiry')(
-                <Select style={{ width: '100%' }} placeholder="请选择">
-                  <Option value="Y">需询价</Option>
-                  <Option value="N">不需询价</Option>
-                  <Option value="">全部</Option>
-                </Select>
-              )}
+            <FormItem key="InquiryCfmDate" {...formLayout} label="采报价日期">
+              {getFieldDecorator('InquiryCfmDate')(<DatePicker style={{ width: '100%' }} />)}
             </FormItem>
           </Col>
+
           {expandForm ? (
             <Fragment>
               <Col md={5} sm={24}>
-                <FormItem key="DeptList" {...this.formLayout} label="部门">
-                  {getFieldDecorator('DeptList')(<Organization />)}
+                <FormItem key="IsInquiry" {...formLayout} label="需询价">
+                  {getFieldDecorator('IsInquiry')(
+                    <Select style={{ width: '100%' }} placeholder="请选择">
+                      <Option value="Y">需询价</Option>
+                      <Option value="N">不询价</Option>
+                      <Option value="">全部</Option>
+                    </Select>
+                  )}
                 </FormItem>
               </Col>
-              <Col md={4} sm={24}>
-                <FormItem key="Closed" {...formLayout}>
-                  {getFieldDecorator('Closed')(
+              <Col md={5} sm={24}>
+                <FormItem key="Closed" {...formLayout} label="关闭状态">
+                  {getFieldDecorator('Closed', { initialValue: Closed })(
                     <Select style={{ width: '100%' }} placeholder="请选择关闭状态">
                       <Option value="Y">已关闭</Option>
                       <Option value="N">未关闭</Option>
+                      <Option value="">全部</Option>
                     </Select>
+                  )}
+                </FormItem>
+              </Col>
+              <Col md={5} sm={24}>
+                <FormItem key="LineStatus" {...formLayout} label="询价状态">
+                  {getFieldDecorator('LineStatus')(
+                    <Select style={{ width: '100%' }} placeholder="请选择询价状态">
+                      <Option value="C">已询价</Option>
+                      <Option value="O">未询价</Option>
+                      <Option value="">全部</Option>
+                    </Select>
+                  )}
+                </FormItem>
+              </Col>
+              <Col md={5} sm={24}>
+                <FormItem key="InquiryStatus" {...formLayout} label="采生成状态">
+                  {getFieldDecorator('InquiryStatus')(
+                    <Select style={{ width: '100%' }} placeholder="请选择">
+                      <Option value="C">已生成</Option>
+                      <Option value="O">未生成</Option>
+                      <Option value="">全部</Option>
+                    </Select>
+                  )}
+                </FormItem>
+              </Col>
+              <Col md={5} sm={24}>
+                <FormItem label="日期" {...formLayout}>
+                  {getFieldDecorator('dateArr', { rules: [{ type: 'array' }] })(
+                    <RangePicker style={{ width: '100%' }} />
                   )}
                 </FormItem>
               </Col>
@@ -602,41 +650,13 @@ class orderLine extends PureComponent {
                 </FormItem>
               </Col>
               <Col md={5} sm={24}>
-                <FormItem key="SLineStatus" {...formLayout} label="销报状态">
-                  {getFieldDecorator('SLineStatus')(
-                    <Select style={{ width: '100%' }} placeholder="请选择">
-                      <Option value="C">已报价</Option>
-                      <Option value="O">未报价</Option>
-                      <Option value="">全部</Option>
-                    </Select>
-                  )}
-                </FormItem>
-              </Col>
-              <Col md={5} sm={24}>
-                <FormItem key="InquiryStatus" {...formLayout} label="采询状态">
-                  {getFieldDecorator('InquiryStatus')(
-                    <Select style={{ width: '100%' }} placeholder="请选择">
-                      <Option value="C">已询价</Option>
-                      <Option value="O">未询价</Option>
-                      <Option value="">全部</Option>
-                    </Select>
-                  )}
-                </FormItem>
-              </Col>
-              <Col md={5} sm={24}>
-                <FormItem key="PLineStatus" {...formLayout} label="采询确认状态">
-                  {getFieldDecorator('PLineStatus')(
-                    <Select style={{ width: '100%' }} placeholder="请选择">
-                      <Option value="C">已确认</Option>
-                      <Option value="O">未确认</Option>
-                      <Option value="">全部</Option>
-                    </Select>
-                  )}
+                <FormItem key="DeptList" {...this.formLayout} label="部门">
+                  {getFieldDecorator('DeptList')(<Organization />)}
                 </FormItem>
               </Col>
             </Fragment>
           ) : null}
-          <Col md={2} sm={24}>
+          <Col md={4} sm={24}>
             <FormItem key="searchBtn">
               <span className="submitButtons">
                 <Button type="primary" htmlType="submit">

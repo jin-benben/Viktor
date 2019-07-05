@@ -48,6 +48,7 @@ class AddParameter extends PureComponent {
       <Modal
         width={960}
         destroyOnClose
+        maskClosable={false}
         title="添加参数"
         visible={modalVisible}
         onOk={okHandle}

@@ -12,6 +12,7 @@ export default class TargetLine extends PureComponent {
       <Modal
         width={960}
         destroyOnClose
+        maskClosable={false}
         title="行预览"
         visible={attachmentVisible}
         onOk={() => handleModalVisible(false)}

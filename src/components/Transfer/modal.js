@@ -92,6 +92,7 @@ class TransferConfirm extends PureComponent {
         width={640}
         destroyOnClose
         title="确认转移"
+        maskClosable={false}
         visible={modalVisible}
         onOk={this.okHandle}
         onCancel={() => handleModalVisible()}

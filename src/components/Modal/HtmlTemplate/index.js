@@ -144,6 +144,7 @@ class SKUModal extends PureComponent {
       <Modal
         width={960}
         title="模板选择"
+        maskClosable={false}
         visible={modalVisible}
         onOk={this.okHandle}
         onCancel={() => handleModalVisible(false)}

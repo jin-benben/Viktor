@@ -158,6 +158,7 @@ class CompanyModal extends PureComponent {
       <Modal
         width={960}
         destroyOnClose
+        maskClosable={false}
         title="客户选择"
         visible={modalVisible}
         onOk={this.okHandle}
