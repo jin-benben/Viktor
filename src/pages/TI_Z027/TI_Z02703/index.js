@@ -131,6 +131,11 @@ class InquiryEdit extends React.Component {
       dataIndex: 'LineComment',
       width: 100,
       align: 'center',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '重量',

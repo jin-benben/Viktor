@@ -46,7 +46,7 @@ class PrintPage extends PureComponent {
             this.setState({
               sendDetail: {
                 ...response.Content,
-                TI_Z04702: response.Content.TI_Z04702List,
+                TI_Z04702: response.Content.TI_Z04702List || [],
               },
             });
           }
