@@ -7,6 +7,7 @@ export default {
     supplierQuotationList: [],
     queryData: {
       Content: {
+        Closed: 'N',
         SearchText: '',
         SearchKey: '',
       },

@@ -770,13 +770,14 @@ class InquiryEdit extends React.Component {
   cancelSubmit = ClosedComment => {
     const { dispatch } = this.props;
     const {
-      formVals: { DocEntry },
+      formVals: { DocEntry, UpdateTimestamp },
     } = this.state;
     dispatch({
       type: 'supplierAskDetail/cancel',
       payload: {
         Content: {
           DocEntry,
+          UpdateTimestamp,
           ClosedComment,
         },
       },

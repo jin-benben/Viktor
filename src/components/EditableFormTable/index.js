@@ -11,7 +11,6 @@ class EditableCell extends PureComponent {
 
     switch (inputType) {
       case 'date':
-        console.log(defaultValue);
         return (
           <DatePicker
             value={defaultValue ? moment(defaultValue, 'YYYY-MM-DD') : null}

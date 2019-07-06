@@ -1292,11 +1292,19 @@ class InquiryEdit extends React.Component {
 
   // change 客户
   changeCompany = company => {
+    const { dispatch } = this.props;
     const { TI_Z00602List, TI_Z00603List } = company;
     const { formVals } = this.state;
     formVals.CardCode = company.Code;
     formVals.CardName = company.Name;
-    this.setState({ formVals, linkmanList: TI_Z00602List || [], addList: TI_Z00603List }, () => {
+    dispatch({
+      type: 'inquiryEdit/save',
+      payload: {
+        linkmanList: TI_Z00602List,
+        addList: TI_Z00603List,
+      },
+    });
+    this.setState({ formVals }, () => {
       if (TI_Z00603List.length) {
         this.handleAdreessChange(TI_Z00603List[0].AddressID);
       } else {
@@ -1314,7 +1322,9 @@ class InquiryEdit extends React.Component {
   linkmanChange = value => {
     const { formVals, linkmanList } = this.state;
     const select = linkmanList.find(item => item.UserID === value);
+    console.log(select, linkmanList, value);
     const { CellphoneNO, Email, PhoneNO, UserID, Name } = select;
+
     Object.assign(formVals, { CellphoneNO, Email, PhoneNO, UserID, Contacts: Name });
     this.setState({ formVals });
   };

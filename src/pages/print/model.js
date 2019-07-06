@@ -24,7 +24,6 @@ export default {
       current: 1,
     },
     printDetail: {},
-    printHistoryDetail: {},
   },
 
   effects: {
@@ -63,16 +62,9 @@ export default {
         }
       }
     },
-    *singlefetch({ payload }, { call, put }) {
+    *singlefetch({ payload, callback }, { call }) {
       const response = yield call(querySingleRule, payload);
-      if (response && response.Status === 200) {
-        yield put({
-          type: 'save',
-          payload: {
-            printHistoryDetail: response.Content,
-          },
-        });
-      }
+      if (callback) callback(response);
     },
     *getPrint({ payload }, { call, put }) {
       const response = yield call(getReportRule, payload);

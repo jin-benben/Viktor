@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, Component } from 'react';
 import { connect } from 'dva';
 import {
   Card,
@@ -40,7 +40,7 @@ const { Panel } = Collapse;
   global,
   loading: loading.effects['SalesQuotationPreview/fetch'],
 }))
-class InquiryEdit extends React.Component {
+class InquiryEdit extends Component {
   skuColumns = [
     {
       title: '行号',
@@ -381,97 +381,39 @@ class InquiryEdit extends React.Component {
     },
   ];
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      formVals: {}, // 单据信息
-      attachmentVisible: false,
-      needmodalVisible: false,
-      transferModalVisible: false,
-      ApproveStsList: [],
-      targetLine: {},
-    };
-  }
+  state = {
+    formVals: {
+      TI_Z02902: [],
+      TI_Z02903: [],
+      TI_Z02603Fahter: [],
+    }, // 单据信息
+    attachmentVisible: false,
+    needmodalVisible: false,
+    transferModalVisible: false,
+    ApproveStsList: [],
+    targetLine: {},
+  };
 
   componentDidMount() {
-    const {
-      dispatch,
-      global: { Curr },
-    } = this.props;
-    if (!Curr.length) {
-      dispatch({
-        type: 'global/getMDMCommonality',
-        payload: {
-          Content: {
-            CodeList: [
-              'Saler',
-              'Purchaser',
-              'TI_Z004',
-              'TI_Z042',
-              'HS',
-              'Curr',
-              'WhsCode',
-              'Company',
-            ],
-          },
-        },
-      });
-    }
-    this.getDetail();
-  }
-
-  componentWillUnmount() {
     const { dispatch } = this.props;
     dispatch({
-      type: 'SalesQuotationPreview/save',
+      type: 'global/getMDMCommonality',
       payload: {
-        inquiryDetail: {
-          Comment: '',
-          SDocStatus: '',
-          PDocStatus: '',
-          Closed: '',
-          ClosedBy: '',
-          SourceType: '1',
-          OrderType: '1',
-          DocDate: new Date(),
-          CreateDate: new Date(),
-          CardCode: '',
-          CardName: '',
-          UserID: '1',
-          Contacts: '',
-          CellphoneNO: '',
-          PhoneNO: '',
-          Email: '',
-          CompanyCode: '',
-          DueDate: null,
-          ToDate: null,
-          InquiryDocTotal: '',
-          DocTotal: '',
-          ProvinceID: '',
-          Province: '',
-          CityID: '',
-          City: '',
-          AreaID: '',
-          Area: '',
-          Address: '',
-          NumAtCard: '',
-          Owner: '',
-          IsInquiry: '',
-          TI_Z02902: [],
-          TI_Z02903: [],
-          TI_Z02603Fahter: [],
+        Content: {
+          CodeList: [
+            'Saler',
+            'Purchaser',
+            'TI_Z004',
+            'TI_Z042',
+            'HS',
+            'Curr',
+            'WhsCode',
+            'Company',
+          ],
         },
       },
     });
-  }
-
-  static getDerivedStateFromProps(nextProps, prevState) {
-    if (nextProps.SalesQuotationPreview.SalesQuotationDetail !== prevState.formVals) {
-      return {
-        formVals: nextProps.SalesQuotationPreview.SalesQuotationDetail,
-      };
-    }
-    return null;
+    this.getDetail();
   }
 
   topMenu = () => {
@@ -544,6 +486,13 @@ class InquiryEdit extends React.Component {
           Content: {
             DocEntry: query.DocEntry,
           },
+        },
+        callback: response => {
+          if (response && response.Status === 200) {
+            this.setState({
+              formVals: response.Content,
+            });
+          }
         },
       });
     }

@@ -26,6 +26,7 @@ import NeedAskPrice from '../components/needAskPrice';
 import Organization from '@/components/Organization/multiple';
 import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
 import Transfer from '@/components/Transfer';
+import MDMCommonality from '@/components/Select';
 import { lineStatus } from '@/utils/publicData';
 
 import { getName } from '@/utils/utils';
@@ -558,7 +559,7 @@ class orderLine extends PureComponent {
       labelCol: { span: 6 },
       wrapperCol: { span: 18 },
     };
-    const { Closed } = queryData.Content;
+    const { Closed, Owner } = queryData.Content;
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
@@ -580,7 +581,9 @@ class orderLine extends PureComponent {
           </Col>
           <Col md={5} sm={24}>
             <FormItem key="Owner" {...formLayout} label="销售员">
-              {getFieldDecorator('Owner')(<SalerPurchaser />)}
+              {getFieldDecorator('Owner', { initialValue: Owner })(
+                <SalerPurchaser initialValue={Owner} />
+              )}
             </FormItem>
           </Col>
           <Col md={5} sm={24}>
@@ -615,13 +618,7 @@ class orderLine extends PureComponent {
               </Col>
               <Col md={5} sm={24}>
                 <FormItem key="LineStatus" {...formLayout} label="询价状态">
-                  {getFieldDecorator('LineStatus')(
-                    <Select style={{ width: '100%' }} placeholder="请选择询价状态">
-                      <Option value="C">已询价</Option>
-                      <Option value="O">未询价</Option>
-                      <Option value="">全部</Option>
-                    </Select>
-                  )}
+                  {getFieldDecorator('LineStatus')(<MDMCommonality data={lineStatus} />)}
                 </FormItem>
               </Col>
               <Col md={5} sm={24}>

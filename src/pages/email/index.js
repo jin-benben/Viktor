@@ -270,19 +270,21 @@ class PrintPage extends PureComponent {
               <Badge count={sendDetail.TI_Z04702.length} showZero>
                 <Button
                   type="primary"
+                  onClick={this.lookAttach}
                   shape="circle"
-                  onClick={this.openUpload}
-                  icon="upload"
-                  title="上传附件"
+                  size="small"
+                  icon="eye"
+                  title="查看附件"
                 />
               </Badge>
               <Button
                 style={{ marginLeft: 16 }}
                 type="primary"
-                onClick={this.lookAttach}
                 shape="circle"
-                icon="eye"
-                title="查看附件"
+                size="small"
+                onClick={this.openUpload}
+                icon="upload"
+                title="上传附件"
               />
             </FormItem>
           </Row>

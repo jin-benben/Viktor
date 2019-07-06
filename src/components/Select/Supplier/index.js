@@ -1,9 +1,9 @@
 import React, { PureComponent, Fragment } from 'react';
-import request from '@/utils/request';
-import SupplierModal from '@/components/Modal/Supplier';
 import { Select, Spin, Icon, Empty, Button } from 'antd';
 import { connect } from 'dva';
 import debounce from 'lodash/debounce';
+import request from '@/utils/request';
+import SupplierModal from '@/components/Modal/Supplier';
 import styles from './style.less';
 
 const { Option } = Select;

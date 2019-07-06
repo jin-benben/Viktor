@@ -72,7 +72,11 @@ class Staffs extends PureComponent {
     });
     const { onChange } = this.props;
     if (onChange) {
-      onChange(value);
+      if (value === undefined) {
+        onChange({ key: '', label: '' });
+      } else {
+        onChange(value);
+      }
     }
   };
 
@@ -84,6 +88,7 @@ class Staffs extends PureComponent {
       <Select
         showSearch
         showArrow={false}
+        allowClear
         labelInValue={labelInValue}
         value={value}
         placeholder="输入名称"

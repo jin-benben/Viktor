@@ -41,19 +41,8 @@ export default {
       TI_Z02603: [],
       TI_Z02605: [],
     },
-    pagination: {
-      Content: {
-        SearchText: '',
-        SearchKey: 'Name',
-      },
-      page: 1,
-      rows: 30,
-      sidx: 'Code',
-      sord: 'Desc',
-    },
     addList: [],
     linkmanList: [],
-    hscodeList: [],
   },
 
   effects: {

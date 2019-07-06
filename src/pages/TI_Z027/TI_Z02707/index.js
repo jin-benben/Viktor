@@ -72,7 +72,7 @@ class supplierQuotationSku extends PureComponent {
     },
     {
       title: '行状态',
-      width: 150,
+      width: 200,
       dataIndex: 'LineStatus',
       align: 'center',
       render: (text, record) =>
@@ -83,9 +83,14 @@ class supplierQuotationSku extends PureComponent {
             ) : (
               <Fragment>
                 {record.PriceRStatus === 'C' ? (
-                  <Tag color="green">已确认</Tag>
+                  <Tag color="green">已返回</Tag>
                 ) : (
-                  <Tag color="gold">未确认</Tag>
+                  <Tag color="gold">未返回</Tag>
+                )}
+                {record.SendEmailStatus === 'Y' ? (
+                  <Tag color="green">已发送</Tag>
+                ) : (
+                  <Tag color="gold">未发送</Tag>
                 )}
                 {text === 'C' ? <Tag color="green">已报价</Tag> : <Tag color="gold">未报价</Tag>}
               </Fragment>
@@ -379,8 +384,10 @@ class supplierQuotationSku extends PureComponent {
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
+      supplierQuotationSku: { queryData },
       global: { Saler },
     } = this.props;
+    const { Closed } = queryData.Content;
     const { expandForm } = this.state;
     const formLayout = {
       labelCol: { span: 8 },
@@ -389,29 +396,41 @@ class supplierQuotationSku extends PureComponent {
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={4} sm={24}>
-            <FormItem key="SearchText" {...formLayout}>
+          <Col md={5} sm={24}>
+            <FormItem key="SearchText" {...formLayout} label="关键字">
               {getFieldDecorator('SearchText')(<Input placeholder="请输入关键字" />)}
             </FormItem>
           </Col>
+
           <Col md={5} sm={24}>
-            <FormItem label="日期" {...formLayout}>
-              {getFieldDecorator('dateArr', { rules: [{ type: 'array' }] })(
-                <RangePicker style={{ width: '100%' }} />
+            <FormItem key="LineStatus" {...formLayout} label="报价状态">
+              {getFieldDecorator('LineStatus')(
+                <Select placeholder="请选择">
+                  <Option value="C">已报价</Option>
+                  <Option value="O">未报价</Option>
+                  <Option value="">全部</Option>
+                </Select>
               )}
             </FormItem>
           </Col>
           <Col md={5} sm={24}>
-            <FormItem key="Owner" {...formLayout} label="采购员">
-              {getFieldDecorator('Owner')(<SalerPurchaser />)}
+            <FormItem key="SendEmailStatus" {...formLayout} label="邮件状态">
+              {getFieldDecorator('SendEmailStatus')(
+                <Select placeholder="请选择">
+                  <Option value="Y">已发送</Option>
+                  <Option value="N">未发送</Option>
+                  <Option value="">全部</Option>
+                </Select>
+              )}
             </FormItem>
           </Col>
           <Col md={5} sm={24}>
-            <FormItem key="LineStatus" {...formLayout} label="确认状态">
-              {getFieldDecorator('LineStatus')(
+            <FormItem key="PriceRStatus" {...formLayout} label=" 价格状态">
+              {getFieldDecorator('PriceRStatus')(
                 <Select placeholder="请选择">
-                  <Option value="1">已报价</Option>
-                  <Option value="2">未报价</Option>
+                  <Option value="Y">已返回</Option>
+                  <Option value="N">未返回</Option>
+                  <Option value="">全部</Option>
                 </Select>
               )}
             </FormItem>
@@ -419,17 +438,25 @@ class supplierQuotationSku extends PureComponent {
           {expandForm ? (
             <Fragment>
               <Col md={5} sm={24}>
-                <FormItem key="DeptList" {...this.formLayout} label="部门">
-                  {getFieldDecorator('DeptList')(<Organization />)}
-                </FormItem>
-              </Col>
-              <Col md={4} sm={24}>
-                <FormItem key="Closed" {...formLayout}>
-                  {getFieldDecorator('Closed')(
+                <FormItem key="Closed" {...formLayout} label="关闭状态">
+                  {getFieldDecorator('Closed', { initialValue: Closed })(
                     <Select placeholder="请选择关闭状态">
                       <Option value="Y">已关闭</Option>
                       <Option value="N">未关闭</Option>
+                      <Option value="">全部</Option>
                     </Select>
+                  )}
+                </FormItem>
+              </Col>
+              <Col md={5} sm={24}>
+                <FormItem key="Owner" {...formLayout} label="采购员">
+                  {getFieldDecorator('Owner')(<SalerPurchaser />)}
+                </FormItem>
+              </Col>
+              <Col md={5} sm={24}>
+                <FormItem label="日期" {...formLayout}>
+                  {getFieldDecorator('dateArr', { rules: [{ type: 'array' }] })(
+                    <RangePicker style={{ width: '100%' }} />
                   )}
                 </FormItem>
               </Col>
@@ -441,13 +468,18 @@ class supplierQuotationSku extends PureComponent {
                 </FormItem>
               </Col>
               <Col md={5} sm={24}>
+                <FormItem key="DeptList" {...this.formLayout} label="部门">
+                  {getFieldDecorator('DeptList')(<Organization />)}
+                </FormItem>
+              </Col>
+              <Col md={5} sm={24}>
                 <FormItem label="销售" {...formLayout}>
                   {getFieldDecorator('Saler')(<MDMCommonality data={Saler} />)}
                 </FormItem>
               </Col>
             </Fragment>
           ) : null}
-          <Col md={5} sm={24}>
+          <Col md={4} sm={24}>
             <FormItem key="searchBtn">
               <span className="submitButtons">
                 <Button type="primary" htmlType="submit">
@@ -498,7 +530,7 @@ class supplierQuotationSku extends PureComponent {
               data={{ list: supplierQuotationSkuList }}
               pagination={pagination}
               rowKey="Key"
-              scroll={{ x: 2350, y: 700 }}
+              scroll={{ x: 2400, y: 700 }}
               rowSelection={{
                 type: 'radio',
                 onSelectRow: this.onSelectRow,
