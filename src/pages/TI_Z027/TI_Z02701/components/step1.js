@@ -3,19 +3,7 @@
 import React, { Fragment } from 'react';
 
 import moment from 'moment';
-import {
-  Row,
-  Col,
-  Form,
-  Input,
-  Table,
-  Button,
-  DatePicker,
-  Checkbox,
-  message,
-  Icon,
-  Tag,
-} from 'antd';
+import { Row, Col, Form, Input, Table, Button, DatePicker, message, Icon, Tag, Select } from 'antd';
 import { connect } from 'dva';
 import Link from 'umi/link';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
@@ -28,7 +16,7 @@ import styles from '../style.less';
 import request from '@/utils/request';
 
 const { RangePicker } = DatePicker;
-
+const { Option } = Select;
 const FormItem = Form.Item;
 @connect(({ global }) => ({
   global,
@@ -404,7 +392,6 @@ class NeedTabl extends React.Component {
         DocDateFrom,
         DocDateTo,
         ...fieldsValue.orderNo,
-        InquiryStatus: fieldsValue.InquiryStatus && fieldsValue.InquiryStatus ? 'C' : 'O',
       };
       Object.assign(queryData.Content, { ...Content });
       this.setState({
@@ -435,7 +422,7 @@ class NeedTabl extends React.Component {
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={6} sm={24}>
+          <Col md={5} sm={24}>
             <FormItem key="SearchText" label="关键字">
               {getFieldDecorator('SearchText')(<Input placeholder="请输入关键字" />)}
             </FormItem>
@@ -452,23 +439,25 @@ class NeedTabl extends React.Component {
               {getFieldDecorator('Owner')(<SalerPurchaser />)}
             </FormItem>
           </Col>
-
-          <Col md={3} sm={24}>
-            <FormItem>
-              {getFieldDecorator('InquiryStatus', {
-                valuePropName: 'checked',
-                initialValue: false,
-              })(<Checkbox>已询价</Checkbox>)}
+          <Col md={5} sm={24}>
+            <FormItem key="InquiryStatus" {...formLayout} label="询价状态">
+              {getFieldDecorator('InquiryStatus', { initialValue: 'O' })(
+                <Select style={{ width: '100%' }} placeholder="请选择">
+                  <Option value="C">已询价</Option>
+                  <Option value="O">未询价</Option>
+                  <Option value="">全部</Option>
+                </Select>
+              )}
             </FormItem>
           </Col>
           {expandForm ? (
             <Fragment>
-              <Col md={6} sm={24}>
+              <Col md={5} sm={24}>
                 <FormItem key="DeptList" {...this.formLayout} label="部门">
                   {getFieldDecorator('DeptList')(<Organization />)}
                 </FormItem>
               </Col>
-              <Col md={6} sm={24}>
+              <Col md={5} sm={24}>
                 <FormItem {...formLayout} label="销售员">
                   {getFieldDecorator('Purchaser')(
                     <MDMCommonality placeholder="销售员" data={Saler} />
@@ -477,7 +466,7 @@ class NeedTabl extends React.Component {
               </Col>
             </Fragment>
           ) : null}
-          <Col md={3} sm={24}>
+          <Col md={2} sm={24}>
             <FormItem key="searchBtn">
               <span className="submitButtons">
                 <Button type="primary" htmlType="submit">

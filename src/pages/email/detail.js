@@ -1,10 +1,11 @@
 import React, { PureComponent, Fragment } from 'react';
-import { Card, Button, message } from 'antd';
+import { Card, Button, message, Modal, Badge } from 'antd';
 import { connect } from 'dva';
 import DescriptionList from 'ant-design-pro/lib/DescriptionList';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import PageLoading from '@/components/PageLoading';
 import MyTag from '@/components/Tag';
+import Attachment from '@/components/Attachment/other';
 import { emailSendType } from '@/utils/publicData';
 import { getName } from '@/utils/utils';
 
@@ -68,8 +69,20 @@ class PrintDetailPage extends PureComponent {
     });
   };
 
+  lookAttach = () => {
+    this.setState({
+      attachmentVisible: true,
+    });
+  };
+
+  handleModalVisible = flag => {
+    this.setState({
+      attachmentVisible: !!flag,
+    });
+  };
+
   render() {
-    const { sendDetail } = this.state;
+    const { sendDetail, attachmentVisible } = this.state;
     return (
       <Card bordered={false}>
         {sendDetail.DocEntry ? (
@@ -90,6 +103,19 @@ class PrintDetailPage extends PureComponent {
               <Description term="发送状态">
                 <MyTag type="成功" value={sendDetail.SendStatus} />
               </Description>
+              <Description term="附件">
+                <Badge count={sendDetail.TI_Z04702.length} showZero>
+                  <Button
+                    style={{ marginLeft: 16 }}
+                    size="small"
+                    type="primary"
+                    onClick={() => this.handleModalVisible(true)}
+                    shape="circle"
+                    icon="eye"
+                    title="查看附件"
+                  />
+                </Badge>
+              </Description>
             </DescriptionList>
             <div
               style={{ overflow: 'auto' }}
@@ -109,6 +135,16 @@ class PrintDetailPage extends PureComponent {
         ) : (
           <PageLoading />
         )}
+        <Modal
+          width={960}
+          destroyOnClose
+          title="物料行附件"
+          visible={attachmentVisible}
+          onOk={() => this.handleModalVisible(false)}
+          onCancel={() => this.handleModalVisible(false)}
+        >
+          <Attachment dataSource={sendDetail.TI_Z04702} />
+        </Modal>
       </Card>
     );
   }

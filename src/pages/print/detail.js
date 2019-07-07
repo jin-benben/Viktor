@@ -29,22 +29,19 @@ class PrintDetailPage extends PureComponent {
             DocEntry: query.DocEntry,
           },
         },
+        callback: response => {
+          if (response && response.Status === 200) {
+            this.setState({
+              printDetail: response.Content,
+            });
+          }
+        },
       });
     }
   }
 
-  static getDerivedStateFromProps(nextProps, prevState) {
-    if (nextProps.print.printHistoryDetail !== prevState.printDetail) {
-      return {
-        printDetail: nextProps.print.printHistoryDetail,
-      };
-    }
-    return null;
-  }
-
   render() {
     const { printDetail } = this.state;
-
     return (
       <Card bordered={false}>
         <DescriptionList style={{ marginBottom: 24 }}>

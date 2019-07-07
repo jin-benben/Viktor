@@ -9,7 +9,6 @@ import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import CancelOrder from '@/components/Modal/CancelOrder';
 import StandardTable from '@/components/StandardTable';
-import MyTag from '@/components/Tag';
 import NeedAskPrice from '../components/needAskPrice';
 import PrintHistory from '@/components/Order/PrintHistory';
 import SendEmail from '@/components/Order/SendEmail';
@@ -598,16 +597,26 @@ class InquiryEdit extends PureComponent {
             <span>{getName(orderSourceType, formVals.OrderType)}</span>
           </Description>
           <Description term="客户参考号">{formVals.NumAtCard}</Description>
-          <Description term="需询价">
-            <MyTag type="IsInquiry" value={formVals.IsInquiry} />
-          </Description>
           <Description term="单据状态">
             {formVals.Closed === 'Y' ? (
-              <MyTag type="关闭" value="Y" />
+              <Tag color="red">已关闭</Tag>
             ) : (
               <Fragment>
-                <MyTag type="报价" value={formVals.SDocStatus} />
-                <MyTag type="询价" value={formVals.PDocStatus} />
+                {formVals.SDocStatus === 'C' ? (
+                  <Tag color="green">已报价</Tag>
+                ) : (
+                  <Tag color="gold">未报价</Tag>
+                )}
+                {formVals.PDocStatus === 'C' ? (
+                  <Tag color="green">已询价</Tag>
+                ) : (
+                  <Tag color="gold">未询价</Tag>
+                )}
+                {formVals.IsInquiry === 'Y' ? (
+                  <Tag color="green">需询价</Tag>
+                ) : (
+                  <Tag color="gold">不询价</Tag>
+                )}
               </Fragment>
             )}
           </Description>

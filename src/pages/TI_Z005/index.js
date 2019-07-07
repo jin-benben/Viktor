@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Row, Col, Card, Form, Input, Modal, Button, message, Divider, Select, Icon } from 'antd';
+import { Row, Col, Card, Form, Input, Modal, Button, message, Divider, Select } from 'antd';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import StandardTable from '@/components/StandardTable';
 import Supplier from '@/components/Supplier';
@@ -23,7 +23,6 @@ class CreateForm extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      clearn: false,
       formVals: {
         Code: '',
         CardCode: '',
@@ -59,12 +58,8 @@ class CreateForm extends PureComponent {
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    if (prevState.clearn) {
-      return {
-        formVals: prevState.formVals,
-      };
-    }
-    if (nextProps.formVals !== prevState.formVals && !prevState.clearn) {
+    console.log(prevState.formVals);
+    if (nextProps.formVals !== prevState.formVals) {
       return {
         formVals: nextProps.formVals,
       };
@@ -75,18 +70,6 @@ class CreateForm extends PureComponent {
   changePicture = ({ FilePath, FilePathX }) => {
     const { formVals } = this.props;
     Object.assign(formVals, { Picture: FilePath, Picture_List: FilePathX });
-  };
-
-  cleanSupplier = () => {
-    const { formVals } = this.state;
-    this.setState({
-      clearn: true,
-      formVals: {
-        ...formVals,
-        CardCode: '',
-        CardName: '',
-      },
-    });
   };
 
   render() {
@@ -114,10 +97,11 @@ class CreateForm extends PureComponent {
       form.validateFields((err, fieldsValue) => {
         if (err) return;
         delete fieldsValue.Picture;
+        console.log(fieldsValue);
         handleSubmit({ ...formVals, ...fieldsValue });
       });
     };
-
+    console.log(formVals);
     return (
       <Modal
         width={640}
@@ -155,12 +139,6 @@ class CreateForm extends PureComponent {
                 labelInValue
               />
             )}
-            <Icon
-              onClick={this.cleanSupplier}
-              type="delete"
-              theme="twoTone"
-              style={{ position: 'absolute', right: -26, top: 3 }}
-            />
           </FormItem>
 
           <FormItem key="WebSite" {...this.formLayout} label="官网">
@@ -281,6 +259,11 @@ class BrandList extends PureComponent {
       title: '简写',
       width: 150,
       dataIndex: 'Abbreviate',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '默认供应商',
