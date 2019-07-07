@@ -214,7 +214,7 @@ class AgreementEdit extends React.Component {
     {
       title: '要求交期',
       width: 150,
-      inputType: 'date',
+      inputType: 'text',
       dataIndex: 'DueDate',
       editable: true,
       align: 'center',
@@ -263,8 +263,6 @@ class AgreementEdit extends React.Component {
       width: 100,
       dataIndex: 'InquiryDueDate',
       align: 'center',
-      render: (text, record) =>
-        record.lastIndex ? null : <span>{text ? moment(text).format('YYYY-MM-DD') : ''}</span>,
     },
     {
       title: '采购员',
@@ -671,7 +669,7 @@ class AgreementEdit extends React.Component {
           PhoneNO: '',
           Email: '',
           CompanyCode: '',
-          DueDate: null,
+          DueDate: '',
           ToDate: null,
           InquiryDocTotal: '',
           DocTotal: '',

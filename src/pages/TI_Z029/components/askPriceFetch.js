@@ -119,7 +119,6 @@ class orderLine extends PureComponent {
       title: '要求交期',
       dataIndex: 'DueDate',
       width: 100,
-      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
     },
     {
       title: '价格',
@@ -150,7 +149,6 @@ class orderLine extends PureComponent {
       title: '询价交期',
       width: 100,
       dataIndex: 'InquiryDueDate',
-      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
     },
     {
       title: '采购员',

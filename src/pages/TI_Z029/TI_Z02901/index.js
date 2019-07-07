@@ -211,8 +211,8 @@ class TI_Z029Component extends React.Component {
     },
     {
       title: '要求交期',
-      width: 150,
-      inputType: 'date',
+      width: 100,
+      inputType: 'text',
       dataIndex: 'DueDate',
       editable: true,
       align: 'center',
@@ -261,8 +261,6 @@ class TI_Z029Component extends React.Component {
       width: 100,
       dataIndex: 'InquiryDueDate',
       align: 'center',
-      render: (text, record) =>
-        record.lastIndex ? null : <span>{moment(text).format('YYYY-MM-DD')}</span>,
     },
     {
       title: '采购员',
@@ -703,7 +701,7 @@ class TI_Z029Component extends React.Component {
           PhoneNO: '',
           Email: '',
           CompanyCode: '',
-          DueDate: null,
+          DueDate: '',
           ToDate: null,
           InquiryDocTotal: '',
           DocTotal: '',
@@ -1395,7 +1393,6 @@ class TI_Z029Component extends React.Component {
           Content: {
             ...formVals,
             ...fieldsValue,
-            DueDate: fieldsValue.DueDate ? fieldsValue.DueDate.format('YYYY-MM-DD') : '',
             ToDate: fieldsValue.ToDate ? fieldsValue.ToDate.format('YYYY-MM-DD') : '',
             DocDate: fieldsValue.DocDate ? fieldsValue.DocDate.format('YYYY-MM-DD') : '',
             CreateUser: currentUser.UserCode,
@@ -1434,7 +1431,6 @@ class TI_Z029Component extends React.Component {
           Content: {
             ...formVals,
             ...fieldsValue,
-            DueDate: fieldsValue.DueDate ? fieldsValue.DueDate.format('YYYY-MM-DD') : '',
             ToDate: fieldsValue.ToDate ? fieldsValue.ToDate.format('YYYY-MM-DD') : '',
             DocDate: fieldsValue.DocDate ? fieldsValue.DocDate.format('YYYY-MM-DD') : '',
             UpdateUser: currentUser.UserCode,
@@ -1478,12 +1474,12 @@ class TI_Z029Component extends React.Component {
     const newArr = formVals.TI_Z02902.map(item => {
       const newitem = item;
       if (!newitem.DueDate) {
-        newitem.DueDate = val.format('YYYY-MM-DD');
+        newitem.DueDate = val;
         return newitem;
       }
       return newitem;
     });
-    Object.assign(formVals, { TI_Z02602: newArr, DueDate: val.format('YYYY-MM-DD') });
+    Object.assign(formVals, { TI_Z02602: newArr, DueDate: val });
     this.setState({
       formVals,
     });
@@ -1715,9 +1711,9 @@ class TI_Z029Component extends React.Component {
             <Col lg={10} md={12} sm={24}>
               <FormItem key="DueDate" {...this.formLayout} label="要求交期">
                 {getFieldDecorator('DueDate', {
-                  initialValue: formVals.DueDate ? moment(formVals.DueDate, 'YYYY-MM-DD') : null,
-                  rules: [{ required: true, message: '请选择要求交期！' }],
-                })(<DatePicker onChange={this.dueDateChange} style={{ width: '100%' }} />)}
+                  initialValue: formVals.DueDate,
+                  rules: [{ required: true, message: '请输入要求交期！' }],
+                })(<Input onChange={this.dueDateChange} placeholder="请输入" />)}
               </FormItem>
             </Col>
           </Row>

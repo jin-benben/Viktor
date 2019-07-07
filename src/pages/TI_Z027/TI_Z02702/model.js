@@ -19,7 +19,7 @@ export default {
       PhoneNO: '',
       Email: '',
       CompanyCode: '',
-      DueDate: null,
+      DueDate: '',
       ToDate: null,
       InquiryDocTotal: '',
       DocTotal: '',

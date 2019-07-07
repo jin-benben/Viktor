@@ -145,8 +145,6 @@ class InquiryEdit extends React.Component {
       width: 100,
       dataIndex: 'DueDate',
       align: 'center',
-      render: (val, record) =>
-        record.lastIndex ? '' : <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
     },
     {
       title: '询价价格',
@@ -192,8 +190,6 @@ class InquiryEdit extends React.Component {
       width: 100,
       dataIndex: 'InquiryDueDate',
       align: 'center',
-      render: (text, record) =>
-        record.lastIndex ? null : <span>{text ? moment(text).format('YYYY-MM-DD') : ''}</span>,
     },
     {
       title: '采购员',

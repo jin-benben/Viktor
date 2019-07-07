@@ -3,14 +3,13 @@ import { connect } from 'dva';
 import router from 'umi/router';
 import Link from 'umi/link';
 import moment from 'moment';
-import { Row, Col, Card, Form, Input, Button, Tooltip, Select, DatePicker, Icon } from 'antd';
+import { Row, Col, Card, Form, Input, Button, Tooltip, Select, DatePicker, Icon, Tag } from 'antd';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import StandardTable from '@/components/StandardTable';
 import DocEntryFrom from '@/components/DocEntryFrom';
 import Organization from '@/components/Organization/multiple';
 import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
 import { getName } from '@/utils/utils';
-import MyTag from '@/components/Tag';
 
 const { RangePicker } = DatePicker;
 
@@ -54,18 +53,27 @@ class agreementOrder extends PureComponent {
       render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
     },
     {
-      title: '单据状态',
-      dataIndex: 'Status',
-      width: 80,
-      render: (text, record) => (
-        <Fragment>
-          {record.Closed === 'Y' ? (
-            <MyTag type="关闭" value="Y" />
-          ) : (
-            <MyTag type="通过" value={record.ApproveSts} />
-          )}
-        </Fragment>
-      ),
+      title: '状态',
+      width: 140,
+      dataIndex: 'DocStatus',
+      align: 'center',
+      render: (text, record) =>
+        record.lastIndex ? null : (
+          <Fragment>
+            {record.Closed === 'Y' ? (
+              <Tag color="red">已关闭</Tag>
+            ) : (
+              <Fragment>
+                {record.ApproveSts === 'Y' ? (
+                  <Tag color="green">已确认</Tag>
+                ) : (
+                  <Tag color="gold">未确认</Tag>
+                )}
+                {text === 'C' ? <Tag color="green">已订单</Tag> : <Tag color="gold">未订单</Tag>}
+              </Fragment>
+            )}
+          </Fragment>
+        ),
     },
     {
       title: '客户',
@@ -197,11 +205,20 @@ class agreementOrder extends PureComponent {
         DocDateFrom = moment(fieldsValue.dateArr[0]).format('YYYY-MM-DD');
         DocDateTo = moment(fieldsValue.dateArr[1]).format('YYYY-MM-DD');
       }
+      let DocEntryFroms = '';
+      let DocEntryTo = '';
+      if (fieldsValue.orderNo) {
+        DocEntryFroms = fieldsValue.orderNo.DocEntryFrom;
+        DocEntryTo = fieldsValue.orderNo.DocEntryTo;
+      }
+      delete fieldsValue.orderNo;
+      delete fieldsValue.dateArr;
       const queryData = {
         ...fieldsValue,
         DocDateFrom,
         DocDateTo,
-        ...fieldsValue.orderNo,
+        DocEntryFroms,
+        DocEntryTo,
       };
       dispatch({
         type: 'agreementOrder/fetch',
@@ -240,25 +257,30 @@ class agreementOrder extends PureComponent {
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={4} sm={24}>
+          <Col md={5} sm={24}>
             <FormItem key="SearchText" {...formLayout}>
               {getFieldDecorator('SearchText')(<Input placeholder="请输入关键字" />)}
             </FormItem>
           </Col>
           <Col md={5} sm={24}>
-            <FormItem label="日期" {...formLayout}>
-              {getFieldDecorator('dateArr', { rules: [{ type: 'array' }] })(
-                <RangePicker style={{ width: '100%' }} />
+            <FormItem key="DocStatus" {...formLayout} label="订单状态">
+              {getFieldDecorator('DocStatus')(
+                <Select placeholder="请选择">
+                  <Option value="C">已订单</Option>
+                  <Option value="O">未订单</Option>
+                  <Option value="">全部</Option>
+                </Select>
               )}
             </FormItem>
           </Col>
+
           <Col md={5} sm={24}>
-            <FormItem key="SDocStatus" {...formLayout} label="报价状态">
-              {getFieldDecorator('SDocStatus')(
+            <FormItem key="ApproveSts" {...formLayout} label="确认状态">
+              {getFieldDecorator('ApproveSts')(
                 <Select placeholder="请选择">
-                  <Option value="1">已报价</Option>
-                  <Option value="2">未报价</Option>
-                  <Option value="3">不详</Option>
+                  <Option value="Y">已确认</Option>
+                  <Option value="N">未确认</Option>
+                  <Option value="">全部</Option>
                 </Select>
               )}
             </FormItem>
@@ -278,7 +300,14 @@ class agreementOrder extends PureComponent {
                   })(<DocEntryFrom />)}
                 </FormItem>
               </Col>
-              <Col md={4} sm={24}>
+              <Col md={5} sm={24}>
+                <FormItem label="日期" {...formLayout}>
+                  {getFieldDecorator('dateArr', { rules: [{ type: 'array' }] })(
+                    <RangePicker style={{ width: '100%' }} />
+                  )}
+                </FormItem>
+              </Col>
+              <Col md={5} sm={24}>
                 <FormItem key="Closed" {...formLayout}>
                   {getFieldDecorator('Closed')(
                     <Select placeholder="请选择关闭状态">
@@ -291,26 +320,6 @@ class agreementOrder extends PureComponent {
               <Col md={5} sm={24}>
                 <FormItem key="DeptList" {...this.formLayout} label="部门">
                   {getFieldDecorator('DeptList')(<Organization />)}
-                </FormItem>
-              </Col>
-              <Col md={5} sm={24}>
-                <FormItem key="InquiryStatus" {...formLayout} label="询价状态">
-                  {getFieldDecorator('InquiryStatus')(
-                    <Select placeholder="请选择">
-                      <Option value="C">已询价</Option>
-                      <Option value="O">未询价</Option>
-                    </Select>
-                  )}
-                </FormItem>
-              </Col>
-              <Col md={5} sm={24}>
-                <FormItem key="IsInquiry" {...formLayout} label="需采购询价">
-                  {getFieldDecorator('IsInquiry')(
-                    <Select placeholder="请选择">
-                      <Option value="Y">是</Option>
-                      <Option value="N">否</Option>
-                    </Select>
-                  )}
                 </FormItem>
               </Col>
             </Fragment>

@@ -129,7 +129,7 @@ class InquiryEdit extends React.Component {
     {
       title: '询价交期',
       width: 120,
-      inputType: 'date',
+      inputType: 'text',
       dataIndex: 'InquiryDueDate',
       editable: true,
       align: 'center',
@@ -154,7 +154,7 @@ class InquiryEdit extends React.Component {
       title: '国外运费',
       width: 80,
       editable: true,
-      inputType: 'text',
+      inputType: '',
       dataIndex: 'ForeignFreight',
       align: 'center',
     },
@@ -184,7 +184,7 @@ class InquiryEdit extends React.Component {
     {
       title: '要求交期',
       width: 120,
-      inputType: 'date',
+      inputType: 'text',
       dataIndex: 'DueDate',
       editable: true,
       align: 'center',

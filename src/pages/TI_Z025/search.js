@@ -3,7 +3,6 @@ import { connect } from 'dva';
 import Link from 'umi/link';
 import moment from 'moment';
 import { Row, Col, Card, Form, Input, Button, Tag } from 'antd';
-
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import StandardTable from '@/components/StandardTable';
 import { getName } from '@/utils/utils';
@@ -23,6 +22,26 @@ class batchManage extends PureComponent {
       title: '批次号',
       dataIndex: 'Code',
       width: 200,
+    },
+    {
+      title: '客户',
+      dataIndex: 'CardName',
+      width: 200,
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
+    },
+    {
+      title: '合同号',
+      width: 100,
+      dataIndex: 'ContractEntry',
+      render: text => (
+        <Link target="_blank" to={`/sellabout/TI_Z030/detail?DocEntry=${text}`}>
+          {text}
+        </Link>
+      ),
     },
     {
       title: '审核日期',
@@ -56,11 +75,6 @@ class batchManage extends PureComponent {
       title: '批次附件数',
       width: 100,
       dataIndex: 'AttachmentCount',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
     },
     {
       title: '物料代码',

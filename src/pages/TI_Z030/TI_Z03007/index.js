@@ -54,9 +54,9 @@ class AgreementLine extends PureComponent {
             ) : (
               <Fragment>
                 {record.ApproveSts === 'Y' ? (
-                  <Tag color="green">已审核</Tag>
+                  <Tag color="green">已确认</Tag>
                 ) : (
-                  <Tag color="gold">未审核</Tag>
+                  <Tag color="gold">未确认</Tag>
                 )}
                 {text === 'C' ? <Tag color="green">已订单</Tag> : <Tag color="gold">未订单</Tag>}
               </Fragment>
@@ -177,7 +177,6 @@ class AgreementLine extends PureComponent {
       width: 100,
       dataIndex: 'DueDate',
       align: 'center',
-      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
     },
     {
       title: '询价价格',
@@ -218,7 +217,18 @@ class AgreementLine extends PureComponent {
       width: 100,
       dataIndex: 'InquiryDueDate',
       align: 'center',
-      render: text => <span>{text ? moment(text).format('YYYY-MM-DD') : ''}</span>,
+    },
+    {
+      title: '销售员',
+      width: 120,
+      dataIndex: 'Owner',
+      align: 'center',
+      render: text => {
+        const {
+          global: { Saler },
+        } = this.props;
+        return <span>{getName(Saler, text)}</span>;
+      },
     },
     {
       title: '采购员',
@@ -422,11 +432,29 @@ class AgreementLine extends PureComponent {
         DocDateFrom = moment(fieldsValue.dateArr[0]).format('YYYY-MM-DD');
         DocDateTo = moment(fieldsValue.dateArr[1]).format('YYYY-MM-DD');
       }
+      let DocEntryFroms = '';
+      let DocEntryTo = '';
+      if (fieldsValue.orderNo) {
+        DocEntryFroms = fieldsValue.orderNo.DocEntryFrom;
+        DocEntryTo = fieldsValue.orderNo.DocEntryTo;
+      }
+      let BaseEntryFrom = '';
+      let BaseEntryTo = '';
+      if (fieldsValue.BaseEntry) {
+        BaseEntryFrom = fieldsValue.BaseEntry.DocEntryFrom;
+        BaseEntryTo = fieldsValue.BaseEntry.DocEntryTo;
+      }
+      delete fieldsValue.orderNo;
+      delete fieldsValue.dateArr;
+      delete fieldsValue.BaseEntry;
       const queryData = {
         ...fieldsValue,
         DocDateFrom,
+        BaseEntryFrom,
+        BaseEntryTo,
         DocDateTo,
-        ...fieldsValue.orderNo,
+        DocEntryFroms,
+        DocEntryTo,
       };
       dispatch({
         type: 'agreementLine/fetch',
@@ -491,11 +519,12 @@ class AgreementLine extends PureComponent {
             </FormItem>
           </Col>
           <Col md={5} sm={24}>
-            <FormItem key="SDocStatus" {...formLayout} label="合同状态">
-              {getFieldDecorator('SDocStatus')(
+            <FormItem key="DocStatus" {...formLayout} label="订单状态">
+              {getFieldDecorator('DocStatus')(
                 <Select placeholder="请选择">
-                  <Option value="C">已报价</Option>
-                  <Option value="O">未报价</Option>
+                  <Option value="C">已订单</Option>
+                  <Option value="O">未订单</Option>
+                  <Option value="">全部</Option>
                 </Select>
               )}
             </FormItem>
@@ -509,11 +538,12 @@ class AgreementLine extends PureComponent {
           {expandForm ? (
             <Fragment>
               <Col md={5} sm={24}>
-                <FormItem key="LineStatus" {...formLayout} label="确认状态">
-                  {getFieldDecorator('LineStatus')(
+                <FormItem key="ApproveSts" {...formLayout} label="确认状态">
+                  {getFieldDecorator('ApproveSts')(
                     <Select placeholder="请选择">
-                      <Option value="C">已报价</Option>
-                      <Option value="O">未报价</Option>
+                      <Option value="Y">已确认</Option>
+                      <Option value="N">未确认</Option>
+                      <Option value="">全部</Option>
                     </Select>
                   )}
                 </FormItem>
@@ -536,20 +566,27 @@ class AgreementLine extends PureComponent {
                 </FormItem>
               </Col>
               <Col md={5} sm={24}>
+                <FormItem key="BaseEntry" {...formLayout} label="客询价单">
+                  {getFieldDecorator('BaseEntry', {
+                    initialValue: { DocEntryFrom: '', DocEntryTo: '' },
+                  })(<DocEntryFrom />)}
+                </FormItem>
+              </Col>
+              <Col md={5} sm={24}>
                 <FormItem key="DeptList" {...this.formLayout} label="部门">
                   {getFieldDecorator('DeptList')(<Organization />)}
                 </FormItem>
               </Col>
 
-              <Col md={5} sm={24}>
+              {/* <Col md={5} sm={24}>
                 <FormItem label="采购" {...formLayout}>
                   {getFieldDecorator('Purchaser')(<MDMCommonality data={Purchaser} />)}
                 </FormItem>
-              </Col>
+              </Col> */}
             </Fragment>
           ) : null}
           <Col md={4} sm={24}>
-            <FormItem key="searchBtn" {...searchFormItemLayout}>
+            <FormItem key="searchBtn">
               <span className="submitButtons">
                 <Button type="primary" htmlType="submit">
                   查询
@@ -595,7 +632,7 @@ class AgreementLine extends PureComponent {
               loading={loading}
               data={{ list: agreementLineList }}
               pagination={pagination}
-              scroll={{ x: 3600 }}
+              scroll={{ x: 3700 }}
               rowKey="Key"
               columns={this.columns}
               onChange={this.handleStandardTableChange}

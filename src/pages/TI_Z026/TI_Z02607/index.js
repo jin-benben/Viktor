@@ -27,6 +27,7 @@ import Organization from '@/components/Organization/multiple';
 import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
 import Transfer from '@/components/Transfer';
 import MyPageHeader from '../components/pageHeader';
+import MDMCommonality from '@/components/Select';
 import { lineStatus } from '@/utils/publicData';
 import { getName } from '@/utils/utils';
 
@@ -179,6 +180,13 @@ class orderLine extends PureComponent {
       ),
     },
     {
+      title: '采报价日期',
+      width: 100,
+      dataIndex: 'InquiryCfmDate',
+      align: 'center',
+      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
+    },
+    {
       title: '询价价格',
       width: 120,
       dataIndex: 'InquiryPrice',
@@ -218,8 +226,6 @@ class orderLine extends PureComponent {
       width: 100,
       dataIndex: 'InquiryDueDate',
       align: 'center',
-      render: (text, record) =>
-        record.lastIndex ? null : <span>{text ? moment(text).format('YYYY-MM-DD') : ''}</span>,
     },
 
     {
@@ -285,7 +291,6 @@ class orderLine extends PureComponent {
       inputType: 'date',
       dataIndex: 'DueDate',
       align: 'center',
-      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
     },
     {
       title: '仓库',
@@ -339,6 +344,18 @@ class orderLine extends PureComponent {
           global: { Purchaser },
         } = this.props;
         return <span>{getName(Purchaser, text)}</span>;
+      },
+    },
+    {
+      title: '销售员',
+      width: 120,
+      dataIndex: 'Owner',
+      align: 'center',
+      render: text => {
+        const {
+          global: { Saler },
+        } = this.props;
+        return <span>{getName(Saler, text)}</span>;
       },
     },
     {
@@ -700,7 +717,7 @@ class orderLine extends PureComponent {
               data={{ list: orderLineList }}
               pagination={pagination}
               rowKey="Key"
-              scroll={{ x: 3700 }}
+              scroll={{ x: 3900 }}
               columns={columns}
               rowSelection={{
                 onSelectRow: this.onSelectRow,

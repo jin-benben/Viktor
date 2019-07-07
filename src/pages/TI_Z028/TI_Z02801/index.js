@@ -137,7 +137,6 @@ class TI_Z02801 extends React.Component {
       title: '采购交期',
       dataIndex: 'InquiryDueDate',
       width: 100,
-      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
     },
     {
       title: '备注',
@@ -266,9 +265,7 @@ class TI_Z02801 extends React.Component {
                   </li>
                   <li>
                     交期：
-                    <span>
-                      {item.InquiryDueDate ? moment(item.InquiryDueDate).format('YYYY-MM-DD') : ''}
-                    </span>
+                    <span>{item.InquiryDueDate}</span>
                   </li>
                   <li>
                     询价返回时间：

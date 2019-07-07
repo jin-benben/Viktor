@@ -1,8 +1,10 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
+import Link from 'umi/link';
 import moment from 'moment';
 import { Row, Col, Card, Form, Select, Button, Tooltip, message, Table } from 'antd';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
+import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -21,6 +23,16 @@ class BatchUpload extends PureComponent {
       title: '批次号',
       dataIndex: 'Code',
       width: 200,
+    },
+    {
+      title: '客户',
+      dataIndex: 'CardName',
+      width: 200,
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '附件数',
@@ -43,23 +55,23 @@ class BatchUpload extends PureComponent {
         )),
     },
     {
-      title: '物料代码',
-      width: 80,
-      dataIndex: 'ItemCode',
-      render: (text, record) => (
-        <Tooltip
-          title={
-            <Fragment>
-              {record.CellphoneNO}
-              <br />
-              {record.Email}
-              <br />
-              {record.PhoneNO}
-            </Fragment>
-          }
-        >
+      title: '合同号',
+      width: 100,
+      dataIndex: 'ContractEntry',
+      render: text => (
+        <Link target="_blank" to={`/sellabout/TI_Z030/detail?DocEntry=${text}`}>
           {text}
-        </Tooltip>
+        </Link>
+      ),
+    },
+    {
+      title: '物料代码',
+      width: 100,
+      dataIndex: 'ItemCode',
+      render: text => (
+        <Link target="_blank" to={`/main/product/TI_Z009/TI_Z00903?Code=${text}`}>
+          {text}
+        </Link>
       ),
     },
     {
@@ -146,7 +158,7 @@ class BatchUpload extends PureComponent {
   };
 
   // eslint-disable-next-line consistent-return
-  approveHandle = ApproveSts => {
+  approveHandle = () => {
     const { dispatch } = this.props;
     const { selectedRows } = this.state;
     if (!selectedRows.length) return false;
@@ -156,7 +168,7 @@ class BatchUpload extends PureComponent {
       payload: {
         Content: {
           Code,
-          ApproveSts,
+          ApproveSts: 'Y',
         },
       },
       callback: response => {
@@ -198,7 +210,7 @@ class BatchUpload extends PureComponent {
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={5} sm={24}>
+          <Col md={6} sm={24}>
             <FormItem key="SlpCode" {...formLayout} label="销售员">
               {getFieldDecorator('SlpCode')(
                 <Select
@@ -247,7 +259,7 @@ class BatchUpload extends PureComponent {
               dataSource={batchApproveList}
               pagination={pagination}
               rowKey="Code"
-              scroll={{ x: 1000, y: 600 }}
+              scroll={{ x: 1200, y: 600 }}
               rowSelection={{
                 selectedRowKeys,
                 onChange: this.onSelectRow,
@@ -258,11 +270,8 @@ class BatchUpload extends PureComponent {
           </div>
         </Card>
         <FooterToolbar>
-          <Button type="primary" onClick={() => this.approveHandle('Y')}>
+          <Button type="primary" onClick={this.approveHandle}>
             通过
-          </Button>
-          <Button type="danger" onClick={() => this.approveHandle('N')}>
-            驳回
           </Button>
         </FooterToolbar>
       </Fragment>

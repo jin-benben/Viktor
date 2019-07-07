@@ -1,8 +1,10 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
+import Link from 'umi/link';
 import moment from 'moment';
 import { Row, Col, Card, Form, Input, Button, Tooltip, Select, Table } from 'antd';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
+import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -23,6 +25,26 @@ class BatchUpload extends PureComponent {
       width: 200,
     },
     {
+      title: '客户',
+      dataIndex: 'CardName',
+      width: 200,
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
+    },
+    {
+      title: '合同号',
+      width: 100,
+      dataIndex: 'ContractEntry',
+      render: text => (
+        <Link target="_blank" to={`/sellabout/TI_Z030/detail?DocEntry=${text}`}>
+          {text}
+        </Link>
+      ),
+    },
+    {
       title: '附件描述',
       width: 200,
       dataIndex: 'AttachmentName',
@@ -38,20 +60,10 @@ class BatchUpload extends PureComponent {
       title: '物料代码',
       width: 100,
       dataIndex: 'ItemCode',
-      render: (text, record) => (
-        <Tooltip
-          title={
-            <Fragment>
-              {record.CellphoneNO}
-              <br />
-              {record.Email}
-              <br />
-              {record.PhoneNO}
-            </Fragment>
-          }
-        >
+      render: text => (
+        <Link target="_blank" to={`/main/product/TI_Z009/TI_Z00903?Code=${text}`}>
           {text}
-        </Tooltip>
+        </Link>
       ),
     },
     {

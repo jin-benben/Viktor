@@ -219,13 +219,22 @@ class SalesQuotation extends PureComponent {
         DocEntryFroms = fieldsValue.orderNo.DocEntryFrom;
         DocEntryTo = fieldsValue.orderNo.DocEntryTo;
       }
+      let BaseEntryFrom = '';
+      let BaseEntryTo = '';
+      if (fieldsValue.BaseEntry) {
+        BaseEntryFrom = fieldsValue.BaseEntry.DocEntryFrom;
+        BaseEntryTo = fieldsValue.BaseEntry.DocEntryTo;
+      }
       delete fieldsValue.orderNo;
       delete fieldsValue.dateArr;
+      delete fieldsValue.BaseEntry;
       const newQueryData = {
         ...fieldsValue,
         DocDateFrom,
+        BaseEntryFrom,
+        BaseEntryTo,
         DocDateTo,
-        DocEntryFrom: DocEntryFroms,
+        DocEntryFroms,
         DocEntryTo,
       };
       Object.assign(queryData.Content, { ...newQueryData });
@@ -320,6 +329,13 @@ class SalesQuotation extends PureComponent {
               <Col md={5} sm={24}>
                 <FormItem key="DeptList" {...this.formLayout} label="部门">
                   {getFieldDecorator('DeptList')(<Organization />)}
+                </FormItem>
+              </Col>
+              <Col md={5} sm={24}>
+                <FormItem key="BaseEntry" {...formLayout} label="客询价单">
+                  {getFieldDecorator('BaseEntry', {
+                    initialValue: { DocEntryFrom: '', DocEntryTo: '' },
+                  })(<DocEntryFrom />)}
                 </FormItem>
               </Col>
             </Fragment>

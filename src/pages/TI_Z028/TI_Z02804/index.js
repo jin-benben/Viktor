@@ -8,6 +8,8 @@ import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import Link from 'umi/link';
 import StandardTable from '@/components/StandardTable';
 import MDMCommonality from '@/components/Select';
+import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
+import DocEntryFrom from '@/components/DocEntryFrom';
 import { getName } from '@/utils/utils';
 import styles from '../style.less';
 
@@ -35,7 +37,7 @@ class TI_Z02804 extends PureComponent {
     },
     {
       title: '单据日期',
-      dataIndex: 'PriceRDateTime',
+      dataIndex: 'CreateDate',
       width: 100,
       render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
     },
@@ -151,6 +153,10 @@ class TI_Z02804 extends PureComponent {
     },
   ];
 
+  state = {
+    expandForm: false,
+  };
+
   componentDidMount() {
     const {
       dispatch,
@@ -169,6 +175,9 @@ class TI_Z02804 extends PureComponent {
           CodeList: ['Saler', 'Company', 'Purchaser'],
         },
       },
+    });
+    dispatch({
+      type: 'global/getAuthority',
     });
   }
 
@@ -201,9 +210,7 @@ class TI_Z02804 extends PureComponent {
                 </li>
                 <li>
                   交期：
-                  <span>
-                    {item.InquiryDueDate ? moment(item.InquiryDueDate).format('YYYY-MM-DD') : ''}
-                  </span>
+                  <span>{item.InquiryDueDate}</span>
                 </li>
                 <li>
                   询价返回时间：
@@ -262,6 +269,14 @@ class TI_Z02804 extends PureComponent {
     });
   };
 
+  toggleForm = () => {
+    // 是否展开
+    const { expandForm } = this.state;
+    this.setState({
+      expandForm: !expandForm,
+    });
+  };
+
   handleSearch = e => {
     // 搜索
     e.preventDefault();
@@ -275,10 +290,29 @@ class TI_Z02804 extends PureComponent {
         DocDateFrom = moment(fieldsValue.dateArr[0]).format('YYYY-MM-DD');
         DocDateTo = moment(fieldsValue.dateArr[1]).format('YYYY-MM-DD');
       }
+      let DocEntryFroms = '';
+      let DocEntryTo = '';
+      if (fieldsValue.orderNo) {
+        DocEntryFroms = fieldsValue.orderNo.DocEntryFrom;
+        DocEntryTo = fieldsValue.orderNo.DocEntryTo;
+      }
+      let BaseEntryFrom = '';
+      let BaseEntryTo = '';
+      if (fieldsValue.BaseEntry) {
+        BaseEntryFrom = fieldsValue.BaseEntry.DocEntryFrom;
+        BaseEntryTo = fieldsValue.BaseEntry.DocEntryTo;
+      }
+      delete fieldsValue.orderNo;
+      delete fieldsValue.dateArr;
+      delete fieldsValue.BaseEntry;
       const queryData = {
         ...fieldsValue,
         DocDateFrom,
+        BaseEntryFrom,
+        BaseEntryTo,
         DocDateTo,
+        DocEntryFroms,
+        DocEntryTo,
       };
       dispatch({
         type: 'TI_Z02804/fetch',
@@ -301,9 +335,9 @@ class TI_Z02804 extends PureComponent {
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
-      global: { Purchaser, currentUser },
+      global: { Purchaser, currentUser, Saler },
     } = this.props;
-
+    const { expandForm } = this.state;
     const formLayout = {
       labelCol: { span: 8 },
       wrapperCol: { span: 16 },
@@ -323,19 +357,54 @@ class TI_Z02804 extends PureComponent {
               )}
             </FormItem>
           </Col>
-          <Col md={6} sm={24}>
-            <FormItem key="Purchaser" {...formLayout} label="采购员">
-              {getFieldDecorator('Purchaser', { initialValue: currentUser.Owner })(
-                <MDMCommonality initialValue={currentUser.Owner} data={Purchaser} />
-              )}
+          <Col md={5} sm={24}>
+            <FormItem key="Owner" {...formLayout} label="采购员">
+              {getFieldDecorator('Owner')(<SalerPurchaser />)}
             </FormItem>
           </Col>
+          <Col md={5} sm={24}>
+            <FormItem {...formLayout} label="销售员">
+              {getFieldDecorator('Saler')(<MDMCommonality placeholder="销售员" data={Saler} />)}
+            </FormItem>
+          </Col>
+          {expandForm ? (
+            <Fragment>
+              <Col md={5} sm={24}>
+                <FormItem key="orderNo" {...formLayout} label="单号">
+                  {getFieldDecorator('orderNo', {
+                    initialValue: { DocEntryFrom: '', DocEntryTo: '' },
+                  })(<DocEntryFrom />)}
+                </FormItem>
+              </Col>
+              <Col md={5} sm={24}>
+                <FormItem key="BaseEntry" {...formLayout} label="询价单号">
+                  {getFieldDecorator('BaseEntry', {
+                    initialValue: { DocEntryFrom: '', DocEntryTo: '' },
+                  })(<DocEntryFrom />)}
+                </FormItem>
+              </Col>
+            </Fragment>
+          ) : (
+            ''
+          )}
+
           <Col md={4} sm={24}>
             <FormItem key="searchBtn">
               <span className="submitButtons">
                 <Button type="primary" htmlType="submit">
                   查询
                 </Button>
+                <a style={{ marginLeft: 8 }} onClick={this.toggleForm}>
+                  {expandForm ? (
+                    <span>
+                      收起 <Icon type="up" />
+                    </span>
+                  ) : (
+                    <span>
+                      展开 <Icon type="down" />
+                    </span>
+                  )}
+                </a>
               </span>
             </FormItem>
           </Col>

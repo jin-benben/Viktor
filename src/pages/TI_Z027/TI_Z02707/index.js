@@ -87,7 +87,7 @@ class supplierQuotationSku extends PureComponent {
                 ) : (
                   <Tag color="gold">未返回</Tag>
                 )}
-                {record.SendEmailStatus === 'Y' ? (
+                {record.SendEmailStatus === 'C' ? (
                   <Tag color="green">已发送</Tag>
                 ) : (
                   <Tag color="gold">未发送</Tag>
@@ -178,13 +178,17 @@ class supplierQuotationSku extends PureComponent {
       width: 120,
       dataIndex: 'InquiryDueDate',
       align: 'center',
-      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
     },
     {
       title: '行备注',
       dataIndex: 'LineComment',
       width: 100,
       align: 'center',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '采购员',
@@ -250,8 +254,6 @@ class supplierQuotationSku extends PureComponent {
       width: 100,
       dataIndex: 'DueDate',
       align: 'center',
-      render: (val, record) =>
-        record.lastIndex ? '' : <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
     },
     {
       title: '上一次价格',
@@ -330,11 +332,29 @@ class supplierQuotationSku extends PureComponent {
         DocDateFrom = moment(fieldsValue.dateArr[0]).format('YYYY-MM-DD');
         DocDateTo = moment(fieldsValue.dateArr[1]).format('YYYY-MM-DD');
       }
+      let DocEntryFroms = '';
+      let DocEntryTo = '';
+      if (fieldsValue.orderNo) {
+        DocEntryFroms = fieldsValue.orderNo.DocEntryFrom;
+        DocEntryTo = fieldsValue.orderNo.DocEntryTo;
+      }
+      let BaseEntryFrom = '';
+      let BaseEntryTo = '';
+      if (fieldsValue.BaseEntry) {
+        BaseEntryFrom = fieldsValue.BaseEntry.DocEntryFrom;
+        BaseEntryTo = fieldsValue.BaseEntry.DocEntryTo;
+      }
+      delete fieldsValue.orderNo;
+      delete fieldsValue.dateArr;
+      delete fieldsValue.BaseEntry;
       const queryData = {
         ...fieldsValue,
         DocDateFrom,
+        BaseEntryFrom,
+        BaseEntryTo,
         DocDateTo,
-        ...fieldsValue.orderNo,
+        DocEntryFroms,
+        DocEntryTo,
       };
       dispatch({
         type: 'supplierQuotationSku/fetch',
@@ -417,8 +437,8 @@ class supplierQuotationSku extends PureComponent {
             <FormItem key="SendEmailStatus" {...formLayout} label="邮件状态">
               {getFieldDecorator('SendEmailStatus')(
                 <Select placeholder="请选择">
-                  <Option value="Y">已发送</Option>
-                  <Option value="N">未发送</Option>
+                  <Option value="C">已发送</Option>
+                  <Option value="O">未发送</Option>
                   <Option value="">全部</Option>
                 </Select>
               )}
@@ -428,8 +448,8 @@ class supplierQuotationSku extends PureComponent {
             <FormItem key="PriceRStatus" {...formLayout} label=" 价格状态">
               {getFieldDecorator('PriceRStatus')(
                 <Select placeholder="请选择">
-                  <Option value="Y">已返回</Option>
-                  <Option value="N">未返回</Option>
+                  <Option value="C">已返回</Option>
+                  <Option value="O">未返回</Option>
                   <Option value="">全部</Option>
                 </Select>
               )}
@@ -468,15 +488,22 @@ class supplierQuotationSku extends PureComponent {
                 </FormItem>
               </Col>
               <Col md={5} sm={24}>
+                <FormItem key="BaseEntry" {...formLayout} label="客询价单">
+                  {getFieldDecorator('BaseEntry', {
+                    initialValue: { DocEntryFrom: '', DocEntryTo: '' },
+                  })(<DocEntryFrom />)}
+                </FormItem>
+              </Col>
+              <Col md={5} sm={24}>
                 <FormItem key="DeptList" {...this.formLayout} label="部门">
                   {getFieldDecorator('DeptList')(<Organization />)}
                 </FormItem>
               </Col>
-              <Col md={5} sm={24}>
+              {/* <Col md={5} sm={24}>
                 <FormItem label="销售" {...formLayout}>
                   {getFieldDecorator('Saler')(<MDMCommonality data={Saler} />)}
                 </FormItem>
-              </Col>
+              </Col> */}
             </Fragment>
           ) : null}
           <Col md={4} sm={24}>

@@ -65,7 +65,7 @@ class supplierQuotation extends PureComponent {
             ) : (
               <Fragment>
                 {text === 'C' ? <Tag color="green">已报价</Tag> : <Tag color="gold">未报价</Tag>}
-                {record.SendEmailStatus === 'Y' ? (
+                {record.SendEmailStatus === 'C' ? (
                   <Tag color="green">已发送</Tag>
                 ) : (
                   <Tag color="gold">未发送</Tag>
@@ -216,11 +216,21 @@ class supplierQuotation extends PureComponent {
         DocDateFrom = moment(fieldsValue.dateArr[0]).format('YYYY-MM-DD');
         DocDateTo = moment(fieldsValue.dateArr[1]).format('YYYY-MM-DD');
       }
+      let DocEntryFroms = '';
+      let DocEntryTo = '';
+      if (fieldsValue.orderNo) {
+        DocEntryFroms = fieldsValue.orderNo.DocEntryFrom;
+        DocEntryTo = fieldsValue.orderNo.DocEntryTo;
+      }
+
+      delete fieldsValue.orderNo;
+      delete fieldsValue.dateArr;
       const queryData = {
         ...fieldsValue,
         DocDateFrom,
         DocDateTo,
-        ...fieldsValue.orderNo,
+        DocEntryFroms,
+        DocEntryTo,
       };
       dispatch({
         type: 'supplierQuotation/fetch',
@@ -281,8 +291,8 @@ class supplierQuotation extends PureComponent {
             <FormItem key="SendEmailStatus" {...formLayout} label="邮件状态">
               {getFieldDecorator('SendEmailStatus')(
                 <Select placeholder="请选择">
-                  <Option value="Y">已发送</Option>
-                  <Option value="N">未发送</Option>
+                  <Option value="C">已发送</Option>
+                  <Option value="O">未发送</Option>
                   <Option value="">全部</Option>
                 </Select>
               )}

@@ -290,7 +290,7 @@ class InquiryEdit extends React.Component {
     {
       title: '要求交期',
       width: 120,
-      inputType: 'date',
+      inputType: 'text',
       dataIndex: 'DueDate',
       editable: true,
       align: 'center',
@@ -493,8 +493,6 @@ class InquiryEdit extends React.Component {
       width: 100,
       dataIndex: 'InquiryDueDate',
       align: 'center',
-      render: (text, record) =>
-        record.lastIndex ? null : <span>{text ? moment(text).format('YYYY-MM-DD') : ''}</span>,
     },
     {
       title: '产地',
@@ -624,7 +622,7 @@ class InquiryEdit extends React.Component {
     {
       title: '要求交期',
       width: 120,
-      inputType: 'date',
+      inputType: 'text',
       dataIndex: 'DueDate',
       editable: true,
       align: 'center',
@@ -896,7 +894,7 @@ class InquiryEdit extends React.Component {
           PhoneNO: '',
           Email: '',
           CompanyCode: '',
-          DueDate: null,
+          DueDate: '',
           ToDate: null,
           InquiryDocTotal: 0,
           InquiryDocTotalLocal: 0,
@@ -1431,7 +1429,6 @@ class InquiryEdit extends React.Component {
           Content: {
             ...formVals,
             ...fieldsValue,
-            DueDate: fieldsValue.DueDate ? fieldsValue.DueDate.format('YYYY-MM-DD') : '',
             ToDate: fieldsValue.ToDate ? fieldsValue.ToDate.format('YYYY-MM-DD') : '',
             DocDate: fieldsValue.DocDate ? fieldsValue.DocDate.format('YYYY-MM-DD') : '',
           },
@@ -1465,7 +1462,6 @@ class InquiryEdit extends React.Component {
           Content: {
             ...formVals,
             ...fieldsValue,
-            DueDate: fieldsValue.DueDate ? fieldsValue.DueDate.format('YYYY-MM-DD') : '',
             ToDate: fieldsValue.ToDate ? fieldsValue.ToDate.format('YYYY-MM-DD') : '',
             DocDate: fieldsValue.DocDate ? fieldsValue.DocDate.format('YYYY-MM-DD') : '',
           },
@@ -1558,12 +1554,12 @@ class InquiryEdit extends React.Component {
     const newArr = formVals.TI_Z02602.map(item => {
       const newitem = item;
       if (!newitem.DueDate) {
-        newitem.DueDate = val.format('YYYY-MM-DD');
+        newitem.DueDate = val;
         return newitem;
       }
       return newitem;
     });
-    Object.assign(formVals, { TI_Z02602: newArr, DueDate: val.format('YYYY-MM-DD') });
+    Object.assign(formVals, { TI_Z02602: newArr, DueDate: val });
     this.setState({
       formVals,
     });
@@ -1846,8 +1842,8 @@ class InquiryEdit extends React.Component {
               <Col lg={8} md={12} sm={24}>
                 <FormItem key="DueDate" {...this.formLayout} label="要求交期">
                   {getFieldDecorator('DueDate', {
-                    initialValue: formVals.DueDate ? moment(formVals.DueDate, 'YYYY-MM-DD') : null,
-                  })(<DatePicker onChange={this.dueDateChange} style={{ width: '100%' }} />)}
+                    initialValue: formVals.DueDate,
+                  })(<Input onChange={this.dueDateChange} placeholder="请输入交期" />)}
                 </FormItem>
               </Col>
             </Row>

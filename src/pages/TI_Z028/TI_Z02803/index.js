@@ -3,9 +3,11 @@ import { connect } from 'dva';
 import router from 'umi/router';
 import Link from 'umi/link';
 import moment from 'moment';
-import { Row, Col, Card, Form, Input, Button, DatePicker } from 'antd';
+import { Row, Col, Card, Form, Input, Button, DatePicker, Icon } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import MDMCommonality from '@/components/Select';
+import DocEntryFrom from '@/components/DocEntryFrom';
+import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
 import { getName } from '@/utils/utils';
 
 const { RangePicker } = DatePicker;
@@ -78,13 +80,17 @@ class TI_Z02803 extends PureComponent {
     },
   ];
 
+  state = {
+    expandForm: false,
+  };
+
   componentDidMount() {
     const {
       dispatch,
       TI_Z02803: { queryData },
       global: { currentUser },
     } = this.props;
-    Object.assign(queryData.Content, { Owner: currentUser.Owner });
+    Object.assign(queryData.Content, { Owner: [currentUser.Owner] });
     dispatch({
       type: 'TI_Z02803/fetch',
       payload: {
@@ -98,6 +104,9 @@ class TI_Z02803 extends PureComponent {
           CodeList: ['Purchaser'],
         },
       },
+    });
+    dispatch({
+      type: 'global/getAuthority',
     });
   }
 
@@ -129,10 +138,20 @@ class TI_Z02803 extends PureComponent {
         DocDateFrom = moment(fieldsValue.dateArr[0]).format('YYYY-MM-DD');
         DocDateTo = moment(fieldsValue.dateArr[1]).format('YYYY-MM-DD');
       }
+      let DocEntryFroms = '';
+      let DocEntryTo = '';
+      if (fieldsValue.orderNo) {
+        DocEntryFroms = fieldsValue.orderNo.DocEntryFrom;
+        DocEntryTo = fieldsValue.orderNo.DocEntryTo;
+      }
+      delete fieldsValue.orderNo;
+      delete fieldsValue.dateArr;
       const queryData = {
         ...fieldsValue,
         DocDateFrom,
         DocDateTo,
+        DocEntryFroms,
+        DocEntryTo,
       };
       dispatch({
         type: 'TI_Z02803/fetch',
@@ -151,12 +170,22 @@ class TI_Z02803 extends PureComponent {
     });
   };
 
+  toggleForm = () => {
+    // 是否展开
+    const { expandForm } = this.state;
+    this.setState({
+      expandForm: !expandForm,
+    });
+  };
+
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
-      global: { Purchaser, currentUser },
+      global: { Purchaser, currentUser, Saler },
+      TI_Z02803: { queryData },
     } = this.props;
-
+    const { Owner } = queryData.Content;
+    const { expandForm } = this.state;
     const formLayout = {
       labelCol: { span: 8 },
       wrapperCol: { span: 16 },
@@ -177,25 +206,43 @@ class TI_Z02803 extends PureComponent {
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={4} sm={24}>
+          <Col md={5} sm={24}>
             <FormItem key="SearchText">
               {getFieldDecorator('SearchText')(<Input placeholder="请输入关键字" />)}
             </FormItem>
           </Col>
-          <Col md={6} sm={24}>
+          <Col md={5} sm={24}>
             <FormItem label="日期" {...formLayout}>
               {getFieldDecorator('dateArr', { rules: [{ type: 'array' }] })(
                 <RangePicker style={{ width: '100%' }} />
               )}
             </FormItem>
           </Col>
-          <Col md={6} sm={24}>
+          <Col md={5} sm={24}>
             <FormItem key="Owner" {...formLayout} label="采购员">
-              {getFieldDecorator('Owner', { initialValue: currentUser.Owner })(
-                <MDMCommonality initialValue={currentUser.Owner} data={Purchaser} />
-              )}
+              {getFieldDecorator('Owner')(<SalerPurchaser />)}
             </FormItem>
           </Col>
+
+          {expandForm ? (
+            <Fragment>
+              <Col md={5} sm={24}>
+                <FormItem {...formLayout} label="销售员">
+                  {getFieldDecorator('Saler')(<MDMCommonality placeholder="销售员" data={Saler} />)}
+                </FormItem>
+              </Col>
+              <Col md={5} sm={24}>
+                <FormItem key="orderNo" {...formLayout} label="单号">
+                  {getFieldDecorator('orderNo', {
+                    initialValue: { DocEntryFrom: '', DocEntryTo: '' },
+                  })(<DocEntryFrom />)}
+                </FormItem>
+              </Col>
+            </Fragment>
+          ) : (
+            ''
+          )}
+
           <Col md={2} sm={24}>
             <FormItem key="searchBtn" {...searchFormItemLayout}>
               <span className="submitButtons">
@@ -210,6 +257,17 @@ class TI_Z02803 extends PureComponent {
                 >
                   新建
                 </Button>
+                <a style={{ marginLeft: 8 }} onClick={this.toggleForm}>
+                  {expandForm ? (
+                    <span>
+                      收起 <Icon type="up" />
+                    </span>
+                  ) : (
+                    <span>
+                      展开 <Icon type="down" />
+                    </span>
+                  )}
+                </a>
               </span>
             </FormItem>
           </Col>

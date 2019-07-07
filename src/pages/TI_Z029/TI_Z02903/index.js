@@ -151,8 +151,6 @@ class InquiryEdit extends Component {
       width: 100,
       dataIndex: 'DueDate',
       align: 'center',
-      render: (val, record) =>
-        record.lastIndex ? '' : <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
     },
     {
       title: '询价价格',
@@ -198,8 +196,6 @@ class InquiryEdit extends Component {
       width: 100,
       dataIndex: 'InquiryDueDate',
       align: 'center',
-      render: (text, record) =>
-        record.lastIndex ? null : <span>{moment(text).format('YYYY-MM-DD')}</span>,
     },
     {
       title: '采购员',
@@ -629,9 +625,7 @@ class InquiryEdit extends Component {
           <Description term="创建日期">
             {moment(formVals.CreateDate).format('YYYY-MM-DD')}
           </Description>
-          <Description term="要求交期">
-            {formVals.DueDate ? moment(formVals.DueDate).format('YYYY-MM-DD') : ''}
-          </Description>
+          <Description term="要求交期">{formVals.DueDate}</Description>
           <Description term="有效日期">
             {formVals.ToDate ? moment(formVals.ToDate).format('YYYY-MM-DD') : ''}
           </Description>

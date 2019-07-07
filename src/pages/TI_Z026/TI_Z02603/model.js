@@ -15,7 +15,7 @@ export default {
       CellphoneNO: '',
       PhoneNO: '',
       Email: '',
-      DueDate: null,
+      DueDate: '',
       ToDate: null,
       InquiryDocTotal: '',
       DocTotal: '',

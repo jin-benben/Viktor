@@ -92,7 +92,6 @@ class OrderLine extends PureComponent {
       width: 100,
       dataIndex: 'DueDate',
       align: 'center',
-      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
     },
     {
       title: '仓库',

@@ -163,7 +163,6 @@ class TI_Z02802 extends PureComponent {
       title: '要求交期',
       dataIndex: 'DueDate',
       width: 120,
-      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
     },
     {
       title: '采购价格',
@@ -174,7 +173,6 @@ class TI_Z02802 extends PureComponent {
       title: '采购交期',
       width: 120,
       dataIndex: 'InquiryDueDate',
-      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
     },
     {
       title: '采购备注',
@@ -235,7 +233,6 @@ class TI_Z02802 extends PureComponent {
       title: '交期',
       width: 100,
       dataIndex: 'InquiryDueDate',
-      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
     },
     {
       title: '备注',
@@ -332,9 +329,7 @@ class TI_Z02802 extends PureComponent {
                 </li>
                 <li>
                   交期：
-                  <span>
-                    {item.InquiryDueDate ? moment(item.InquiryDueDate).format('YYYY-MM-DD') : ''}
-                  </span>
+                  <span>{item.InquiryDueDate}</span>
                 </li>
                 <li>
                   询价返回时间：

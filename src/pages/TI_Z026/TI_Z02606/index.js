@@ -127,7 +127,7 @@ class inquiryListPage extends PureComponent {
     },
     {
       title: '销售员',
-      width: 100,
+      width: 120,
       dataIndex: 'Owner',
       render: text => {
         const {

@@ -248,10 +248,8 @@ class NeedTabl extends React.Component {
     {
       title: '要求交期',
       width: 100,
-      inputType: 'date',
       dataIndex: 'DueDate',
       align: 'center',
-      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
     },
     {
       title: '客户参考号',
@@ -387,11 +385,21 @@ class NeedTabl extends React.Component {
         DocDateFrom = moment(fieldsValue.dateArr[0]).format('YYYY-MM-DD');
         DocDateTo = moment(fieldsValue.dateArr[1]).format('YYYY-MM-DD');
       }
-      const Content = {
+      let DocEntryFroms = '';
+      let DocEntryTo = '';
+      if (fieldsValue.orderNo) {
+        DocEntryFroms = fieldsValue.orderNo.DocEntryFrom;
+        DocEntryTo = fieldsValue.orderNo.DocEntryTo;
+      }
+
+      delete fieldsValue.orderNo;
+      delete fieldsValue.dateArr;
+      const queryData = {
         ...fieldsValue,
         DocDateFrom,
         DocDateTo,
-        ...fieldsValue.orderNo,
+        DocEntryFroms,
+        DocEntryTo,
       };
       Object.assign(queryData.Content, { ...Content });
       this.setState({
@@ -455,6 +463,13 @@ class NeedTabl extends React.Component {
               <Col md={5} sm={24}>
                 <FormItem key="DeptList" {...this.formLayout} label="部门">
                   {getFieldDecorator('DeptList')(<Organization />)}
+                </FormItem>
+              </Col>
+              <Col md={5} sm={24}>
+                <FormItem key="orderNo" {...formLayout} label="单号">
+                  {getFieldDecorator('orderNo', {
+                    initialValue: { DocEntryFrom: '', DocEntryTo: '' },
+                  })(<DocEntryFrom />)}
                 </FormItem>
               </Col>
               <Col md={5} sm={24}>

@@ -195,7 +195,6 @@ class SalesQuotationSku extends PureComponent {
       width: 100,
       dataIndex: 'DueDate',
       align: 'center',
-      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
     },
     {
       title: '询价价格',
@@ -236,7 +235,18 @@ class SalesQuotationSku extends PureComponent {
       width: 100,
       dataIndex: 'InquiryDueDate',
       align: 'center',
-      render: text => <span>{text ? moment(text).format('YYYY-MM-DD') : ''}</span>,
+    },
+    {
+      title: '销售员',
+      width: 120,
+      dataIndex: 'Owner',
+      align: 'center',
+      render: text => {
+        const {
+          global: { Saler },
+        } = this.props;
+        return <span>{getName(Saler, text)}</span>;
+      },
     },
     {
       title: '采购员',
@@ -441,11 +451,29 @@ class SalesQuotationSku extends PureComponent {
         DocDateFrom = moment(fieldsValue.dateArr[0]).format('YYYY-MM-DD');
         DocDateTo = moment(fieldsValue.dateArr[1]).format('YYYY-MM-DD');
       }
+      let DocEntryFroms = '';
+      let DocEntryTo = '';
+      if (fieldsValue.orderNo) {
+        DocEntryFroms = fieldsValue.orderNo.DocEntryFrom;
+        DocEntryTo = fieldsValue.orderNo.DocEntryTo;
+      }
+      let BaseEntryFrom = '';
+      let BaseEntryTo = '';
+      if (fieldsValue.BaseEntry) {
+        BaseEntryFrom = fieldsValue.BaseEntry.DocEntryFrom;
+        BaseEntryTo = fieldsValue.BaseEntry.DocEntryTo;
+      }
+      delete fieldsValue.orderNo;
+      delete fieldsValue.dateArr;
+      delete fieldsValue.BaseEntry;
       const queryData = {
         ...fieldsValue,
         DocDateFrom,
+        BaseEntryFrom,
+        BaseEntryTo,
         DocDateTo,
-        ...fieldsValue.orderNo,
+        DocEntryFroms,
+        DocEntryTo,
       };
       dispatch({
         type: 'SalesQuotationSku/fetch',
@@ -548,24 +576,30 @@ class SalesQuotationSku extends PureComponent {
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={4} sm={24}>
+          <Col md={5} sm={24}>
             <FormItem key="SearchText" {...formLayout}>
               {getFieldDecorator('SearchText')(<Input placeholder="请输入关键字" />)}
             </FormItem>
           </Col>
+
           <Col md={5} sm={24}>
-            <FormItem label="日期" {...formLayout}>
-              {getFieldDecorator('dateArr', { rules: [{ type: 'array' }] })(
-                <RangePicker style={{ width: '100%' }} />
+            <FormItem key="ApproveSts" {...formLayout} label="确认状态">
+              {getFieldDecorator('ApproveSts')(
+                <Select placeholder="请选择">
+                  <Option value="Y">已发送</Option>
+                  <Option value="N">未发送</Option>
+                  <Option value="">全部</Option>
+                </Select>
               )}
             </FormItem>
           </Col>
           <Col md={5} sm={24}>
-            <FormItem key="SDocStatus" {...formLayout} label="合同状态">
-              {getFieldDecorator('SDocStatus')(
+            <FormItem key="DocStatus" {...formLayout} label="合同状态">
+              {getFieldDecorator('DocStatus')(
                 <Select placeholder="请选择">
-                  <Option value="C">已报价</Option>
-                  <Option value="O">未报价</Option>
+                  <Option value="C">已合同</Option>
+                  <Option value="O">未合同</Option>
+                  <Option value="">全部</Option>
                 </Select>
               )}
             </FormItem>
@@ -584,7 +618,14 @@ class SalesQuotationSku extends PureComponent {
                   })(<DocEntryFrom />)}
                 </FormItem>
               </Col>
-              <Col md={4} sm={24}>
+              <Col md={5} sm={24}>
+                <FormItem label="日期" {...formLayout}>
+                  {getFieldDecorator('dateArr', { rules: [{ type: 'array' }] })(
+                    <RangePicker style={{ width: '100%' }} />
+                  )}
+                </FormItem>
+              </Col>
+              <Col md={5} sm={24}>
                 <FormItem key="Closed" {...formLayout}>
                   {getFieldDecorator('Closed')(
                     <Select placeholder="请选择关闭状态">
@@ -600,33 +641,15 @@ class SalesQuotationSku extends PureComponent {
                 </FormItem>
               </Col>
               <Col md={5} sm={24}>
-                <FormItem key="LineStatus" {...formLayout} label="确认状态">
-                  {getFieldDecorator('LineStatus')(
-                    <Select placeholder="请选择">
-                      <Option value="C">已报价</Option>
-                      <Option value="O">未报价</Option>
-                    </Select>
-                  )}
-                </FormItem>
-              </Col>
-              <Col md={5} sm={24}>
-                <FormItem label="采购" {...formLayout}>
-                  {getFieldDecorator('Purchaser')(<MDMCommonality data={Purchaser} />)}
-                </FormItem>
-              </Col>
-
-              <Col md={5} sm={24}>
-                <FormItem key="OrderType" {...formLayout} label="订单类型">
-                  {getFieldDecorator('OrderType')(
-                    <Select placeholder="请选择">
-                      <Option value="1">正常订单</Option>
-                    </Select>
-                  )}
+                <FormItem key="BaseEntry" {...formLayout} label="客询价单">
+                  {getFieldDecorator('BaseEntry', {
+                    initialValue: { DocEntryFrom: '', DocEntryTo: '' },
+                  })(<DocEntryFrom />)}
                 </FormItem>
               </Col>
             </Fragment>
           ) : null}
-          <Col md={5} sm={24}>
+          <Col md={4} sm={24}>
             <FormItem key="searchBtn">
               <span className="submitButtons">
                 <Button type="primary" htmlType="submit">
@@ -689,7 +712,7 @@ class SalesQuotationSku extends PureComponent {
               loading={loading}
               data={{ list: SalesQuotationSkuList }}
               pagination={pagination}
-              scroll={{ x: 3620 }}
+              scroll={{ x: 3800 }}
               rowKey="Key"
               columns={this.columns}
               rowSelection={{

@@ -23,7 +23,7 @@ export default {
       CellphoneNO: '',
       PhoneNO: '',
       Email: '',
-      DueDate: null,
+      DueDate: '',
       ToDate: null,
       InquiryDocTotal: 0,
       InquiryDocTotalLocal: 0,

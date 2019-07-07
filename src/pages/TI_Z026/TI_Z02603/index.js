@@ -139,8 +139,6 @@ class InquiryEdit extends PureComponent {
       width: 100,
       dataIndex: 'InquiryDueDate',
       align: 'center',
-      render: (text, record) =>
-        record.lastIndex ? null : <span>{text ? moment(text).format('YYYY-MM-DD') : ''}</span>,
     },
     {
       title: '名称(外)',
@@ -243,8 +241,6 @@ class InquiryEdit extends PureComponent {
       inputType: 'date',
       dataIndex: 'DueDate',
       align: 'center',
-      render: (val, record) =>
-        record.lastIndex ? '' : <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
     },
     {
       title: '仓库',
@@ -575,9 +571,7 @@ class InquiryEdit extends PureComponent {
           <Description term="创建日期">
             {moment(formVals.CreateDate).format('YYYY-MM-DD')}
           </Description>
-          <Description term="要求交期">
-            {formVals.DueDate ? moment(formVals.DueDate).format('YYYY-MM-DD') : ''}
-          </Description>
+          <Description term="要求交期">{formVals.DueDate}</Description>
           <Description term="有效日期">
             {formVals.ToDate ? moment(formVals.ToDate).format('YYYY-MM-DD') : ''}
           </Description>
