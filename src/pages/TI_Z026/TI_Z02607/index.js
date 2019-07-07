@@ -26,8 +26,8 @@ import NeedAskPrice from '../components/needAskPrice';
 import Organization from '@/components/Organization/multiple';
 import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
 import Transfer from '@/components/Transfer';
+import MyPageHeader from '../components/pageHeader';
 import { lineStatus } from '@/utils/publicData';
-
 import { getName } from '@/utils/utils';
 
 const { RangePicker } = DatePicker;
@@ -360,16 +360,6 @@ class orderLine extends PureComponent {
         <Ellipsis tooltip lines={1}>
           {text}
         </Ellipsis>
-      ),
-    },
-    {
-      title: '采询状态',
-      width: 100,
-      dataIndex: 'InquiryStatus',
-      render: text => (
-        <span>
-          {text === 'C' ? <Tag color="green">采已询价</Tag> : <Tag color="gold">采未询价</Tag>}
-        </span>
       ),
     },
     {
@@ -706,6 +696,7 @@ class orderLine extends PureComponent {
     return (
       <Fragment>
         <Card bordered={false}>
+          <MyPageHeader {...this.props.location} />
           <div className="tableList">
             <div className="tableListForm">{this.renderSimpleForm()}</div>
             <StandardTable

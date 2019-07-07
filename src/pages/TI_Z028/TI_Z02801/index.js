@@ -53,12 +53,12 @@ class TI_Z02801 extends React.Component {
         </Link>
       ),
     },
-    {
-      title: '单据日期',
-      dataIndex: 'DocDate',
-      width: 100,
-      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
-    },
+    // {
+    //   title: '单据日期',
+    //   dataIndex: 'DocDate',
+    //   width: 100,
+    //   render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
+    // },
     {
       title: '销售员',
       width: 120,
@@ -193,8 +193,13 @@ class TI_Z02801 extends React.Component {
   componentDidMount() {
     const {
       dispatch,
+      location: { query },
       TI_Z02801: { queryData },
     } = this.props;
+    const { PInquiryEntry } = query;
+    if (PInquiryEntry) {
+      Object.assign(queryData.Content, { PInquiryEntry });
+    }
     dispatch({
       type: 'TI_Z02801/fetch',
       payload: {
@@ -477,6 +482,7 @@ class TI_Z02801 extends React.Component {
                     <Select placeholder="请选择确认状态">
                       <Option value="C">已确认</Option>
                       <Option value="O">未确认</Option>
+                      <Option value="">全部</Option>
                     </Select>
                   )}
                 </FormItem>
@@ -532,7 +538,7 @@ class TI_Z02801 extends React.Component {
         tab += item.width;
       }
     });
-    console.log(tab);
+    const height = document.body.offsetHeight - 56 - 64 - 56 - 24 - 32 - 30;
     return (
       <Fragment>
         <Card bordered={false}>
@@ -544,7 +550,7 @@ class TI_Z02801 extends React.Component {
               dataSource={orderLineList}
               pagination={pagination}
               rowKey="LineID"
-              scroll={{ x: 1500 }}
+              scroll={{ x: 1700, y: height }}
               rowSelection={{
                 onChange: this.onSelectRow,
                 selectedRowKeys,

@@ -22,6 +22,8 @@ import {
   Menu,
   Tag,
   Badge,
+  PageHeader,
+  Breadcrumb,
 } from 'antd';
 import moment from 'moment';
 import round from 'lodash/round';
@@ -42,12 +44,14 @@ import HSCode from '@/components/HSCode';
 import PushLink from '@/components/PushLink';
 import Attachment from '@/components/Attachment';
 import MyTag from '@/components/Tag';
+import MyPageHeader from '../components/pageHeader';
 import { getName } from '@/utils/utils';
 import { orderSourceType, lineStatus } from '@/utils/publicData';
 
 const { TabPane } = Tabs;
 const FormItem = Form.Item;
 const { Option } = Select;
+
 @connect(({ inquiryEdit, loading, global }) => ({
   inquiryEdit,
   global,
@@ -1619,6 +1623,7 @@ class InquiryEdit extends React.Component {
     }
     return (
       <Card bordered={false} loading={detailLoading}>
+        <MyPageHeader {...this.props.location} breadcrumb={{ breadcrumbName: '添加' }} />
         <Form {...formItemLayout}>
           <Row gutter={8}>
             <Col lg={10} md={12} sm={24}>

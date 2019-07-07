@@ -1,9 +1,10 @@
 import React, { PureComponent, Fragment } from 'react';
-import request from '@/utils/request';
-import SupplierModal from '@/components/Modal/Supplier';
+import Link from 'umi/link';
 import { Select, Spin, Icon, Empty, Button } from 'antd';
 import { connect } from 'dva';
 import debounce from 'lodash/debounce';
+import request from '@/utils/request';
+import SupplierModal from '@/components/Modal/Supplier';
 import styles from './style.less';
 
 const { Option } = Select;
@@ -24,10 +25,15 @@ class SupplierSelect extends PureComponent {
     value: { key: '' },
     companyModal: false,
     fetching: false,
+    isSearch: false,
   };
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    if (!prevState.data.length && prevState.data !== nextProps.global.SupplierList) {
+    if (
+      !prevState.data.length &&
+      prevState.data !== nextProps.global.SupplierList &&
+      !prevState.isSearch
+    ) {
       return {
         data: nextProps.global.SupplierList,
       };
@@ -59,7 +65,7 @@ class SupplierSelect extends PureComponent {
         sord: 'DESC',
       },
     });
-    this.setState({ fetching: false });
+    this.setState({ fetching: false, isSearch: true });
     if (response.Status !== 200 || fetchId !== this.lastFetchId) {
       this.setState({ data: [], fetching: false });
       return;
@@ -119,7 +125,15 @@ class SupplierSelect extends PureComponent {
               />
             }
             placeholder="输入内容"
-            notFoundContent={fetching ? <Spin size="small" /> : <Empty style={{ width: '100%' }} />}
+            notFoundContent={
+              fetching ? (
+                <Spin size="small" />
+              ) : (
+                <Empty style={{ width: '100%' }}>
+                  <Link to="/main/TI_Z007/add">去添加</Link>
+                </Empty>
+              )
+            }
             filterOption={false}
             onSearch={this.fetchSupplier}
             onChange={this.handleChange}

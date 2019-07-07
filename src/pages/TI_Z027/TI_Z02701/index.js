@@ -80,7 +80,7 @@ class SupplierAsk extends Component {
       type: 'global/getMDMCommonality',
       payload: {
         Content: {
-          CodeList: ['Saler', 'WhsCode', 'Curr', 'Company', 'Purchaser'],
+          CodeList: ['Saler', 'WhsCode', 'Curr', 'TI_Z004', 'Company', 'Purchaser'],
         },
       },
     });

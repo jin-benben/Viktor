@@ -1123,6 +1123,14 @@ class InquiryEdit extends React.Component {
           <Button icon="plus" type="primary" href="/purchase/TI_Z027/edit" target="_blank">
             新建
           </Button>
+          <Button
+            icon="plus"
+            type="primary"
+            href={`/purchase/TI_Z028/TI_Z02801?PInquiryEntry=${formVals.DocEntry}`}
+            target="_blank"
+          >
+            添加到询价确认单
+          </Button>
         </FooterToolbar>
         <OrderAttachUpload {...uploadmodalMethods} modalVisible={uploadmodalVisible} />
         <SKUModal {...parentMethods} modalVisible={skuModalVisible} />

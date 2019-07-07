@@ -425,7 +425,7 @@ class NeedTabl extends React.Component {
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
-      global: { Purchaser },
+      global: { Saler },
     } = this.props;
     const formLayout = {
       labelCol: { span: 6 },
@@ -471,7 +471,7 @@ class NeedTabl extends React.Component {
               <Col md={6} sm={24}>
                 <FormItem {...formLayout} label="销售员">
                   {getFieldDecorator('Purchaser')(
-                    <MDMCommonality placeholder="销售员" data={Purchaser} />
+                    <MDMCommonality placeholder="销售员" data={Saler} />
                   )}
                 </FormItem>
               </Col>

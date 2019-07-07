@@ -15,6 +15,7 @@ import PrintHistory from '@/components/Order/PrintHistory';
 import SendEmail from '@/components/Order/SendEmail';
 import Transfer from '@/components/Transfer';
 import Attachment from '@/components/Attachment';
+import MyPageHeader from '../components/pageHeader';
 import { getName } from '@/utils/utils';
 import { orderSourceType, linkmanColumns, lineStatus } from '@/utils/publicData';
 
@@ -563,6 +564,7 @@ class InquiryEdit extends PureComponent {
     // console.log(tablwidth)
     return (
       <Card bordered={false} loading={loading}>
+        <MyPageHeader {...this.props.location} />
         <DescriptionList style={{ marginBottom: 24 }}>
           <Description term="单号">{formVals.DocEntry}</Description>
           <Description term="客户">

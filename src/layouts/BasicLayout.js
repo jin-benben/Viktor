@@ -145,7 +145,7 @@ class BasicLayout extends React.PureComponent {
       isMobile,
       menuData,
       breadcrumbNameMap,
-      // route: { routes },
+      route: { routes },
       fixedHeader,
     } = this.props;
     const isTop = PropsLayout === 'topmenu';
@@ -153,7 +153,10 @@ class BasicLayout extends React.PureComponent {
     const breadcrumbObj = conversionBreadcrumbList({
       ...this.props,
     });
+    console.log();
+
     const isbreadcrumb = breadcrumbObj.routes.length > 1 && pathname.indexOf('/exception') === -1;
+    const isAsk = pathname.indexOf('/sellabout/TI_Z026') === -1;
     const contentStyle = !fixedHeader ? { paddingTop: 0 } : {};
     const layout = (
       <Scrollbars style={{ minHeight: '100vh' }}>
@@ -182,7 +185,7 @@ class BasicLayout extends React.PureComponent {
               {...this.props}
             />
             <Content className={styles.content} style={contentStyle}>
-              {isbreadcrumb ? <PageHeader breadcrumb={breadcrumbObj} /> : null}
+              {isbreadcrumb && isAsk ? <PageHeader breadcrumb={breadcrumbObj} /> : null}
               {children}
             </Content>
           </Layout>

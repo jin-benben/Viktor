@@ -373,6 +373,15 @@ class InquiryEdit extends React.Component {
           </Link>
         </Menu.Item>
         <Menu.Item>
+          <Link
+            target="_blank"
+            to={`/purchase/TI_Z028/TI_Z02801?PInquiryEntry=${formVals.DocEntry}`}
+          >
+            添加到询价确认单
+          </Link>
+        </Menu.Item>
+
+        <Menu.Item>
           <OrderPrint BaseEntry={formVals.DocEntry} BaseType="TI_Z027" />
         </Menu.Item>
         <Menu.Item>

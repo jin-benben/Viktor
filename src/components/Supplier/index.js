@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import { Select, Spin, message, Empty } from 'antd';
 import { connect } from 'dva';
+import Link from 'umi/link';
 import debounce from 'lodash/debounce';
 import request from '@/utils/request';
 
@@ -40,7 +41,7 @@ class Staffs extends PureComponent {
     if (!value) return;
     this.lastFetchId += 1;
     const fetchId = this.lastFetchId;
-    this.setState({ data: [], fetching: true });
+    this.setState({ data: [], fetching: true, initialValue: true });
     const response = await request('/MDM/TI_Z007/TI_Z00702', {
       method: 'POST',
       data: {
@@ -87,7 +88,15 @@ class Staffs extends PureComponent {
         labelInValue={labelInValue}
         value={value}
         placeholder="输入名称"
-        notFoundContent={fetching ? <Spin size="small" /> : <Empty />}
+        notFoundContent={
+          fetching ? (
+            <Spin size="small" />
+          ) : (
+            <Empty style={{ width: '100%' }}>
+              <Link to="/main/TI_Z007/add">去添加</Link>
+            </Empty>
+          )
+        }
         filterOption={false}
         onSearch={this.fetchUser}
         onChange={this.handleChange}
