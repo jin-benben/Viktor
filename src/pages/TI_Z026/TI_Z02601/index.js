@@ -207,7 +207,7 @@ class InquiryEdit extends React.Component {
     },
     {
       title: '税率',
-      width: 80,
+      width: 100,
       dataIndex: 'HSVatRate',
       align: 'center',
       render: (text, record) =>
@@ -815,6 +815,30 @@ class InquiryEdit extends React.Component {
           .add('30', 'day')
           .format('YYYY/MM/DD'),
         TI_Z02602: [],
+        TI_Z02605: [],
+        Comment: '',
+        CardCode: '',
+        CardName: '',
+        Contacts: '',
+        CellphoneNO: '',
+        PhoneNO: '',
+        Email: '',
+        Fax: '',
+        CompanyCode: '',
+        DueDate: '',
+        InquiryDocTotal: 0,
+        InquiryDocTotalLocal: 0,
+        DocTotal: 0,
+        ProvinceID: '',
+        Province: '',
+        CityID: '',
+        City: '',
+        AreaID: '',
+        Area: '',
+        Address: '',
+        AddressID: '',
+        NumAtCard: '',
+        Owner: '',
       }, // 单据信息
       tabIndex: '1', // tab
       uploadmodalVisible: false, // 上传Modal
@@ -982,9 +1006,9 @@ class InquiryEdit extends React.Component {
 
   // 海关编码change
   codeChange = (select, record, index) => {
-    const { Code, U_VatRate, U_VatRateOther } = select;
+    const { Code, U_VatRate } = select;
     const { inquiryDetail } = this.state;
-    Object.assign(record, { HSCode: Code, HSVatRate: U_VatRate, HSVatRateOther: U_VatRateOther });
+    Object.assign(record, { HSCode: Code, HSVatRate: U_VatRate, HSVatRateOther: '' });
     inquiryDetail.TI_Z02602[index] = record;
     this.setState({ inquiryDetail });
   };
@@ -1518,12 +1542,12 @@ class InquiryEdit extends React.Component {
     const newArr = inquiryDetail.TI_Z02602.map(item => {
       const newitem = item;
       if (!newitem.DueDate) {
-        newitem.DueDate = val;
+        newitem.DueDate = val.target.value;
         return newitem;
       }
       return newitem;
     });
-    Object.assign(inquiryDetail, { TI_Z02602: newArr, DueDate: val });
+    Object.assign(inquiryDetail, { TI_Z02602: newArr, DueDate: val.target.value });
     this.setState({
       inquiryDetail,
     });
@@ -1816,7 +1840,7 @@ class InquiryEdit extends React.Component {
                 <FormItem key="DueDate" {...this.formLayout} label="要求交期">
                   {getFieldDecorator('DueDate', {
                     initialValue: inquiryDetail.DueDate,
-                  })(<Input onChange={this.dueDateChange} placeholder="请输入交期" />)}
+                  })(<Input onChange={this.dueDateChange} placeholder="请输入" />)}
                 </FormItem>
               </Col>
             </Row>

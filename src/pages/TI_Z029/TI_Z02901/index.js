@@ -1306,9 +1306,9 @@ class TI_Z029Component extends React.Component {
 
   // 海关编码change
   codeChange = (select, record, index) => {
-    const { Code, U_VatRate, U_VatRateOther } = select;
+    const { Code, U_VatRate } = select;
     const { formVals } = this.state;
-    Object.assign(record, { HSCode: Code, HSVatRate: U_VatRate, HSVatRateOther: U_VatRateOther });
+    Object.assign(record, { HSCode: Code, HSVatRate: U_VatRate, HSVatRateOther: '' });
     formVals.TI_Z02902[index] = record;
     this.setState({ formVals });
   };
@@ -1447,12 +1447,12 @@ class TI_Z029Component extends React.Component {
     const newArr = formVals.TI_Z02902.map(item => {
       const newitem = item;
       if (!newitem.DueDate) {
-        newitem.DueDate = val;
+        newitem.DueDate = val.target.value;
         return newitem;
       }
       return newitem;
     });
-    Object.assign(formVals, { TI_Z02602: newArr, DueDate: val });
+    Object.assign(formVals, { TI_Z02602: newArr, DueDate: val.target.value });
     this.setState({
       formVals,
     });

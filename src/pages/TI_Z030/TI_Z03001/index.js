@@ -594,6 +594,28 @@ class AgreementEdit extends React.Component {
         TI_Z03004: [],
         TI_Z03005: [],
         TI_Z02603Fahter: [],
+        CardCode: '',
+        CardName: '',
+        Contacts: '',
+        CellphoneNO: '',
+        PhoneNO: '',
+        Email: '',
+        Fax: '',
+        CompanyCode: '',
+        DueDate: '',
+        InquiryDocTotal: 0,
+        InquiryDocTotalLocal: 0,
+        DocTotal: 0,
+        ProvinceID: '',
+        Province: '',
+        CityID: '',
+        City: '',
+        AreaID: '',
+        Area: '',
+        Address: '',
+        AddressID: '',
+        NumAtCard: '',
+        Owner: '',
       }, // 单据信息
       tabIndex: '1', // tab
       uploadmodalVisible: false, // 上传Modal
@@ -1238,9 +1260,9 @@ class AgreementEdit extends React.Component {
 
   // 海关编码change
   codeChange = (select, record, index) => {
-    const { Code, U_VatRate, U_VatRateOther } = select;
+    const { Code, U_VatRate } = select;
     const { orderDetail } = this.state;
-    Object.assign(record, { HSCode: Code, HSVatRate: U_VatRate, HSVatRateOther: U_VatRateOther });
+    Object.assign(record, { HSCode: Code, HSVatRate: U_VatRate, HSVatRateOther: '' });
     orderDetail.TI_Z03002[index] = record;
     this.setState({ orderDetail });
   };

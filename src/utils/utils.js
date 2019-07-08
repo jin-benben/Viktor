@@ -8,7 +8,7 @@ export function isUrl(path) {
 export function checkPhone(phone) {
   // 手机效验
   if (phone.length === 11) {
-    return /^1(3|4|5|7|8)\d{9}$/.test(phone);
+    return /^1(3|4|5|6|7|8|9)\d{9}$/.test(phone);
   }
   return false;
 }

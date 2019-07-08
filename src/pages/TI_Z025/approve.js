@@ -2,7 +2,7 @@ import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import Link from 'umi/link';
 import moment from 'moment';
-import { Row, Col, Card, Form, Select, Button, Tooltip, message, Table } from 'antd';
+import { Row, Col, Card, Form, Select, Button, message, Table } from 'antd';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 
@@ -173,8 +173,7 @@ class BatchUpload extends PureComponent {
       },
       callback: response => {
         if (response && response.Status === 200) {
-          if (ApproveSts === 'Y') message.success('审批通过');
-          if (ApproveSts === 'N') message.success('已驳回');
+          message.success('审批通过');
           dispatch({
             type: 'batchManage/approvefetch',
             payload: {
