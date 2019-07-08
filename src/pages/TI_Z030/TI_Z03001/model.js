@@ -1,4 +1,3 @@
-import moment from 'moment';
 import {
   querySingleRule,
   addRule,
@@ -14,63 +13,12 @@ import { uploadRule } from '../../TI_Z026/service';
 export default {
   namespace: 'agreementEdit',
 
-  state: {
-    orderDetail: {
-      Comment: '',
-      OrderType: '1',
-      SourceType: '1',
-      Transport: 'N',
-      DocDate: moment().format('YYYY/MM/DD'),
-      CreateDate: moment().format('YYYY/MM/DD'),
-      ToDate: moment()
-        .add('30', 'day')
-        .format('YYYY/MM/DD'),
-      CardCode: '',
-      CardName: '',
-      UserID: '',
-      Contacts: '',
-      CellphoneNO: '',
-      PhoneNO: '',
-      Email: '',
-      CompanyCode: '',
-      DueDate: null,
-      InquiryDocTotal: '',
-      DocTotal: '',
-      ProvinceID: '',
-      Province: '',
-      CityID: '',
-      City: '',
-      AreaID: '',
-      Area: '',
-      Address: '',
-      NumAtCard: '',
-      Owner: '',
-      TI_Z03002: [],
-      TI_Z03004: [],
-      TI_Z03005: [],
-      TI_Z02603Fahter: [],
-    },
-    linkmanList: [],
-    addList: [],
-  },
+  state: {},
 
   effects: {
-    *fetch({ payload }, { call, put }) {
+    *fetch({ payload, callback }, { call }) {
       const response = yield call(querySingleRule, payload);
-      if (response && response.Status === 200) {
-        yield put({
-          type: 'save',
-          payload: {
-            orderDetail: response.Content,
-          },
-        });
-        yield put({
-          type: 'company',
-          payload: {
-            Content: { Code: response.Content.CardCode },
-          },
-        });
-      }
+      if (callback) callback(response);
     },
     *getBaseEntry({ payload, callback }, { call }) {
       const response = yield call(queryBaseEntryleRule, payload);
@@ -80,17 +28,9 @@ export default {
       const response = yield call(addRule, payload);
       if (callback) callback(response);
     },
-    *company({ payload }, { put, call }) {
+    *company({ payload, callback }, { call }) {
       const response = yield call(companyRule, payload);
-      if (response && response.Status === 200) {
-        yield put({
-          type: 'save',
-          payload: {
-            addList: response.Content.TI_Z00603List,
-            linkmanList: response.Content.TI_Z00602List,
-          },
-        });
-      }
+      if (callback) callback(response);
     },
 
     *update({ payload, callback }, { call }) {

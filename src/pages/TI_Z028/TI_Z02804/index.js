@@ -10,6 +10,7 @@ import StandardTable from '@/components/StandardTable';
 import MDMCommonality from '@/components/Select';
 import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
 import DocEntryFrom from '@/components/DocEntryFrom';
+import MyPageHeader from '../components/pageHeader';
 import { getName } from '@/utils/utils';
 import styles from '../style.less';
 
@@ -416,33 +417,26 @@ class TI_Z02804 extends PureComponent {
   render() {
     const {
       TI_Z02804: { orderList, pagination },
-
       loading,
+      location,
     } = this.props;
-    const columns = this.columns.map(item => {
-      const newItem = item;
-      newItem.align = 'center';
-      return newItem;
-    });
-
     return (
-      <Fragment>
-        <Card bordered={false}>
-          <div className="tableList">
-            <div className="tableListForm">{this.renderSimpleForm()}</div>
-            <StandardTable
-              loading={loading}
-              data={{ list: orderList }}
-              pagination={pagination}
-              rowKey="Key"
-              scroll={{ x: 1500 }}
-              expandedRowRender={this.expandedRowRender}
-              columns={columns}
-              onChange={this.handleStandardTableChange}
-            />
-          </div>
-        </Card>
-      </Fragment>
+      <Card bordered={false}>
+        <MyPageHeader {...location} />
+        <div className="tableList">
+          <div className="tableListForm">{this.renderSimpleForm()}</div>
+          <StandardTable
+            loading={loading}
+            data={{ list: orderList }}
+            pagination={pagination}
+            rowKey="Key"
+            scroll={{ x: 1500 }}
+            expandedRowRender={this.expandedRowRender}
+            columns={this.columns}
+            onChange={this.handleStandardTableChange}
+          />
+        </div>
+      </Card>
     );
   }
 }

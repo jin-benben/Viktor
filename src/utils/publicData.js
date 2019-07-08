@@ -252,16 +252,19 @@ export const otherCostCColumns = [
   {
     title: '费用项目',
     align: 'center',
+    width: 100,
     dataIndex: 'FeeName',
   },
   {
     title: '总计',
     align: 'center',
+    width: 100,
     dataIndex: 'OtherTotal',
   },
   {
     title: '行备注',
     align: 'center',
+    width: 100,
     dataIndex: 'LineComment',
   },
 ];

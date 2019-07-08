@@ -98,7 +98,9 @@ class Staffs extends PureComponent {
             <Spin size="small" />
           ) : (
             <Empty style={{ width: '100%' }}>
-              <Link to="/main/TI_Z007/add">去添加</Link>
+              <Link target="_blank" to="/main/TI_Z007/add">
+                去添加
+              </Link>
             </Empty>
           )
         }

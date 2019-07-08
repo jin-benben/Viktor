@@ -8,6 +8,7 @@ import moment from 'moment';
 import { connect } from 'dva';
 import Link from 'umi/link';
 import router from 'umi/router';
+import MyPageHeader from '../components/pageHeader';
 import styles from '../style.less';
 import { getName } from '@/utils/utils';
 
@@ -30,12 +31,6 @@ class TI_Z02802 extends PureComponent {
       ),
     },
     {
-      title: '单据日期',
-      dataIndex: 'DocDate',
-      width: 120,
-      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
-    },
-    {
       title: '创建日期',
       width: 120,
       dataIndex: 'CreateDate',
@@ -43,7 +38,7 @@ class TI_Z02802 extends PureComponent {
     },
     {
       title: '销售员',
-      width: 100,
+      width: 120,
       dataIndex: 'Saler',
       render: text => {
         const {
@@ -58,53 +53,25 @@ class TI_Z02802 extends PureComponent {
       dataIndex: 'NumAtCard',
     },
     {
-      title: 'SKU',
-      width: 80,
+      title: '物料',
       dataIndex: 'SKU',
-    },
-    {
-      title: '产品描述',
-      width: 150,
-      dataIndex: 'SKUName',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {' '}
-          {text}{' '}
-        </Ellipsis>
-      ),
-    },
-    {
-      title: '品牌',
-      width: 80,
-      dataIndex: 'BrandName',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {' '}
-          {text}{' '}
-        </Ellipsis>
-      ),
-    },
-    {
-      title: '名称',
-      width: 100,
-      dataIndex: 'ProductName',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {' '}
-          {text}{' '}
-        </Ellipsis>
-      ),
-    },
-    {
-      title: '型号',
-      width: 100,
-      dataIndex: 'ManufactureNO',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {' '}
-          {text}{' '}
-        </Ellipsis>
-      ),
+      align: 'center',
+      width: 300,
+      render: (text, record) =>
+        record.lastIndex ? (
+          ''
+        ) : (
+          <Ellipsis tooltip lines={1}>
+            {text ? (
+              <Link target="_blank" to={`/main/product/TI_Z009/TI_Z00903?Code${text}`}>
+                {text}-
+              </Link>
+            ) : (
+              ''
+            )}
+            {record.SKUName}
+          </Ellipsis>
+        ),
     },
     {
       title: '参数',
@@ -130,7 +97,7 @@ class TI_Z02802 extends PureComponent {
     },
     {
       title: '采购员',
-      width: 80,
+      width: 120,
       dataIndex: 'Purchaser',
       render: text => {
         const {
@@ -148,21 +115,6 @@ class TI_Z02802 extends PureComponent {
       title: '单位',
       width: 80,
       dataIndex: 'Unit',
-    },
-    {
-      title: '行备注',
-      width: 100,
-      dataIndex: 'SLineComment',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
-    {
-      title: '要求交期',
-      dataIndex: 'DueDate',
-      width: 120,
     },
     {
       title: '采购价格',
@@ -195,49 +147,10 @@ class TI_Z02802 extends PureComponent {
         </Ellipsis>
       ),
     },
-  ];
-
-  childColumns = [
-    // {
-    //   title: '询价单号',
-    //   width: 150,
-    //   dataIndex: 'PInquiryEntry',
-    // },
-    // {
-    //   title: '询价单行',
-    //   width: 80,
-    //   dataIndex: 'PInquiryLineID',
-    // },
     {
-      title: '询价日期',
+      title: '销行备注',
       width: 100,
-      dataIndex: 'CreateDate',
-      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
-    },
-    {
-      title: '供应商',
-      width: 80,
-      dataIndex: 'CardName',
-    },
-    {
-      title: '价格',
-      width: 100,
-      dataIndex: 'Price',
-    },
-    {
-      title: '型号',
-      width: 100,
-      dataIndex: 'ManufactureNO',
-    },
-    {
-      title: '交期',
-      width: 100,
-      dataIndex: 'InquiryDueDate',
-    },
-    {
-      title: '备注',
-      width: 100,
-      dataIndex: 'LineComment',
+      dataIndex: 'SLineComment',
       render: text => (
         <Ellipsis tooltip lines={1}>
           {text}
@@ -245,10 +158,9 @@ class TI_Z02802 extends PureComponent {
       ),
     },
     {
-      title: '最优',
-      width: 80,
-      dataIndex: 'IsSelect',
-      render: val => <span>{val === 'Y' ? '是' : '否'}</span>,
+      title: '要求交期',
+      dataIndex: 'DueDate',
+      width: 120,
     },
   ];
 
@@ -269,35 +181,23 @@ class TI_Z02802 extends PureComponent {
             DocEntry: query.DocEntry,
           },
         },
+        callback: response => {
+          if (response && response.Status === 200) {
+            this.setState({
+              purchaseDetail: response.Content,
+            });
+          }
+        },
       });
     }
     dispatch({
       type: 'global/getMDMCommonality',
       payload: {
         Content: {
-          CodeList: ['Purchaser', 'Curr'],
+          CodeList: ['Purchaser', 'Curr', 'TI_Z004', 'Saler'],
         },
       },
     });
-  }
-
-  componentWillUnmount() {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'TI_Z02802/save',
-      payload: {
-        purchaseDetail: {},
-      },
-    });
-  }
-
-  static getDerivedStateFromProps(nextProps, prevState) {
-    if (nextProps.TI_Z02802.purchaseDetail !== prevState.purchaseDetail) {
-      return {
-        purchaseDetail: nextProps.TI_Z02802.purchaseDetail,
-      };
-    }
-    return null;
   }
 
   expandedRowRender = record => (
@@ -377,10 +277,11 @@ class TI_Z02802 extends PureComponent {
     const { purchaseDetail } = this.state;
     const {
       global: { Purchaser, TI_Z004 },
+      location,
     } = this.props;
-
     return (
       <Card bordered={false}>
+        <MyPageHeader {...location} />
         <DescriptionList style={{ marginBottom: 24 }}>
           <Description term="单号">{purchaseDetail.DocEntry}</Description>
           <Description term="单据日期">
@@ -402,14 +303,13 @@ class TI_Z02802 extends PureComponent {
             <span>{getName(Purchaser, purchaseDetail.Owner)}</span>
           </Description>
         </DescriptionList>
-
         <Table
           bordered
           style={{ marginBottom: 20, marginTop: 20 }}
           dataSource={purchaseDetail.TI_Z02802}
           rowKey="LineID"
           pagination={false}
-          scroll={{ x: 2500, y: 500 }}
+          scroll={{ x: 2000, y: 500 }}
           expandedRowRender={this.expandedRowRender}
           columns={this.columns}
           onChange={this.handleStandardTableChange}

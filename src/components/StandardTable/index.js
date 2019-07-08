@@ -33,6 +33,7 @@ class StandardTable extends PureComponent {
     this.state = {
       selectedRowKeys: [],
       columns: props.columns,
+      rowId: '',
       height: 0,
     };
   }
@@ -90,6 +91,23 @@ class StandardTable extends PureComponent {
     this.setState({ selectedRowKeys });
   };
 
+  onClickRow = record => {
+    const { rowKey } = this.props;
+    return {
+      onClick: () => {
+        this.setState({
+          rowId: record[rowKey],
+        });
+      },
+    };
+  };
+
+  setRowClassName = record => {
+    const { rowId } = this.state;
+    const { rowKey } = this.props;
+    return record[rowKey] === rowId ? 'clickRowStyl' : '';
+  };
+
   render() {
     const { data = {}, size, rowKey, scroll, ...rest } = this.props;
     let { rowSelection } = this.props;
@@ -138,6 +156,8 @@ class StandardTable extends PureComponent {
           scroll={{ ...scroll, y: height }}
           {...rest}
           rowSelection={rowSelection}
+          onRow={this.onClickRow}
+          rowClassName={this.setRowClassName}
           columns={columns} //  columns={columns} 需放到  {...rest} 后，防止 columns 被覆盖
         />
       </div>

@@ -27,6 +27,7 @@ import TargetLine from '@/components/TargetLine';
 import Emails from '@/components/Modal/Email';
 import PrintHistory from '@/components/Order/PrintHistory';
 import SendEmail from '@/components/Order/SendEmail';
+import MyPageHeader from '../components/pageHeader';
 import { getName } from '@/utils/utils';
 import { orderSourceType, linkmanColumns, otherCostCColumns, baseType } from '@/utils/publicData';
 
@@ -145,6 +146,8 @@ class InquiryEdit extends React.Component {
       width: 100,
       dataIndex: 'DueDate',
       align: 'center',
+      render: (text, record) =>
+        record.lastIndex ? null : <span>{text ? moment(text).format('YYYY-MM-DD') : ''}</span>,
     },
     {
       title: '询价价格',
@@ -374,7 +377,11 @@ class InquiryEdit extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      formVals: {}, // 单据信息
+      agreementDetail: {
+        TI_Z03002: [],
+        TI_Z03003: [],
+        TI_Z02603Fahter: [],
+      }, // 单据信息
       attachmentVisible: false,
       needmodalVisible: false,
       targetLine: {},
@@ -383,7 +390,6 @@ class InquiryEdit extends React.Component {
 
   componentDidMount() {
     const { dispatch } = this.props;
-
     dispatch({
       type: 'global/getMDMCommonality',
       payload: {
@@ -404,62 +410,8 @@ class InquiryEdit extends React.Component {
     this.getDetail();
   }
 
-  componentWillUnmount() {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'agreementPreview/save',
-      payload: {
-        inquiryDetail: {
-          Comment: '',
-          SDocStatus: '',
-          PDocStatus: '',
-          Closed: '',
-          ClosedBy: '',
-          SourceType: '1',
-          OrderType: '1',
-          DocDate: new Date(),
-          CreateDate: new Date(),
-          CardCode: '',
-          CardName: '',
-          UserID: '1',
-          Contacts: '',
-          CellphoneNO: '',
-          PhoneNO: '',
-          Email: '',
-          CompanyCode: '',
-          DueDate: null,
-          ToDate: null,
-          InquiryDocTotal: '',
-          DocTotal: '',
-          ProvinceID: '',
-          Province: '',
-          CityID: '',
-          City: '',
-          AreaID: '',
-          Area: '',
-          Address: '',
-          NumAtCard: '',
-          Owner: '',
-          IsInquiry: '',
-          TI_Z03002: [],
-          TI_Z03003: [],
-          TI_Z02603Fahter: [],
-        },
-      },
-    });
-  }
-
-  static getDerivedStateFromProps(nextProps, prevState) {
-    if (nextProps.agreementPreview.agreementDetail !== prevState.formVals) {
-      return {
-        formVals: nextProps.agreementPreview.agreementDetail,
-      };
-    }
-    return null;
-  }
-
   topMenu = () => {
-    const { formVals } = this.state;
+    const { agreementDetail } = this.state;
     return (
       <Menu>
         <Menu.Item>
@@ -478,10 +430,10 @@ class InquiryEdit extends React.Component {
           </a>
         </Menu.Item>
         <Menu.Item>
-          <OrderPrint BaseEntry={formVals.DocEntry} BaseType="TI_Z030" />
+          <OrderPrint BaseEntry={agreementDetail.DocEntry} BaseType="TI_Z030" />
         </Menu.Item>
         <Menu.Item>
-          <Emails BaseEntry={formVals.DocEntry} BaseType="TI_Z030" />
+          <Emails BaseEntry={agreementDetail.DocEntry} BaseType="TI_Z030" />
         </Menu.Item>
       </Menu>
     );
@@ -491,7 +443,7 @@ class InquiryEdit extends React.Component {
   cancelSubmit = ClosedComment => {
     const { dispatch } = this.props;
     const {
-      formVals: { UpdateTimestamp, DocEntry },
+      agreementDetail: { UpdateTimestamp, DocEntry },
     } = this.state;
     dispatch({
       type: 'agreementPreview/cancel',
@@ -505,6 +457,7 @@ class InquiryEdit extends React.Component {
       callback: response => {
         if (response && response.Status === 200) {
           message.success('取消成功');
+          this.getDetail();
         }
       },
     });
@@ -535,13 +488,30 @@ class InquiryEdit extends React.Component {
             DocEntry: query.DocEntry,
           },
         },
+        callback: response => {
+          if (response && response.Status === 200) {
+            const { InquiryDocTotal, InquiryDocTotalLocal, DocTotal, TI_Z03002 } = response.Content;
+            if (TI_Z03002.length > 0) {
+              TI_Z03002.push({
+                LineID: TI_Z03002[TI_Z03002.length - 1].LineID + 1,
+                lastIndex: true,
+                InquiryLineTotal: InquiryDocTotal,
+                InquiryLineTotalLocal: InquiryDocTotalLocal,
+                LineTotal: DocTotal,
+              });
+            }
+            this.setState({
+              agreementDetail: response.Content,
+            });
+          }
+        },
       });
     }
   };
 
   toUpdate = () => {
-    const { formVals } = this.state;
-    router.push(`/sellabout/TI_Z030/update?DocEntry=${formVals.DocEntry}`);
+    const { agreementDetail } = this.state;
+    router.push(`/sellabout/TI_Z030/update?DocEntry=${agreementDetail.DocEntry}`);
   };
 
   // 发送需询价
@@ -551,7 +521,7 @@ class InquiryEdit extends React.Component {
       global: { currentUser },
     } = this.props;
     const {
-      formVals: { UpdateTimestamp, DocEntry },
+      agreementDetail: { UpdateTimestamp, DocEntry },
     } = this.state;
     dispatch({
       type: 'agreementPreview/confirm',
@@ -586,7 +556,7 @@ class InquiryEdit extends React.Component {
   costCheck = () => {
     const { dispatch } = this.props;
     const {
-      formVals: { DocEntry, UpdateTimestamp },
+      agreementDetail: { DocEntry, UpdateTimestamp },
     } = this.state;
     dispatch({
       type: 'agreementPreview/costCheck',
@@ -610,70 +580,67 @@ class InquiryEdit extends React.Component {
     const {
       global: { Saler, Company, TI_Z004 },
       location: { query },
+      loading,
+      location,
     } = this.props;
-    const { formVals, attachmentVisible, targetLine, needmodalVisible } = this.state;
+    const { agreementDetail, attachmentVisible, targetLine, needmodalVisible } = this.state;
 
     const needParentMethods = {
       handleSubmit: this.submitNeedLine,
       handleModalVisible: this.handleModalVisible,
     };
 
-    const newdata = [...formVals.TI_Z03002];
-    if (newdata.length > 0) {
-      newdata.push({
-        LineID: newdata[newdata.length - 1].LineID + 1,
-        lastIndex: true,
-        InquiryLineTotal: formVals.InquiryDocTotal,
-        InquiryLineTotalLocal: formVals.InquiryDocTotalLocal,
-        LineTotal: formVals.DocTotal,
-      });
-    }
     return (
-      <Card bordered={false}>
+      <Card bordered={false} loading={loading}>
+        <MyPageHeader {...location} />
         <DescriptionList style={{ marginBottom: 24 }}>
-          <Description term="单号">{formVals.DocEntry}</Description>
+          <Description term="单号">{agreementDetail.DocEntry}</Description>
           <Description term="客户">
-            <Link to={`/main/TI_Z006/detail?Code=${formVals.CardCode}`}>
-              {`${formVals.CardName}(${formVals.CardCode})`}
+            <Link to={`/main/TI_Z006/detail?Code=${agreementDetail.CardCode}`}>
+              {`${agreementDetail.CardName}(${agreementDetail.CardCode})`}
             </Link>
           </Description>
-          <Description term="单据日期">{moment(formVals.DocDate).format('YYYY-MM-DD')}</Description>
+          <Description term="单据日期">
+            {moment(agreementDetail.DocDate).format('YYYY-MM-DD')}
+          </Description>
           <Description term="创建日期">
-            {moment(formVals.CreateDate).format('YYYY-MM-DD')}
+            {moment(agreementDetail.CreateDate).format('YYYY-MM-DD')}
           </Description>
           <Description term="要求交期">
-            {formVals.DueDate ? moment(formVals.DueDate).format('YYYY-MM-DD') : ''}
+            {agreementDetail.DueDate ? moment(agreementDetail.DueDate).format('YYYY-MM-DD') : ''}
           </Description>
           <Description term="有效日期">
-            {formVals.ToDate ? moment(formVals.ToDate).format('YYYY-MM-DD') : ''}
+            {agreementDetail.ToDate ? moment(agreementDetail.ToDate).format('YYYY-MM-DD') : ''}
           </Description>
-          <Description term="联系人">{formVals.Contacts}</Description>
-          <Description term="备注">{formVals.Comment}</Description>
+          <Description term="联系人">{agreementDetail.Contacts}</Description>
+          <Description term="备注">{agreementDetail.Comment}</Description>
           <Description term="创建人">
-            <span>{getName(TI_Z004, formVals.CreateUser)}</span>
+            <span>{getName(TI_Z004, agreementDetail.CreateUser)}</span>
           </Description>
           <Description term="销售">
-            <span>{getName(Saler, formVals.Owner)}</span>
+            <span>{getName(Saler, agreementDetail.Owner)}</span>
           </Description>
           <Description term="交易公司">
-            <span>{getName(Company, formVals.CompanyCode)}</span>
+            <span>{getName(Company, agreementDetail.CompanyCode)}</span>
           </Description>
-          <Description term="订单类型">{formVals.OrderType === '1' ? '正常订单' : ''}</Description>
+          <Description term="订单类型">
+            {agreementDetail.OrderType === '1' ? '正常订单' : ''}
+          </Description>
           <Description term="来源类型">
-            <span>{getName(orderSourceType, formVals.OrderType)}</span>
+            <span>{getName(orderSourceType, agreementDetail.OrderType)}</span>
           </Description>
-          <Description term="客户参考号">{formVals.NumAtCard}</Description>
+          <Description term="客户参考号">{agreementDetail.NumAtCard}</Description>
           <Description term="单据状态">
-            {formVals.Closed === 'Y' ? (
+            {agreementDetail.Closed === 'Y' ? (
               <Tag color="red">已关闭</Tag>
             ) : (
               <Fragment>
-                {formVals.ApproveSts === 'Y' ? (
+                {agreementDetail.ApproveSts === 'Y' ? (
                   <Tag color="green">已审核</Tag>
                 ) : (
                   <Tag color="gold">未审核</Tag>
                 )}
-                {formVals.DocStatus === 'C' ? (
+                {agreementDetail.DocStatus === 'C' ? (
                   <Tag color="green">已订单</Tag>
                 ) : (
                   <Tag color="gold">未订单</Tag>
@@ -681,17 +648,17 @@ class InquiryEdit extends React.Component {
               </Fragment>
             )}
           </Description>
-          {formVals.Closed === 'N' ? null : (
+          {agreementDetail.Closed === 'N' ? null : (
             <Fragment>
-              <Description term="关闭原因">{formVals.ClosedComment}</Description>
-              <Description term="关闭人">{formVals.ClosedBy}</Description>
+              <Description term="关闭原因">{agreementDetail.ClosedComment}</Description>
+              <Description term="关闭人">{agreementDetail.ClosedBy}</Description>
             </Fragment>
           )}
         </DescriptionList>
         <Tabs>
           <TabPane tab="物料" key="1">
             <StandardTable
-              data={{ list: newdata }}
+              data={{ list: agreementDetail.TI_Z03002 }}
               rowKey="LineID"
               scroll={{ x: 3200 }}
               columns={this.skuColumns}
@@ -699,25 +666,27 @@ class InquiryEdit extends React.Component {
           </TabPane>
           <TabPane tab="常规" key="2">
             <DescriptionList style={{ marginBottom: 24 }}>
-              <Description term="手机号码">{formVals.CellphoneNO}</Description>
-              <Description term="联系人电话">{formVals.PhoneNO}</Description>
-              <Description term="联系人邮箱">{formVals.Email}</Description>
+              <Description term="手机号码">{agreementDetail.CellphoneNO}</Description>
+              <Description term="联系人电话">{agreementDetail.PhoneNO}</Description>
+              <Description term="联系人邮箱">{agreementDetail.Email}</Description>
               <Description term="地址">
-                {`${formVals.Province}${formVals.City}${formVals.Area}${formVals.Address}`}
+                {`${agreementDetail.Province}${agreementDetail.City}${agreementDetail.Area}${
+                  agreementDetail.Address
+                }`}
               </Description>
             </DescriptionList>
           </TabPane>
           <TabPane tab="其余成本" key="3">
             <StandardTable
-              data={{ list: formVals.TI_Z03004 }}
+              data={{ list: agreementDetail.TI_Z03004 }}
               rowKey="LineID"
               columns={otherCostCColumns}
             />
           </TabPane>
           <TabPane tab="附件" key="4">
-            {formVals.TI_Z02603Fahter.length ? (
+            {agreementDetail.TI_Z02603Fahter.length ? (
               <Collapse>
-                {formVals.TI_Z02603Fahter.map(item => {
+                {agreementDetail.TI_Z02603Fahter.map(item => {
                   const header = (
                     <div>
                       单号：{' '}
@@ -762,7 +731,7 @@ class InquiryEdit extends React.Component {
           </TabPane>
           <TabPane tab="其他推送人" key="5">
             <StandardTable
-              data={{ list: formVals.TI_Z03005 }}
+              data={{ list: agreementDetail.TI_Z03005 }}
               rowKey="UserID"
               columns={linkmanColumns}
             />
@@ -781,7 +750,7 @@ class InquiryEdit extends React.Component {
           handleModalVisible={this.handleModalVisible}
         />
         <FooterToolbar>
-          {formVals.Closed !== 'Y' ? (
+          {agreementDetail.Closed !== 'Y' ? (
             <Fragment>
               <CancelOrder cancelSubmit={this.cancelSubmit} />
               <Button onClick={this.toUpdate} type="primary">
@@ -799,7 +768,7 @@ class InquiryEdit extends React.Component {
           )}
 
           <NeedAskPrice
-            data={formVals.TI_Z03002}
+            data={agreementDetail.TI_Z03002}
             {...needParentMethods}
             modalVisible={needmodalVisible}
           />

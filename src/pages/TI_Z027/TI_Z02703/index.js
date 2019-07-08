@@ -27,6 +27,7 @@ import Transfer from '@/components/Transfer';
 import OrderPrint from '@/components/Modal/OrderPrint';
 import PrintHistory from '@/components/Order/PrintHistory';
 import SendEmail from '@/components/Order/SendEmail';
+import MyPageHeader from '../components/pageHeader';
 import { getName } from '@/utils/utils';
 import { baseType } from '@/utils/publicData';
 
@@ -456,6 +457,7 @@ class InquiryEdit extends React.Component {
     const {
       global: { TI_Z004, Company, Curr, Purchaser },
       location: { query },
+      location,
     } = this.props;
     const { formVals, attachmentVisible, prviewList, transferModalVisible } = this.state;
 
@@ -474,6 +476,7 @@ class InquiryEdit extends React.Component {
     };
     return (
       <Card bordered={false}>
+        <MyPageHeader {...location} />
         <DescriptionList style={{ marginBottom: 24 }}>
           <Description term="单号">{formVals.DocEntry}</Description>
           <Description term="供应商">

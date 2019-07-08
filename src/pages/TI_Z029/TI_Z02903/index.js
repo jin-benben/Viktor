@@ -28,6 +28,7 @@ import TargetLine from '@/components/TargetLine';
 import Transfer from '@/components/Transfer';
 import PrintHistory from '@/components/Order/PrintHistory';
 import SendEmail from '@/components/Order/SendEmail';
+import MyPageHeader from '../components/pageHeader';
 import { getName } from '@/utils/utils';
 import { orderSourceType, linkmanColumns, otherCostCColumns, baseType } from '@/utils/publicData';
 
@@ -582,6 +583,7 @@ class InquiryEdit extends Component {
     const {
       global: { TI_Z004, Saler, Company },
       location: { query },
+      location,
       loading,
     } = this.props;
     const {
@@ -614,6 +616,7 @@ class InquiryEdit extends Component {
     }
     return (
       <Card bordered={false} loading={loading}>
+        <MyPageHeader {...location} />
         <DescriptionList style={{ marginBottom: 24 }}>
           <Description term="单号">{formVals.DocEntry}</Description>
           <Description term="客户">

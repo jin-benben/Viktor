@@ -10,6 +10,7 @@ import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import StandardTable from '@/components/StandardTable';
 import DocEntryFrom from '@/components/DocEntryFrom';
 import Organization from '@/components/Organization/multiple';
+import MyPageHeader from '../components/pageHeader';
 import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
 import { getName } from '@/utils/utils';
 
@@ -377,10 +378,12 @@ class SalesQuotation extends PureComponent {
     const {
       SalesQuotation: { SalesQuotationList, pagination },
       loading,
+      location,
     } = this.props;
     return (
       <Fragment>
         <Card bordered={false}>
+          <MyPageHeader {...location} />
           <div className="tableList">
             <div className="tableListForm">{this.renderSimpleForm()}</div>
             <StandardTable

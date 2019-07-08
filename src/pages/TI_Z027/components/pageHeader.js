@@ -6,18 +6,18 @@ const MyPageHeader = props => {
   const routes = [
     {
       path: '/',
-      breadcrumbName: '销售业务',
+      breadcrumbName: '采购业务',
     },
     {
-      path: '/sellabout/TI_Z026/TI_Z02601',
-      breadcrumbName: '客户询价单',
+      path: '/purchase/TI_Z027/edit',
+      breadcrumbName: '采购询价单',
     },
     {
-      path: '/sellabout/TI_Z026/TI_Z02606',
+      path: '/purchase/TI_Z027/search',
       breadcrumbName: '单据查询',
     },
     {
-      path: '/sellabout/TI_Z026/TI_Z02607',
+      path: '/purchase/TI_Z027/searchLine',
       breadcrumbName: '明细查询',
     },
   ];

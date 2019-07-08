@@ -524,6 +524,7 @@ class InquiryEdit extends PureComponent {
       global: { Saler, Company, TI_Z004 },
       loading,
       location: { query },
+      location,
     } = this.props;
     const {
       formVals,
@@ -559,7 +560,7 @@ class InquiryEdit extends PureComponent {
     // console.log(tablwidth)
     return (
       <Card bordered={false} loading={loading}>
-        <MyPageHeader {...this.props.location} />
+        <MyPageHeader {...location} />
         <DescriptionList style={{ marginBottom: 24 }}>
           <Description term="单号">{formVals.DocEntry}</Description>
           <Description term="客户">

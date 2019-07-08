@@ -6,7 +6,7 @@ import moment from 'moment';
 import { Row, Col, Card, Form, Input, Button, Tag, Select, DatePicker, Icon, Tooltip } from 'antd';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import StandardTable from '@/components/StandardTable';
-import MDMCommonality from '@/components/Select';
+import MyPageHeader from '../components/pageHeader';
 import Organization from '@/components/Organization/multiple';
 import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
 import DocEntryFrom from '@/components/DocEntryFrom';
@@ -17,7 +17,6 @@ const { RangePicker } = DatePicker;
 const FormItem = Form.Item;
 const { Option } = Select;
 
-/* eslint react/no-multi-comp:0 */
 @connect(({ agreementLine, loading, global }) => ({
   agreementLine,
   global,
@@ -484,24 +483,11 @@ class AgreementLine extends PureComponent {
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
-      global: { Purchaser },
     } = this.props;
     const { expandForm } = this.state;
     const formLayout = {
       labelCol: { span: 8 },
       wrapperCol: { span: 16 },
-    };
-    const searchFormItemLayout = {
-      wrapperCol: {
-        xs: {
-          span: 24,
-          offset: 0,
-        },
-        sm: {
-          span: 16,
-          offset: 8,
-        },
-      },
     };
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
@@ -550,10 +536,11 @@ class AgreementLine extends PureComponent {
               </Col>
               <Col md={4} sm={24}>
                 <FormItem key="Closed" {...formLayout}>
-                  {getFieldDecorator('Closed')(
+                  {getFieldDecorator('Closed', { initialValue: 'N' })(
                     <Select placeholder="请选择关闭状态">
                       <Option value="Y">已关闭</Option>
                       <Option value="N">未关闭</Option>
+                      <Option value="">全部</Option>
                     </Select>
                   )}
                 </FormItem>
@@ -622,24 +609,24 @@ class AgreementLine extends PureComponent {
     const {
       agreementLine: { agreementLineList, pagination },
       loading,
+      location,
     } = this.props;
     return (
-      <Fragment>
-        <Card bordered={false}>
-          <div className="tableList">
-            <div className="tableListForm">{this.renderSimpleForm()}</div>
-            <StandardTable
-              loading={loading}
-              data={{ list: agreementLineList }}
-              pagination={pagination}
-              scroll={{ x: 3700 }}
-              rowKey="Key"
-              columns={this.columns}
-              onChange={this.handleStandardTableChange}
-            />
-          </div>
-        </Card>
-      </Fragment>
+      <Card bordered={false}>
+        <MyPageHeader {...location} />
+        <div className="tableList">
+          <div className="tableListForm">{this.renderSimpleForm()}</div>
+          <StandardTable
+            loading={loading}
+            data={{ list: agreementLineList }}
+            pagination={pagination}
+            scroll={{ x: 3720 }}
+            rowKey="Key"
+            columns={this.columns}
+            onChange={this.handleStandardTableChange}
+          />
+        </div>
+      </Card>
     );
   }
 }

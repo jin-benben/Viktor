@@ -246,15 +246,13 @@ export default {
             Token: currentUser.Token,
           },
         };
+        yield put({
+          type: 'save',
+          payload: {
+            currentUser,
+          },
+        });
         const response = yield call(tokenOutRule, payload);
-        if (response && response.Status === 200) {
-          yield put({
-            type: 'save',
-            payload: {
-              currentUser,
-            },
-          });
-        }
         if (response && response.Status !== 200) {
           yield put(
             routerRedux.replace({

@@ -7,6 +7,7 @@ export default {
     agreementOrderList: [],
     queryData: {
       Content: {
+        Closed: 'N',
         SearchText: '',
         SearchKey: '',
       },

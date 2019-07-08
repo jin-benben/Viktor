@@ -27,6 +27,7 @@ import MDMCommonality from '@/components/Select';
 import Organization from '@/components/Organization/multiple';
 import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
 import OrderPreview from './components';
+import MyPageHeader from '../components/pageHeader';
 import { getName } from '@/utils/utils';
 import styles from '../style.less';
 
@@ -516,6 +517,7 @@ class TI_Z02801 extends React.Component {
       TI_Z02801: { pagination },
       global: { Purchaser, Company, Saler },
       loading,
+      location,
     } = this.props;
 
     const { modalVisible, selectedRows, orderLineList, selectedRowKeys } = this.state;
@@ -529,16 +531,11 @@ class TI_Z02801 extends React.Component {
       handleSubmit: this.okHandle,
       handleModalVisible: this.handleModalVisible,
     };
-    let tab = 0;
-    columns.map(item => {
-      if (item.width) {
-        tab += item.width;
-      }
-    });
     const height = document.body.offsetHeight - 56 - 64 - 56 - 24 - 32 - 30;
     return (
       <Fragment>
         <Card bordered={false}>
+          <MyPageHeader {...location} />
           <div className="tableList">
             <div className="tableListForm">{this.renderSimpleForm()}</div>
             <Table

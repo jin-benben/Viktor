@@ -10,6 +10,7 @@ import StandardTable from '@/components/StandardTable';
 import NeedTabl from './components/step1';
 import ConfirmTabl from './components/step2';
 import OrderModal from './components/orderModal';
+import MyPageHeader from '../components/pageHeader';
 import styles from './style.less';
 import request from '@/utils/request';
 
@@ -401,12 +402,14 @@ class SupplierAsk extends Component {
 
   render() {
     const { current, selectedRows, modalVisible, responsTable, confimSelectedRows } = this.state;
+    const { location } = this.props;
     const parentMethods = {
       handleSubmit: this.submitSelect,
       handleModalVisible: this.handleModalVisible,
     };
     return (
       <Card bordered={false}>
+        <MyPageHeader {...location} />
         <Steps style={{ marginBottom: 30 }} current={current}>
           <Step onClick={() => this.changeCurrent(0)} title="需询价查询" />
           <Step onClick={() => this.changeCurrent(1)} title="按供应商确认" />

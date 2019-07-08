@@ -11,6 +11,7 @@ import SupplierSelect from '@/components/Select/Supplier';
 import MDMCommonality from '@/components/Select';
 import Organization from '@/components/Organization/multiple';
 import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
+import DocEntryFrom from '@/components/DocEntryFrom';
 import { getName } from '@/utils/utils';
 import styles from '../style.less';
 import request from '@/utils/request';
@@ -394,7 +395,7 @@ class NeedTabl extends React.Component {
 
       delete fieldsValue.orderNo;
       delete fieldsValue.dateArr;
-      const queryData = {
+      const Content = {
         ...fieldsValue,
         DocDateFrom,
         DocDateTo,
@@ -435,14 +436,14 @@ class NeedTabl extends React.Component {
               {getFieldDecorator('SearchText')(<Input placeholder="请输入关键字" />)}
             </FormItem>
           </Col>
-          <Col md={6} sm={24}>
+          <Col md={5} sm={24}>
             <FormItem label="日期" {...formLayout}>
               {getFieldDecorator('dateArr', { rules: [{ type: 'array' }] })(
                 <RangePicker style={{ width: '100%' }} />
               )}
             </FormItem>
           </Col>
-          <Col md={6} sm={24}>
+          <Col md={5} sm={24}>
             <FormItem key="Owner" {...formLayout} label="采购员">
               {getFieldDecorator('Owner')(<SalerPurchaser />)}
             </FormItem>
@@ -481,7 +482,7 @@ class NeedTabl extends React.Component {
               </Col>
             </Fragment>
           ) : null}
-          <Col md={2} sm={24}>
+          <Col md={4} sm={24}>
             <FormItem key="searchBtn">
               <span className="submitButtons">
                 <Button type="primary" htmlType="submit">
@@ -508,11 +509,6 @@ class NeedTabl extends React.Component {
 
   render() {
     const { pagination, orderLineList, selectedRowKeys, loading } = this.state;
-    // const columns = this.columns.map(item => {
-    //   // eslint-disable-next-line no-param-reassign
-    //   item.align = 'Center';
-    //   return item;
-    // });
     const height = document.body.offsetHeight - 56 - 64 - 56 - 24 - 32 - 30;
     return (
       <Fragment>

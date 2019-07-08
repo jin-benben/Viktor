@@ -688,6 +688,7 @@ class orderLine extends PureComponent {
     const {
       orderLine: { orderLineList, pagination },
       loading,
+      location,
     } = this.props;
     const { needAsk, modalVisible, transferModalVisible, transferLine } = this.state;
 
@@ -709,7 +710,7 @@ class orderLine extends PureComponent {
     return (
       <Fragment>
         <Card bordered={false}>
-          <MyPageHeader {...this.props.location} />
+          <MyPageHeader {...location} />
           <div className="tableList">
             <div className="tableListForm">{this.renderSimpleForm()}</div>
             <StandardTable

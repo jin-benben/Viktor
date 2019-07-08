@@ -385,11 +385,12 @@ class inquiryListPage extends PureComponent {
     const {
       inquiryFetch: { inquiryList, pagination },
       loading,
+      location,
     } = this.props;
     return (
       <Fragment>
         <Card bordered={false}>
-          <MyPageHeader {...this.props.location} />
+          <MyPageHeader {...location} />
           <div className="tableList">
             <div className="tableListForm">{this.renderSimpleForm()}</div>
             <StandardTable

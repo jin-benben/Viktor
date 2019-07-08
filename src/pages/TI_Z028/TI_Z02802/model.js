@@ -6,16 +6,9 @@ export default {
     purchaseDetail: {},
   },
   effects: {
-    *fetch({ payload }, { call, put }) {
+    *fetch({ payload, callback }, { call }) {
       const response = yield call(querySingleRule, payload);
-      if (response && response.Status === 200) {
-        yield put({
-          type: 'save',
-          payload: {
-            purchaseDetail: response.Content,
-          },
-        });
-      }
+      if (callback) callback(response);
     },
   },
   reducers: {

@@ -22,8 +22,6 @@ import {
   Dropdown,
   Menu,
   Modal,
-  Collapse,
-  Empty,
   Tag,
   Badge,
 } from 'antd';
@@ -46,14 +44,16 @@ import CompanySelect from '@/components/Company/index';
 import HSCode from '@/components/HSCode';
 import PushLink from '@/components/PushLink';
 import Attachment from '@/components/Attachment';
+import MyPageHeader from '../components/pageHeader';
+import OrderAttach from '@/components/Attachment/order';
 import { getName, validatorPhone, validatorEmail } from '@/utils/utils';
-import { otherCostCColumns, baseType } from '@/utils/publicData';
+import { otherCostCColumns } from '@/utils/publicData';
 
 const { TextArea } = Input;
 const { TabPane } = Tabs;
 const FormItem = Form.Item;
 const { Option } = Select;
-const { Panel } = Collapse;
+
 @connect(({ TI_Z029, loading, global }) => ({
   TI_Z029,
   global,
@@ -578,33 +578,6 @@ class TI_Z029Component extends React.Component {
           onClick={() => this.deletePushLine(index)}
         />
       ),
-    },
-  ];
-
-  otherCostCColumns = [
-    {
-      title: '序号',
-      width: 80,
-      align: 'center',
-      dataIndex: 'OrderId',
-    },
-    {
-      title: '费用项目',
-      align: 'center',
-      width: 100,
-      dataIndex: 'FeeName',
-    },
-    {
-      title: '总计',
-      align: 'center',
-      width: 100,
-      dataIndex: 'OtherTotal',
-    },
-    {
-      title: '行备注',
-      align: 'center',
-      width: 100,
-      dataIndex: 'LineComment',
     },
   ];
 
@@ -1551,8 +1524,9 @@ class TI_Z029Component extends React.Component {
       addloading,
       updateloading,
       detailloading,
-      global: { Saler, Company, TI_Z004 },
+      global: { Saler, Company },
       location: { query },
+      location,
     } = this.props;
     const {
       formVals,
@@ -1618,6 +1592,7 @@ class TI_Z029Component extends React.Component {
 
     return (
       <Card bordered={false} loading={detailloading}>
+        <MyPageHeader {...location} />
         <Form {...formItemLayout}>
           <Row gutter={8}>
             <Col lg={10} md={12} sm={24}>
@@ -1846,66 +1821,11 @@ class TI_Z029Component extends React.Component {
             />
           </TabPane>
           <TabPane tab="附件" key="4">
-            {formVals.TI_Z02603Fahter.length ? (
-              <Collapse>
-                {formVals.TI_Z02603Fahter.map(item => {
-                  const header = (
-                    <div>
-                      单号：{' '}
-                      <Link
-                        target="_blank"
-                        to={`/sellabout/TI_Z026/detail?DocEntry=${item.DocEntry}`}
-                      >
-                        {item.DocEntry}
-                      </Link>
-                      ; 创建日期：{moment(item.FCreateDate).format('YYYY-MM-DD')}； 创建人
-                      <span>{getName(TI_Z004, item.FCreateUser)}</span>； 更新日期：
-                      {moment(item.FUpdateDate).format('YYYY-MM-DD')}； 更新人:
-                      <span>{getName(TI_Z004, item.FUpdateUser)}</span>
-                      <Icon
-                        title="上传附件"
-                        className="icons"
-                        style={{ color: '#08c', marginRight: 5, marginLeft: 5 }}
-                        type="cloud-upload"
-                        onClick={() => this.skuLineAttachment(item, '', false)}
-                      />
-                    </div>
-                  );
-                  return (
-                    <Panel header={header} key={item.DocEntry}>
-                      {item.TI_Z02603.map((line, index) => (
-                        <ul key={line.OrderID}>
-                          <li>序号:{line.OrderID}</li>
-                          <li>
-                            来源类型:<span>{getName(baseType, line.BaseType)}</span>
-                          </li>
-                          <li>来源单号:{line.BaseEntry}</li>
-                          <li>附件代码:{line.AttachmentCode}</li>
-                          <li>附件描述:{line.AttachmentName}</li>
-                          <li>
-                            附件路径:
-                            <a href={line.AttachmentPath} target="_blank" rel="noopener noreferrer">
-                              {line.AttachmentPath}
-                            </a>
-                          </li>
-                          <li>
-                            操作:{' '}
-                            <Icon
-                              title="删除行"
-                              type="delete"
-                              theme="twoTone"
-                              onClick={() => this.deleteLine(item, index, false)}
-                            />
-                          </li>
-                        </ul>
-                      ))}
-                    </Panel>
-                  );
-                })}
-              </Collapse>
-            ) : (
-              <Empty />
-            )}
+            <OrderAttach
+              dataSource={formVals.TI_Z02603Fahter}
+              deleteLine={this.deleteLine}
+              skuLineAttachment={this.skuLineAttachment}
+            />
           </TabPane>
           <TabPane tab="其他推送人" key="5">
             <StandardTable

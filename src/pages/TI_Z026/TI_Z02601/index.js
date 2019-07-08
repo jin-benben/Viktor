@@ -22,8 +22,6 @@ import {
   Menu,
   Tag,
   Badge,
-  PageHeader,
-  Breadcrumb,
 } from 'antd';
 import moment from 'moment';
 import round from 'lodash/round';
@@ -302,7 +300,7 @@ class InquiryEdit extends React.Component {
       width: 80,
       render: (text, record, index) => {
         const {
-          formVals: { DocEntry },
+          inquiryDetail: { DocEntry },
         } = this.state;
         return record.lastIndex ? null : (
           <Fragment>
@@ -737,7 +735,7 @@ class InquiryEdit extends React.Component {
       width: 80,
       render: (text, record, index) => {
         const {
-          formVals: { DocEntry },
+          inquiryDetail: { DocEntry },
         } = this.state;
         return record.lastIndex ? null : (
           <Fragment>
@@ -808,7 +806,16 @@ class InquiryEdit extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      formVals: {}, // 单据信息
+      inquiryDetail: {
+        SourceType: '1',
+        OrderType: '1',
+        DocDate: moment().format('YYYY/MM/DD'),
+        CreateDate: moment().format('YYYY/MM/DD'),
+        ToDate: moment()
+          .add('30', 'day')
+          .format('YYYY/MM/DD'),
+        TI_Z02602: [],
+      }, // 单据信息
       tabIndex: '1', // tab
       uploadmodalVisible: false, // 上传Modal
       attachmentVisible: false, // 附件Modal
@@ -835,9 +842,9 @@ class InquiryEdit extends React.Component {
     const {
       dispatch,
       global: { currentUser, CustomerList, BrandList, HSCodeList },
-      inquiryEdit: { inquiryDetail },
     } = this.props;
     const { CompanyCode, Owner, DefaultWhsCode, UserCode } = currentUser;
+    const { inquiryDetail } = this.state;
     if (!CustomerList.length) {
       dispatch({
         type: 'global/getCustomer',
@@ -853,18 +860,16 @@ class InquiryEdit extends React.Component {
         type: 'global/getBrand',
       });
     }
-    this.setState({ DefaultWhsCode });
-    dispatch({
-      type: 'inquiryEdit/save',
-      payload: {
-        inquiryDetail: {
-          ...inquiryDetail,
-          CompanyCode,
-          Owner,
-          CreateUser: UserCode,
-        },
+    this.setState({
+      DefaultWhsCode,
+      inquiryDetail: {
+        ...inquiryDetail,
+        CompanyCode,
+        Owner,
+        CreateUser: UserCode,
       },
     });
+
     dispatch({
       type: 'global/getMDMCommonality',
       payload: {
@@ -876,72 +881,12 @@ class InquiryEdit extends React.Component {
     this.getDetail();
   }
 
-  componentWillUnmount() {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'inquiryEdit/save',
-      payload: {
-        inquiryDetail: {
-          Comment: '',
-          SourceType: '1',
-          OrderType: '1',
-          DocDate: new Date(),
-          CreateDate: new Date(),
-          CardCode: '',
-          CardName: '',
-          Contacts: '',
-          CellphoneNO: '',
-          PhoneNO: '',
-          Email: '',
-          CompanyCode: '',
-          DueDate: '',
-          ToDate: null,
-          InquiryDocTotal: 0,
-          InquiryDocTotalLocal: 0,
-          DocTotal: '',
-          ProvinceID: '',
-          Province: '',
-          CityID: '',
-          City: '',
-          AreaID: '',
-          Area: '',
-          Address: '',
-          NumAtCard: '',
-          Owner: '',
-          IsInquiry: '',
-          TI_Z02605: [],
-          TI_Z02602: [],
-          TI_Z02603: [],
-        },
-      },
-    });
-  }
-
-  static getDerivedStateFromProps(nextProps, prevState) {
-    if (
-      nextProps.inquiryEdit.inquiryDetail !== prevState.formVals ||
-      nextProps.inquiryEdit.addList !== prevState.addList ||
-      nextProps.inquiryEdit.linkmanList !== prevState.linkmanList
-    ) {
-      return {
-        formVals: nextProps.inquiryEdit.inquiryDetail,
-        addList: nextProps.inquiryEdit.addList.length
-          ? nextProps.inquiryEdit.addList
-          : prevState.addList,
-        linkmanList: nextProps.inquiryEdit.linkmanList.length
-          ? nextProps.inquiryEdit.linkmanList
-          : prevState.linkmanList,
-      };
-    }
-    return null;
-  }
-
   topMenu = () => {
-    const { formVals } = this.state;
+    const { inquiryDetail } = this.state;
     return (
       <Menu>
         <Menu.Item>
-          <Link target="_blank" to={`/sellabout/TI_Z029/add?BaseEntry=${formVals.DocEntry}`}>
+          <Link target="_blank" to={`/sellabout/TI_Z029/add?BaseEntry=${inquiryDetail.DocEntry}`}>
             复制到销售报价单
           </Link>
         </Menu.Item>
@@ -973,26 +918,53 @@ class InquiryEdit extends React.Component {
             DocEntry: query.DocEntry,
           },
         },
+        callback: response => {
+          if (response && response.Status === 200) {
+            this.setState({
+              inquiryDetail: response.Content,
+            });
+            this.getCompany(response.Content.CardCode);
+          }
+        },
       });
     }
   };
 
+  getCompany = Code => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'inquiryEdit/company',
+      payload: {
+        Content: { Code },
+      },
+      callback: response => {
+        if (response && response.Status === 200) {
+          const { TI_Z00603List, TI_Z00602List } = response.Content;
+          this.setState({
+            addList: TI_Z00603List,
+            linkmanList: TI_Z00602List,
+          });
+        }
+      },
+    });
+  };
+
   // 删除 其他推送人
   deletePushLine = index => {
-    const { formVals } = this.state;
-    formVals.TI_Z02605.splice(index, 1);
-    this.setState({ formVals: { ...formVals } });
+    const { inquiryDetail } = this.state;
+    inquiryDetail.TI_Z02605.splice(index, 1);
+    this.setState({ inquiryDetail: { ...inquiryDetail } });
   };
 
   // 添加推送人
   submitPushLine = selectedRows => {
-    const { formVals } = this.state;
-    if (formVals.TI_Z02605.length) {
-      Object.assign(formVals, { TI_Z02605: [...formVals.TI_Z02605, ...selectedRows] });
+    const { inquiryDetail } = this.state;
+    if (inquiryDetail.TI_Z02605.length) {
+      Object.assign(inquiryDetail, { TI_Z02605: [...inquiryDetail.TI_Z02605, ...selectedRows] });
     } else {
-      Object.assign(formVals, { TI_Z02605: [...selectedRows] });
+      Object.assign(inquiryDetail, { TI_Z02605: [...selectedRows] });
     }
-    this.setState({ formVals: { ...formVals }, pushModalVisible: false });
+    this.setState({ inquiryDetail: { ...inquiryDetail }, pushModalVisible: false });
   };
 
   // 添加推送人modal
@@ -1011,17 +983,17 @@ class InquiryEdit extends React.Component {
   // 海关编码change
   codeChange = (select, record, index) => {
     const { Code, U_VatRate, U_VatRateOther } = select;
-    const { formVals } = this.state;
+    const { inquiryDetail } = this.state;
     Object.assign(record, { HSCode: Code, HSVatRate: U_VatRate, HSVatRateOther: U_VatRateOther });
-    formVals.TI_Z02602[index] = record;
-    this.setState({ formVals });
+    inquiryDetail.TI_Z02602[index] = record;
+    this.setState({ inquiryDetail });
   };
 
   //  行内容改变
   rowChange = record => {
-    const { formVals } = this.state;
+    const { inquiryDetail } = this.state;
     let thisIndex = 0;
-    formVals.TI_Z02602.map((item, index) => {
+    inquiryDetail.TI_Z02602.map((item, index) => {
       if (item.LineID === record.LineID) {
         record.SKUName = `${record.BrandName}  ${record.ProductName}  ${record.ManufactureNO}  ${
           record.Parameters
@@ -1032,36 +1004,36 @@ class InquiryEdit extends React.Component {
       return item;
     });
     this.autoAddLine(record, thisIndex);
-    this.setState({ formVals }, () => {
+    this.setState({ inquiryDetail }, () => {
       this.getTotal();
     });
   };
 
   //  计算总计
   getTotal = () => {
-    const { formVals } = this.state;
+    const { inquiryDetail } = this.state;
     let DocTotal = 0;
     // eslint-disable-next-line array-callback-return
-    formVals.TI_Z02602.map(record => {
+    inquiryDetail.TI_Z02602.map(record => {
       record.LineTotal = isNaN(record.Quantity * record.Price) ? 0 : record.Quantity * record.Price;
       record.LineTotal = round(record.LineTotal, 2);
       DocTotal += record.LineTotal;
     });
-    formVals.DocTotal = DocTotal;
-    this.setState({ formVals });
+    inquiryDetail.DocTotal = DocTotal;
+    this.setState({ inquiryDetail });
   };
 
   // 品牌,仓库改变
 
   rowSelectChange = (value, record, index, key) => {
-    const { formVals } = this.state;
+    const { inquiryDetail } = this.state;
     record[key] = value;
     record.SKUName = `${record.BrandName}  ${record.ProductName}  ${record.ManufactureNO}  ${
       record.Parameters
     }  ${record.Package}`;
-    formVals.TI_Z02602[index] = record;
+    inquiryDetail.TI_Z02602[index] = record;
 
-    this.setState({ formVals: { ...formVals } }, () => {
+    this.setState({ inquiryDetail: { ...inquiryDetail } }, () => {
       this.autoAddLine(record, index);
     });
   };
@@ -1086,8 +1058,8 @@ class InquiryEdit extends React.Component {
       Code,
       EnglishName,
     } = select;
-    const { thisLine, LineID, formVals } = this.state;
-    formVals.TI_Z02602[LineID] = {
+    const { thisLine, LineID, inquiryDetail } = this.state;
+    inquiryDetail.TI_Z02602[LineID] = {
       ...thisLine,
       SKU: Code,
       SKUName: Name,
@@ -1100,36 +1072,36 @@ class InquiryEdit extends React.Component {
       ProductName,
       Unit,
     };
-    this.setState({ formVals: { ...formVals } });
+    this.setState({ inquiryDetail: { ...inquiryDetail } });
     this.handleModalVisible(false);
   };
 
   // 删除附件
   deleteLine = (record, index) => {
     const {
-      formVals,
-      formVals: { DocEntry },
+      inquiryDetail,
+      inquiryDetail: { DocEntry },
       LineID,
     } = this.state;
     let attch;
     if (LineID >= 0) {
-      formVals.TI_Z02602[LineID].TI_Z02604.splice(index, 1);
+      inquiryDetail.TI_Z02602[LineID].TI_Z02604.splice(index, 1);
       attch = {
         Content: {
           Type: '2',
           DocEntry,
           ItemLine: record.LineID,
-          EnclosureList: [formVals.TI_Z02602[LineID].TI_Z02604],
+          EnclosureList: [inquiryDetail.TI_Z02602[LineID].TI_Z02604],
         },
       };
     } else {
-      formVals.TI_Z02603.splice(index, 1);
+      inquiryDetail.TI_Z02603.splice(index, 1);
       attch = {
         Content: {
           Type: '1',
           DocEntry,
           ItemLine: 0,
-          EnclosureList: [...formVals.TI_Z02603],
+          EnclosureList: [...inquiryDetail.TI_Z02603],
         },
       };
     }
@@ -1149,9 +1121,9 @@ class InquiryEdit extends React.Component {
 
   // 删除行物料
   deleteSKULine = (record, index) => {
-    const { formVals } = this.state;
-    formVals.TI_Z02602.splice(index, 1);
-    this.setState({ formVals }, () => {
+    const { inquiryDetail } = this.state;
+    inquiryDetail.TI_Z02602.splice(index, 1);
+    this.setState({ inquiryDetail }, () => {
       this.getTotal();
     });
   };
@@ -1160,17 +1132,17 @@ class InquiryEdit extends React.Component {
   handleSubmit = fieldsValue => {
     const { AttachmentPath, AttachmentCode, AttachmentName, AttachmentExtension } = fieldsValue;
     const {
-      formVals,
-      formVals: { DocEntry },
+      inquiryDetail,
+      inquiryDetail: { DocEntry },
       LineID,
       thisLine,
     } = this.state;
 
-    const lastsku = formVals.TI_Z02603[formVals.TI_Z02603.length - 1];
+    const lastsku = inquiryDetail.TI_Z02603[inquiryDetail.TI_Z02603.length - 1];
     if (fieldsValue.AttachmentPath) {
       let attch;
       if (LineID >= 0) {
-        const thisLineChild = formVals.TI_Z02602[LineID].TI_Z02604;
+        const thisLineChild = inquiryDetail.TI_Z02602[LineID].TI_Z02604;
         const last = thisLineChild[thisLineChild.length - 1];
         const ID = last ? last.OrderID + 1 : 1;
         attch = {
@@ -1202,7 +1174,7 @@ class InquiryEdit extends React.Component {
             DocEntry,
             ItemLine: 0,
             EnclosureList: [
-              ...formVals.TI_Z02603,
+              ...inquiryDetail.TI_Z02603,
               {
                 DocEntry,
                 OrderID: lastsku ? lastsku.OrderID + 1 : 1,
@@ -1259,7 +1231,7 @@ class InquiryEdit extends React.Component {
 
   rightButton = tabIndex => {
     const {
-      formVals: { DocEntry },
+      inquiryDetail: { DocEntry },
     } = this.state;
     if (tabIndex === '1') {
       return (
@@ -1294,77 +1266,69 @@ class InquiryEdit extends React.Component {
 
   // change 客户
   changeCompany = company => {
-    const { dispatch } = this.props;
     const { TI_Z00602List, TI_Z00603List } = company;
-    const { formVals } = this.state;
-    formVals.CardCode = company.Code;
-    formVals.CardName = company.Name;
-    dispatch({
-      type: 'inquiryEdit/save',
-      payload: {
+    const { inquiryDetail } = this.state;
+    this.setState(
+      {
+        inquiryDetail: {
+          ...inquiryDetail,
+          CardCode: company.Code,
+          CardName: company.Name,
+        },
+
         linkmanList: TI_Z00602List,
         addList: TI_Z00603List,
       },
-    });
-    this.setState({ formVals }, () => {
-      if (TI_Z00603List.length) {
-        this.handleAdreessChange(TI_Z00603List[0].AddressID);
-      } else {
-        message.warning('该客户下没有收货地址，请先维护收货地址');
+      () => {
+        if (TI_Z00603List.length) {
+          this.handleAdreessChange(TI_Z00603List[0].AddressID);
+        } else {
+          message.warning('该客户下没有收货地址，请先维护收货地址');
+        }
+        if (TI_Z00602List.length) {
+          this.linkmanChange(TI_Z00602List[0].UserID);
+        } else {
+          message.warning('该客户下没有维护联系人，请先维护联系人');
+        }
       }
-      if (TI_Z00602List.length) {
-        this.linkmanChange(TI_Z00602List[0].UserID);
-      } else {
-        message.warning('该客户下没有维护联系人，请先维护联系人');
-      }
-    });
+    );
   };
 
   // 联系人change
   linkmanChange = value => {
-    const { formVals, linkmanList } = this.state;
+    const { inquiryDetail, linkmanList } = this.state;
     const select = linkmanList.find(item => item.UserID === value);
-    console.log(select, linkmanList, value);
     const { CellphoneNO, Email, PhoneNO, UserID, Name } = select;
-
-    Object.assign(formVals, { CellphoneNO, Email, PhoneNO, UserID, Contacts: Name });
-    this.setState({ formVals });
+    this.setState({
+      inquiryDetail: { ...inquiryDetail, CellphoneNO, Email, PhoneNO, UserID, Contacts: Name },
+    });
   };
 
   // 地址改变
   handleAdreessChange = value => {
-    const { addList, formVals } = this.state;
+    const { addList, inquiryDetail } = this.state;
     const select = addList.find(item => item.AddressID === value);
-    const {
-      Province,
-      ProvinceID,
-      City,
-      CityID,
-      Area,
-      AreaID,
-
-      AddressID,
-      Address,
-    } = select;
-    Object.assign(formVals, {
-      Province,
-      ProvinceID,
-      City,
-      CityID,
-      Area,
-      AreaID,
-
-      AddressID,
-      Address,
+    const { Province, ProvinceID, City, CityID, Area, AreaID, AddressID, Address } = select;
+    this.setState({
+      inquiryDetail: {
+        ...inquiryDetail,
+        Province,
+        ProvinceID,
+        City,
+        CityID,
+        Area,
+        AreaID,
+        AddressID,
+        Address,
+      },
     });
-    this.setState({ formVals });
   };
 
   autoAddLine = (record, index) => {
     // 自动添加行
     // 如果行中品牌,SKU,参数，名称都不为空则添加一行，最后一行时有效
-    const { formVals } = this.state;
-    const { length } = formVals.TI_Z02602;
+    const { inquiryDetail } = this.state;
+    const { length } = inquiryDetail.TI_Z02602;
     if (
       index === length - 1 &&
       record.SKU &&
@@ -1378,10 +1342,10 @@ class InquiryEdit extends React.Component {
 
   addLineSku = () => {
     // 添加物料
-    const { formVals, DefaultWhsCode } = this.state;
-    const last = formVals.TI_Z02602[formVals.TI_Z02602.length - 1];
+    const { inquiryDetail, DefaultWhsCode } = this.state;
+    const last = inquiryDetail.TI_Z02602[inquiryDetail.TI_Z02602.length - 1];
     const LineID = last ? last.LineID + 1 : 1;
-    formVals.TI_Z02602.push({
+    inquiryDetail.TI_Z02602.push({
       LineID,
       SKU: '',
       SKUName: '',
@@ -1401,19 +1365,19 @@ class InquiryEdit extends React.Component {
       Package: '',
       Quantity: '',
       Unit: '',
-      DueDate: formVals.DueDate,
+      DueDate: inquiryDetail.DueDate,
       WhsCode: DefaultWhsCode,
       Price: '',
       LineTotal: '',
       TI_Z02604: [],
     });
-    this.setState({ formVals });
+    this.setState({ inquiryDetail });
   };
 
   saveHandle = () => {
     // 保存主数据
     const { form, dispatch } = this.props;
-    const { formVals } = this.state;
+    const { inquiryDetail } = this.state;
     form.validateFields((err, fieldsValue) => {
       if (err) {
         // eslint-disable-next-line compat/compat
@@ -1427,7 +1391,7 @@ class InquiryEdit extends React.Component {
         type: 'inquiryEdit/add',
         payload: {
           Content: {
-            ...formVals,
+            ...inquiryDetail,
             ...fieldsValue,
             ToDate: fieldsValue.ToDate ? fieldsValue.ToDate.format('YYYY-MM-DD') : '',
             DocDate: fieldsValue.DocDate ? fieldsValue.DocDate.format('YYYY-MM-DD') : '',
@@ -1446,7 +1410,7 @@ class InquiryEdit extends React.Component {
   // 更新主数据
   updateHandle = () => {
     const { form, dispatch } = this.props;
-    const { formVals } = this.state;
+    const { inquiryDetail } = this.state;
     form.validateFields((err, fieldsValue) => {
       if (err) {
         // eslint-disable-next-line compat/compat
@@ -1460,7 +1424,7 @@ class InquiryEdit extends React.Component {
         type: 'inquiryEdit/update',
         payload: {
           Content: {
-            ...formVals,
+            ...inquiryDetail,
             ...fieldsValue,
             ToDate: fieldsValue.ToDate ? fieldsValue.ToDate.format('YYYY-MM-DD') : '',
             DocDate: fieldsValue.DocDate ? fieldsValue.DocDate.format('YYYY-MM-DD') : '',
@@ -1479,12 +1443,12 @@ class InquiryEdit extends React.Component {
   // 取消单据
   cancelSubmit = ClosedComment => {
     const { dispatch } = this.props;
-    const { formVals } = this.state;
+    const { inquiryDetail } = this.state;
     dispatch({
       type: 'inquiryEdit/cancel',
       payload: {
         Content: {
-          DocEntry: formVals.DocEntry,
+          DocEntry: inquiryDetail.DocEntry,
           ClosedComment,
         },
       },
@@ -1505,8 +1469,8 @@ class InquiryEdit extends React.Component {
 
   // 确认需要采购询价
   selectNeed = () => {
-    const { formVals } = this.state;
-    const selectedRows = formVals.TI_Z02602.filter((item, index) => {
+    const { inquiryDetail } = this.state;
+    const selectedRows = inquiryDetail.TI_Z02602.filter((item, index) => {
       const newItem = item;
       newItem.Key = index;
       return newItem.IsInquiry === 'N';
@@ -1524,8 +1488,8 @@ class InquiryEdit extends React.Component {
       return;
     }
     if (info.file.response.Status === 200) {
-      const { formVals, DefaultWhsCode } = this.state;
-      const last = formVals.TI_Z02602[formVals.TI_Z02602.length - 1];
+      const { inquiryDetail, DefaultWhsCode } = this.state;
+      const last = inquiryDetail.TI_Z02602[inquiryDetail.TI_Z02602.length - 1];
       const LineID = last ? last.LineID + 1 : 1;
       const {
         loTI_Z026ExcelFiledList: { rows },
@@ -1542,16 +1506,16 @@ class InquiryEdit extends React.Component {
         newItem.TI_Z02604 = [];
         return newItem;
       });
-      Object.assign(formVals, { TI_Z02602: [...newArr, ...formVals.TI_Z02602] });
-      this.setState({ formVals });
+      Object.assign(inquiryDetail, { TI_Z02602: [...newArr, ...inquiryDetail.TI_Z02602] });
+      this.setState({ inquiryDetail });
     } else {
       message.warning(info.file.response.MessageString);
     }
   };
 
   dueDateChange = val => {
-    const { formVals } = this.state;
-    const newArr = formVals.TI_Z02602.map(item => {
+    const { inquiryDetail } = this.state;
+    const newArr = inquiryDetail.TI_Z02602.map(item => {
       const newitem = item;
       if (!newitem.DueDate) {
         newitem.DueDate = val;
@@ -1559,9 +1523,9 @@ class InquiryEdit extends React.Component {
       }
       return newitem;
     });
-    Object.assign(formVals, { TI_Z02602: newArr, DueDate: val });
+    Object.assign(inquiryDetail, { TI_Z02602: newArr, DueDate: val });
     this.setState({
-      formVals,
+      inquiryDetail,
     });
   };
 
@@ -1575,7 +1539,7 @@ class InquiryEdit extends React.Component {
       location: { query },
     } = this.props;
     const {
-      formVals,
+      inquiryDetail,
       tabIndex,
       thisLine,
       linkmanList,
@@ -1617,29 +1581,29 @@ class InquiryEdit extends React.Component {
       handleSubmit: this.submitPushLine,
       handleModalVisible: this.handleModalVisible,
     };
-    const newdata = [...formVals.TI_Z02602];
+    const newdata = [...inquiryDetail.TI_Z02602];
     if (newdata.length > 0) {
       newdata.push({
         LineID: newdata[newdata.length - 1].LineID + 1,
         lastIndex: true,
-        InquiryLineTotal: formVals.InquiryDocTotal,
-        InquiryLineTotalLocal: formVals.InquiryDocTotalLocal,
-        LineTotal: formVals.DocTotal,
+        InquiryLineTotal: inquiryDetail.InquiryDocTotal,
+        InquiryLineTotalLocal: inquiryDetail.InquiryDocTotalLocal,
+        LineTotal: inquiryDetail.DocTotal,
       });
     }
     return (
       <Card bordered={false} loading={detailLoading}>
-        <MyPageHeader {...this.props.location} breadcrumb={{ breadcrumbName: '添加' }} />
+        <MyPageHeader {...location} />
         <Form {...formItemLayout}>
           <Row gutter={8}>
             <Col lg={10} md={12} sm={24}>
               <FormItem key="CardCode" {...this.formLayout} label="客户ID">
                 {getFieldDecorator('CardCode', {
                   rules: [{ required: true, message: '请选择客户！' }],
-                  initialValue: { key: formVals.CardName, label: formVals.CardCode },
+                  initialValue: { key: inquiryDetail.CardName, label: inquiryDetail.CardCode },
                 })(
                   <CompanySelect
-                    initialValue={{ key: formVals.CardName, label: formVals.CardCode }}
+                    initialValue={{ key: inquiryDetail.CardName, label: inquiryDetail.CardCode }}
                     onChange={this.changeCompany}
                     keyType="Code"
                   />
@@ -1649,7 +1613,7 @@ class InquiryEdit extends React.Component {
             <Col lg={10} md={12} sm={24}>
               <FormItem key="DocEntry" {...this.formLayout} label="单号">
                 {getFieldDecorator('DocEntry', {
-                  initialValue: formVals.DocEntry,
+                  initialValue: inquiryDetail.DocEntry,
                 })(<Input disabled placeholder="单号" />)}
               </FormItem>
             </Col>
@@ -1659,10 +1623,10 @@ class InquiryEdit extends React.Component {
               <FormItem key="CardName" {...this.formLayout} label="客户名称">
                 {getFieldDecorator('CardName', {
                   rules: [{ required: true, message: '请输入客户名称！' }],
-                  initialValue: { key: formVals.CardCode, label: formVals.CardName },
+                  initialValue: { key: inquiryDetail.CardCode, label: inquiryDetail.CardName },
                 })(
                   <CompanySelect
-                    initialValue={{ key: formVals.CardCode, label: formVals.CardName }}
+                    initialValue={{ key: inquiryDetail.CardCode, label: inquiryDetail.CardName }}
                     onChange={this.changeCompany}
                     keyType="Name"
                   />
@@ -1673,7 +1637,9 @@ class InquiryEdit extends React.Component {
               <FormItem key="DocDate" {...this.formLayout} label="单据日期">
                 {getFieldDecorator('DocDate', {
                   rules: [{ required: true, message: '请选择单据日期！' }],
-                  initialValue: formVals.DocDate ? moment(formVals.DocDate, 'YYYY-MM-DD') : null,
+                  initialValue: inquiryDetail.DocDate
+                    ? moment(inquiryDetail.DocDate, 'YYYY-MM-DD')
+                    : null,
                 })(<DatePicker style={{ width: '100%' }} />)}
               </FormItem>
             </Col>
@@ -1683,7 +1649,7 @@ class InquiryEdit extends React.Component {
               <FormItem key="UserID" {...this.formLayout} label="联系人">
                 {getFieldDecorator('UserID', {
                   rules: [{ required: true, message: '请输入联系人！' }],
-                  initialValue: formVals.UserID,
+                  initialValue: inquiryDetail.UserID,
                 })(
                   <Select
                     placeholder="请选择联系人"
@@ -1702,7 +1668,7 @@ class InquiryEdit extends React.Component {
             <Col lg={10} md={12} sm={24}>
               <FormItem key="OrderType" {...this.formLayout} label="订单类型">
                 {getFieldDecorator('OrderType', {
-                  initialValue: formVals.OrderType,
+                  initialValue: inquiryDetail.OrderType,
                   rules: [{ required: true, message: '请选择订单类型！' }],
                 })(
                   <Select placeholder="请选择订单类型">
@@ -1716,14 +1682,16 @@ class InquiryEdit extends React.Component {
             <Col lg={10} md={12} sm={24}>
               <FormItem key="NumAtCard" {...this.formLayout} label="客户参考号">
                 {getFieldDecorator('NumAtCard', {
-                  initialValue: formVals.NumAtCard,
+                  initialValue: inquiryDetail.NumAtCard,
                 })(<Input placeholder="请输入客户参考号" />)}
               </FormItem>
             </Col>
             <Col lg={10} md={12} sm={24}>
               <FormItem key="ToDate" {...this.formLayout} label="有效期至">
                 {getFieldDecorator('ToDate', {
-                  initialValue: formVals.ToDate ? moment(formVals.ToDate, 'YYYY-MM-DD') : null,
+                  initialValue: inquiryDetail.ToDate
+                    ? moment(inquiryDetail.ToDate, 'YYYY-MM-DD')
+                    : null,
                   rules: [{ required: true, message: '请选择有效期！' }],
                 })(<DatePicker style={{ width: '100%' }} />)}
               </FormItem>
@@ -1753,14 +1721,14 @@ class InquiryEdit extends React.Component {
               <Col lg={10} md={12} sm={24}>
                 <FormItem key="Owner" {...this.formLayout} label="销售员">
                   {getFieldDecorator('Owner', {
-                    initialValue: formVals.Owner,
+                    initialValue: inquiryDetail.Owner,
                     rules: [{ required: true, message: '请选择销售员！' }],
-                  })(<MDMCommonality initialValue={formVals.Owner} data={Saler} />)}
+                  })(<MDMCommonality initialValue={inquiryDetail.Owner} data={Saler} />)}
                 </FormItem>
               </Col>
               <Col lg={10} md={12} sm={24}>
                 <FormItem key="CreateDate" {...this.formLayout} label="创建日期">
-                  <span>{moment(formVals.CreateDate).format('YYYY-MM-DD')}</span>
+                  <span>{moment(inquiryDetail.CreateDate).format('YYYY-MM-DD')}</span>
                 </FormItem>
               </Col>
             </Row>
@@ -1770,14 +1738,14 @@ class InquiryEdit extends React.Component {
               <Col lg={8} md={12} sm={24}>
                 <FormItem key="CellphoneNO" {...this.formLayout} label="手机号码">
                   {getFieldDecorator('CellphoneNO', {
-                    initialValue: formVals.CellphoneNO,
+                    initialValue: inquiryDetail.CellphoneNO,
                   })(<Input disabled placeholder="手机号码" />)}
                 </FormItem>
               </Col>
               <Col lg={8} md={12} sm={24}>
                 <FormItem key="PhoneNO" {...this.formLayout} label="联系人电话">
                   {getFieldDecorator('PhoneNO', {
-                    initialValue: formVals.PhoneNO,
+                    initialValue: inquiryDetail.PhoneNO,
                   })(<Input disabled placeholder="电话号码" />)}
                 </FormItem>
               </Col>
@@ -1785,14 +1753,14 @@ class InquiryEdit extends React.Component {
                 <FormItem key="Email " {...this.formLayout} label="联系人邮箱">
                   {getFieldDecorator('Email', {
                     rules: [{ validator: this.validatorEmail }],
-                    initialValue: formVals.Email,
+                    initialValue: inquiryDetail.Email,
                   })(<Input disabled placeholder="请输入邮箱" />)}
                 </FormItem>
               </Col>
               <Col lg={8} md={12} sm={24}>
                 <FormItem key="address" {...this.formLayout} label="地址">
                   {getFieldDecorator('address', {
-                    initialValue: formVals.AddressID,
+                    initialValue: inquiryDetail.AddressID,
                   })(
                     <Select
                       placeholder="请选择地址"
@@ -1811,7 +1779,7 @@ class InquiryEdit extends React.Component {
               <Col lg={8} md={12} sm={24}>
                 <FormItem key="Address" {...this.formLayout} label="地址">
                   {getFieldDecorator('Address', {
-                    initialValue: formVals.Address,
+                    initialValue: inquiryDetail.Address,
                   })(<Input placeholder="请输入详细地址！" />)}
                 </FormItem>
               </Col>
@@ -1819,41 +1787,46 @@ class InquiryEdit extends React.Component {
               <Col lg={8} md={12} sm={24}>
                 <FormItem key="CompanyCode" {...this.formLayout} label="交易公司">
                   {getFieldDecorator('CompanyCode', {
-                    initialValue: formVals.CompanyCode,
+                    initialValue: inquiryDetail.CompanyCode,
                     rules: [{ required: true, message: '请选择交易公司！' }],
-                  })(<MDMCommonality initialValue={formVals.CompanyCode} data={Company} />)}
+                  })(<MDMCommonality initialValue={inquiryDetail.CompanyCode} data={Company} />)}
                 </FormItem>
               </Col>
               <Col lg={8} md={12} sm={24}>
                 <FormItem key="SourceType" {...this.formLayout} label="来源类型">
                   {getFieldDecorator('SourceType', {
-                    initialValue: formVals.SourceType,
+                    initialValue: inquiryDetail.SourceType,
                     rules: [{ required: true, message: '请选择来源类型！' }],
-                  })(<MDMCommonality initialValue={formVals.SourceType} data={orderSourceType} />)}
+                  })(
+                    <MDMCommonality
+                      initialValue={inquiryDetail.SourceType}
+                      data={orderSourceType}
+                    />
+                  )}
                 </FormItem>
               </Col>
               <Col lg={8} md={12} sm={24}>
                 <FormItem key="Comment" {...this.formLayout} label="备注">
                   {getFieldDecorator('Comment', {
-                    initialValue: formVals.Comment,
+                    initialValue: inquiryDetail.Comment,
                   })(<Input placeholder="请输入备注" />)}
                 </FormItem>
               </Col>
               <Col lg={8} md={12} sm={24}>
                 <FormItem key="DueDate" {...this.formLayout} label="要求交期">
                   {getFieldDecorator('DueDate', {
-                    initialValue: formVals.DueDate,
+                    initialValue: inquiryDetail.DueDate,
                   })(<Input onChange={this.dueDateChange} placeholder="请输入交期" />)}
                 </FormItem>
               </Col>
             </Row>
           </TabPane>
           <TabPane tab="附件" key="3">
-            <Attachment dataSource={formVals.TI_Z02603} deleteLineFun={this.deleteLine} />
+            <Attachment dataSource={inquiryDetail.TI_Z02603} deleteLineFun={this.deleteLine} />
           </TabPane>
           <TabPane tab="其他推送人" key="4">
             <StandardTable
-              data={{ list: formVals.TI_Z02605 }}
+              data={{ list: inquiryDetail.TI_Z02605 }}
               rowKey="UserID"
               columns={this.linkmanColumns}
             />
@@ -1861,7 +1834,7 @@ class InquiryEdit extends React.Component {
         </Tabs>
 
         <FooterToolbar>
-          {formVals.DocEntry ? (
+          {inquiryDetail.DocEntry ? (
             <Fragment>
               <CancelOrder cancelSubmit={this.cancelSubmit} />
               <Button onClick={this.updateHandle} type="primary" loading={updateloading}>

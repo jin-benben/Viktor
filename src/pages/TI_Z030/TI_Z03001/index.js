@@ -20,9 +20,7 @@ import {
   DatePicker,
   Modal,
   Select,
-  Collapse,
   Dropdown,
-  Empty,
   Menu,
   Tag,
   Badge,
@@ -46,14 +44,16 @@ import CompanySelect from '@/components/Company/index';
 import HSCode from '@/components/HSCode';
 import PushLink from '@/components/PushLink';
 import Attachment from '@/components/Attachment';
+import OrderAttach from '@/components/Attachment/order';
+import MyPageHeader from '../components/pageHeader';
 import { getName, validatorPhone, validatorEmail } from '@/utils/utils';
-import { otherCostCColumns, baseType } from '@/utils/publicData';
+import { otherCostCColumns, formItemLayout } from '@/utils/publicData';
 
 const { TextArea } = Input;
 const { TabPane } = Tabs;
 const FormItem = Form.Item;
 const { Option } = Select;
-const { Panel } = Collapse;
+
 @connect(({ agreementEdit, loading, global }) => ({
   agreementEdit,
   global,
@@ -213,15 +213,15 @@ class AgreementEdit extends React.Component {
     },
     {
       title: '要求交期',
-      width: 150,
-      inputType: 'text',
+      width: 120,
+      inputType: 'date',
       dataIndex: 'DueDate',
       editable: true,
       align: 'center',
     },
     {
       title: '询价价格',
-      width: 120,
+      width: 150,
       dataIndex: 'InquiryPrice',
       align: 'center',
       render: (text, record) => {
@@ -430,7 +430,7 @@ class AgreementEdit extends React.Component {
       width: 80,
       render: (text, record, index) => {
         const {
-          formVals: { DocEntry },
+          orderDetail: { DocEntry },
         } = this.state;
         return record.lastIndex ? null : (
           <Fragment>
@@ -505,7 +505,7 @@ class AgreementEdit extends React.Component {
       width: 80,
       render: (text, record, index) => {
         const {
-          formVals: { DocEntry },
+          orderDetail: { DocEntry },
         } = this.state;
         return record.lastIndex ? null : (
           <Fragment>
@@ -549,21 +549,25 @@ class AgreementEdit extends React.Component {
     {
       title: '用户ID',
       align: 'center',
+      width: 100,
       dataIndex: 'UserID',
     },
     {
       title: '联系人',
       align: 'center',
+      width: 100,
       dataIndex: 'Contacts',
     },
     {
       title: '手机号',
       align: 'center',
+      width: 100,
       dataIndex: 'CellphoneNO',
     },
     {
       title: '操作',
       align: 'center',
+      width: 100,
       render: (text, record, index) => (
         <Icon
           title="删除行"
@@ -578,7 +582,17 @@ class AgreementEdit extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      formVals: {
+      orderDetail: {
+        SourceType: '1',
+        Transport: 'N',
+        DocDate: moment().format('YYYY/MM/DD'),
+        CreateDate: moment().format('YYYY/MM/DD'),
+        ToDate: moment()
+          .add('30', 'day')
+          .format('YYYY/MM/DD'),
+        TI_Z03002: [],
+        TI_Z03004: [],
+        TI_Z03005: [],
         TI_Z02603Fahter: [],
       }, // 单据信息
       tabIndex: '1', // tab
@@ -607,8 +621,8 @@ class AgreementEdit extends React.Component {
     const {
       dispatch,
       global: { currentUser, CustomerList, BrandList, Curr, HSCodeList },
-      agreementEdit: { orderDetail },
     } = this.props;
+    const { orderDetail } = this.state;
     if (!HSCodeList.length) {
       dispatch({
         type: 'global/getHscode',
@@ -636,87 +650,24 @@ class AgreementEdit extends React.Component {
     }
 
     const { CompanyCode, Owner, UserCode } = currentUser;
-    dispatch({
-      type: 'agreementEdit/save',
-      payload: {
-        orderDetail: {
-          ...orderDetail,
-          CompanyCode,
-          Owner,
-          CreateCode: UserCode,
-        },
+    this.setState({
+      orderDetail: {
+        ...orderDetail,
+        CompanyCode,
+        Owner,
+        CreateCode: UserCode,
       },
     });
     this.getBaseEntry();
     this.getDetail();
   }
 
-  componentWillUnmount() {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'agreementEdit/save',
-      payload: {
-        orderDetail: {
-          Comment: '',
-          OrderType: '1',
-          Transport: 'N',
-          DocDate: null,
-          CreateDate: null,
-          CardCode: '',
-          CardName: '',
-          Contacts: '',
-          CellphoneNO: '',
-          PhoneNO: '',
-          Email: '',
-          CompanyCode: '',
-          DueDate: '',
-          ToDate: null,
-          InquiryDocTotal: '',
-          DocTotal: '',
-          ProvinceID: '',
-          Province: '',
-          CityID: '',
-          City: '',
-          AreaID: '',
-          Area: '',
-          Address: '',
-          NumAtCard: '',
-          Owner: '',
-          IsInquiry: '',
-          TI_Z03002: [],
-          TI_Z03004: [],
-          TI_Z03005: [],
-          TI_Z02603Fahter: [],
-        },
-      },
-    });
-  }
-
-  static getDerivedStateFromProps(nextProps, prevState) {
-    if (
-      nextProps.agreementEdit.orderDetail !== prevState.formVals ||
-      nextProps.agreementEdit.addList !== prevState.addList ||
-      nextProps.agreementEdit.linkmanList !== prevState.linkmanList
-    ) {
-      return {
-        formVals: nextProps.agreementEdit.orderDetail,
-        addList: nextProps.agreementEdit.addList.length
-          ? nextProps.agreementEdit.addList
-          : prevState.addList,
-        linkmanList: nextProps.agreementEdit.linkmanList.length
-          ? nextProps.agreementEdit.linkmanList
-          : prevState.linkmanList,
-      };
-    }
-    return null;
-  }
-
   getBaseEntry = () => {
     const {
       dispatch,
-      agreementEdit: { orderDetail },
       location: { query },
     } = this.props;
+    const { orderDetail } = this.state;
     if (query.BaseEntry) {
       dispatch({
         type: 'agreementEdit/getBaseEntry',
@@ -727,14 +678,7 @@ class AgreementEdit extends React.Component {
         },
         callback: response => {
           if (response && response.Status === 200) {
-            dispatch({
-              type: 'agreementEdit/company',
-              payload: {
-                Content: {
-                  Code: response.Content.CardCode,
-                },
-              },
-            });
+            this.getCompany(response.Content.CardCode);
             const {
               Address,
               AddressID,
@@ -756,41 +700,37 @@ class AgreementEdit extends React.Component {
               Province,
               ProvinceID,
               UserID,
-              DueDate,
               ToDate,
               TI_Z02905,
             } = response.Content;
 
-            dispatch({
-              type: 'agreementEdit/save',
-              payload: {
-                orderDetail: {
-                  ...orderDetail,
-                  Address,
-                  AddressID,
-                  Area,
-                  AreaID,
-                  CardCode,
-                  CardName,
-                  CellphoneNO,
-                  City,
-                  CityID,
-                  Comment,
-                  CompanyCode,
-                  Contacts,
-                  Email,
-                  NumAtCard,
-                  OrderType,
-                  Owner,
-                  PhoneNO,
-                  Province,
-                  ProvinceID,
-                  DueDate,
-                  ToDate,
-                  UserID,
-                  TI_Z03005: TI_Z02905,
-                  TI_Z03002: [],
-                },
+            this.setState({
+              orderDetail: {
+                ...orderDetail,
+                Address,
+                AddressID,
+                Area,
+                AreaID,
+                CardCode,
+                CardName,
+                CellphoneNO,
+                City,
+                CityID,
+                Comment,
+                CompanyCode,
+                Contacts,
+                Email,
+                NumAtCard,
+                OrderType,
+                Owner,
+                PhoneNO,
+                Province,
+                ProvinceID,
+                DueDate: '',
+                ToDate,
+                UserID,
+                TI_Z03005: TI_Z02905,
+                TI_Z03002: [],
               },
             });
             this.addLineSKU(response.Content.TI_Z02902);
@@ -813,38 +753,61 @@ class AgreementEdit extends React.Component {
             DocEntry: query.DocEntry,
           },
         },
+        callback: response => {
+          if (response && response.Status === 200) {
+            this.setState({
+              orderDetail: response.Content,
+            });
+            this.getCompany(response.Content.CardCode);
+          }
+        },
       });
     }
   };
 
+  getCompany = Code => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'agreementEdit/company',
+      payload: {
+        Content: { Code },
+      },
+      callback: response => {
+        if (response && response.Status === 200) {
+          const { TI_Z00603List, TI_Z00602List } = response.Content;
+          this.setState({
+            addList: TI_Z00603List,
+            linkmanList: TI_Z00602List,
+          });
+        }
+      },
+    });
+  };
+
   //  行内容改变
   rowChange = record => {
-    const { formVals } = this.state;
-    formVals.TI_Z03002.map(item => {
+    const { orderDetail } = this.state;
+    orderDetail.TI_Z03002.map(item => {
       if (item.key === record.key) {
         return record;
       }
       return item;
     });
-    this.setState({ formVals }, () => {
+    this.setState({ orderDetail }, () => {
       this.getTotal();
     });
   };
 
   //  计算总计
   getTotal = () => {
-    const { formVals } = this.state;
-    const {
-      dispatch,
-      agreementEdit: { orderDetail },
-    } = this.props;
+    const { orderDetail } = this.state;
     let DocTotal = 0;
     let InquiryDocTotalLocal = 0;
     let InquiryDocTotal = 0;
     let OtherTotal = 0;
     let ProfitTotal = 0;
     // eslint-disable-next-line array-callback-return
-    formVals.TI_Z03002.map(record => {
+    orderDetail.TI_Z03002.map(record => {
       record.OtherTotal = record.OtherTotal || 0;
       record.InquiryLineTotal = isNaN(record.Quantity * record.InquiryPrice)
         ? 0
@@ -868,17 +831,14 @@ class AgreementEdit extends React.Component {
     InquiryDocTotal = round(InquiryDocTotal, 2);
     OtherTotal = round(OtherTotal, 2);
     ProfitTotal = round(DocTotal - InquiryDocTotalLocal - OtherTotal, 2);
-    dispatch({
-      type: 'agreementEdit/save',
-      payload: {
-        orderDetail: {
-          ...orderDetail,
-          DocTotal,
-          InquiryDocTotalLocal,
-          InquiryDocTotal,
-          ProfitTotal,
-          OtherTotal,
-        },
+    this.setState({
+      orderDetail: {
+        ...orderDetail,
+        DocTotal,
+        InquiryDocTotalLocal,
+        InquiryDocTotal,
+        ProfitTotal,
+        OtherTotal,
       },
     });
   };
@@ -886,10 +846,10 @@ class AgreementEdit extends React.Component {
   // 品牌,仓库改变
 
   rowSelectChange = (value, record, index, key) => {
-    const { formVals } = this.state;
+    const { orderDetail } = this.state;
     record[key] = value;
-    formVals.TI_Z03002[index] = record;
-    this.setState({ formVals: { ...formVals } });
+    orderDetail.TI_Z03002[index] = record;
+    this.setState({ orderDetail: { ...orderDetail } });
   };
 
   // sku输入框获取焦点
@@ -912,8 +872,8 @@ class AgreementEdit extends React.Component {
       Code,
       EnglishName,
     } = select;
-    const { targetLine, LineID, formVals } = this.state;
-    formVals.TI_Z03002[LineID] = {
+    const { targetLine, LineID, orderDetail } = this.state;
+    orderDetail.TI_Z03002[LineID] = {
       ...targetLine,
       SKU: Code,
       SKUName: Name,
@@ -926,7 +886,7 @@ class AgreementEdit extends React.Component {
       ProductName,
       Unit,
     };
-    this.setState({ formVals: { ...formVals } });
+    this.setState({ orderDetail: { ...orderDetail } });
     this.handleModalVisible(false);
   };
 
@@ -943,9 +903,9 @@ class AgreementEdit extends React.Component {
 
   // 删除行物料
   deleteSKULine = (record, index) => {
-    const { formVals } = this.state;
-    formVals.TI_Z03002.splice(index, 1);
-    this.setState({ formVals }, () => {
+    const { orderDetail } = this.state;
+    orderDetail.TI_Z03002.splice(index, 1);
+    this.setState({ orderDetail }, () => {
       this.getTotal();
     });
   };
@@ -982,7 +942,7 @@ class AgreementEdit extends React.Component {
   handleSubmit = fieldsValue => {
     const { AttachmentPath, AttachmentCode, AttachmentName, AttachmentExtension } = fieldsValue;
     const {
-      formVals: { DocEntry },
+      orderDetail: { DocEntry },
       targetLine,
       isLine,
     } = this.state;
@@ -1080,9 +1040,9 @@ class AgreementEdit extends React.Component {
   };
 
   copyFromOrder = () => {
-    const { formVals } = this.state;
+    const { orderDetail } = this.state;
     const { queryData } = this.getAskPriceOrder.state;
-    if (!formVals.CardCode) {
+    if (!orderDetail.CardCode) {
       message.warning('请先选择客户');
       return false;
     }
@@ -1111,10 +1071,10 @@ class AgreementEdit extends React.Component {
   // change 客户
   changeCompany = company => {
     const { TI_Z00602List, TI_Z00603List } = company;
-    const { formVals } = this.state;
-    formVals.CardCode = company.Code;
-    formVals.CardName = company.Name;
-    this.setState({ formVals, linkmanList: TI_Z00602List || [], addList: TI_Z00603List }, () => {
+    const { orderDetail } = this.state;
+    orderDetail.CardCode = company.Code;
+    orderDetail.CardName = company.Name;
+    this.setState({ orderDetail, linkmanList: TI_Z00602List || [], addList: TI_Z00603List }, () => {
       if (TI_Z00603List.length) {
         this.handleAdreessChange(TI_Z00603List[0].AddressID);
       } else {
@@ -1130,40 +1090,39 @@ class AgreementEdit extends React.Component {
 
   // 联系人change
   linkmanChange = value => {
-    const { formVals, linkmanList } = this.state;
+    const { orderDetail, linkmanList } = this.state;
     const select = linkmanList.find(item => item.UserID === value);
     const { CellphoneNO, Email, PhoneNO, UserID, Name } = select;
-    Object.assign(formVals, { CellphoneNO, Email, PhoneNO, UserID, Contacts: Name });
-    this.setState({ formVals });
+    this.setState({
+      orderDetail: {
+        ...orderDetail,
+        CellphoneNO,
+        Email,
+        PhoneNO,
+        UserID,
+        Contacts: Name,
+      },
+    });
   };
 
   // 地址改变
   handleAdreessChange = value => {
-    const { addList, formVals } = this.state;
+    const { addList, orderDetail } = this.state;
     const select = addList.find(item => item.AddressID === value);
-    const {
-      Province,
-      ProvinceID,
-      City,
-      CityID,
-      Area,
-      AreaID,
-
-      AddressID,
-      Address,
-    } = select;
-    Object.assign(formVals, {
-      Province,
-      ProvinceID,
-      City,
-      CityID,
-      Area,
-      AreaID,
-
-      AddressID,
-      Address,
+    const { Province, ProvinceID, City, CityID, Area, AreaID, AddressID, Address } = select;
+    this.setState({
+      orderDetail: {
+        ...orderDetail,
+        Province,
+        ProvinceID,
+        City,
+        CityID,
+        Area,
+        AreaID,
+        AddressID,
+        Address,
+      },
     });
-    this.setState({ formVals });
   };
 
   // 添加行
@@ -1171,10 +1130,10 @@ class AgreementEdit extends React.Component {
     const {
       global: { currentUser },
     } = this.props;
-    const { formVals } = this.state;
+    const { orderDetail } = this.state;
     let newLineID = 1;
-    if (formVals.TI_Z03002.length) {
-      newLineID = formVals.TI_Z03002[formVals.TI_Z03002.length - 1].LineID + 1;
+    if (orderDetail.TI_Z03002.length) {
+      newLineID = orderDetail.TI_Z03002[orderDetail.TI_Z03002.length - 1].LineID + 1;
     }
     selectedRows.map((item, index) => {
       if (item.LineStatus !== 'O') return;
@@ -1223,7 +1182,7 @@ class AgreementEdit extends React.Component {
         DocEntry,
         SourceType,
       } = item;
-      formVals.TI_Z03002.push({
+      orderDetail.TI_Z03002.push({
         QuotationEntry: DocEntry,
         QuotationLineID: LineID,
         BaseEntry,
@@ -1268,11 +1227,11 @@ class AgreementEdit extends React.Component {
         Contacts,
         WhsCode,
         CreateUser: currentUser.UserCode,
-        CreateDate: formVals.CreateDate || new Date(),
+        CreateDate: orderDetail.CreateDate || new Date(),
         LineID: newLineID,
       });
     });
-    this.setState({ formVals, orderModalVisible: false }, () => {
+    this.setState({ orderDetail, orderModalVisible: false }, () => {
       this.getTotal();
     });
   };
@@ -1280,28 +1239,28 @@ class AgreementEdit extends React.Component {
   // 海关编码change
   codeChange = (select, record, index) => {
     const { Code, U_VatRate, U_VatRateOther } = select;
-    const { formVals } = this.state;
+    const { orderDetail } = this.state;
     Object.assign(record, { HSCode: Code, HSVatRate: U_VatRate, HSVatRateOther: U_VatRateOther });
-    formVals.TI_Z03002[index] = record;
-    this.setState({ formVals });
+    orderDetail.TI_Z03002[index] = record;
+    this.setState({ orderDetail });
   };
 
   // 删除 其他推送人
   deletePushLine = index => {
-    const { formVals } = this.state;
-    formVals.TI_Z03005.splice(index, 1);
-    this.setState({ formVals: { ...formVals } });
+    const { orderDetail } = this.state;
+    orderDetail.TI_Z03005.splice(index, 1);
+    this.setState({ orderDetail: { ...orderDetail } });
   };
 
   // 添加推送人
   submitPushLine = selectedRows => {
-    const { formVals } = this.state;
-    if (formVals.TI_Z03005.length) {
-      Object.assign(formVals, { TI_Z03005: [...formVals.TI_Z03005, ...selectedRows] });
+    const { orderDetail } = this.state;
+    if (orderDetail.TI_Z03005.length) {
+      Object.assign(orderDetail, { TI_Z03005: [...orderDetail.TI_Z03005, ...selectedRows] });
     } else {
-      Object.assign(formVals, { TI_Z03005: [...selectedRows] });
+      Object.assign(orderDetail, { TI_Z03005: [...selectedRows] });
     }
-    this.setState({ formVals: { ...formVals }, pushModalVisible: false });
+    this.setState({ orderDetail: { ...orderDetail }, pushModalVisible: false });
   };
 
   // 添加推送人modal
@@ -1324,7 +1283,7 @@ class AgreementEdit extends React.Component {
       dispatch,
       global: { currentUser },
     } = this.props;
-    const { formVals } = this.state;
+    const { orderDetail } = this.state;
     form.validateFields((err, fieldsValue) => {
       if (err) {
         message.error(Object.values(err)[0].errors[0].message);
@@ -1337,7 +1296,7 @@ class AgreementEdit extends React.Component {
         type: 'agreementEdit/add',
         payload: {
           Content: {
-            ...formVals,
+            ...orderDetail,
             ...fieldsValue,
             DueDate: fieldsValue.DueDate ? fieldsValue.DueDate.format('YYYY-MM-DD') : '',
             ToDate: fieldsValue.ToDate ? fieldsValue.ToDate.format('YYYY-MM-DD') : '',
@@ -1362,7 +1321,7 @@ class AgreementEdit extends React.Component {
       dispatch,
       global: { currentUser },
     } = this.props;
-    const { formVals } = this.state;
+    const { orderDetail } = this.state;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
       delete fieldsValue.address;
@@ -1372,7 +1331,7 @@ class AgreementEdit extends React.Component {
         type: 'agreementEdit/update',
         payload: {
           Content: {
-            ...formVals,
+            ...orderDetail,
             ...fieldsValue,
             DueDate: fieldsValue.DueDate ? fieldsValue.DueDate.format('YYYY-MM-DD') : '',
             ToDate: fieldsValue.ToDate ? fieldsValue.ToDate.format('YYYY-MM-DD') : '',
@@ -1394,7 +1353,7 @@ class AgreementEdit extends React.Component {
   cancelSubmit = ClosedComment => {
     const { dispatch } = this.props;
     const {
-      formVals: { UpdateTimestamp, DocEntry },
+      orderDetail: { UpdateTimestamp, DocEntry },
     } = this.state;
     dispatch({
       type: 'agreementEdit/cancel',
@@ -1420,7 +1379,7 @@ class AgreementEdit extends React.Component {
       global: { currentUser },
     } = this.props;
     const {
-      formVals: { UpdateTimestamp, DocEntry },
+      orderDetail: { UpdateTimestamp, DocEntry },
     } = this.state;
     dispatch({
       type: 'agreementEdit/confirm',
@@ -1455,7 +1414,7 @@ class AgreementEdit extends React.Component {
   costCheck = () => {
     const { dispatch } = this.props;
     const {
-      formVals: { DocEntry, UpdateTimestamp },
+      orderDetail: { DocEntry, UpdateTimestamp },
     } = this.state;
     dispatch({
       type: 'agreementEdit/costCheck',
@@ -1498,14 +1457,15 @@ class AgreementEdit extends React.Component {
   render() {
     const {
       form: { getFieldDecorator },
-      global: { Saler, Company, TI_Z004 },
+      global: { Saler, Company },
       addloading,
       updateloading,
       detailloading,
       location: { query },
+      location,
     } = this.props;
     const {
-      formVals,
+      orderDetail,
       tabIndex,
       targetLine,
       linkmanList,
@@ -1517,18 +1477,7 @@ class AgreementEdit extends React.Component {
       attachmentVisible,
       pushModalVisible,
     } = this.state;
-    const formItemLayout = {
-      labelCol: {
-        xs: { span: 24 },
-        sm: { span: 10 },
-      },
-      wrapperCol: {
-        xs: { span: 24 },
-        sm: { span: 14 },
-        md: { span: 10 },
-        lg: { span: 6 },
-      },
-    };
+
     const uploadmodalMethods = {
       handleSubmit: this.handleSubmit,
       handleModalVisible: this.handleModalVisible,
@@ -1553,39 +1502,35 @@ class AgreementEdit extends React.Component {
       handleModalVisible: this.handleModalVisible,
     };
 
-    const newdata = [...formVals.TI_Z03002];
+    const newdata = [...orderDetail.TI_Z03002];
     if (newdata.length > 0) {
       newdata.push({
         LineID: newdata[newdata.length - 1].LineID + 1,
         lastIndex: true,
-        InquiryLineTotal: formVals.InquiryDocTotal,
-        InquiryLineTotalLocal: formVals.InquiryDocTotalLocal,
-        LineTotal: formVals.DocTotal,
-        OtherTotal: formVals.OtherTotal,
-        ProfitLineTotal: formVals.ProfitTotal,
+        InquiryLineTotal: orderDetail.InquiryDocTotal,
+        InquiryLineTotalLocal: orderDetail.InquiryDocTotalLocal,
+        LineTotal: orderDetail.DocTotal,
+        OtherTotal: orderDetail.OtherTotal,
+        ProfitLineTotal: orderDetail.ProfitTotal,
       });
     }
 
-    const attachmentList = [];
-    formVals.TI_Z02603Fahter.map(item => {
-      attachmentList.push(...item.TI_Z02603);
-    });
-
     return (
       <Card bordered={false} loading={detailloading}>
+        <MyPageHeader {...location} />
         <Form {...formItemLayout}>
           <Row gutter={8}>
             <Col lg={10} md={12} sm={24}>
               <FormItem key="CardCode" {...this.formLayout} label="客户ID">
-                {formVals.DocEntry ? (
-                  <Input disabled value={formVals.CardCode} placeholder="单号" />
+                {orderDetail.DocEntry ? (
+                  <Input disabled value={orderDetail.CardCode} placeholder="单号" />
                 ) : (
                   getFieldDecorator('CardCode', {
                     rules: [{ required: true, message: '请选择客户！' }],
-                    initialValue: { key: formVals.CardName, label: formVals.CardCode },
+                    initialValue: { key: orderDetail.CardName, label: orderDetail.CardCode },
                   })(
                     <CompanySelect
-                      initialValue={{ key: formVals.CardName, label: formVals.CardCode }}
+                      initialValue={{ key: orderDetail.CardName, label: orderDetail.CardCode }}
                       onChange={this.changeCompany}
                       keyType="Code"
                     />
@@ -1596,7 +1541,7 @@ class AgreementEdit extends React.Component {
             <Col lg={10} md={12} sm={24}>
               <FormItem key="DocEntry" {...this.formLayout} label="单号">
                 {getFieldDecorator('DocEntry', {
-                  initialValue: formVals.DocEntry,
+                  initialValue: orderDetail.DocEntry,
                 })(<Input disabled placeholder="单号" />)}
               </FormItem>
             </Col>
@@ -1604,15 +1549,15 @@ class AgreementEdit extends React.Component {
           <Row gutter={8}>
             <Col lg={10} md={12} sm={24}>
               <FormItem key="CardName" {...this.formLayout} label="客户名称">
-                {formVals.DocEntry ? (
-                  <Input disabled value={formVals.CardName} placeholder="单号" />
+                {orderDetail.DocEntry ? (
+                  <Input disabled value={orderDetail.CardName} placeholder="单号" />
                 ) : (
                   getFieldDecorator('CardName', {
                     rules: [{ required: true, message: '请输入客户名称！' }],
-                    initialValue: { key: formVals.CardCode, label: formVals.CardName },
+                    initialValue: { key: orderDetail.CardCode, label: orderDetail.CardName },
                   })(
                     <CompanySelect
-                      initialValue={{ key: formVals.CardCode, label: formVals.CardName }}
+                      initialValue={{ key: orderDetail.CardCode, label: orderDetail.CardName }}
                       onChange={this.changeCompany}
                       keyType="Name"
                     />
@@ -1624,7 +1569,9 @@ class AgreementEdit extends React.Component {
               <FormItem key="DocDate" {...this.formLayout} label="单据日期">
                 {getFieldDecorator('DocDate', {
                   rules: [{ required: true, message: '请选择单据日期！' }],
-                  initialValue: formVals.DocDate ? moment(formVals.DocDate, 'YYYY-MM-DD') : null,
+                  initialValue: orderDetail.DocDate
+                    ? moment(orderDetail.DocDate, 'YYYY-MM-DD')
+                    : null,
                 })(<DatePicker style={{ width: '100%' }} />)}
               </FormItem>
             </Col>
@@ -1634,7 +1581,7 @@ class AgreementEdit extends React.Component {
               <FormItem key="UserID" {...this.formLayout} label="联系人">
                 {getFieldDecorator('UserID', {
                   rules: [{ required: true, message: '请输入联系人！' }],
-                  initialValue: formVals.UserID,
+                  initialValue: orderDetail.UserID,
                 })(
                   <Select
                     placeholder="请选择联系人"
@@ -1653,7 +1600,9 @@ class AgreementEdit extends React.Component {
             <Col lg={10} md={12} sm={24}>
               <FormItem key="ToDate" {...this.formLayout} label="有效期至">
                 {getFieldDecorator('ToDate', {
-                  initialValue: formVals.ToDate ? moment(formVals.ToDate, 'YYYY-MM-DD') : null,
+                  initialValue: orderDetail.ToDate
+                    ? moment(orderDetail.ToDate, 'YYYY-MM-DD')
+                    : null,
                 })(<DatePicker style={{ width: '100%' }} />)}
               </FormItem>
             </Col>
@@ -1662,14 +1611,16 @@ class AgreementEdit extends React.Component {
             <Col lg={10} md={12} sm={24}>
               <FormItem key="NumAtCard" {...this.formLayout} label="客户参考号">
                 {getFieldDecorator('NumAtCard', {
-                  initialValue: formVals.NumAtCard,
+                  initialValue: orderDetail.NumAtCard,
                 })(<Input placeholder="请输入客户参考号" />)}
               </FormItem>
             </Col>
             <Col lg={10} md={12} sm={24}>
               <FormItem key="DueDate" {...this.formLayout} label="要求交期">
                 {getFieldDecorator('DueDate', {
-                  initialValue: formVals.DueDate ? moment(formVals.DueDate, 'YYYY-MM-DD') : null,
+                  initialValue: orderDetail.DueDate
+                    ? moment(orderDetail.DueDate, 'YYYY-MM-DD')
+                    : null,
                   rules: [{ required: true, message: '请选择要求交期！' }],
                 })(<DatePicker style={{ width: '100%' }} />)}
               </FormItem>
@@ -1699,15 +1650,15 @@ class AgreementEdit extends React.Component {
               <Col lg={10} md={12} sm={24}>
                 <FormItem key="Owner" {...this.formLayout} label="销售员">
                   {getFieldDecorator('Owner', {
-                    initialValue: formVals.Owner,
+                    initialValue: orderDetail.Owner,
                     rules: [{ required: true, message: '请选择销售员！' }],
-                  })(<MDMCommonality initialValue={formVals.Owner} data={Saler} />)}
+                  })(<MDMCommonality initialValue={orderDetail.Owner} data={Saler} />)}
                 </FormItem>
               </Col>
               <Col lg={10} md={12} sm={24}>
                 <FormItem key="Comment" {...this.formLayout} label="备注">
                   {getFieldDecorator('Comment', {
-                    initialValue: formVals.Comment,
+                    initialValue: orderDetail.Comment,
                   })(<TextArea placeholder="请输入备注" />)}
                 </FormItem>
               </Col>
@@ -1718,7 +1669,7 @@ class AgreementEdit extends React.Component {
               <Col lg={8} md={12} sm={24}>
                 <FormItem key="CellphoneNO" {...this.formLayout} label="手机号码">
                   {getFieldDecorator('CellphoneNO', {
-                    initialValue: formVals.CellphoneNO,
+                    initialValue: orderDetail.CellphoneNO,
                     rules: [{ validator: validatorPhone }],
                   })(<Input placeholder="手机号码" />)}
                 </FormItem>
@@ -1726,7 +1677,7 @@ class AgreementEdit extends React.Component {
               <Col lg={8} md={12} sm={24}>
                 <FormItem key="PhoneNO" {...this.formLayout} label="联系人电话">
                   {getFieldDecorator('PhoneNO', {
-                    initialValue: formVals.PhoneNO,
+                    initialValue: orderDetail.PhoneNO,
                   })(<Input placeholder="电话号码" />)}
                 </FormItem>
               </Col>
@@ -1734,7 +1685,7 @@ class AgreementEdit extends React.Component {
                 <FormItem key="Email " {...this.formLayout} label="联系人邮箱">
                   {getFieldDecorator('Email', {
                     rules: [{ validator: validatorEmail }],
-                    initialValue: formVals.Email,
+                    initialValue: orderDetail.Email,
                   })(<Input placeholder="请输入邮箱" />)}
                 </FormItem>
               </Col>
@@ -1742,7 +1693,7 @@ class AgreementEdit extends React.Component {
                 <FormItem key="address" {...this.formLayout} label="地址">
                   {getFieldDecorator('address', {
                     rules: [{ required: true, message: '请选择地址！' }],
-                    initialValue: formVals.AddressID,
+                    initialValue: orderDetail.AddressID,
                   })(
                     <Select
                       placeholder="请选择地址"
@@ -1762,17 +1713,17 @@ class AgreementEdit extends React.Component {
                 <FormItem key="Address" {...this.formLayout} label="地址">
                   {getFieldDecorator('Address', {
                     rules: [{ required: true, message: '请输入详细地址！' }],
-                    initialValue: formVals.Address,
+                    initialValue: orderDetail.Address,
                   })(<Input placeholder="请输入详细地址！" />)}
                 </FormItem>
               </Col>
               <Col lg={8} md={12} sm={24}>
                 <FormItem key="OrderType" {...this.formLayout} label="订单类型">
                   {getFieldDecorator('OrderType', {
-                    initialValue: formVals.OrderType,
+                    initialValue: orderDetail.OrderType,
                     rules: [{ required: true, message: '请选择订单类型！' }],
                   })(
-                    <Select placeholder="请选择订单类型">
+                    <Select style={{ width: '100%' }} placeholder="请选择订单类型">
                       <Option value="1">正常订单</Option>
                     </Select>
                   )}
@@ -1781,15 +1732,15 @@ class AgreementEdit extends React.Component {
               <Col lg={8} md={12} sm={24}>
                 <FormItem key="CompanyCode" {...this.formLayout} label="交易公司">
                   {getFieldDecorator('CompanyCode', {
-                    initialValue: formVals.CompanyCode,
+                    initialValue: orderDetail.CompanyCode,
                     rules: [{ required: true, message: '请选择交易公司！' }],
-                  })(<MDMCommonality initialValue={formVals.CompanyCode} data={Company} />)}
+                  })(<MDMCommonality initialValue={orderDetail.CompanyCode} data={Company} />)}
                 </FormItem>
               </Col>
               <Col lg={8} md={12} sm={24}>
                 <FormItem key="Transport" {...this.formLayout} label="单独运输">
                   {getFieldDecorator('Transport', {
-                    initialValue: formVals.Transport,
+                    initialValue: orderDetail.Transport,
                     rules: [{ required: true, message: '请选择运输方式' }],
                   })(
                     <Select style={{ width: '100%' }} placeholder="请选择">
@@ -1803,76 +1754,21 @@ class AgreementEdit extends React.Component {
           </TabPane>
           <TabPane tab="其余成本" key="3">
             <StandardTable
-              data={{ list: formVals.TI_Z03004 }}
+              data={{ list: orderDetail.TI_Z03004 }}
               rowKey="LineID"
               columns={otherCostCColumns}
             />
           </TabPane>
           <TabPane tab="附件" key="4">
-            {formVals.TI_Z02603Fahter.length ? (
-              <Collapse>
-                {formVals.TI_Z02603Fahter.map(item => {
-                  const header = (
-                    <div>
-                      单号：{' '}
-                      <Link
-                        target="_blank"
-                        to={`/sellabout/TI_Z026/detail?DocEntry=${item.DocEntry}`}
-                      >
-                        {item.DocEntry}
-                      </Link>
-                      ; 创建日期：{moment(item.FCreateDate).format('YYYY-MM-DD')}； 创建人
-                      <span>{getName(TI_Z004, item.FCreateUser)}</span>； 更新日期：
-                      {moment(item.FUpdateDate).format('YYYY-MM-DD')}； 更新人:
-                      <span>{getName(TI_Z004, item.FUpdateUser)}</span>
-                      <Icon
-                        title="上传附件"
-                        className="icons"
-                        style={{ color: '#08c', marginRight: 5, marginLeft: 5 }}
-                        type="cloud-upload"
-                        onClick={() => this.skuLineAttachment(item, '', false)}
-                      />
-                    </div>
-                  );
-                  return (
-                    <Panel header={header} key={item.DocEntry}>
-                      {item.TI_Z02603.map((line, index) => (
-                        <ul key={line.OrderID}>
-                          <li>序号:{line.OrderID}</li>
-                          <li>
-                            来源类型:<span>{getName(baseType, line.BaseType)}</span>
-                          </li>
-                          <li>来源单号:{line.BaseEntry}</li>
-                          <li>附件代码:{line.AttachmentCode}</li>
-                          <li>附件描述:{line.AttachmentName}</li>
-                          <li>
-                            附件路径:
-                            <a href={line.AttachmentPath} target="_blank" rel="noopener noreferrer">
-                              {line.AttachmentPath}
-                            </a>
-                          </li>
-                          <li>
-                            操作:{' '}
-                            <Icon
-                              title="删除行"
-                              type="delete"
-                              theme="twoTone"
-                              onClick={() => this.deleteLine(item, index, false)}
-                            />
-                          </li>
-                        </ul>
-                      ))}
-                    </Panel>
-                  );
-                })}
-              </Collapse>
-            ) : (
-              <Empty />
-            )}
+            <OrderAttach
+              dataSource={orderDetail.TI_Z02603Fahter}
+              deleteLine={this.deleteLine}
+              skuLineAttachment={this.skuLineAttachment}
+            />
           </TabPane>
           <TabPane tab="其他推送人" key="5">
             <StandardTable
-              data={{ list: formVals.TI_Z03005 }}
+              data={{ list: orderDetail.TI_Z03005 }}
               rowKey="UserID"
               columns={this.linkmanColumns}
             />
@@ -1880,7 +1776,7 @@ class AgreementEdit extends React.Component {
         </Tabs>
 
         <FooterToolbar>
-          {formVals.DocEntry ? (
+          {orderDetail.DocEntry ? (
             <Fragment>
               <CancelOrder cancelSubmit={this.cancelSubmit} />
 
@@ -1910,7 +1806,7 @@ class AgreementEdit extends React.Component {
           onRef={c => {
             this.getAskPriceOrder = c;
           }}
-          SearchText={formVals.CardCode}
+          SearchText={orderDetail.CardCode}
           {...orderParentMethods}
           modalVisible={orderModalVisible}
         />
@@ -1943,7 +1839,7 @@ class AgreementEdit extends React.Component {
         </Modal>
 
         <NeedAskPrice
-          data={formVals.TI_Z03002}
+          data={orderDetail.TI_Z03002}
           {...needParentMethods}
           modalVisible={needmodalVisible}
         />

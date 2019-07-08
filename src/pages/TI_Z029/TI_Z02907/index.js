@@ -20,12 +20,12 @@ import Link from 'umi/link';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import StandardTable from '@/components/StandardTable';
-import MDMCommonality from '@/components/Select';
 import NeedAskPrice from '../components/needAskPrice';
 import Transfer from '@/components/Transfer';
 import DocEntryFrom from '@/components/DocEntryFrom';
 import Organization from '@/components/Organization/multiple';
 import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
+import MyPageHeader from '../components/pageHeader';
 import { getName } from '@/utils/utils';
 
 const { RangePicker } = DatePicker;
@@ -566,7 +566,6 @@ class SalesQuotationSku extends PureComponent {
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
-      global: { Purchaser },
     } = this.props;
     const { expandForm } = this.state;
     const formLayout = {
@@ -686,6 +685,7 @@ class SalesQuotationSku extends PureComponent {
     const {
       SalesQuotationSku: { SalesQuotationSkuList, pagination },
       loading,
+      location,
     } = this.props;
     const { needmodalVisible, selectedRows, transferModalVisible, transferLine } = this.state;
     const needParentMethods = {
@@ -706,6 +706,7 @@ class SalesQuotationSku extends PureComponent {
     return (
       <Fragment>
         <Card bordered={false}>
+          <MyPageHeader {...location} />
           <div className="tableList">
             <div className="tableListForm">{this.renderSimpleForm()}</div>
             <StandardTable

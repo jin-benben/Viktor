@@ -9,15 +9,15 @@ const MyPageHeader = props => {
       breadcrumbName: '销售业务',
     },
     {
-      path: '/sellabout/TI_Z026/TI_Z02601',
-      breadcrumbName: '客户询价单',
+      path: '/sellabout/TI_Z030/add',
+      breadcrumbName: '销售合同',
     },
     {
-      path: '/sellabout/TI_Z026/TI_Z02606',
+      path: '/sellabout/TI_Z030/search',
       breadcrumbName: '单据查询',
     },
     {
-      path: '/sellabout/TI_Z026/TI_Z02607',
+      path: '/sellabout/TI_Z030/searchLine',
       breadcrumbName: '明细查询',
     },
   ];

@@ -9,6 +9,7 @@ import StandardTable from '@/components/StandardTable';
 import DocEntryFrom from '@/components/DocEntryFrom';
 import Organization from '@/components/Organization/multiple';
 import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
+import MyPageHeader from '../components/pageHeader';
 import { getName } from '@/utils/utils';
 
 const { RangePicker } = DatePicker;
@@ -309,10 +310,11 @@ class agreementOrder extends PureComponent {
               </Col>
               <Col md={5} sm={24}>
                 <FormItem key="Closed" {...formLayout}>
-                  {getFieldDecorator('Closed')(
+                  {getFieldDecorator('Closed', { initialValue: 'N' })(
                     <Select placeholder="请选择关闭状态">
                       <Option value="Y">已关闭</Option>
                       <Option value="N">未关闭</Option>
+                      <Option value="">全部</Option>
                     </Select>
                   )}
                 </FormItem>
@@ -361,11 +363,13 @@ class agreementOrder extends PureComponent {
     const {
       agreementOrder: { agreementOrderList, pagination },
       loading,
+      location,
     } = this.props;
     const tableWidth = document.body.offsetWidth < 1800 ? 1700 : 0;
 
     return (
       <Fragment>
+        <MyPageHeader {...location} />
         <Card bordered={false}>
           <div className="tableList">
             <div className="tableListForm">{this.renderSimpleForm()}</div>

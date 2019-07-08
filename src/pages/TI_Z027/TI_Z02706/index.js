@@ -10,6 +10,7 @@ import StandardTable from '@/components/StandardTable';
 import DocEntryFrom from '@/components/DocEntryFrom';
 import Organization from '@/components/Organization/multiple';
 import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
+import MyPageHeader from '../components/pageHeader';
 import { getName } from '@/utils/utils';
 
 const { RangePicker } = DatePicker;
@@ -369,6 +370,7 @@ class supplierQuotation extends PureComponent {
     const {
       supplierQuotation: { supplierQuotationList, pagination },
       loading,
+      location,
     } = this.props;
     // let tabwidth=0;
     // this.columns.map(item=>{
@@ -380,6 +382,7 @@ class supplierQuotation extends PureComponent {
     return (
       <Fragment>
         <Card bordered={false}>
+          <MyPageHeader {...location} />
           <div className="tableList">
             <div className="tableListForm">{this.renderSimpleForm()}</div>
             <StandardTable

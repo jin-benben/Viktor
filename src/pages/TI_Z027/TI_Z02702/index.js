@@ -35,6 +35,7 @@ import SKUModal from '@/components/Modal/SKU';
 import Brand from '@/components/Brand';
 import Attachment from '@/components/Attachment';
 import SupplierSelect from '@/components/Select/Supplier';
+import MyPageHeader from '../components/pageHeader';
 import { getName } from '@/utils/utils';
 import { baseType } from '@/utils/publicData';
 
@@ -828,6 +829,7 @@ class InquiryEdit extends React.Component {
     const {
       form: { getFieldDecorator },
       global: { Purchaser, Curr, Company, TI_Z004 },
+      location,
     } = this.props;
     const {
       formVals,
@@ -870,6 +872,7 @@ class InquiryEdit extends React.Component {
     }
     return (
       <Card bordered={false}>
+        <MyPageHeader {...location} />
         <Form {...formItemLayout}>
           <Row gutter={8}>
             <Col lg={10} md={12} sm={24}>

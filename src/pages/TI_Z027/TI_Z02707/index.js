@@ -20,11 +20,11 @@ import {
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import StandardTable from '@/components/StandardTable';
-import MDMCommonality from '@/components/Select';
 import DocEntryFrom from '@/components/DocEntryFrom';
 import Organization from '@/components/Organization/multiple';
 import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
 import Transfer from '@/components/Transfer';
+import MyPageHeader from '../components/pageHeader';
 import { getName } from '@/utils/utils';
 
 const { RangePicker } = DatePicker;
@@ -405,7 +405,6 @@ class supplierQuotationSku extends PureComponent {
     const {
       form: { getFieldDecorator },
       supplierQuotationSku: { queryData },
-      global: { Saler },
     } = this.props;
     const { Closed } = queryData.Content;
     const { expandForm } = this.state;
@@ -499,11 +498,6 @@ class supplierQuotationSku extends PureComponent {
                   {getFieldDecorator('DeptList')(<Organization />)}
                 </FormItem>
               </Col>
-              {/* <Col md={5} sm={24}>
-                <FormItem label="销售" {...formLayout}>
-                  {getFieldDecorator('Saler')(<MDMCommonality data={Saler} />)}
-                </FormItem>
-              </Col> */}
             </Fragment>
           ) : null}
           <Col md={4} sm={24}>
@@ -535,6 +529,7 @@ class supplierQuotationSku extends PureComponent {
     const {
       supplierQuotationSku: { supplierQuotationSkuList, pagination },
       loading,
+      location,
     } = this.props;
     const { transferModalVisible, transferLine } = this.state;
     const transferParentMethods = {
@@ -550,6 +545,7 @@ class supplierQuotationSku extends PureComponent {
     return (
       <Fragment>
         <Card bordered={false}>
+          <MyPageHeader {...location} />
           <div className="tableList">
             <div className="tableListForm">{this.renderSimpleForm()}</div>
             <StandardTable

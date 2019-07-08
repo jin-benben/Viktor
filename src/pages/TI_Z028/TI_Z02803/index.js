@@ -8,6 +8,7 @@ import StandardTable from '@/components/StandardTable';
 import MDMCommonality from '@/components/Select';
 import DocEntryFrom from '@/components/DocEntryFrom';
 import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
+import MyPageHeader from '../components/pageHeader';
 import { getName } from '@/utils/utils';
 
 const { RangePicker } = DatePicker;
@@ -82,21 +83,36 @@ class TI_Z02803 extends PureComponent {
 
   state = {
     expandForm: false,
+    orderList: [],
+    queryData: {
+      Content: {
+        Owner: [],
+        SearchText: '',
+        SearchKey: '',
+      },
+      page: 1,
+      rows: 30,
+      sidx: 'DocEntry',
+      sord: 'Desc',
+    },
+    pagination: {
+      showSizeChanger: true,
+      showTotal: total => `共 ${total} 条`,
+      pageSizeOptions: ['30', '60', '90'],
+      total: 0,
+      pageSize: 30,
+      current: 1,
+    },
   };
 
   componentDidMount() {
     const {
       dispatch,
-      TI_Z02803: { queryData },
       global: { currentUser },
     } = this.props;
+    const { queryData } = this.state;
     Object.assign(queryData.Content, { Owner: [currentUser.Owner] });
-    dispatch({
-      type: 'TI_Z02803/fetch',
-      payload: {
-        ...queryData,
-      },
-    });
+    this.getOrder(queryData);
     dispatch({
       type: 'global/getMDMCommonality',
       payload: {
@@ -110,26 +126,53 @@ class TI_Z02803 extends PureComponent {
     });
   }
 
-  handleStandardTableChange = pagination => {
-    const {
-      dispatch,
-      TI_Z02803: { queryData },
-    } = this.props;
+  getOrder = queryData => {
+    const { dispatch } = this.props;
     dispatch({
       type: 'TI_Z02803/fetch',
       payload: {
         ...queryData,
-        page: pagination.current,
-        rows: pagination.pageSize,
       },
+      callback: response => {
+        if (response && response.Status === 200) {
+          if (!response.Content) {
+            this.setState({
+              orderList: [],
+              pagination: {
+                total: 0,
+              },
+              queryData,
+            });
+          } else {
+            const { rows, records, page } = response.Content;
+            this.setState({
+              orderList: rows,
+              queryData,
+              pagination: {
+                total: records,
+                pageSize: queryData.rows,
+                current: page,
+              },
+            });
+          }
+        }
+      },
+    });
+  };
+
+  handleStandardTableChange = pagination => {
+    const { queryData } = this.state;
+    this.getOrder({
+      ...queryData,
+      page: pagination.current,
+      rows: pagination.pageSize,
     });
   };
 
   handleSearch = e => {
     // 搜索
     e.preventDefault();
-    const { dispatch, form } = this.props;
-
+    const { form } = this.props;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
       let DocDateFrom;
@@ -153,19 +196,16 @@ class TI_Z02803 extends PureComponent {
         DocEntryFroms,
         DocEntryTo,
       };
-      dispatch({
-        type: 'TI_Z02803/fetch',
-        payload: {
-          Content: {
-            SearchText: '',
-            SearchKey: 'Name',
-            ...queryData,
-          },
-          page: 1,
-          rows: 30,
-          sidx: 'DocEntry',
-          sord: 'Desc',
+      this.getOrder({
+        Content: {
+          SearchText: '',
+          SearchKey: 'Name',
+          ...queryData,
         },
+        page: 1,
+        rows: 30,
+        sidx: 'DocEntry',
+        sord: 'Desc',
       });
     });
   };
@@ -181,27 +221,16 @@ class TI_Z02803 extends PureComponent {
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
-      global: { Purchaser, currentUser, Saler },
-      TI_Z02803: { queryData },
+      global: { Saler },
     } = this.props;
-    const { Owner } = queryData.Content;
-    const { expandForm } = this.state;
+    const {
+      expandForm,
+      queryData: { Content },
+    } = this.state;
+    const { Owner } = Content;
     const formLayout = {
       labelCol: { span: 8 },
       wrapperCol: { span: 16 },
-    };
-
-    const searchFormItemLayout = {
-      wrapperCol: {
-        xs: {
-          span: 24,
-          offset: 0,
-        },
-        sm: {
-          span: 16,
-          offset: 8,
-        },
-      },
     };
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
@@ -220,7 +249,9 @@ class TI_Z02803 extends PureComponent {
           </Col>
           <Col md={5} sm={24}>
             <FormItem key="Owner" {...formLayout} label="采购员">
-              {getFieldDecorator('Owner')(<SalerPurchaser />)}
+              {getFieldDecorator('Owner', { initialValue: Owner })(
+                <SalerPurchaser initialValue={Owner} />
+              )}
             </FormItem>
           </Col>
 
@@ -244,7 +275,7 @@ class TI_Z02803 extends PureComponent {
           )}
 
           <Col md={2} sm={24}>
-            <FormItem key="searchBtn" {...searchFormItemLayout}>
+            <FormItem key="searchBtn">
               <span className="submitButtons">
                 <Button type="primary" htmlType="submit">
                   查询
@@ -277,26 +308,23 @@ class TI_Z02803 extends PureComponent {
   }
 
   render() {
-    const {
-      TI_Z02803: { orderList, pagination },
-      loading,
-    } = this.props;
+    const { loading, location } = this.props;
+    const { orderList, pagination } = this.state;
     return (
-      <Fragment>
-        <Card bordered={false}>
-          <div className="tableList">
-            <div className="tableListForm">{this.renderSimpleForm()}</div>
-            <StandardTable
-              loading={loading}
-              data={{ list: orderList }}
-              pagination={pagination}
-              rowKey="DocEntry"
-              columns={this.columns}
-              onChange={this.handleStandardTableChange}
-            />
-          </div>
-        </Card>
-      </Fragment>
+      <Card bordered={false}>
+        <MyPageHeader {...location} />
+        <div className="tableList">
+          <div className="tableListForm">{this.renderSimpleForm()}</div>
+          <StandardTable
+            loading={loading}
+            data={{ list: orderList }}
+            pagination={pagination}
+            rowKey="DocEntry"
+            columns={this.columns}
+            onChange={this.handleStandardTableChange}
+          />
+        </div>
+      </Card>
     );
   }
 }
