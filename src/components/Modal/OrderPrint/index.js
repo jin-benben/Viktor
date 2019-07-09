@@ -149,6 +149,7 @@ class OrderPrint extends PureComponent {
   };
 
   getTemplate = async params => {
+    const { pagination } = this.state;
     const response = await request('/MDM/TI_Z044/TI_Z04402', {
       method: 'POST',
       data: {
@@ -158,14 +159,18 @@ class OrderPrint extends PureComponent {
     if (response && response.Status === 200) {
       if (response.Content) {
         const { rows, records, page } = response.Content;
-        const { pagination } = this.state;
         this.setState({
           templateList: [...rows],
+          queryData: { ...params },
           pagination: { ...pagination, total: records, current: page },
         });
       } else {
         this.setState({
           templateList: [],
+          queryData: { ...params },
+          pagination: {
+            total: 0,
+          },
         });
       }
     }

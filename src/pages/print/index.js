@@ -21,16 +21,14 @@ class PrintPage extends Component {
       location: { query },
       dispatch,
     } = this.props;
-    if (query.BaseEntry && query.Code) {
-      dispatch({
-        type: 'print/getPrint',
-        payload: {
-          Content: {
-            ...query,
-          },
+    dispatch({
+      type: 'print/getPrint',
+      payload: {
+        Content: {
+          ...query,
         },
-      });
-    }
+      },
+    });
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {

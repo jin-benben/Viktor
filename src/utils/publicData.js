@@ -7,6 +7,10 @@ export const printType = [
     Key: '2',
     Value: '直接打印',
   },
+  {
+    Key: '3',
+    Value: '快递单打印',
+  },
 ];
 export const printOrderType = [
   {
@@ -24,6 +28,10 @@ export const printOrderType = [
   {
     Key: 'TI_Z030',
     Value: '销售合同',
+  },
+  {
+    Key: 'TI_Z048',
+    Value: '电子面单',
   },
   {
     Key: 'ODLN',
@@ -228,16 +236,19 @@ export const linkmanColumns = [
   {
     title: '用户ID',
     align: 'center',
+    width: 100,
     dataIndex: 'UserID',
   },
   {
     title: '联系人',
     align: 'center',
+    width: 100,
     dataIndex: 'Contacts',
   },
   {
     title: '手机号',
     align: 'center',
+    width: 100,
     dataIndex: 'CellphoneNO',
   },
 ];

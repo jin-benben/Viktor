@@ -79,26 +79,7 @@ class AgreementLine extends PureComponent {
         </Ellipsis>
       ),
     },
-    {
-      title: '联系人',
-      width: 150,
-      dataIndex: 'Contacts',
-      render: (text, record) => (
-        <Tooltip
-          title={
-            <Fragment>
-              {record.CellphoneNO}
-              <br />
-              {record.Email}
-              <br />
-              {record.PhoneNO}
-            </Fragment>
-          }
-        >
-          {text}
-        </Tooltip>
-      ),
-    },
+
     {
       title: '物料',
       dataIndex: 'SKU',
@@ -178,26 +159,35 @@ class AgreementLine extends PureComponent {
       align: 'center',
     },
     {
+      title: '报价交期',
+      width: 120,
+      dataIndex: 'DueDateComment',
+      align: 'center',
+    },
+    {
       title: '询价价格',
-      width: 150,
+      width: 120,
       dataIndex: 'InquiryPrice',
       align: 'center',
       render: (text, record) => {
         if (!text) return '';
-        return <span>{`${text || ''}(${record.Currency || ''})[${record.DocRate || ''}]`}</span>;
+        return (
+          <Ellipsis tooltip lines={1}>{`${text || ''}(${record.Currency || ''})[${record.DocRate ||
+            ''}]`}</Ellipsis>
+        );
       },
     },
     {
       title: '询行总计',
-      width: 200,
+      width: 150,
       align: 'center',
       dataIndex: 'InquiryLineTotal',
       render: (text, record) => (
-        <span>
+        <Ellipsis tooltip lines={1}>
           {`${text || ''}${
             record.Currency ? `(${record.Currency})` : ''
           }-${record.InquiryLineTotalLocal || ''}`}
-        </span>
+        </Ellipsis>
       ),
     },
     {
@@ -367,6 +357,7 @@ class AgreementLine extends PureComponent {
     {
       title: '销订单号',
       align: 'center',
+      width: 100,
       dataIndex: 'SoEntry',
       render: (text, recond) =>
         text ? (
@@ -394,7 +385,7 @@ class AgreementLine extends PureComponent {
       type: 'global/getMDMCommonality',
       payload: {
         Content: {
-          CodeList: ['Saler', 'Purchaser'],
+          CodeList: ['Saler', 'Purchaser', 'WhsCode'],
         },
       },
     });
@@ -611,6 +602,7 @@ class AgreementLine extends PureComponent {
       loading,
       location,
     } = this.props;
+
     return (
       <Card bordered={false}>
         <MyPageHeader {...location} />
@@ -620,7 +612,7 @@ class AgreementLine extends PureComponent {
             loading={loading}
             data={{ list: agreementLineList }}
             pagination={pagination}
-            scroll={{ x: 3720 }}
+            scroll={{ x: 3900 }}
             rowKey="Key"
             columns={this.columns}
             onChange={this.handleStandardTableChange}

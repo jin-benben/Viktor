@@ -15,6 +15,7 @@ class authorityGroup extends PureComponent {
   state = {
     checkedKeys: [],
     expandedKeys: [],
+    autoExpandParent: false,
   };
 
   componentDidMount() {
@@ -28,7 +29,8 @@ class authorityGroup extends PureComponent {
   // 点击树形节点时
   onExpand = expandedKeys => {
     this.setState({
-      expandedKeys,
+      expandedKeys: [...expandedKeys],
+      autoExpandParent: false,
     });
   };
 
@@ -67,12 +69,12 @@ class authorityGroup extends PureComponent {
     data.map(item => {
       if (item.children) {
         return (
-          <TreeNode title={item.Name} key={item.Code} dataRef={item}>
+          <TreeNode title={item.text} key={item.Code} dataRef={item}>
             {this.renderTreeNodes(item.children)}
           </TreeNode>
         );
       }
-      return <TreeNode title={item.Name} key={item.Code} dataRef={item} />;
+      return <TreeNode title={item.text} key={item.Code} dataRef={item} />;
     });
 
   updateHandle = () => {
@@ -100,20 +102,23 @@ class authorityGroup extends PureComponent {
   };
 
   render() {
-    const { expandedKeys, checkedKeys } = this.state;
+    const { expandedKeys, checkedKeys, autoExpandParent } = this.state;
     const {
       authoritySet: { treeData },
+      location: {
+        query: { Name },
+      },
     } = this.props;
 
     return (
-      <Card bordered={false}>
+      <Card bordered={false} title={`${Name}权限设置`} style={{ borderBottom: 'none' }}>
         {treeData.length ? (
           <Tree
             onExpand={this.onExpand}
             className="trees"
             checkable
             expandedKeys={expandedKeys}
-            autoExpandParent
+            autoExpandParent={autoExpandParent}
             onCheck={this.onCheck}
             checkedKeys={checkedKeys}
             selectedKeys={checkedKeys}

@@ -86,11 +86,7 @@ class agreementOrder extends PureComponent {
         </Ellipsis>
       ),
     },
-    {
-      title: '客户参考号',
-      width: 100,
-      dataIndex: 'NumAtCard',
-    },
+
     {
       title: '联系人',
       width: 150,
@@ -141,6 +137,11 @@ class agreementOrder extends PureComponent {
       title: '成本总计',
       width: 100,
       dataIndex: 'OtherTotal',
+    },
+    {
+      title: '客户参考号',
+      width: 100,
+      dataIndex: 'NumAtCard',
     },
     {
       title: '备注',

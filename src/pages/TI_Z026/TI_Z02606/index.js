@@ -121,7 +121,8 @@ class inquiryListPage extends PureComponent {
       width: 300,
       render: (text, record) => (
         <Ellipsis tooltip lines={1}>
-          {`${record.Province}${record.City}${record.Area}${record.Address}`}
+          {`${record.Province || ''}${record.City || ''}${record.Area || ''}${record.Address ||
+            ''}`}
         </Ellipsis>
       ),
     },
@@ -387,6 +388,7 @@ class inquiryListPage extends PureComponent {
       loading,
       location,
     } = this.props;
+    console.log(pagination);
     return (
       <Fragment>
         <Card bordered={false}>

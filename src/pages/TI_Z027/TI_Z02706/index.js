@@ -85,16 +85,7 @@ class supplierQuotation extends PureComponent {
         </Ellipsis>
       ),
     },
-    {
-      title: '客户参考号',
-      width: 150,
-      dataIndex: 'NumAtCard',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
+
     {
       title: '联系人',
       width: 150,
@@ -162,6 +153,16 @@ class supplierQuotation extends PureComponent {
       width: 100,
       dataIndex: 'ToDate',
       render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
+    },
+    {
+      title: '客户参考号',
+      width: 150,
+      dataIndex: 'NumAtCard',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
   ];
 

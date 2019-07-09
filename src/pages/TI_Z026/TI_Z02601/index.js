@@ -455,7 +455,10 @@ class InquiryEdit extends React.Component {
       render: (text, record) => {
         if (record.lastIndex) return '';
         if (!text) return '';
-        return <span>{`${text || ''}(${record.Currency || ''})[${record.DocRate || ''}]`}</span>;
+        return (
+          <Ellipsis tooltip lines={1}>{`${text || ''}(${record.Currency || ''})[${record.DocRate ||
+            ''}]`}</Ellipsis>
+        );
       },
     },
     {
@@ -467,11 +470,11 @@ class InquiryEdit extends React.Component {
         record.lastIndex ? (
           ''
         ) : (
-          <span>
+          <Ellipsis tooltip lines={1}>
             {`${text || ''}${
               record.Currency ? `(${record.Currency})` : ''
             }-${record.InquiryLineTotalLocal || ''}`}
-          </span>
+          </Ellipsis>
         ),
     },
     {
@@ -1541,10 +1544,7 @@ class InquiryEdit extends React.Component {
     const { inquiryDetail } = this.state;
     const newArr = inquiryDetail.TI_Z02602.map(item => {
       const newitem = item;
-      if (!newitem.DueDate) {
-        newitem.DueDate = val.target.value;
-        return newitem;
-      }
+      newitem.DueDate = val.target.value;
       return newitem;
     });
     Object.assign(inquiryDetail, { TI_Z02602: newArr, DueDate: val.target.value });

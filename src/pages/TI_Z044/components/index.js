@@ -12,11 +12,15 @@ const { Option } = Select;
 class PrintTemplateDetail extends PureComponent {
   state = {
     templateVisible: false,
+    isChange: false,
     templatdetail: {},
   };
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    if (nextProps.templatdetail.HtmlTemplateCode !== prevState.templatdetail.HtmlTemplateCode) {
+    if (
+      nextProps.templatdetail.HtmlTemplateCode !== prevState.templatdetail.HtmlTemplateCode &&
+      !prevState.isChange
+    ) {
       return {
         templatdetail: nextProps.templatdetail,
       };
@@ -32,7 +36,7 @@ class PrintTemplateDetail extends PureComponent {
     const { templatdetail } = this.state;
     const { Code } = select[0];
     Object.assign(templatdetail, { HtmlTemplateCode: Code });
-    this.setState({ templatdetail: { ...templatdetail }, templateVisible: false });
+    this.setState({ templatdetail: { ...templatdetail }, templateVisible: false, isChange: true });
   };
 
   render() {

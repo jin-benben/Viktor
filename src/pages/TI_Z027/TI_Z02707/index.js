@@ -108,31 +108,12 @@ class supplierQuotationSku extends PureComponent {
         </Ellipsis>
       ),
     },
-    {
-      title: '联系人',
-      width: 100,
-      dataIndex: 'Contacts',
-      render: (text, record) => (
-        <Tooltip
-          title={
-            <Fragment>
-              {record.CellphoneNO}
-              <br />
-              {record.Email}
-              <br />
-              {record.PhoneNO}
-            </Fragment>
-          }
-        >
-          {text}
-        </Tooltip>
-      ),
-    },
+
     {
       title: '物料',
       dataIndex: 'SKU',
       align: 'center',
-      width: 100,
+      width: 200,
       render: (text, record) =>
         record.lastIndex ? (
           ''
@@ -213,6 +194,26 @@ class supplierQuotationSku extends PureComponent {
         } = this.props;
         return <span>{getName(Saler, text)}</span>;
       },
+    },
+    {
+      title: '联系人',
+      width: 100,
+      dataIndex: 'Contacts',
+      render: (text, record) => (
+        <Tooltip
+          title={
+            <Fragment>
+              {record.CellphoneNO}
+              <br />
+              {record.Email}
+              <br />
+              {record.PhoneNO}
+            </Fragment>
+          }
+        >
+          {text}
+        </Tooltip>
+      ),
     },
     {
       title: '重量',
@@ -553,7 +554,7 @@ class supplierQuotationSku extends PureComponent {
               data={{ list: supplierQuotationSkuList }}
               pagination={pagination}
               rowKey="Key"
-              scroll={{ x: 2400, y: 700 }}
+              scroll={{ x: 2500 }}
               rowSelection={{
                 type: 'radio',
                 onSelectRow: this.onSelectRow,

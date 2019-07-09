@@ -2,7 +2,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { Row, Col, Card, Form, Input, Button, message } from 'antd';
-import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import StandardTable from '@/components/StandardTable';
 import EditTemplate from './components';
 import { getName } from '@/utils/utils';
@@ -36,15 +35,11 @@ class EmailSendTemplate extends PureComponent {
       title: '代码',
       width: 80,
       dataIndex: 'Code',
-      render: (text, record) => (
-        <a href="javascript:;" onClick={() => this.changeTemplate(record)}>
-          {text}
-        </a>
-      ),
+      render: (text, record) => <a onClick={() => this.changeTemplate(record)}>{text}</a>,
     },
     {
       title: '名称',
-      width: 100,
+      width: 200,
       dataIndex: 'Name',
     },
     {
@@ -55,17 +50,17 @@ class EmailSendTemplate extends PureComponent {
     },
     {
       title: '内容模板',
-      width: 100,
+      width: 80,
       dataIndex: 'HtmlTemplateCode',
       render: text => (
-        <Ellipsis tooltip lines={5}>
+        <a target="_blank" rel="noopener noreferrer" href={`/base/TI_Z049/detail?Code=${text}`}>
           {text}
-        </Ellipsis>
+        </a>
       ),
     },
     {
       title: '备注',
-      width: 100,
+      width: 200,
       dataIndex: 'Comment',
     },
   ];

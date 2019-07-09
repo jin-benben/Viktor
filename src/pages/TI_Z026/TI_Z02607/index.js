@@ -108,6 +108,7 @@ class orderLine extends PureComponent {
     },
     {
       title: '客户',
+      width: 150,
       dataIndex: 'CardName',
       render: text => (
         <Ellipsis tooltip lines={1}>
@@ -188,7 +189,7 @@ class orderLine extends PureComponent {
     },
     {
       title: '询价价格',
-      width: 120,
+      width: 200,
       dataIndex: 'InquiryPrice',
       align: 'center',
       render: (text, record) => {
@@ -198,7 +199,7 @@ class orderLine extends PureComponent {
     },
     {
       title: '询行总计',
-      width: 150,
+      width: 200,
       align: 'center',
       dataIndex: 'InquiryLineTotal',
       render: (text, record) => (
@@ -477,6 +478,13 @@ class orderLine extends PureComponent {
         DocDateFrom = moment(fieldsValue.dateArr[0]).format('YYYY-MM-DD');
         DocDateTo = moment(fieldsValue.dateArr[1]).format('YYYY-MM-DD');
       }
+      let InquiryCfmDateFrom;
+      let InquiryCfmDateTo;
+      if (fieldsValue.InquiryCfmDate) {
+        InquiryCfmDateFrom = moment(fieldsValue.InquiryCfmDate[0]).format('YYYY-MM-DD');
+        InquiryCfmDateTo = moment(fieldsValue.InquiryCfmDate[1]).format('YYYY-MM-DD');
+      }
+
       let DocEntryFroms = '';
       let DocEntryTo = '';
       if (fieldsValue.orderNo) {
@@ -484,6 +492,7 @@ class orderLine extends PureComponent {
         DocEntryTo = fieldsValue.orderNo.DocEntryTo;
       }
       delete fieldsValue.orderNo;
+      delete fieldsValue.InquiryCfmDate;
       delete fieldsValue.dateArr;
       const newQueryData = {
         ...fieldsValue,
@@ -491,10 +500,8 @@ class orderLine extends PureComponent {
         DocDateTo,
         DocEntryFrom: DocEntryFroms,
         DocEntryTo,
-        ...fieldsValue.orderNo,
-        InquiryCfmDate: fieldsValue.InquiryCfmDate
-          ? fieldsValue.InquiryCfmDate.format('YYYY-MM-DD')
-          : '',
+        InquiryCfmDateFrom,
+        InquiryCfmDateTo,
       };
       Object.assign(queryData.Content, { ...newQueryData });
       Object.assign(queryData, { page: 1 });
@@ -593,11 +600,12 @@ class orderLine extends PureComponent {
             </FormItem>
           </Col>
           <Col md={5} sm={24}>
-            <FormItem key="InquiryCfmDate" {...formLayout} label="采报价日期">
-              {getFieldDecorator('InquiryCfmDate')(<DatePicker style={{ width: '100%' }} />)}
+            <FormItem label="采报价日期" {...formLayout}>
+              {getFieldDecorator('InquiryCfmDate', { rules: [{ type: 'array' }] })(
+                <RangePicker style={{ width: '100%' }} />
+              )}
             </FormItem>
           </Col>
-
           {expandForm ? (
             <Fragment>
               <Col md={5} sm={24}>
@@ -692,12 +700,6 @@ class orderLine extends PureComponent {
     } = this.props;
     const { needAsk, modalVisible, transferModalVisible, transferLine } = this.state;
 
-    const columns = this.columns.map(item => {
-      // eslint-disable-next-line no-param-reassign
-      item.align = 'Center';
-      return item;
-    });
-
     const parentMethods = {
       handleSubmit: this.submitNeedLine,
       handleModalVisible: this.handleModalVisible,
@@ -706,7 +708,13 @@ class orderLine extends PureComponent {
     const transferParentMethods = {
       handleModalVisible: this.handleModalVisible,
     };
-
+    //    let tablwidth=0;
+    // this.columns.map(item=>{
+    //   if(item.width){
+    //     tablwidth+=item.width
+    //   }
+    // })
+    // console.log(tablwidth)
     return (
       <Fragment>
         <Card bordered={false}>
@@ -718,8 +726,8 @@ class orderLine extends PureComponent {
               data={{ list: orderLineList }}
               pagination={pagination}
               rowKey="Key"
-              scroll={{ x: 3900 }}
-              columns={columns}
+              scroll={{ x: 4000 }}
+              columns={this.columns}
               rowSelection={{
                 onSelectRow: this.onSelectRow,
               }}

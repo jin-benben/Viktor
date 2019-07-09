@@ -34,7 +34,7 @@ class inquiryList extends PureComponent {
       dataIndex: 'set',
       width: 100,
       render: (text, record) => (
-        <Link to={`/base/TI_Z014/set?Code=${record.Code}`}>
+        <Link to={`/base/TI_Z014/set?Code=${record.Code}&Name=${record.Name}`}>
           <Icon type="setting" theme="twoTone" />
         </Link>
       ),
@@ -45,7 +45,7 @@ class inquiryList extends PureComponent {
       width: 100,
       dataIndex: 'change',
       render: (text, record) => (
-        <Link to={`/base/TI_Z014/edit?Code=${record.Code}`}>
+        <Link to={`/base/TI_Z014/edit?Code=${record.Code}&Name=${record.Name}`}>
           <Icon type="edit" theme="twoTone" />
         </Link>
       ),

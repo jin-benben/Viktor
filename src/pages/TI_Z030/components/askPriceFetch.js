@@ -51,7 +51,7 @@ class orderLine extends PureComponent {
   columns = [
     {
       title: '单号',
-      width: 50,
+      width: 80,
       fixed: 'left',
       dataIndex: 'DocEntry',
       render: (text, recond) => (
@@ -91,21 +91,21 @@ class orderLine extends PureComponent {
       width: 80,
       dataIndex: 'Unit',
     },
-    {
-      title: '要求交期',
-      dataIndex: 'DueDate',
-      width: 100,
-    },
-    {
-      title: '客户参考号',
-      width: 100,
-      dataIndex: 'NumAtCard',
-    },
-    {
-      title: '询价交期',
-      width: 100,
-      dataIndex: 'InquiryDueDate',
-    },
+    // {
+    //   title: '要求交期',
+    //   dataIndex: 'DueDate',
+    //   width: 100,
+    // },
+    // {
+    //   title: '客户参考号',
+    //   width: 100,
+    //   dataIndex: 'NumAtCard',
+    // },
+    // {
+    //   title: '询价交期',
+    //   width: 100,
+    //   dataIndex: 'InquiryDueDate',
+    // },
     {
       title: '价格',
       width: 100,
@@ -181,16 +181,36 @@ class orderLine extends PureComponent {
   }
 
   fetchOrder = async params => {
+    const { pagination } = this.state;
     const response = await request('/OMS/TI_Z029/TI_Z02907', {
       method: 'POST',
       data: {
         ...params,
       },
     });
-    if (response.Status !== 200) {
-      return;
+    if (response && response.Status === 200) {
+      if (response.Content) {
+        const { rows, records, page } = response.Content;
+        this.setState({
+          orderLineList: rows,
+          queryData: { ...params },
+          pagination: {
+            ...pagination,
+            total: records,
+            pageSize: params.rows,
+            current: page,
+          },
+        });
+      } else {
+        this.setState({
+          orderLineList: [],
+          queryData: { ...params },
+          pagination: {
+            total: 0,
+          },
+        });
+      }
     }
-    this.setState({ orderLineList: response.Content ? response.Content.rows : [] });
   };
 
   handleStandardTableChange = pagination => {
@@ -210,13 +230,20 @@ class orderLine extends PureComponent {
         DocDateFrom = moment(fieldsValue.dateArr[0]).format('YYYY-MM-DD');
         DocDateTo = moment(fieldsValue.dateArr[1]).format('YYYY-MM-DD');
       }
+      let DocEntryFroms = '';
+      let DocEntryTo = '';
+      if (fieldsValue.orderNo) {
+        DocEntryFroms = fieldsValue.orderNo.DocEntryFrom;
+        DocEntryTo = fieldsValue.orderNo.DocEntryTo;
+      }
       // eslint-disable-next-line no-param-reassign
       delete fieldsValue.orderNo;
       const queryData = {
         ...fieldsValue,
         DocDateFrom,
         DocDateTo,
-        ...fieldsValue.orderNo,
+        DocEntryFroms,
+        DocEntryTo,
       };
 
       this.fetchOrder({

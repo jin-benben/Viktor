@@ -96,12 +96,12 @@ class DataAuthority extends Component {
     data.map(item => {
       if (item.children) {
         return (
-          <TreeNode title={item.Name} key={item.Code}>
+          <TreeNode title={item.text} key={item.Code}>
             {this.renderTreeNodes(item.children)}
           </TreeNode>
         );
       }
-      return <TreeNode title={item.Name} key={item.Code} />;
+      return <TreeNode title={item.text} key={item.Code} />;
     });
 
   // 点击树形节点时

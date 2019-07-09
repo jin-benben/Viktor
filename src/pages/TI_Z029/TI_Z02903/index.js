@@ -161,7 +161,10 @@ class InquiryEdit extends Component {
       render: (text, record) => {
         if (record.lastIndex) return '';
         if (!text) return '';
-        return <span>{`${text || ''}(${record.Currency || ''})[${record.DocRate || ''}]`}</span>;
+        return (
+          <Ellipsis tooltip lines={1}>{`${text || ''}(${record.Currency || ''})[${record.DocRate ||
+            ''}]`}</Ellipsis>
+        );
       },
     },
     {
@@ -173,11 +176,11 @@ class InquiryEdit extends Component {
         record.lastIndex ? (
           ''
         ) : (
-          <span>
+          <Ellipsis tooltip lines={1}>
             {`${text || ''}${
               record.Currency ? `(${record.Currency})` : ''
             }-${record.InquiryLineTotalLocal || ''}`}
-          </span>
+          </Ellipsis>
         ),
     },
     {

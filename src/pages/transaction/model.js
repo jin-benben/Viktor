@@ -97,6 +97,9 @@ export default {
             type: 'save',
             payload: {
               ordrList: [],
+              pagination1: {
+                total: 0,
+              },
             },
           });
         } else {
@@ -106,6 +109,9 @@ export default {
             payload: {
               ordrList: rows,
               pagination1: {
+                showSizeChanger: true,
+                showTotal: total => `共 ${total} 条`,
+                pageSizeOptions: ['30', '60', '90'],
                 total: records,
                 pageSize: payload.rows,
                 current: page,
@@ -123,6 +129,9 @@ export default {
             type: 'save',
             payload: {
               ordrLineList: [],
+              pagination5: {
+                total: 0,
+              },
             },
           });
         } else {
@@ -132,6 +141,9 @@ export default {
             payload: {
               ordrLineList: rows,
               pagination5: {
+                showSizeChanger: true,
+                showTotal: total => `共 ${total} 条`,
+                pageSizeOptions: ['30', '60', '90'],
                 total: records,
                 pageSize: payload.rows,
                 current: page,
@@ -149,6 +161,9 @@ export default {
             type: 'save',
             payload: {
               orctovpmList: [],
+              pagination2: {
+                total: 0,
+              },
             },
           });
         } else {
@@ -158,6 +173,9 @@ export default {
             payload: {
               orctovpmList: rows,
               pagination2: {
+                showSizeChanger: true,
+                showTotal: total => `共 ${total} 条`,
+                pageSizeOptions: ['30', '60', '90'],
                 total: records,
                 pageSize: payload.rows,
                 current: page,
@@ -175,6 +193,9 @@ export default {
             type: 'save',
             payload: {
               odlnordnList: [],
+              pagination3: {
+                total: 0,
+              },
             },
           });
         } else {
@@ -184,6 +205,9 @@ export default {
             payload: {
               odlnordnList: rows,
               pagination3: {
+                showSizeChanger: true,
+                showTotal: total => `共 ${total} 条`,
+                pageSizeOptions: ['30', '60', '90'],
                 total: records,
                 pageSize: payload.rows,
                 current: page,
@@ -201,6 +225,9 @@ export default {
             type: 'save',
             payload: {
               odlnordnLineList: [],
+              pagination6: {
+                total: 0,
+              },
             },
           });
         } else {
@@ -210,6 +237,9 @@ export default {
             payload: {
               odlnordnLineList: rows,
               pagination6: {
+                showSizeChanger: true,
+                showTotal: total => `共 ${total} 条`,
+                pageSizeOptions: ['30', '60', '90'],
                 total: records,
                 pageSize: payload.rows,
                 current: page,
@@ -228,6 +258,9 @@ export default {
             type: 'save',
             payload: {
               oinvorinList: [],
+              pagination4: {
+                total: 0,
+              },
             },
           });
         } else {
@@ -237,6 +270,9 @@ export default {
             payload: {
               oinvorinList: rows,
               pagination4: {
+                showSizeChanger: true,
+                showTotal: total => `共 ${total} 条`,
+                pageSizeOptions: ['30', '60', '90'],
                 total: records,
                 pageSize: payload.rows,
                 current: page,
@@ -254,6 +290,9 @@ export default {
             type: 'save',
             payload: {
               oinvorinLineList: [],
+              pagination7: {
+                total: 0,
+              },
             },
           });
         } else {
@@ -263,6 +302,9 @@ export default {
             payload: {
               oinvorinLineList: rows,
               pagination7: {
+                showSizeChanger: true,
+                showTotal: total => `共 ${total} 条`,
+                pageSizeOptions: ['30', '60', '90'],
                 total: records,
                 pageSize: payload.rows,
                 current: page,

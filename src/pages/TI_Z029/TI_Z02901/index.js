@@ -225,7 +225,10 @@ class TI_Z029Component extends React.Component {
       render: (text, record) => {
         if (record.lastIndex) return '';
         if (!text) return '';
-        return <span>{`${text || ''}(${record.Currency || ''})[${record.DocRate || ''}]`}</span>;
+        return (
+          <Ellipsis tooltip lines={1}>{`${text || ''}(${record.Currency || ''})[${record.DocRate ||
+            ''}]`}</Ellipsis>
+        );
       },
     },
     {
@@ -237,11 +240,11 @@ class TI_Z029Component extends React.Component {
         record.lastIndex ? (
           ''
         ) : (
-          <span>
+          <Ellipsis tooltip lines={1}>
             {`${text || ''}${
               record.Currency ? `(${record.Currency})` : ''
             }-${record.InquiryLineTotalLocal || ''}`}
-          </span>
+          </Ellipsis>
         ),
     },
     {
@@ -1446,10 +1449,7 @@ class TI_Z029Component extends React.Component {
     const { formVals } = this.state;
     const newArr = formVals.TI_Z02902.map(item => {
       const newitem = item;
-      if (!newitem.DueDate) {
-        newitem.DueDate = val.target.value;
-        return newitem;
-      }
+      newitem.DueDate = val.target.value;
       return newitem;
     });
     Object.assign(formVals, { TI_Z02602: newArr, DueDate: val.target.value });
@@ -1817,7 +1817,7 @@ class TI_Z029Component extends React.Component {
             <StandardTable
               data={{ list: formVals.TI_Z02904 }}
               rowKey="LineID"
-              columns={this.otherCostCColumns}
+              columns={otherCostCColumns}
             />
           </TabPane>
           <TabPane tab="附件" key="4">

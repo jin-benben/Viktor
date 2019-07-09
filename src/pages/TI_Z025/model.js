@@ -56,7 +56,13 @@ export default {
             type: 'save',
             payload: {
               batchList: rows,
+              queryData: {
+                ...payload,
+              },
               pagination: {
+                showSizeChanger: true,
+                showTotal: total => `共 ${total} 条`,
+                pageSizeOptions: ['30', '60', '90'],
                 total: records,
                 pageSize: payload.rows,
                 current: page,

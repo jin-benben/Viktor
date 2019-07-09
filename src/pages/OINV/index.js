@@ -17,13 +17,13 @@ import {
   Input,
   Modal,
   Table,
-  Checkbox,
 } from 'antd';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import StandardTable from '@/components/StandardTable';
 import DocEntryFrom from '@/components/DocEntryFrom';
 import NeedAskPrice from './components';
+import OrderPrint from '@/components/Modal/OrderPrint/other';
 import MDMCommonality from '@/components/Select';
 import { getName } from '@/utils/utils';
 
@@ -44,7 +44,8 @@ class OINVConfrim extends PureComponent {
     expandForm: false,
     modalVisible: false,
     modalVisible1: false,
-    ischecked: true,
+    modalVisible2: false,
+    ParameterJson: '',
     selectedRows: [],
     responseData: [],
     selectPrint: [],
@@ -154,7 +155,7 @@ class OINVConfrim extends PureComponent {
     {
       title: '运输方式',
       dataIndex: 'TrnspCode',
-      width: 100,
+      width: 150,
       render: (text, record, index) => {
         const {
           global: { Trnsp },
@@ -419,10 +420,10 @@ class OINVConfrim extends PureComponent {
 
   // 需询价弹窗
   handleModalVisible = flag => {
-    this.setState({ modalVisible: !!flag, modalVisible1: !!flag });
+    this.setState({ modalVisible: !!flag, modalVisible1: !!flag, modalVisible2: !!flag });
   };
 
-  print = () => {
+  printHandle = () => {
     const { dispatch } = this.props;
     const { selectedRows } = this.state;
     if (!selectedRows.length) {
@@ -470,26 +471,17 @@ class OINVConfrim extends PureComponent {
   };
 
   okHandle = () => {
-    const {
-      global: { currentUser },
-    } = this.props;
-    const { selectPrint, ischecked } = this.state;
+    const { selectPrint } = this.state;
     const DocEntryList = selectPrint.map(item => item.BaseEntry);
     if (DocEntryList.length) {
-      window.open(
-        `http://47.104.65.49:8086/PrintExample.aspx?BaseType=13&DocEntryList=${DocEntryList.join()}&UserCode=${
-          currentUser.UserCode
-        }&IsPreview=${ischecked ? '1' : '0'}`
-      );
+      this.setState({
+        modalVisible2: true,
+        modalVisible1: false,
+        ParameterJson: JSON.stringify({ DocEntry: DocEntryList }),
+      });
     } else {
       message.success('请先选择');
     }
-  };
-
-  changePriview = e => {
-    this.setState({
-      ischecked: e.target.checked,
-    });
   };
 
   renderSimpleForm() {
@@ -592,8 +584,9 @@ class OINVConfrim extends PureComponent {
       modalVisible,
       responseData,
       modalVisible1,
-      ischecked,
+      modalVisible2,
       selectedRowKeys,
+      ParameterJson,
     } = this.state;
 
     const columns = this.columns.map(item => {
@@ -637,7 +630,7 @@ class OINVConfrim extends PureComponent {
           <Button style={{ marginTop: 20 }} onClick={this.selectNeed} type="primary">
             确认发票
           </Button>
-          <Button style={{ marginTop: 20 }} onClick={this.print} type="primary">
+          <Button style={{ marginTop: 20 }} onClick={this.printHandle} type="primary">
             打印
           </Button>
         </FooterToolbar>
@@ -664,15 +657,19 @@ class OINVConfrim extends PureComponent {
               columns={this.responseColums}
             />
             <div style={{ marginTop: 30 }}>
-              <Checkbox checked={ischecked} onChange={this.changePriview}>
-                预览快递单
-              </Checkbox>{' '}
               <Button onClick={this.okHandle} type="primary">
                 打印
               </Button>
             </div>
           </div>
         </Modal>
+        <OrderPrint
+          ParameterJson={ParameterJson}
+          BaseEntry=""
+          BaseType="TI_Z048"
+          modalVisible={modalVisible2}
+          handleModalVisible={this.handleModalVisible}
+        />
       </Fragment>
     );
   }

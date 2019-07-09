@@ -50,7 +50,6 @@ class StaffsModal extends PureComponent {
 
   okHandle = () => {
     const { selectedRows } = this.state;
-    console.log(selectedRows);
     const { handleSubmit } = this.props;
     if (selectedRows.length) {
       handleSubmit(selectedRows);

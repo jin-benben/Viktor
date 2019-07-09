@@ -2,7 +2,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { Row, Col, Card, Form, Input, Button, message } from 'antd';
-import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import StandardTable from '@/components/StandardTable';
 import EditTemplate from './components';
 import { getName } from '@/utils/utils';
@@ -60,12 +59,12 @@ class PrintTemplate extends PureComponent {
     },
     {
       title: '内容模板',
-      width: 200,
+      width: 80,
       dataIndex: 'HtmlTemplateCode',
       render: text => (
-        <Ellipsis tooltip lines={5}>
+        <a target="_blank" rel="noopener noreferrer" href={`/base/TI_Z049/detail?Code=${text}`}>
           {text}
-        </Ellipsis>
+        </a>
       ),
     },
     {

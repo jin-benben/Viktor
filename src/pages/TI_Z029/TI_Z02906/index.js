@@ -87,11 +87,7 @@ class SalesQuotation extends PureComponent {
         </Ellipsis>
       ),
     },
-    {
-      title: '客户参考号',
-      width: 100,
-      dataIndex: 'NumAtCard',
-    },
+
     {
       title: '联系人',
       width: 150,
@@ -146,6 +142,11 @@ class SalesQuotation extends PureComponent {
       title: '利润',
       width: 100,
       dataIndex: 'ProfitTotal',
+    },
+    {
+      title: '客户参考号',
+      width: 100,
+      dataIndex: 'NumAtCard',
     },
     {
       title: '备注',

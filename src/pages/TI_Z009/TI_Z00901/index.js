@@ -314,7 +314,7 @@ class AddSKU extends Component {
         type: 'global/getMDMCommonality',
         payload: {
           Content: {
-            CodeList: ['Purchaser', 'TI_Z042', 'WhsCode'],
+            CodeList: ['Purchaser', 'TI_Z042', 'WhsCode', 'Saler'],
           },
         },
       });

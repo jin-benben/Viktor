@@ -198,25 +198,28 @@ class SalesQuotationSku extends PureComponent {
     },
     {
       title: '询价价格',
-      width: 150,
+      width: 120,
       dataIndex: 'InquiryPrice',
       align: 'center',
       render: (text, record) => {
         if (!text) return '';
-        return <span>{`${text || ''}(${record.Currency || ''})[${record.DocRate || ''}]`}</span>;
+        return (
+          <Ellipsis tooltip lines={1}>{`${text || ''}(${record.Currency || ''})[${record.DocRate ||
+            ''}]`}</Ellipsis>
+        );
       },
     },
     {
       title: '询行总计',
-      width: 200,
+      width: 150,
       align: 'center',
       dataIndex: 'InquiryLineTotal',
       render: (text, record) => (
-        <span>
+        <Ellipsis tooltip lines={1}>
           {`${text || ''}${
             record.Currency ? `(${record.Currency})` : ''
           }-${record.InquiryLineTotalLocal || ''}`}
-        </span>
+        </Ellipsis>
       ),
     },
     {
@@ -457,6 +460,12 @@ class SalesQuotationSku extends PureComponent {
         DocEntryFroms = fieldsValue.orderNo.DocEntryFrom;
         DocEntryTo = fieldsValue.orderNo.DocEntryTo;
       }
+      let InquiryCfmDateFrom = '';
+      let InquiryCfmDateTo = '';
+      if (fieldsValue.InquiryCfmDate) {
+        InquiryCfmDateFrom = moment(fieldsValue.InquiryCfmDate[0]).format('YYYY-MM-DD');
+        InquiryCfmDateTo = moment(fieldsValue.InquiryCfmDate[1]).format('YYYY-MM-DD');
+      }
       let BaseEntryFrom = '';
       let BaseEntryTo = '';
       if (fieldsValue.BaseEntry) {
@@ -466,6 +475,7 @@ class SalesQuotationSku extends PureComponent {
       delete fieldsValue.orderNo;
       delete fieldsValue.dateArr;
       delete fieldsValue.BaseEntry;
+      delete fieldsValue.InquiryCfmDate;
       const queryData = {
         ...fieldsValue,
         DocDateFrom,
@@ -474,6 +484,8 @@ class SalesQuotationSku extends PureComponent {
         DocDateTo,
         DocEntryFroms,
         DocEntryTo,
+        InquiryCfmDateFrom,
+        InquiryCfmDateTo,
       };
       dispatch({
         type: 'SalesQuotationSku/fetch',
@@ -620,6 +632,13 @@ class SalesQuotationSku extends PureComponent {
               <Col md={5} sm={24}>
                 <FormItem label="日期" {...formLayout}>
                   {getFieldDecorator('dateArr', { rules: [{ type: 'array' }] })(
+                    <RangePicker style={{ width: '100%' }} />
+                  )}
+                </FormItem>
+              </Col>
+              <Col md={5} sm={24}>
+                <FormItem label="采报价日期" {...formLayout}>
+                  {getFieldDecorator('InquiryCfmDate', { rules: [{ type: 'array' }] })(
                     <RangePicker style={{ width: '100%' }} />
                   )}
                 </FormItem>

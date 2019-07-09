@@ -220,14 +220,23 @@ class AgreementEdit extends React.Component {
       align: 'center',
     },
     {
+      title: '报价交期',
+      width: 120,
+      dataIndex: 'DueDateComment',
+      align: 'center',
+    },
+    {
       title: '询价价格',
-      width: 150,
+      width: 120,
       dataIndex: 'InquiryPrice',
       align: 'center',
       render: (text, record) => {
         if (record.lastIndex) return '';
         if (!text) return '';
-        return <span>{`${text || ''}(${record.Currency || ''})[${record.DocRate || ''}]`}</span>;
+        return (
+          <Ellipsis tooltip lines={1}>{`${text || ''}(${record.Currency || ''})[${record.DocRate ||
+            ''}]`}</Ellipsis>
+        );
       },
     },
     {
@@ -239,11 +248,11 @@ class AgreementEdit extends React.Component {
         record.lastIndex ? (
           ''
         ) : (
-          <span>
+          <Ellipsis tooltip lines={1}>
             {`${text || ''}${
               record.Currency ? `(${record.Currency})` : ''
             }-${record.InquiryLineTotalLocal || ''}`}
-          </span>
+          </Ellipsis>
         ),
     },
     {
@@ -594,6 +603,7 @@ class AgreementEdit extends React.Component {
         TI_Z03004: [],
         TI_Z03005: [],
         TI_Z02603Fahter: [],
+        Comment: '',
         CardCode: '',
         CardName: '',
         Contacts: '',
@@ -616,6 +626,7 @@ class AgreementEdit extends React.Component {
         AddressID: '',
         NumAtCard: '',
         Owner: '',
+        Gtax: '',
       }, // 单据信息
       tabIndex: '1', // tab
       uploadmodalVisible: false, // 上传Modal
@@ -724,6 +735,7 @@ class AgreementEdit extends React.Component {
               UserID,
               ToDate,
               TI_Z02905,
+              DueDate,
             } = response.Content;
 
             this.setState({
@@ -751,6 +763,7 @@ class AgreementEdit extends React.Component {
                 DueDate: '',
                 ToDate,
                 UserID,
+                DueDateComment: DueDate,
                 TI_Z03005: TI_Z02905,
                 TI_Z03002: [],
               },
@@ -1231,7 +1244,6 @@ class AgreementEdit extends React.Component {
         Quantity,
         Unit,
         ForeignParameters,
-        DueDate,
         InquiryPrice,
         Price,
         InquiryDueDate,
@@ -1248,6 +1260,7 @@ class AgreementEdit extends React.Component {
         InquiryCfmUser,
         Contacts,
         WhsCode,
+        DueDateComment: DueDate,
         CreateUser: currentUser.UserCode,
         CreateDate: orderDetail.CreateDate || new Date(),
         LineID: newLineID,
@@ -1655,7 +1668,7 @@ class AgreementEdit extends React.Component {
               <EditableFormTable
                 rowChange={this.rowChange}
                 rowKey="LineID"
-                scroll={{ x: 4200 }}
+                scroll={{ x: 4300 }}
                 columns={this.skuColumns1}
                 data={newdata}
               />
@@ -1760,6 +1773,18 @@ class AgreementEdit extends React.Component {
                 </FormItem>
               </Col>
               <Col lg={8} md={12} sm={24}>
+                <FormItem key="Gtax" {...this.formLayout} label="需金税发票">
+                  {getFieldDecorator('Gtax', {
+                    initialValue: orderDetail.Gtax,
+                  })(
+                    <Select style={{ width: '100%' }} placeholder="请选择">
+                      <Option value="Y">是</Option>
+                      <Option value="N">否</Option>
+                    </Select>
+                  )}
+                </FormItem>
+              </Col>
+              <Col lg={8} md={12} sm={24}>
                 <FormItem key="Transport" {...this.formLayout} label="单独运输">
                   {getFieldDecorator('Transport', {
                     initialValue: orderDetail.Transport,
@@ -1770,6 +1795,13 @@ class AgreementEdit extends React.Component {
                       <Option value="N">否</Option>
                     </Select>
                   )}
+                </FormItem>
+              </Col>
+              <Col lg={8} md={12} sm={24}>
+                <FormItem key="DueDateComment" {...this.formLayout} label="报价交期备注">
+                  {getFieldDecorator('DueDateComment', {
+                    initialValue: orderDetail.DueDateComment,
+                  })(<Input disabled placeholder="报价交期备注" />)}
                 </FormItem>
               </Col>
             </Row>

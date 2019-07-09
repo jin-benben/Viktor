@@ -1,18 +1,26 @@
 import React, { PureComponent } from 'react';
 
-import { Row, Col, Form, Input, Modal, Button, message, Table } from 'antd';
-
+import { Row, Col, Form, Input, Modal, Button, message } from 'antd';
+import { connect } from 'dva';
+import Ellipsis from 'ant-design-pro/lib/Ellipsis';
+import StandardTable from '@/components/StandardTable';
 import request from '@/utils/request';
+import { printType, printOrderType } from '@/utils/publicData';
+import { getName } from '@/utils/utils';
 
 const FormItem = Form.Item;
 
 @Form.create()
-class SKUModal extends PureComponent {
+@connect(({ global }) => ({
+  global,
+}))
+class OrderPrint extends PureComponent {
   state = {
     templateList: [],
     selectedRows: [],
     queryData: {
       Content: {
+        BaseType: '',
         SearchText: '',
         SearchKey: 'Name',
       },
@@ -34,31 +42,79 @@ class SKUModal extends PureComponent {
   columns = [
     {
       title: '代码',
+      width: 60,
       dataIndex: 'Code',
-      width: 100,
     },
     {
       title: '名称',
+      width: 200,
       dataIndex: 'Name',
+    },
+    {
+      title: '打印类型',
+      dataIndex: 'PrintType',
+      width: 70,
+      render: text => <span>{getName(printType, text)}</span>,
+    },
+    {
+      title: '单据类型',
+      dataIndex: 'BaseType',
+      width: 80,
+      render: text => <span>{getName(printOrderType, text)}</span>,
+    },
+    {
+      title: '内容模板',
+      width: 70,
+      dataIndex: 'HtmlTemplateCode',
+      render: text => (
+        <Ellipsis tooltip lines={5}>
+          {text}
+        </Ellipsis>
+      ),
+    },
+    {
+      title: '备注',
+      width: 200,
+      dataIndex: 'Comment',
     },
   ];
 
   componentDidMount() {
     const { queryData } = this.state;
+    const { BaseType } = this.props;
+    Object.assign(queryData.Content, { BaseType });
     this.getTemplate(queryData);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const { queryData } = this.state;
+
+    if (nextProps.BaseType !== queryData.Content.BaseType) {
+      Object.assign(queryData.Content, { BaseType: nextProps.BaseType });
+      this.getTemplate(queryData);
+      return {
+        queryData: {
+          ...queryData,
+        },
+      };
+    }
+    return null;
   }
 
   okHandle = () => {
     const { selectedRows } = this.state;
-    const { handleSubmit } = this.props;
+    const { BaseEntry, BaseType, ParameterJson } = this.props;
     if (selectedRows.length) {
-      handleSubmit(selectedRows);
+      const { Code, Name } = selectedRows[0];
+      window.open(
+        `/base/print?BaseEntry=${BaseEntry}&BaseType=${BaseType}&Code=${Code}&Name=${Name}&ParameterJson=${ParameterJson}`
+      );
     } else {
       message.warning('请先选择');
     }
   };
 
-  onSelectRow = (selectedKeys, selectedRows) => {
+  onSelectRow = selectedRows => {
     this.setState({ selectedRows: [...selectedRows] });
   };
 
@@ -76,26 +132,25 @@ class SKUModal extends PureComponent {
   handleSearch = e => {
     e.preventDefault();
     const { form } = this.props;
+    const { queryData } = this.state;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
-      const queryData = {
+      this.getTemplate({
         Content: {
-          SearchText: '',
-          SearchKey: 'Name',
+          ...queryData.Content,
           ...fieldsValue,
         },
         page: 1,
         rows: 30,
         sidx: 'Code',
         sord: 'Desc',
-      };
-      this.getTemplate(queryData);
+      });
     });
   };
 
   getTemplate = async params => {
     const { pagination } = this.state;
-    const response = await request('/MDM/TI_Z049/TI_Z04902', {
+    const response = await request('/MDM/TI_Z044/TI_Z04402', {
       method: 'POST',
       data: {
         ...params,
@@ -146,29 +201,30 @@ class SKUModal extends PureComponent {
   }
 
   render() {
-    const { loading, pagination, templateList } = this.state;
-    const { modalVisible, handleModalVisible } = this.props;
+    const { pagination, templateList, loading } = this.state;
+    const { handleModalVisible, modalVisible } = this.props;
     return (
       <Modal
         width={960}
-        title="模板选择"
+        destroyOnClose
         maskClosable={false}
+        title="模板选择"
         visible={modalVisible}
         onOk={this.okHandle}
         onCancel={() => handleModalVisible(false)}
       >
         <div className="tableList">
           <div className="tableListForm">{this.renderSimpleForm()}</div>
-          <Table
+          <StandardTable
             loading={loading}
-            dataSource={templateList}
+            data={{ list: templateList }}
             rowKey="Code"
             scroll={{ y: 400 }}
             pagination={pagination}
             columns={this.columns}
             rowSelection={{
               type: 'radio',
-              onChange: this.onSelectRow,
+              onSelectRow: this.onSelectRow,
             }}
             onChange={this.handleStandardTableChange}
           />
@@ -178,4 +234,4 @@ class SKUModal extends PureComponent {
   }
 }
 
-export default SKUModal;
+export default OrderPrint;

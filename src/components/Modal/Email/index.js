@@ -2,9 +2,9 @@ import React, { PureComponent, Fragment } from 'react';
 
 import { Row, Col, Form, Input, Modal, Button, message } from 'antd';
 import { connect } from 'dva';
+import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import StandardTable from '@/components/StandardTable';
 import request from '@/utils/request';
-import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import { emailSendType } from '@/utils/publicData';
 import { getName } from '@/utils/utils';
 
@@ -141,6 +141,7 @@ class EmailModal extends PureComponent {
   };
 
   getTemplate = async params => {
+    const { pagination } = this.state;
     const response = await request('/MDM/TI_Z046/TI_Z04602', {
       method: 'POST',
       data: {
@@ -150,14 +151,18 @@ class EmailModal extends PureComponent {
     if (response && response.Status === 200) {
       if (response.Content) {
         const { rows, records, page } = response.Content;
-        const { pagination } = this.state;
         this.setState({
           templateList: [...rows],
+          queryData: { ...params },
           pagination: { ...pagination, total: records, current: page },
         });
       } else {
         this.setState({
           templateList: [],
+          queryData: { ...params },
+          pagination: {
+            total: 0,
+          },
         });
       }
     }
