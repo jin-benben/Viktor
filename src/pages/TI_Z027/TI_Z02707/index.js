@@ -23,6 +23,7 @@ import StandardTable from '@/components/StandardTable';
 import DocEntryFrom from '@/components/DocEntryFrom';
 import Organization from '@/components/Organization/multiple';
 import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
+import ProcessorSelect from '@/components/Select/SalerPurchaser';
 import Transfer from '@/components/Transfer';
 import MyPageHeader from '../components/pageHeader';
 import { getName } from '@/utils/utils';
@@ -263,6 +264,33 @@ class supplierQuotationSku extends PureComponent {
       align: 'center',
     },
     {
+      title: '处理人',
+      width: 120,
+      dataIndex: 'Processor',
+      render: val => {
+        const {
+          global: { TI_Z004 },
+        } = this.props;
+        return <span>{getName(TI_Z004, val)}</span>;
+      },
+    },
+    {
+      title: '转移备注',
+      width: 150,
+      dataIndex: 'TransferComment',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
+    },
+    {
+      title: '转移日期',
+      dataIndex: 'TransferDateTime',
+      width: 100,
+      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
+    },
+    {
       title: '客户参考号',
       width: 100,
       dataIndex: 'NumAtCard',
@@ -296,7 +324,7 @@ class supplierQuotationSku extends PureComponent {
       type: 'global/getMDMCommonality',
       payload: {
         Content: {
-          CodeList: ['Saler', 'Company', 'Purchaser'],
+          CodeList: ['Saler', 'Company', 'Purchaser', 'TI_Z004'],
         },
       },
     });
@@ -333,6 +361,13 @@ class supplierQuotationSku extends PureComponent {
         DocDateFrom = moment(fieldsValue.dateArr[0]).format('YYYY-MM-DD');
         DocDateTo = moment(fieldsValue.dateArr[1]).format('YYYY-MM-DD');
       }
+      let TransferDateTimeFrom = '';
+      let TransferDateTimeTo = '';
+      if (fieldsValue.TransferDate) {
+        TransferDateTimeFrom = moment(fieldsValue.TransferDate[0]).format('YYYY-MM-DD');
+        TransferDateTimeTo = moment(fieldsValue.TransferDate[1]).format('YYYY-MM-DD');
+      }
+
       let DocEntryFroms = '';
       let DocEntryTo = '';
       if (fieldsValue.orderNo) {
@@ -348,6 +383,7 @@ class supplierQuotationSku extends PureComponent {
       delete fieldsValue.orderNo;
       delete fieldsValue.dateArr;
       delete fieldsValue.BaseEntry;
+      delete fieldsValue.TransferDate;
       const queryData = {
         ...fieldsValue,
         DocDateFrom,
@@ -356,6 +392,8 @@ class supplierQuotationSku extends PureComponent {
         DocDateTo,
         DocEntryFroms,
         DocEntryTo,
+        TransferDateTimeFrom,
+        TransferDateTimeTo,
       };
       dispatch({
         type: 'supplierQuotationSku/fetch',
@@ -406,6 +444,7 @@ class supplierQuotationSku extends PureComponent {
     const {
       form: { getFieldDecorator },
       supplierQuotationSku: { queryData },
+      global: { OSLPList },
     } = this.props;
     const { Closed } = queryData.Content;
     const { expandForm } = this.state;
@@ -474,7 +513,7 @@ class supplierQuotationSku extends PureComponent {
                 </FormItem>
               </Col>
               <Col md={5} sm={24}>
-                <FormItem label="日期" {...formLayout}>
+                <FormItem label="单据日期" {...formLayout}>
                   {getFieldDecorator('dateArr', { rules: [{ type: 'array' }] })(
                     <RangePicker style={{ width: '100%' }} />
                   )}
@@ -497,6 +536,29 @@ class supplierQuotationSku extends PureComponent {
               <Col md={5} sm={24}>
                 <FormItem key="DeptList" {...this.formLayout} label="部门">
                   {getFieldDecorator('DeptList')(<Organization />)}
+                </FormItem>
+              </Col>
+              <Col md={5} sm={24}>
+                <FormItem label="转移日期" {...formLayout}>
+                  {getFieldDecorator('TransferDate', { rules: [{ type: 'array' }] })(
+                    <RangePicker style={{ width: '100%' }} />
+                  )}
+                </FormItem>
+              </Col>
+              <Col md={5} sm={24}>
+                <FormItem key="Processor" {...formLayout} label="处理人">
+                  {getFieldDecorator('Processor')(<ProcessorSelect data={OSLPList} type="Code" />)}
+                </FormItem>
+              </Col>
+              <Col md={5} sm={24}>
+                <FormItem key="AutoTransfer" {...formLayout} label="自动转移">
+                  {getFieldDecorator('AutoTransfer')(
+                    <Select placeholder="请选择">
+                      <Option value="Y">是</Option>
+                      <Option value="N">否</Option>
+                      <Option value="">全部</Option>
+                    </Select>
+                  )}
                 </FormItem>
               </Col>
             </Fragment>
@@ -554,7 +616,7 @@ class supplierQuotationSku extends PureComponent {
               data={{ list: supplierQuotationSkuList }}
               pagination={pagination}
               rowKey="Key"
-              scroll={{ x: 2500 }}
+              scroll={{ x: 2900 }}
               rowSelection={{
                 type: 'radio',
                 onSelectRow: this.onSelectRow,

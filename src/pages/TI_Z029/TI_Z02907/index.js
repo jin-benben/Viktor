@@ -25,6 +25,7 @@ import Transfer from '@/components/Transfer';
 import DocEntryFrom from '@/components/DocEntryFrom';
 import Organization from '@/components/Organization/multiple';
 import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
+import ProcessorSelect from '@/components/Select/SalerPurchaser';
 import MyPageHeader from '../components/pageHeader';
 import { getName } from '@/utils/utils';
 
@@ -460,6 +461,12 @@ class SalesQuotationSku extends PureComponent {
         DocEntryFroms = fieldsValue.orderNo.DocEntryFrom;
         DocEntryTo = fieldsValue.orderNo.DocEntryTo;
       }
+      let TransferDateTimeFrom = '';
+      let TransferDateTimeTo = '';
+      if (fieldsValue.TransferDate) {
+        TransferDateTimeFrom = moment(fieldsValue.TransferDate[0]).format('YYYY-MM-DD');
+        TransferDateTimeTo = moment(fieldsValue.TransferDate[1]).format('YYYY-MM-DD');
+      }
       let InquiryCfmDateFrom = '';
       let InquiryCfmDateTo = '';
       if (fieldsValue.InquiryCfmDate) {
@@ -476,6 +483,7 @@ class SalesQuotationSku extends PureComponent {
       delete fieldsValue.dateArr;
       delete fieldsValue.BaseEntry;
       delete fieldsValue.InquiryCfmDate;
+      delete fieldsValue.TransferDate;
       const queryData = {
         ...fieldsValue,
         DocDateFrom,
@@ -578,6 +586,7 @@ class SalesQuotationSku extends PureComponent {
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
+      global: { OSLPList },
     } = this.props;
     const { expandForm } = this.state;
     const formLayout = {
@@ -663,6 +672,29 @@ class SalesQuotationSku extends PureComponent {
                   {getFieldDecorator('BaseEntry', {
                     initialValue: { DocEntryFrom: '', DocEntryTo: '' },
                   })(<DocEntryFrom />)}
+                </FormItem>
+              </Col>
+              <Col md={5} sm={24}>
+                <FormItem label="转移日期" {...formLayout}>
+                  {getFieldDecorator('TransferDate', { rules: [{ type: 'array' }] })(
+                    <RangePicker style={{ width: '100%' }} />
+                  )}
+                </FormItem>
+              </Col>
+              <Col md={5} sm={24}>
+                <FormItem key="Processor" {...formLayout} label="处理人">
+                  {getFieldDecorator('Processor')(<ProcessorSelect data={OSLPList} type="Code" />)}
+                </FormItem>
+              </Col>
+              <Col md={5} sm={24}>
+                <FormItem key="AutoTransfer" {...formLayout} label="自动转移">
+                  {getFieldDecorator('AutoTransfer')(
+                    <Select placeholder="请选择">
+                      <Option value="Y">是</Option>
+                      <Option value="N">否</Option>
+                      <Option value="">全部</Option>
+                    </Select>
+                  )}
                 </FormItem>
               </Col>
             </Fragment>

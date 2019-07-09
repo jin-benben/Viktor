@@ -60,13 +60,21 @@ class SalerPurchaser extends PureComponent {
 
     if (onChange) {
       const { data } = this.state;
-      const select = data.find(item => item.SlpCode === value);
-      onChange(select);
+      const { type } = this.props;
+      const TypeKey = type || 'SlpCode';
+      const select = data.find(item => item[TypeKey] === value);
+      if (type) {
+        onChange(select.Code);
+      } else {
+        onChange(select);
+      }
     }
   };
 
   render() {
     const { fetching, data, value } = this.state;
+    const { type } = this.props;
+    const TypeKey = type || 'SlpCode';
     return (
       <Select
         showSearch
@@ -80,7 +88,7 @@ class SalerPurchaser extends PureComponent {
         style={{ width: '100%' }}
       >
         {data.map(option => (
-          <Option key={option.SlpCode} value={option.SlpCode}>
+          <Option key={option[TypeKey]} value={option[TypeKey]}>
             {option.SlpName}
           </Option>
         ))}

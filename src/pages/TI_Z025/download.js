@@ -154,7 +154,7 @@ class BatchUpload extends PureComponent {
     const { selectedRows } = this.state;
     const { dispatch } = this.props;
     if (!selectedRows.length) return false;
-    const AttachmentCode = selectedRows.map(item => item.Code);
+    const AttachmentCode = selectedRows.map(item => item.AttachmentCode);
     dispatch({
       type: 'batchManage/upload',
       payload: {
