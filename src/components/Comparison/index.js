@@ -100,7 +100,7 @@ class comparison extends PureComponent {
           />
         </Modal>
         <Button type="primary" onClick={() => this.handleModalVisible(true)}>
-          字符匹配
+          名称规格匹配
         </Button>
       </Fragment>
     );

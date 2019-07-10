@@ -398,7 +398,7 @@ class CompanyEdit extends React.Component {
           icon="plus"
           style={{ marginLeft: 8 }}
           type="primary"
-          onClick={() => this.handleModalVisible(true)}
+          onClick={() => this.setState({brandmodalVisible:true})}
         >
           添加品牌
         </Button>
