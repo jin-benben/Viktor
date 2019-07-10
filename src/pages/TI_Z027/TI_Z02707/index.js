@@ -156,6 +156,14 @@ class supplierQuotationSku extends PureComponent {
       align: 'center',
     },
     {
+      title: '重量[运费]',
+      width: 100,
+      dataIndex: 'Rweight',
+      align: 'center',
+      render: (text, record) =>
+        record.lastIndex ? '' : <span>{`${text}[${record.ForeignFreight}]`}</span>,
+    },
+    {
       title: '询价交期',
       width: 120,
       dataIndex: 'InquiryDueDate',
@@ -216,18 +224,7 @@ class supplierQuotationSku extends PureComponent {
         </Tooltip>
       ),
     },
-    {
-      title: '重量',
-      width: 80,
-      dataIndex: 'Rweight',
-      align: 'center',
-    },
-    {
-      title: '国外运费',
-      width: 80,
-      dataIndex: 'ForeignFreight',
-      align: 'center',
-    },
+
     {
       title: '销行备注',
       dataIndex: 'BaseLineComment',
@@ -289,6 +286,16 @@ class supplierQuotationSku extends PureComponent {
       dataIndex: 'TransferDateTime',
       width: 100,
       render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
+    },
+    {
+      title: '创建日期',
+      width: 100,
+      dataIndex: 'CreateDate',
+      render: val => (
+        <Ellipsis tooltip lines={1}>
+          <span>{val ? moment(val).format('YYYY-MM-DD HH-DD-MM') : ''}</span>
+        </Ellipsis>
+      ),
     },
     {
       title: '客户参考号',
@@ -616,7 +623,7 @@ class supplierQuotationSku extends PureComponent {
               data={{ list: supplierQuotationSkuList }}
               pagination={pagination}
               rowKey="Key"
-              scroll={{ x: 2900 }}
+              scroll={{ x: 3000 }}
               rowSelection={{
                 type: 'radio',
                 onSelectRow: this.onSelectRow,

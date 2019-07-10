@@ -49,12 +49,6 @@ class supplierQuotation extends PureComponent {
       render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
     },
     {
-      title: '创建日期',
-      width: 100,
-      dataIndex: 'CreateDate',
-      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
-    },
-    {
       title: '单据状态',
       dataIndex: 'DocStatus',
       width: 140,
@@ -155,8 +149,18 @@ class supplierQuotation extends PureComponent {
       render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
     },
     {
+      title: '创建日期',
+      width: 100,
+      dataIndex: 'CreateDate',
+      render: val => (
+        <Ellipsis tooltip lines={1}>
+          <span>{val ? moment(val).format('YYYY-MM-DD HH-DD-MM') : ''}</span>
+        </Ellipsis>
+      ),
+    },
+    {
       title: '客户参考号',
-      width: 150,
+      width: 100,
       dataIndex: 'NumAtCard',
       render: text => (
         <Ellipsis tooltip lines={1}>

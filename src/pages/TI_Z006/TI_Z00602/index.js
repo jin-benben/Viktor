@@ -4,6 +4,7 @@ import router from 'umi/router';
 import { Row, Col, Card, Form, Input, Button } from 'antd';
 import Link from 'umi/link';
 import StandardTable from '@/components/StandardTable';
+import MyPageHeader from '../components/pageHeader';
 import { getName } from '@/utils/utils';
 
 const FormItem = Form.Item;
@@ -192,11 +193,13 @@ class companySearch extends PureComponent {
     const {
       companySearch: { companyList, pagination },
       loading,
+      location,
     } = this.props;
 
     return (
       <Fragment>
         <Card bordered={false}>
+          <MyPageHeader {...location} />
           <div className="tableList">
             <div className="tableListForm">{this.renderSimpleForm()}</div>
             <StandardTable

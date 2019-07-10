@@ -120,6 +120,14 @@ class InquiryEdit extends React.Component {
       align: 'center',
     },
     {
+      title: '重量[运费]',
+      width: 100,
+      dataIndex: 'Rweight',
+      align: 'center',
+      render: (text, record) =>
+        record.lastIndex ? '' : <span>{`${text}[${record.ForeignFreight}]`}</span>,
+    },
+    {
       title: '询价交期',
       width: 120,
       dataIndex: 'InquiryDueDate',
@@ -136,18 +144,7 @@ class InquiryEdit extends React.Component {
         </Ellipsis>
       ),
     },
-    {
-      title: '重量',
-      width: 80,
-      dataIndex: 'Rweight',
-      align: 'center',
-    },
-    {
-      title: '国外运费',
-      width: 80,
-      dataIndex: 'ForeignFreight',
-      align: 'center',
-    },
+
     {
       title: '销行备注',
       dataIndex: 'BaseLineComment',

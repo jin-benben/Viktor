@@ -6,6 +6,7 @@ import { Row, Col, Card, Form, Input, Button } from 'antd';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import StandardTable from '@/components/StandardTable';
 import Brand from '@/components/Brand';
+import MyPageHeader from '../components/pageHeader';
 import { getName } from '@/utils/utils';
 
 const FormItem = Form.Item;
@@ -269,11 +270,13 @@ class SupplierSearch extends PureComponent {
     const {
       supplierSearch: { supplierList, pagination },
       loading,
+      location,
     } = this.props;
 
     return (
       <Fragment>
         <Card bordered={false}>
+          <MyPageHeader {...location} />
           <div className="tableList">
             <div className="tableListForm">{this.renderSimpleForm()}</div>
             <StandardTable

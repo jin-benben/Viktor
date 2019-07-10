@@ -1,22 +1,25 @@
 /* eslint-disable no-param-reassign */
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Row, Col, Card, Form, Input, Modal, Button, message, Divider, Select } from 'antd';
+import { Row, Col, Card, Form, Input, Modal, Button, message, Divider, Select, Icon } from 'antd';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import StandardTable from '@/components/StandardTable';
 import Supplier from '@/components/Supplier';
 import Upload from '@/components/Upload';
 import MDMCommonality from '@/components/Select';
 import MyIcon from '@/components/MyIcon';
+import OrderAttachUpload from '@/components/Modal/OrderAttachUpload';
+import MyPageHeader from './components/pageHeader';
 import { getName } from '@/utils/utils';
-import { brandLevel } from '@/utils/publicData';
+import { brandLevel, formLayout, formItemLayout } from '@/utils/publicData';
 
 const { TextArea } = Input;
 const FormItem = Form.Item;
 const { Option } = Select;
 
-@connect(({ global }) => ({
+@connect(({ global, loading }) => ({
   global,
+  loading: loading.models.brands,
 }))
 @Form.create()
 class CreateForm extends PureComponent {
@@ -28,10 +31,6 @@ class CreateForm extends PureComponent {
         CardCode: '',
         CardName: '',
       },
-    };
-    this.formLayout = {
-      labelCol: { span: 7 },
-      wrapperCol: { span: 13 },
     };
   }
 
@@ -58,7 +57,6 @@ class CreateForm extends PureComponent {
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    console.log(prevState.formVals);
     if (nextProps.formVals !== prevState.formVals) {
       return {
         formVals: nextProps.formVals,
@@ -80,31 +78,22 @@ class CreateForm extends PureComponent {
       modalVisible,
       handleModalVisible,
       handleSubmit,
+      loading,
     } = this.props;
     const { formVals } = this.state;
-    const formItemLayout = {
-      labelCol: {
-        xs: { span: 24 },
-        sm: { span: 7 },
-      },
-      wrapperCol: {
-        xs: { span: 24 },
-        sm: { span: 16 },
-        md: { span: 10 },
-      },
-    };
+
     const okHandle = () => {
       form.validateFields((err, fieldsValue) => {
         if (err) return;
         delete fieldsValue.Picture;
-        console.log(fieldsValue);
         handleSubmit({ ...formVals, ...fieldsValue });
       });
     };
-    console.log(formVals);
+
     return (
       <Modal
         width={640}
+        confirmLoading={loading}
         destroyOnClose
         title="品牌编辑"
         maskClosable={false}
@@ -113,13 +102,13 @@ class CreateForm extends PureComponent {
         onCancel={() => handleModalVisible()}
       >
         <Form {...formItemLayout}>
-          <FormItem key="Name" {...this.formLayout} label="名称">
+          <FormItem key="Name" {...formLayout} label="名称">
             {getFieldDecorator('Name', {
               rules: [{ required: true, message: '请输入名称！' }],
               initialValue: formVals.Name,
             })(<Input placeholder="请输入名称！" />)}
           </FormItem>
-          <FormItem key="Purchaser" {...this.formLayout} label="采购员">
+          <FormItem key="Purchaser" {...formLayout} label="采购员">
             {getFieldDecorator('Purchaser', {
               rules: [{ required: true, message: '请选择采购员！' }],
               initialValue: formVals.Purchaser,
@@ -127,7 +116,7 @@ class CreateForm extends PureComponent {
           </FormItem>
           <FormItem
             key="supplier"
-            {...this.formLayout}
+            {...formLayout}
             label="默认供应商"
             style={{ position: 'relative' }}
           >
@@ -141,17 +130,17 @@ class CreateForm extends PureComponent {
             )}
           </FormItem>
 
-          <FormItem key="WebSite" {...this.formLayout} label="官网">
+          <FormItem key="WebSite" {...formLayout} label="官网">
             {getFieldDecorator('WebSite', {
               initialValue: formVals.WebSite,
             })(<Input placeholder="请输入官网！" />)}
           </FormItem>
-          <FormItem key="Abbreviate" {...this.formLayout} label="简写">
+          <FormItem key="Abbreviate" {...formLayout} label="简写">
             {getFieldDecorator('Abbreviate', {
               initialValue: formVals.Abbreviate,
             })(<Input placeholder="请输入简写！" />)}
           </FormItem>
-          <FormItem key="BrandLevel" {...this.formLayout} label="级别">
+          <FormItem key="BrandLevel" {...formLayout} label="级别">
             {getFieldDecorator('BrandLevel', {
               initialValue: formVals.BrandLevel,
             })(
@@ -164,13 +153,13 @@ class CreateForm extends PureComponent {
               </Select>
             )}
           </FormItem>
-          <FormItem key="Content" {...this.formLayout} label="品牌介绍">
+          <FormItem key="Content" {...formLayout} label="品牌介绍">
             {getFieldDecorator('Content', {
               rules: [{ required: true, message: '请输入名称！' }],
               initialValue: formVals.Content,
             })(<TextArea rows={4} placeholder="请输入介绍" />)}
           </FormItem>
-          <FormItem key="Picture" {...this.formLayout} label="品牌主图">
+          <FormItem key="Picture" {...formLayout} label="品牌主图">
             {getFieldDecorator('Picture', {
               initialValue: formVals.Picture,
             })(
@@ -191,12 +180,14 @@ class CreateForm extends PureComponent {
 @connect(({ brands, loading, global }) => ({
   brands,
   global,
-  loading: loading.models.rule,
+  loading: loading.models.brands,
 }))
 @Form.create()
 class BrandList extends PureComponent {
   state = {
     modalVisible: false,
+    uploadmodalVisible: false,
+    BaseEntry: '',
     method: 'A',
     formValues: {},
   };
@@ -271,7 +262,7 @@ class BrandList extends PureComponent {
     },
     {
       title: '操作',
-      width: 100,
+      width: 120,
       fixed: 'right',
       render: (text, record) => (
         <Fragment>
@@ -286,6 +277,11 @@ class BrandList extends PureComponent {
             rel="noopener noreferrer"
           >
             物料
+          </a>
+          <Divider type="vertical" />
+          <a onClick={() => this.uploadLine(record)} title="附件上传">
+            {' '}
+            <Icon type="cloud-upload" />
           </a>
         </Fragment>
       ),
@@ -339,6 +335,40 @@ class BrandList extends PureComponent {
           sord: 'Desc',
         },
       });
+    });
+  };
+
+  uploadLine = record => {
+    this.setState({
+      uploadmodalVisible: true,
+      BaseEntry: record.Code,
+    });
+  };
+
+  handleSubmitAttach = fieldsValue => {
+    const { AttachmentPath, AttachmentCode, AttachmentName, AttachmentExtension } = fieldsValue;
+    const { dispatch } = this.props;
+    const { BaseEntry } = this.state;
+    dispatch({
+      type: 'brands/attach',
+      payload: {
+        Content: {
+          BaseEntry,
+          BaseType: 'TI_Z005',
+          AttachmentPath,
+          AttachmentCode,
+          AttachmentName,
+          AttachmentExtension,
+        },
+      },
+      callback: response => {
+        if (response && response.Status === 200) {
+          message.success('保存成功');
+          this.setState({
+            uploadmodalVisible: false,
+          });
+        }
+      },
     });
   };
 
@@ -433,9 +463,18 @@ class BrandList extends PureComponent {
     }
   };
 
+  addBrand = () => {
+    this.setState({
+      modalVisible: true,
+      method: 'A',
+      formValues: {},
+    });
+  };
+
   handleModalVisible = flag => {
     this.setState({
       modalVisible: !!flag,
+      uploadmodalVisible: !!flag,
       method: 'A',
       formValues: {},
     });
@@ -458,12 +497,7 @@ class BrandList extends PureComponent {
               <Button type="primary" htmlType="submit">
                 查询
               </Button>
-              <Button
-                icon="plus"
-                style={{ marginLeft: 8 }}
-                type="primary"
-                onClick={() => this.handleModalVisible(true)}
-              >
+              <Button icon="plus" style={{ marginLeft: 8 }} type="primary" onClick={this.addBrand}>
                 新建
               </Button>
             </span>
@@ -477,15 +511,21 @@ class BrandList extends PureComponent {
     const {
       brands: { brandsList, pagination },
       loading,
+      location,
     } = this.props;
-    const { modalVisible, formValues } = this.state;
+    const { modalVisible, formValues, uploadmodalVisible } = this.state;
     const parentMethods = {
       handleSubmit: this.handleSubmit,
+      handleModalVisible: this.handleModalVisible,
+    };
+    const uploadmodalMethods = {
+      handleSubmit: this.handleSubmitAttach,
       handleModalVisible: this.handleModalVisible,
     };
     return (
       <Fragment>
         <Card bordered={false}>
+          <MyPageHeader {...location} />
           <div className="tableList">
             <div className="tableListForm">{this.renderSimpleForm()}</div>
             <StandardTable
@@ -500,6 +540,7 @@ class BrandList extends PureComponent {
           </div>
         </Card>
         <CreateForm {...parentMethods} formVals={formValues} modalVisible={modalVisible} />
+        <OrderAttachUpload {...uploadmodalMethods} modalVisible={uploadmodalVisible} />
       </Fragment>
     );
   }

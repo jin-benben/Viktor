@@ -42,6 +42,7 @@ import HSCode from '@/components/HSCode';
 import PushLink from '@/components/PushLink';
 import Attachment from '@/components/Attachment';
 import MyTag from '@/components/Tag';
+import Comparison from '@/components/Comparison';
 import MyPageHeader from '../components/pageHeader';
 import { getName } from '@/utils/utils';
 import { orderSourceType, lineStatus } from '@/utils/publicData';
@@ -1019,18 +1020,15 @@ class InquiryEdit extends React.Component {
   //  行内容改变
   rowChange = record => {
     const { inquiryDetail } = this.state;
-    let thisIndex = 0;
-    inquiryDetail.TI_Z02602.map((item, index) => {
+    inquiryDetail.TI_Z02602.map(item => {
       if (item.LineID === record.LineID) {
         record.SKUName = `${record.BrandName}  ${record.ProductName}  ${record.ManufactureNO}  ${
           record.Parameters
         }  ${record.Package}`;
-        thisIndex = index;
         return record;
       }
       return item;
     });
-    this.autoAddLine(record, thisIndex);
     this.setState({ inquiryDetail }, () => {
       this.getTotal();
     });
@@ -1060,9 +1058,7 @@ class InquiryEdit extends React.Component {
     }  ${record.Package}`;
     inquiryDetail.TI_Z02602[index] = record;
 
-    this.setState({ inquiryDetail: { ...inquiryDetail } }, () => {
-      this.autoAddLine(record, index);
-    });
+    this.setState({ inquiryDetail: { ...inquiryDetail } });
   };
 
   // sku输入框获取焦点
@@ -1349,22 +1345,6 @@ class InquiryEdit extends React.Component {
         Address,
       },
     });
-  };
-
-  autoAddLine = (record, index) => {
-    // 自动添加行
-    // 如果行中品牌,SKU,参数，名称都不为空则添加一行，最后一行时有效
-    const { inquiryDetail } = this.state;
-    const { length } = inquiryDetail.TI_Z02602;
-    if (
-      index === length - 1 &&
-      record.SKU &&
-      record.BrandName &&
-      record.ProductName &&
-      record.Parameters
-    ) {
-      this.addLineSku();
-    }
   };
 
   addLineSku = () => {
@@ -1864,6 +1844,7 @@ class InquiryEdit extends React.Component {
               <Button onClick={this.updateHandle} type="primary" loading={updateloading}>
                 更新
               </Button>
+              <Comparison key="LineID" dataSource={inquiryDetail.TI_Z02602} />
               <Dropdown overlay={this.topMenu} placement="topCenter">
                 <Button type="primary">
                   更多

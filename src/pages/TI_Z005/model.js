@@ -1,4 +1,4 @@
-import { queryRule, addRule, updateRule, querySingleRule } from './service';
+import { queryRule, addRule, updateRule, querySingleRule, attachRule } from './service';
 
 export default {
   namespace: 'brands',
@@ -82,6 +82,10 @@ export default {
     },
     *update({ payload, callback }, { call }) {
       const response = yield call(updateRule, payload);
+      if (callback) callback(response);
+    },
+    *attach({ payload, callback }, { call }) {
+      const response = yield call(attachRule, payload);
       if (callback) callback(response);
     },
   },

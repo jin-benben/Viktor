@@ -29,6 +29,7 @@ import Transfer from '@/components/Transfer';
 import MyPageHeader from '../components/pageHeader';
 import MDMCommonality from '@/components/Select';
 import ProcessorSelect from '@/components/Select/SalerPurchaser';
+import Comparison from '@/components/Comparison';
 import { lineStatus } from '@/utils/publicData';
 import { getName } from '@/utils/utils';
 
@@ -190,25 +191,35 @@ class orderLine extends PureComponent {
     },
     {
       title: '询价价格',
-      width: 200,
+      width: 100,
       dataIndex: 'InquiryPrice',
       align: 'center',
       render: (text, record) => {
         if (!text) return '';
-        return <span>{`${text || ''}(${record.Currency || ''})[${record.DocRate || ''}]`}</span>;
+        return (
+          <Ellipsis tooltip lines={1}>{`${text || ''}(${record.Currency || ''})[${record.DocRate ||
+            ''}]`}</Ellipsis>
+        );
       },
     },
     {
+      title: '重量[运费]',
+      width: 100,
+      dataIndex: 'Rweight',
+      align: 'center',
+      render: (text, record) => <span>{`${text}[${record.ForeignFreight}]`}</span>,
+    },
+    {
       title: '询行总计',
-      width: 200,
+      width: 100,
       align: 'center',
       dataIndex: 'InquiryLineTotal',
       render: (text, record) => (
-        <span>
+        <Ellipsis tooltip lines={1}>
           {`${text || ''}${
             record.Currency ? `(${record.Currency})` : ''
           }-${record.InquiryLineTotalLocal || ''}`}
-        </span>
+        </Ellipsis>
       ),
     },
     {
@@ -267,18 +278,6 @@ class orderLine extends PureComponent {
       title: '要求名称',
       width: 80,
       dataIndex: 'CustomerName',
-      align: 'center',
-    },
-    {
-      title: '重量',
-      width: 80,
-      dataIndex: 'Rweight',
-      align: 'center',
-    },
-    {
-      title: '国外运费',
-      width: 80,
-      dataIndex: 'ForeignFreight',
       align: 'center',
     },
     {
@@ -378,6 +377,16 @@ class orderLine extends PureComponent {
       render: text => (
         <Ellipsis tooltip lines={1}>
           {text}
+        </Ellipsis>
+      ),
+    },
+    {
+      title: '创建日期',
+      width: 100,
+      dataIndex: 'CreateDate',
+      render: val => (
+        <Ellipsis tooltip lines={1}>
+          <span>{val ? moment(val).format('YYYY-MM-DD HH-DD-MM') : ''}</span>
         </Ellipsis>
       ),
     },
@@ -730,7 +739,7 @@ class orderLine extends PureComponent {
       loading,
       location,
     } = this.props;
-    const { needAsk, modalVisible, transferModalVisible, transferLine } = this.state;
+    const { needAsk, modalVisible, transferModalVisible, transferLine, selectedRows } = this.state;
 
     const parentMethods = {
       handleSubmit: this.submitNeedLine,
@@ -758,7 +767,7 @@ class orderLine extends PureComponent {
               data={{ list: orderLineList }}
               pagination={pagination}
               rowKey="Key"
-              scroll={{ x: 4000 }}
+              scroll={{ x: 3900 }}
               columns={this.columns}
               rowSelection={{
                 onSelectRow: this.onSelectRow,
@@ -775,6 +784,7 @@ class orderLine extends PureComponent {
           <Button type="primary" onClick={this.toTransfer}>
             转移
           </Button>
+          <Comparison key="Key" dataSource={selectedRows.length ? selectedRows : orderLineList} />
         </FooterToolbar>
         <Transfer
           SourceEntry={transferLine.DocEntry}

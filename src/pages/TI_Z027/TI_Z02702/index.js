@@ -21,6 +21,8 @@ import {
   Select,
   Empty,
   Badge,
+  Dropdown,
+  Menu,
 } from 'antd';
 import moment from 'moment';
 import Link from 'umi/link';
@@ -35,6 +37,7 @@ import SKUModal from '@/components/Modal/SKU';
 import Brand from '@/components/Brand';
 import Attachment from '@/components/Attachment';
 import SupplierSelect from '@/components/Select/Supplier';
+import Emails from '@/components/Modal/Email';
 import MyPageHeader from '../components/pageHeader';
 import { getName } from '@/utils/utils';
 import { baseType } from '@/utils/publicData';
@@ -695,6 +698,35 @@ class InquiryEdit extends React.Component {
     this.setState({ tabIndex });
   };
 
+  topMenu = () => {
+    const { formVals } = this.state;
+    return (
+      <Menu>
+        <Menu.Item>
+          <Link target="_blank" to="/purchase/TI_Z027/edit">
+            新建采购询价单
+          </Link>
+        </Menu.Item>
+        <Menu.Item>
+          <Link target="_blank" to={`/purchase/TI_Z027/detail?DocEntry=${formVals.DocEntry}`}>
+            详情
+          </Link>
+        </Menu.Item>
+        <Menu.Item>
+          <Link
+            target="_blank"
+            to={`/purchase/TI_Z028/TI_Z02801?PInquiryEntry=${formVals.DocEntry}`}
+          >
+            添加到询价确认单
+          </Link>
+        </Menu.Item>
+        <Menu.Item>
+          <Emails BaseEntry={formVals.DocEntry} BaseType="TI_Z027" />
+        </Menu.Item>
+      </Menu>
+    );
+  };
+
   rightButton = tabIndex => {
     if (tabIndex === '3') {
       return (
@@ -1110,31 +1142,15 @@ class InquiryEdit extends React.Component {
         </Tabs>
         <FooterToolbar>
           <CancelOrder cancelSubmit={this.cancelSubmit} />
-          <Button
-            style={{ marginLeft: 10, marginRight: 10 }}
-            onClick={this.updateHandle}
-            type="primary"
-          >
+          <Button style={{ marginLeft: 10 }} onClick={this.updateHandle} type="primary">
             更新
           </Button>
-          <Button
-            style={{ marginRight: 10 }}
-            type="primary"
-            href={`/purchase/TI_Z027/detail?DocEntry=${formVals.DocEntry}`}
-          >
-            详情
-          </Button>
-          <Button icon="plus" type="primary" href="/purchase/TI_Z027/edit" target="_blank">
-            新建
-          </Button>
-          <Button
-            icon="plus"
-            type="primary"
-            href={`/purchase/TI_Z028/TI_Z02801?PInquiryEntry=${formVals.DocEntry}`}
-            target="_blank"
-          >
-            添加到询价确认单
-          </Button>
+          <Dropdown overlay={this.topMenu} placement="topCenter">
+            <Button type="primary">
+              更多
+              <Icon type="ellipsis" />
+            </Button>
+          </Dropdown>
         </FooterToolbar>
         <OrderAttachUpload {...uploadmodalMethods} modalVisible={uploadmodalVisible} />
         <SKUModal {...parentMethods} modalVisible={skuModalVisible} />

@@ -26,6 +26,7 @@ import DocEntryFrom from '@/components/DocEntryFrom';
 import Organization from '@/components/Organization/multiple';
 import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
 import ProcessorSelect from '@/components/Select/SalerPurchaser';
+import Comparison from '@/components/Comparison';
 import MyPageHeader from '../components/pageHeader';
 import { getName } from '@/utils/utils';
 
@@ -211,6 +212,13 @@ class SalesQuotationSku extends PureComponent {
       },
     },
     {
+      title: '重量[运费]',
+      width: 100,
+      dataIndex: 'Rweight',
+      align: 'center',
+      render: (text, record) => <span>{`${text}[${record.ForeignFreight}]`}</span>,
+    },
+    {
       title: '询行总计',
       width: 150,
       align: 'center',
@@ -295,18 +303,6 @@ class SalesQuotationSku extends PureComponent {
       render: (text, record) => <span>{`${text}-${record.HSVatRateOther}`}</span>,
     },
     {
-      title: '重量',
-      width: 80,
-      dataIndex: 'Rweight',
-      align: 'center',
-    },
-    {
-      title: '国外运费',
-      width: 80,
-      dataIndex: 'ForeignFreight',
-      align: 'center',
-    },
-    {
       title: '备注',
       dataIndex: 'LineComment',
       width: 100,
@@ -360,6 +356,16 @@ class SalesQuotationSku extends PureComponent {
       render: (text, record) => (
         <Ellipsis tooltip lines={1}>
           {text} {record.ForeignParameters}
+        </Ellipsis>
+      ),
+    },
+    {
+      title: '创建日期',
+      width: 100,
+      dataIndex: 'CreateDate',
+      render: val => (
+        <Ellipsis tooltip lines={1}>
+          <span>{val ? moment(val).format('YYYY-MM-DD HH-DD-MM') : ''}</span>
         </Ellipsis>
       ),
     },
@@ -764,7 +770,7 @@ class SalesQuotationSku extends PureComponent {
               loading={loading}
               data={{ list: SalesQuotationSkuList }}
               pagination={pagination}
-              scroll={{ x: 3800 }}
+              scroll={{ x: 3900 }}
               rowKey="Key"
               columns={this.columns}
               rowSelection={{
@@ -775,18 +781,24 @@ class SalesQuotationSku extends PureComponent {
           </div>
         </Card>
         <NeedAskPrice data={selectedRows} {...needParentMethods} modalVisible={needmodalVisible} />
+
+        <Transfer
+          SourceEntry={transferLine.DocEntry}
+          SourceType="TI_Z029"
+          modalVisible={transferModalVisible}
+          {...transferParentMethods}
+        />
         <FooterToolbar>
           <Button onClick={this.toConfrim} type="primary">
             确认销售报价
           </Button>
-          <Button type="primary" onClick={this.toTransfer}>
+          <Button style={{ marginLeft: 8 }} type="primary" onClick={this.toTransfer}>
             转移
           </Button>
-          <Transfer
-            SourceEntry={transferLine.DocEntry}
-            SourceType="TI_Z029"
-            modalVisible={transferModalVisible}
-            {...transferParentMethods}
+          <Comparison
+            type="TI_Z029"
+            key="Key"
+            dataSource={selectedRows.length ? selectedRows : SalesQuotationSkuList}
           />
         </FooterToolbar>
       </Fragment>

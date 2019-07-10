@@ -12,7 +12,10 @@ import PrintHistory from '@/components/Order/PrintHistory';
 import SupplierAsk from '@/components/Order/TI_Z027';
 import LinkMan from '../components/linkman';
 import MDMCommonality from '@/components/Select';
+import OrderAttachUpload from '@/components/Modal/OrderAttachUpload';
+import Attach from '@/components/Attachment/other';
 import MyIcon from '@/components/MyIcon';
+import MyPageHeader from '../components/pageHeader';
 
 const { TabPane } = Tabs;
 
@@ -126,6 +129,7 @@ class CompanyEdit extends React.Component {
       tabIndex: '1',
       LinkManmodalVisible: false,
       brandmodalVisible: false,
+      uploadmodalVisible: false,
       linkManVal: {
         Name: '',
         CellphoneNO: '',
@@ -294,6 +298,7 @@ class CompanyEdit extends React.Component {
     this.setState({
       LinkManmodalVisible: !!flag,
       brandmodalVisible: !!flag,
+      uploadmodalVisible: !!flag,
     });
   };
 
@@ -351,6 +356,34 @@ class CompanyEdit extends React.Component {
     this.setState({ tabIndex });
   };
 
+  handleSubmitAttach = fieldsValue => {
+    const { AttachmentPath, AttachmentCode, AttachmentName, AttachmentExtension } = fieldsValue;
+    const { dispatch } = this.props;
+    const { formVals } = this.state;
+    dispatch({
+      type: 'supplierEdit/attach',
+      payload: {
+        Content: {
+          BaseEntry: formVals.Code,
+          BaseType: 'TI_Z007',
+          AttachmentPath,
+          AttachmentCode,
+          AttachmentName,
+          AttachmentExtension,
+        },
+      },
+      callback: response => {
+        if (response && response.Status === 200) {
+          message.success('保存成功');
+          this.setState({
+            uploadmodalVisible: false,
+          });
+          this.getDetail();
+        }
+      },
+    });
+  };
+
   rightButton = tabIndex => {
     if (tabIndex === '1') {
       return (
@@ -393,8 +426,16 @@ class CompanyEdit extends React.Component {
     const {
       form: { getFieldDecorator },
       global: { Company, PayMent, Curr, Supplier },
+      location,
     } = this.props;
-    const { formVals, tabIndex, LinkManmodalVisible, linkManVal, brandmodalVisible } = this.state;
+    const {
+      formVals,
+      tabIndex,
+      LinkManmodalVisible,
+      linkManVal,
+      brandmodalVisible,
+      uploadmodalVisible,
+    } = this.state;
     const formItemLayout = {
       labelCol: {
         xs: { span: 24 },
@@ -414,8 +455,13 @@ class CompanyEdit extends React.Component {
       handleSubmit: this.addBrandFetch,
       handleModalVisible: this.handleModalVisible,
     };
+    const uploadmodalMethods = {
+      handleSubmit: this.handleSubmitAttach,
+      handleModalVisible: this.handleModalVisible,
+    };
     return (
       <Card bordered={false}>
+        <MyPageHeader {...location} />
         <Form {...formItemLayout}>
           <Row gutter={8}>
             <Col lg={8} md={12} sm={24}>
@@ -526,6 +572,20 @@ class CompanyEdit extends React.Component {
               </FormItem>
             </Col>
             <Col lg={8} md={12} sm={24}>
+              <FormItem key="Url" {...this.formLayout} label="官网">
+                {getFieldDecorator('Url', {
+                  initialValue: formVals.Url,
+                })(<Input placeholder="请输入官网" />)}
+              </FormItem>
+            </Col>
+            <Col lg={8} md={12} sm={24}>
+              <FormItem key="Comment" {...this.formLayout} label="备注">
+                {getFieldDecorator('Comment', {
+                  initialValue: formVals.Comment,
+                })(<Input placeholder="请输入备注" />)}
+              </FormItem>
+            </Col>
+            <Col lg={8} md={12} sm={24}>
               <FormItem key="Status" {...this.formLayout} label="状态">
                 {getFieldDecorator('Status', {
                   valuePropName: 'checked',
@@ -555,6 +615,9 @@ class CompanyEdit extends React.Component {
                   columns={this.brandColumns}
                 />
               </TabPane>
+              <TabPane tab="附件" key="3">
+                {formVals.Name ? <Attach dataSource={formVals.AttachmentList} /> : ''}
+              </TabPane>
               <TabPane tab="采购询价单" key="5">
                 {formVals.Name ? <SupplierAsk QueryType="3" QueryKey={formVals.Code} /> : ''}
               </TabPane>
@@ -571,6 +634,7 @@ class CompanyEdit extends React.Component {
               modalVisible={LinkManmodalVisible}
             />
             <BrandModal {...brandParentMethods} modalVisible={brandmodalVisible} />
+            <OrderAttachUpload {...uploadmodalMethods} modalVisible={uploadmodalVisible} />
           </Fragment>
         ) : null}
         <FooterToolbar>
@@ -579,6 +643,9 @@ class CompanyEdit extends React.Component {
               {this.rightButton(tabIndex)}
               <Button onClick={this.updateHandle} type="primary">
                 更新
+              </Button>
+              <Button onClick={() => this.setState({ uploadmodalVisible: true })} type="primary">
+                上传附件
               </Button>
             </Fragment>
           ) : (

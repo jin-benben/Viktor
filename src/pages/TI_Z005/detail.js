@@ -11,6 +11,8 @@ import SupplierAsk from '@/components/Order/TI_Z027';
 import OdlnordnFetch from '@/components/Order/OdlnordnFetch';
 import OinvorinFetch from '@/components/Order/OinvorinFetch';
 import OrderFetch from '@/components/Order/OrderFetch';
+import Attach from '@/components/Attachment/other';
+import MyPageHeader from './components/pageHeader';
 import { getName } from '@/utils/utils';
 import { brandLevel } from '@/utils/publicData';
 
@@ -231,6 +233,7 @@ class BrandDetail extends PureComponent {
     const { formVals } = this.state;
     return (
       <Card bordered={false}>
+        <MyPageHeader {...location} />
         <DescriptionList style={{ marginBottom: 24 }}>
           <Description term="品牌ID">{formVals.Code}</Description>
           <Description term="名称">{formVals.Name}</Description>
@@ -250,6 +253,9 @@ class BrandDetail extends PureComponent {
         <Tabs animated={false}>
           <TabPane tab="品牌介绍" key="1">
             {formVals.Content}
+          </TabPane>
+          <TabPane tab="附件" key="9">
+            {formVals.Name ? <Attach dataSource={formVals.AttachmentList} /> : ''}
           </TabPane>
           <TabPane tab="品牌供应商" key="2">
             {formVals.Name ? <BrandSupplier BrandName={formVals.Name} /> : ''}

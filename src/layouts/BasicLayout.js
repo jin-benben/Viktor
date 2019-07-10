@@ -159,6 +159,9 @@ class BasicLayout extends React.PureComponent {
       pathname.indexOf('/purchase/TI_Z027') === -1 &&
       pathname.indexOf('/sellabout/TI_Z030') === -1 &&
       pathname.indexOf('/sellabout/TI_Z029') === -1 &&
+      pathname.indexOf('/main/product/TI_Z005') === -1 &&
+      pathname.indexOf('/main/TI_Z006') === -1 &&
+      pathname.indexOf('/main/TI_Z007') === -1 &&
       pathname.indexOf('/purchase/TI_Z028') === -1;
     const contentStyle = !fixedHeader ? { paddingTop: 0 } : {};
     const layout = (

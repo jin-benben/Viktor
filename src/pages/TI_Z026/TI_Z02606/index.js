@@ -172,6 +172,16 @@ class inquiryListPage extends PureComponent {
         </Ellipsis>
       ),
     },
+    {
+      title: '创建日期',
+      width: 100,
+      dataIndex: 'CreateDate',
+      render: val => (
+        <Ellipsis tooltip lines={1}>
+          <span>{val ? moment(val).format('YYYY-MM-DD HH-DD-MM') : ''}</span>
+        </Ellipsis>
+      ),
+    },
   ];
 
   componentDidMount() {

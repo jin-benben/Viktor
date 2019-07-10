@@ -61,3 +61,12 @@ export async function updateRule(params) {
     },
   });
 }
+
+export async function attachRule(params) {
+  return request('/OMS/TI_Z052/TI_Z05201', {
+    method: 'POST',
+    data: {
+      ...params,
+    },
+  });
+}

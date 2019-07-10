@@ -153,10 +153,10 @@ class AgreementLine extends PureComponent {
       dataIndex: 'ProfitLineTotal',
     },
     {
-      title: '要求交期',
+      title: '交期',
       width: 100,
       dataIndex: 'DueDate',
-      align: 'center',
+      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
     },
     {
       title: '报价交期',
@@ -166,7 +166,7 @@ class AgreementLine extends PureComponent {
     },
     {
       title: '询价价格',
-      width: 120,
+      width: 100,
       dataIndex: 'InquiryPrice',
       align: 'center',
       render: (text, record) => {
@@ -178,8 +178,15 @@ class AgreementLine extends PureComponent {
       },
     },
     {
+      title: '重量[运费]',
+      width: 100,
+      dataIndex: 'Rweight',
+      align: 'center',
+      render: (text, record) => <span>{`${text}[${record.ForeignFreight}]`}</span>,
+    },
+    {
       title: '询行总计',
-      width: 150,
+      width: 100,
       align: 'center',
       dataIndex: 'InquiryLineTotal',
       render: (text, record) => (
@@ -261,18 +268,7 @@ class AgreementLine extends PureComponent {
       align: 'center',
       render: (text, record) => <span>{`${text}-${record.HSVatRateOther}`}</span>,
     },
-    {
-      title: '重量',
-      width: 80,
-      dataIndex: 'Rweight',
-      align: 'center',
-    },
-    {
-      title: '国外运费',
-      width: 80,
-      dataIndex: 'ForeignFreight',
-      align: 'center',
-    },
+
     {
       title: '备注',
       dataIndex: 'LineComment',
@@ -327,6 +323,16 @@ class AgreementLine extends PureComponent {
       render: (text, record) => (
         <Ellipsis tooltip lines={1}>
           {text} {record.ForeignParameters}
+        </Ellipsis>
+      ),
+    },
+    {
+      title: '创建日期',
+      width: 100,
+      dataIndex: 'CreateDate',
+      render: val => (
+        <Ellipsis tooltip lines={1}>
+          <span>{val ? moment(val).format('YYYY-MM-DD HH-DD-MM') : ''}</span>
         </Ellipsis>
       ),
     },
@@ -612,7 +618,7 @@ class AgreementLine extends PureComponent {
             loading={loading}
             data={{ list: agreementLineList }}
             pagination={pagination}
-            scroll={{ x: 3900 }}
+            scroll={{ x: 3700 }}
             rowKey="Key"
             columns={this.columns}
             onChange={this.handleStandardTableChange}

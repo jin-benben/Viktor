@@ -2,13 +2,14 @@ import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import Link from 'umi/link';
 import moment from 'moment';
-import { Row, Col, Card, Form, Input, Button, Tooltip, Select, Table } from 'antd';
+import { Row, Col, Card, Form, Input, Button, Tag, Select, Table, Modal, Badge } from 'antd';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
+import { getName } from '@/utils/utils';
 
 const FormItem = Form.Item;
 const { Option } = Select;
-
+const { Meta } = Card;
 /* eslint react/no-multi-comp:0 */
 @connect(({ batchManage, loading, global }) => ({
   batchManage,
@@ -45,25 +46,55 @@ class BatchUpload extends PureComponent {
       ),
     },
     {
-      title: '附件描述',
-      width: 200,
-      dataIndex: 'AttachmentName',
-      align: 'center',
-    },
-    {
-      title: '附件',
+      title: '物料描述',
       width: 100,
-      dataIndex: 'AttachmentPath',
-      render: val => (val ? <img style={{ width: 50, height: 50 }} src={val} alt="主图" /> : ''),
-    },
-    {
-      title: '物料代码',
-      width: 100,
-      dataIndex: 'ItemCode',
-      render: text => (
-        <Link target="_blank" to={`/main/product/TI_Z009/TI_Z00903?Code=${text}`}>
-          {text}
+      dataIndex: 'ItemName',
+      render: (text, record) => (
+        <Link target="_blank" to={`/main/product/TI_Z009/TI_Z00903?Code=${record.ItemCode}`}>
+          <Ellipsis tooltip lines={1}>
+            {text}
+          </Ellipsis>
         </Link>
+      ),
+    },
+    {
+      title: '审核日期',
+      dataIndex: 'ApproveDate',
+      width: 100,
+      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
+    },
+    {
+      title: '审核人',
+      width: 100,
+      dataIndex: 'ApproveBy',
+      render: text => {
+        const {
+          global: { TI_Z004 },
+        } = this.props;
+        return <span>{getName(TI_Z004, text)}</span>;
+      },
+    },
+    {
+      title: '审核状态',
+      width: 100,
+      dataIndex: 'ApproveSts',
+      align: 'center',
+      render: text => {
+        if (!text) return '';
+        if (text === 'Y') return <Tag color="green">已通过</Tag>;
+        return <Tag color="gold">未通过</Tag>;
+      },
+    },
+    {
+      title: '批次附件数',
+      width: 100,
+      dataIndex: 'AttachmentCount',
+      render: (text, record) => (
+        <Badge
+          onClick={() => this.previewHandle(record)}
+          count={text}
+          style={{ backgroundColor: '#52c41a', cursor: 'pointer' }}
+        />
       ),
     },
     {
@@ -83,6 +114,8 @@ class BatchUpload extends PureComponent {
   state = {
     selectedRows: [],
     selectedRowKeys: [],
+    attchList: [],
+    modalVisible: false,
   };
 
   componentDidMount() {
@@ -154,12 +187,12 @@ class BatchUpload extends PureComponent {
     const { selectedRows } = this.state;
     const { dispatch } = this.props;
     if (!selectedRows.length) return false;
-    const AttachmentCode = selectedRows.map(item => item.AttachmentCode);
+    const Code = selectedRows.map(item => item.Code);
     dispatch({
       type: 'batchManage/upload',
       payload: {
         Content: {
-          AttachmentCode,
+          Code,
         },
       },
       callback: response => {
@@ -167,6 +200,32 @@ class BatchUpload extends PureComponent {
           window.open(response.Content.Url);
         }
       },
+    });
+  };
+
+  previewHandle = ({ Code }) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'batchManage/detail',
+      payload: {
+        Content: {
+          Code,
+        },
+      },
+      callback: response => {
+        if (response && response.Status === 200) {
+          this.setState({
+            modalVisible: true,
+            attchList: response.Content.TI_Z02502,
+          });
+        }
+      },
+    });
+  };
+
+  handleModalVisible = () => {
+    this.setState({
+      modalVisible: false,
     });
   };
 
@@ -231,7 +290,7 @@ class BatchUpload extends PureComponent {
       searchLoading,
       uploadLoading,
     } = this.props;
-    const { selectedRowKeys } = this.state;
+    const { selectedRowKeys, modalVisible, attchList } = this.state;
     return (
       <Fragment>
         <Card bordered={false}>
@@ -257,6 +316,35 @@ class BatchUpload extends PureComponent {
             下载
           </Button>
         </FooterToolbar>
+        <Modal
+          width={960}
+          footer={null}
+          title="附件预览"
+          visible={modalVisible}
+          onCancel={() => this.handleModalVisible()}
+        >
+          <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+            {attchList.map(item => (
+              <Card
+                key={item.OrderID}
+                hoverable
+                style={{
+                  width: 300,
+                  height: 300,
+                }}
+                cover={
+                  <img
+                    style={{ width: 'auto', height: 200, margin: '0 auto 20px' }}
+                    alt="example"
+                    src={item.AttachmentPath}
+                  />
+                }
+              >
+                <Meta description={item.AttachmentName} />
+              </Card>
+            ))}
+          </div>
+        </Modal>
       </Fragment>
     );
   }

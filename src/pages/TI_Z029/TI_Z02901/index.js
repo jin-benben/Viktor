@@ -46,6 +46,7 @@ import PushLink from '@/components/PushLink';
 import Attachment from '@/components/Attachment';
 import MyPageHeader from '../components/pageHeader';
 import OrderAttach from '@/components/Attachment/order';
+import Comparison from '@/components/Comparison';
 import { getName, validatorPhone, validatorEmail } from '@/utils/utils';
 import { otherCostCColumns } from '@/utils/publicData';
 
@@ -1840,7 +1841,6 @@ class TI_Z029Component extends React.Component {
           {formVals.DocEntry ? (
             <Fragment>
               <CancelOrder cancelSubmit={this.cancelSubmit} />
-
               <Button
                 loading={updateloading}
                 style={{ marginLeft: 10 }}
@@ -1849,6 +1849,7 @@ class TI_Z029Component extends React.Component {
               >
                 更新
               </Button>
+              <Comparison key="LineID" type="TI_Z029" dataSource={formVals.TI_Z02902} />
               <Dropdown overlay={this.topMenu} placement="topCenter">
                 <Button type="primary">
                   更多

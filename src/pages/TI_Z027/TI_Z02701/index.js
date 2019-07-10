@@ -207,6 +207,10 @@ class SupplierAsk extends Component {
         CompanyCode,
         Purchaser,
         Owner,
+        TransferDateTime,
+        TransferType,
+        TransferConfirmStatus,
+        AutoTransfer,
       } = item;
       const ToDate = moment()
         .add('30', 'day')
@@ -268,6 +272,10 @@ class SupplierAsk extends Component {
               Purchaser,
               Owner,
               BaseLineComment: LineComment,
+              TransferDateTime,
+              TransferType,
+              TransferConfirmStatus,
+              AutoTransfer,
             },
           ],
         });
@@ -297,6 +305,7 @@ class SupplierAsk extends Component {
           Purchaser,
           Owner,
           BaseLineComment: LineComment,
+          TransferDateTime,
         });
       }
     });

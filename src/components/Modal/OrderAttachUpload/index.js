@@ -57,7 +57,6 @@ class OrderAttachUpload extends PureComponent {
     const okHandle = () => {
       form.validateFields((err, fieldsValue) => {
         if (err) return;
-        form.resetFields();
         handleSubmit({ ...this.state, ...fieldsValue });
       });
     };

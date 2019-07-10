@@ -4,6 +4,7 @@ import {
   approveRule,
   approveSearchRule,
   searchRule,
+  detailRule,
 } from './service';
 
 export default {
@@ -106,6 +107,10 @@ export default {
     },
     *approve({ payload, callback }, { call }) {
       const response = yield call(approveRule, payload);
+      if (callback) callback(response);
+    },
+    *detail({ payload, callback }, { call }) {
+      const response = yield call(detailRule, payload);
       if (callback) callback(response);
     },
     *uploadfetch({ payload }, { call, put }) {

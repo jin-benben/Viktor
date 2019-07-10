@@ -5,6 +5,7 @@ import {
   linkmanRule,
   addbrandRule,
   deletebrandRule,
+  attachRule,
 } from '../service';
 
 export default {
@@ -39,6 +40,11 @@ export default {
       const response = yield call(linkmanRule, payload);
       if (callback) callback(response);
     },
+    *attach({ payload, callback }, { call }) {
+      const response = yield call(attachRule, payload);
+      if (callback) callback(response);
+    },
+
     *deletebrand({ payload, callback }, { call, put }) {
       const response = yield call(deletebrandRule, payload);
       yield put({

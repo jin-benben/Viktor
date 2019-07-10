@@ -16,6 +16,7 @@ import OrderFetch from '@/components/Order/OrderFetch';
 import OrctovpmFetch from '@/components/Order/OrctovpmFetch';
 import PrintHistory from '@/components/Order/PrintHistory';
 import MDMCommonality from '@/components/Select';
+import MyPageHeader from '../components/pageHeader';
 import { getName } from '@/utils/utils';
 
 const { TabPane } = Tabs;
@@ -460,6 +461,7 @@ class CompanyEdit extends PureComponent {
     const {
       form: { getFieldDecorator },
       global,
+      location,
       global: { PayMent, Trnsp },
     } = this.props;
     const CardList = global.Card ? global.Card : [];
@@ -492,6 +494,7 @@ class CompanyEdit extends PureComponent {
     };
     return (
       <Card bordered={false}>
+        <MyPageHeader {...location} />
         <Form {...formItemLayout} onSubmit={this.handleSubmit}>
           <Row gutter={8}>
             <Col lg={8} md={12} sm={24}>

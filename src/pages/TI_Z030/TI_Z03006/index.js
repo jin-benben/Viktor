@@ -51,7 +51,11 @@ class agreementOrder extends PureComponent {
       title: '创建日期',
       width: 100,
       dataIndex: 'CreateDate',
-      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
+      render: val => (
+        <Ellipsis tooltip lines={1}>
+          <span>{val ? moment(val).format('YYYY-MM-DD HH-DD-MM') : ''}</span>
+        </Ellipsis>
+      ),
     },
     {
       title: '状态',
@@ -366,7 +370,6 @@ class agreementOrder extends PureComponent {
       loading,
       location,
     } = this.props;
-    const tableWidth = document.body.offsetWidth < 1800 ? 1700 : 0;
 
     return (
       <Fragment>
@@ -379,7 +382,7 @@ class agreementOrder extends PureComponent {
               data={{ list: agreementOrderList }}
               pagination={pagination}
               rowKey="DocEntry"
-              scroll={{ x: tableWidth, y: 600 }}
+              scroll={{ x: 1700 }}
               columns={this.columns}
               onChange={this.handleStandardTableChange}
             />

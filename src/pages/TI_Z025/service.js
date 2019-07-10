@@ -43,3 +43,12 @@ export async function approveRule(params) {
     },
   });
 }
+
+export async function detailRule(params) {
+  return request('/OMS/TI_Z025/TI_Z02503', {
+    method: 'POST',
+    data: {
+      ...params,
+    },
+  });
+}

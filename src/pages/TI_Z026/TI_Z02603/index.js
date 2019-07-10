@@ -110,6 +110,14 @@ class InquiryEdit extends PureComponent {
       },
     },
     {
+      title: '重量[运费]',
+      width: 100,
+      dataIndex: 'Rweight',
+      align: 'center',
+      render: (text, record) =>
+        record.lastIndex ? '' : <span>{`${text}[${record.ForeignFreight}]`}</span>,
+    },
+    {
       title: '询行总计',
       width: 150,
       align: 'center',
@@ -220,18 +228,7 @@ class InquiryEdit extends PureComponent {
       dataIndex: 'CustomerName',
       align: 'center',
     },
-    {
-      title: '重量',
-      width: 80,
-      dataIndex: 'Rweight',
-      align: 'center',
-    },
-    {
-      title: '国外运费',
-      width: 80,
-      dataIndex: 'ForeignFreight',
-      align: 'center',
-    },
+
     {
       title: '建议价格',
       width: 80,
