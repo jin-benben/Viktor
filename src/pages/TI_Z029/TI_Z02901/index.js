@@ -179,6 +179,22 @@ class TI_Z029Component extends React.Component {
       align: 'center',
     },
     {
+      title: '重量',
+      width: 80,
+      dataIndex: 'Rweight',
+      editable: true,
+      inputType: 'text',
+      align: 'center',
+    },
+    {
+      title: '国外运费',
+      width: 80,
+      editable: true,
+      inputType: 'text',
+      dataIndex: 'ForeignFreight',
+      align: 'center',
+    },
+    {
       title: '行总计',
       width: 100,
       align: 'center',
@@ -211,7 +227,7 @@ class TI_Z029Component extends React.Component {
       dataIndex: 'ProfitLineTotal',
     },
     {
-      title: '要求交期',
+      title: '报价交期',
       width: 100,
       inputType: 'text',
       dataIndex: 'DueDate',
@@ -331,22 +347,7 @@ class TI_Z029Component extends React.Component {
       render: (text, record) =>
         record.lastIndex ? '' : <span>{`${text}-${record.HSVatRateOther}`}</span>,
     },
-    {
-      title: '重量',
-      width: 80,
-      dataIndex: 'Rweight',
-      editable: true,
-      inputType: 'text',
-      align: 'center',
-    },
-    {
-      title: '国外运费',
-      width: 80,
-      editable: true,
-      inputType: 'text',
-      dataIndex: 'ForeignFreight',
-      align: 'center',
-    },
+
     {
       title: '备注',
       dataIndex: 'LineComment',
@@ -1685,10 +1686,10 @@ class TI_Z029Component extends React.Component {
               </FormItem>
             </Col>
             <Col lg={10} md={12} sm={24}>
-              <FormItem key="DueDate" {...this.formLayout} label="要求交期">
+              <FormItem key="DueDate" {...this.formLayout} label="报价交期">
                 {getFieldDecorator('DueDate', {
                   initialValue: formVals.DueDate,
-                  rules: [{ required: true, message: '请输入要求交期！' }],
+                  rules: [{ required: true, message: '请输入报价交期！' }],
                 })(<Input onChange={this.dueDateChange} placeholder="请输入" />)}
               </FormItem>
             </Col>
@@ -1849,7 +1850,7 @@ class TI_Z029Component extends React.Component {
               >
                 更新
               </Button>
-              <Comparison key="LineID" type="TI_Z029" dataSource={formVals.TI_Z02902} />
+              <Comparison rowkey="LineID" type="TI_Z029" dataSource={formVals.TI_Z02902} />
               <Dropdown overlay={this.topMenu} placement="topCenter">
                 <Button type="primary">
                   更多

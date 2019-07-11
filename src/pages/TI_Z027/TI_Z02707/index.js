@@ -20,7 +20,6 @@ import {
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import StandardTable from '@/components/StandardTable';
-import DocEntryFrom from '@/components/DocEntryFrom';
 import Organization from '@/components/Organization/multiple';
 import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
 import ProcessorSelect from '@/components/Select/SalerPurchaser';
@@ -161,7 +160,7 @@ class supplierQuotationSku extends PureComponent {
       dataIndex: 'Rweight',
       align: 'center',
       render: (text, record) =>
-        record.lastIndex ? '' : <span>{`${text}[${record.ForeignFreight}]`}</span>,
+        record.lastIndex ? '' : <span>{`${text}(公斤)[${record.ForeignFreight}]`}</span>,
     },
     {
       title: '询价交期',
@@ -293,7 +292,7 @@ class supplierQuotationSku extends PureComponent {
       dataIndex: 'CreateDate',
       render: val => (
         <Ellipsis tooltip lines={1}>
-          <span>{val ? moment(val).format('YYYY-MM-DD HH-DD-MM') : ''}</span>
+          <span>{val ? moment(val).format('YYYY-MM-DD HH:DD:MM') : ''}</span>
         </Ellipsis>
       ),
     },
@@ -374,31 +373,12 @@ class supplierQuotationSku extends PureComponent {
         TransferDateTimeFrom = moment(fieldsValue.TransferDate[0]).format('YYYY-MM-DD');
         TransferDateTimeTo = moment(fieldsValue.TransferDate[1]).format('YYYY-MM-DD');
       }
-
-      let DocEntryFroms = '';
-      let DocEntryTo = '';
-      if (fieldsValue.orderNo) {
-        DocEntryFroms = fieldsValue.orderNo.DocEntryFrom;
-        DocEntryTo = fieldsValue.orderNo.DocEntryTo;
-      }
-      let BaseEntryFrom = '';
-      let BaseEntryTo = '';
-      if (fieldsValue.BaseEntry) {
-        BaseEntryFrom = fieldsValue.BaseEntry.DocEntryFrom;
-        BaseEntryTo = fieldsValue.BaseEntry.DocEntryTo;
-      }
-      delete fieldsValue.orderNo;
       delete fieldsValue.dateArr;
-      delete fieldsValue.BaseEntry;
       delete fieldsValue.TransferDate;
       const queryData = {
         ...fieldsValue,
         DocDateFrom,
-        BaseEntryFrom,
-        BaseEntryTo,
         DocDateTo,
-        DocEntryFroms,
-        DocEntryTo,
         TransferDateTimeFrom,
         TransferDateTimeTo,
       };
@@ -527,19 +507,28 @@ class supplierQuotationSku extends PureComponent {
                 </FormItem>
               </Col>
               <Col md={5} sm={24}>
-                <FormItem key="orderNo" {...formLayout} label="单号">
-                  {getFieldDecorator('orderNo', {
-                    initialValue: { DocEntryFrom: '', DocEntryTo: '' },
-                  })(<DocEntryFrom />)}
+                <FormItem {...formLayout} label="单号">
+                  <FormItem className="lineFormItem" key="DocEntryFrom">
+                    {getFieldDecorator('DocEntryFrom')(<Input placeholder="开始单号" />)}
+                  </FormItem>
+                  <span className="lineFormItemCenter">-</span>
+                  <FormItem className="lineFormItem" key="DocEntryTo">
+                    {getFieldDecorator('DocEntryTo')(<Input placeholder="结束单号" />)}
+                  </FormItem>
                 </FormItem>
               </Col>
               <Col md={5} sm={24}>
-                <FormItem key="BaseEntry" {...formLayout} label="客询价单">
-                  {getFieldDecorator('BaseEntry', {
-                    initialValue: { DocEntryFrom: '', DocEntryTo: '' },
-                  })(<DocEntryFrom />)}
+                <FormItem {...formLayout} label="客询价单">
+                  <FormItem className="lineFormItem" key="BaseEntryFrom">
+                    {getFieldDecorator('BaseEntryFrom')(<Input placeholder="开始单号" />)}
+                  </FormItem>
+                  <span className="lineFormItemCenter">-</span>
+                  <FormItem className="lineFormItem" key="BaseEntryTo">
+                    {getFieldDecorator('BaseEntryTo')(<Input placeholder="结束单号" />)}
+                  </FormItem>
                 </FormItem>
               </Col>
+
               <Col md={5} sm={24}>
                 <FormItem key="DeptList" {...this.formLayout} label="部门">
                   {getFieldDecorator('DeptList')(<Organization />)}

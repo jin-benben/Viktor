@@ -10,6 +10,7 @@ import {
   hscodeRule,
   processorRule,
   authorityRule,
+  changepasswordRule,
 } from '@/services';
 
 export default {
@@ -261,6 +262,10 @@ export default {
           );
         }
       }
+    },
+    *changepassword({ payload, callback }, { call }) {
+      const response = yield call(changepasswordRule, payload);
+      if (callback) callback(response);
     },
   },
 

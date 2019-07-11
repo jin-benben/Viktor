@@ -6,6 +6,7 @@ import { connect } from 'dva';
 import router from 'umi/router';
 import GlobalHeader from '@/components/GlobalHeader';
 import TopNavHeader from '@/components/TopNavHeader';
+import ChangePassword from '@/components/Password';
 import styles from './Header.less';
 
 const { Header } = Layout;
@@ -13,6 +14,7 @@ const { Header } = Layout;
 class HeaderView extends PureComponent {
   state = {
     visible: true,
+    passwordModalVisible: false,
   };
 
   static getDerivedStateFromProps(props, state) {
@@ -54,6 +56,12 @@ class HeaderView extends PureComponent {
     });
   };
 
+  handleModalVisible = flag => {
+    this.setState({
+      passwordModalVisible: !!flag,
+    });
+  };
+
   handleMenuClick = ({ key }) => {
     const { dispatch } = this.props;
     if (key === 'userCenter') {
@@ -64,9 +72,10 @@ class HeaderView extends PureComponent {
       router.push('/exception/trigger');
       return;
     }
-    if (key === 'userinfo') {
-      router.push('/account/settings/base');
-      return;
+    if (key === 'lock') {
+      this.setState({
+        passwordModalVisible: true,
+      });
     }
     if (key === 'logout') {
       dispatch({
@@ -114,9 +123,9 @@ class HeaderView extends PureComponent {
   };
 
   render() {
-    const { isMobile, handleMenuCollapse, setting } = this.props;
+    const { isMobile, handleMenuCollapse, setting, currentUser } = this.props;
     const { navTheme, layout, fixedHeader } = setting;
-    const { visible } = this.state;
+    const { visible, passwordModalVisible } = this.state;
     const isTop = layout === 'topmenu';
     const width = this.getHeadWidth();
     const HeaderDom = visible ? (
@@ -140,6 +149,11 @@ class HeaderView extends PureComponent {
             {...this.props}
           />
         )}
+        <ChangePassword
+          Code={currentUser.UserCode}
+          modalVisible={passwordModalVisible}
+          handleModalVisible={this.handleModalVisible}
+        />
       </Header>
     ) : null;
     return (

@@ -180,6 +180,22 @@ class AgreementEdit extends React.Component {
       align: 'center',
     },
     {
+      title: '重量',
+      width: 80,
+      dataIndex: 'Rweight',
+      editable: true,
+      inputType: 'text',
+      align: 'center',
+    },
+    {
+      title: '国外运费',
+      width: 80,
+      editable: true,
+      inputType: 'text',
+      dataIndex: 'ForeignFreight',
+      align: 'center',
+    },
+    {
       title: '行总计',
       width: 100,
       align: 'center',
@@ -212,7 +228,7 @@ class AgreementEdit extends React.Component {
       dataIndex: 'ProfitLineTotal',
     },
     {
-      title: '要求交期',
+      title: '订单交期',
       width: 120,
       inputType: 'date',
       dataIndex: 'DueDate',
@@ -338,22 +354,7 @@ class AgreementEdit extends React.Component {
       render: (text, record) =>
         record.lastIndex ? '' : <span>{`${text}-${record.HSVatRateOther}`}</span>,
     },
-    {
-      title: '重量',
-      width: 80,
-      dataIndex: 'Rweight',
-      editable: true,
-      inputType: 'text',
-      align: 'center',
-    },
-    {
-      title: '国外运费',
-      width: 80,
-      editable: true,
-      inputType: 'text',
-      dataIndex: 'ForeignFreight',
-      align: 'center',
-    },
+
     {
       title: '备注',
       dataIndex: 'LineComment',
@@ -1651,12 +1652,12 @@ class AgreementEdit extends React.Component {
               </FormItem>
             </Col>
             <Col lg={10} md={12} sm={24}>
-              <FormItem key="DueDate" {...this.formLayout} label="要求交期">
+              <FormItem key="DueDate" {...this.formLayout} label="订单交期">
                 {getFieldDecorator('DueDate', {
                   initialValue: orderDetail.DueDate
                     ? moment(orderDetail.DueDate, 'YYYY-MM-DD')
                     : null,
-                  rules: [{ required: true, message: '请选择要求交期！' }],
+                  rules: [{ required: true, message: '请选择订单交期！' }],
                 })(<DatePicker style={{ width: '100%' }} />)}
               </FormItem>
             </Col>

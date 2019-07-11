@@ -1,7 +1,6 @@
 /* eslint-disable consistent-return */
 /* eslint-disable no-param-reassign */
 import React, { Fragment } from 'react';
-
 import moment from 'moment';
 import { Row, Col, Form, Input, Table, Button, DatePicker, message, Icon, Tag, Select } from 'antd';
 import { connect } from 'dva';
@@ -11,7 +10,6 @@ import SupplierSelect from '@/components/Select/Supplier';
 import MDMCommonality from '@/components/Select';
 import Organization from '@/components/Organization/multiple';
 import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
-import DocEntryFrom from '@/components/DocEntryFrom';
 import { getName } from '@/utils/utils';
 import styles from '../style.less';
 import request from '@/utils/request';
@@ -386,21 +384,11 @@ class NeedTabl extends React.Component {
         DocDateFrom = moment(fieldsValue.dateArr[0]).format('YYYY-MM-DD');
         DocDateTo = moment(fieldsValue.dateArr[1]).format('YYYY-MM-DD');
       }
-      let DocEntryFroms = '';
-      let DocEntryTo = '';
-      if (fieldsValue.orderNo) {
-        DocEntryFroms = fieldsValue.orderNo.DocEntryFrom;
-        DocEntryTo = fieldsValue.orderNo.DocEntryTo;
-      }
-
-      delete fieldsValue.orderNo;
       delete fieldsValue.dateArr;
       const Content = {
         ...fieldsValue,
         DocDateFrom,
         DocDateTo,
-        DocEntryFroms,
-        DocEntryTo,
       };
       Object.assign(queryData.Content, { ...Content });
       this.setState({
@@ -467,10 +455,14 @@ class NeedTabl extends React.Component {
                 </FormItem>
               </Col>
               <Col md={5} sm={24}>
-                <FormItem key="orderNo" {...formLayout} label="单号">
-                  {getFieldDecorator('orderNo', {
-                    initialValue: { DocEntryFrom: '', DocEntryTo: '' },
-                  })(<DocEntryFrom />)}
+                <FormItem {...formLayout} label="单号">
+                  <FormItem className="lineFormItem" key="DocEntryFrom">
+                    {getFieldDecorator('DocEntryFrom')(<Input placeholder="开始单号" />)}
+                  </FormItem>
+                  <span className="lineFormItemCenter">-</span>
+                  <FormItem className="lineFormItem" key="DocEntryTo">
+                    {getFieldDecorator('DocEntryTo')(<Input placeholder="结束单号" />)}
+                  </FormItem>
                 </FormItem>
               </Col>
               <Col md={5} sm={24}>

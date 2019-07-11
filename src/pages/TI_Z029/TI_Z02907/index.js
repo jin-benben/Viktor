@@ -22,7 +22,6 @@ import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import StandardTable from '@/components/StandardTable';
 import NeedAskPrice from '../components/needAskPrice';
 import Transfer from '@/components/Transfer';
-import DocEntryFrom from '@/components/DocEntryFrom';
 import Organization from '@/components/Organization/multiple';
 import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
 import ProcessorSelect from '@/components/Select/SalerPurchaser';
@@ -193,7 +192,7 @@ class SalesQuotationSku extends PureComponent {
       dataIndex: 'ProfitLineTotal',
     },
     {
-      title: '要求交期',
+      title: '报价交期',
       width: 100,
       dataIndex: 'DueDate',
       align: 'center',
@@ -213,10 +212,10 @@ class SalesQuotationSku extends PureComponent {
     },
     {
       title: '重量[运费]',
-      width: 100,
+      width: 120,
       dataIndex: 'Rweight',
       align: 'center',
-      render: (text, record) => <span>{`${text}[${record.ForeignFreight}]`}</span>,
+      render: (text, record) => <span>{`${text}(公斤)[${record.ForeignFreight}]`}</span>,
     },
     {
       title: '询行总计',
@@ -365,7 +364,7 @@ class SalesQuotationSku extends PureComponent {
       dataIndex: 'CreateDate',
       render: val => (
         <Ellipsis tooltip lines={1}>
-          <span>{val ? moment(val).format('YYYY-MM-DD HH-DD-MM') : ''}</span>
+          <span>{val ? moment(val).format('YYYY-MM-DD HH:DD:MM') : ''}</span>
         </Ellipsis>
       ),
     },
@@ -424,7 +423,7 @@ class SalesQuotationSku extends PureComponent {
       type: 'global/getMDMCommonality',
       payload: {
         Content: {
-          CodeList: ['Saler', 'Purchaser', 'WhsCode'],
+          CodeList: ['Saler', 'Purchaser', 'WhsCode', 'TI_Z042'],
         },
       },
     });
@@ -446,6 +445,9 @@ class SalesQuotationSku extends PureComponent {
         rows: pagination.pageSize,
       },
     });
+    this.setState({
+      selectedRows: [],
+    });
   };
 
   handleSearch = e => {
@@ -461,12 +463,7 @@ class SalesQuotationSku extends PureComponent {
         DocDateFrom = moment(fieldsValue.dateArr[0]).format('YYYY-MM-DD');
         DocDateTo = moment(fieldsValue.dateArr[1]).format('YYYY-MM-DD');
       }
-      let DocEntryFroms = '';
-      let DocEntryTo = '';
-      if (fieldsValue.orderNo) {
-        DocEntryFroms = fieldsValue.orderNo.DocEntryFrom;
-        DocEntryTo = fieldsValue.orderNo.DocEntryTo;
-      }
+
       let TransferDateTimeFrom = '';
       let TransferDateTimeTo = '';
       if (fieldsValue.TransferDate) {
@@ -479,25 +476,16 @@ class SalesQuotationSku extends PureComponent {
         InquiryCfmDateFrom = moment(fieldsValue.InquiryCfmDate[0]).format('YYYY-MM-DD');
         InquiryCfmDateTo = moment(fieldsValue.InquiryCfmDate[1]).format('YYYY-MM-DD');
       }
-      let BaseEntryFrom = '';
-      let BaseEntryTo = '';
-      if (fieldsValue.BaseEntry) {
-        BaseEntryFrom = fieldsValue.BaseEntry.DocEntryFrom;
-        BaseEntryTo = fieldsValue.BaseEntry.DocEntryTo;
-      }
-      delete fieldsValue.orderNo;
+
       delete fieldsValue.dateArr;
-      delete fieldsValue.BaseEntry;
       delete fieldsValue.InquiryCfmDate;
       delete fieldsValue.TransferDate;
       const queryData = {
         ...fieldsValue,
         DocDateFrom,
-        BaseEntryFrom,
-        BaseEntryTo,
         DocDateTo,
-        DocEntryFroms,
-        DocEntryTo,
+        TransferDateTimeFrom,
+        TransferDateTimeTo,
         InquiryCfmDateFrom,
         InquiryCfmDateTo,
       };
@@ -638,13 +626,6 @@ class SalesQuotationSku extends PureComponent {
           {expandForm ? (
             <Fragment>
               <Col md={5} sm={24}>
-                <FormItem key="orderNo" {...formLayout} label="单号">
-                  {getFieldDecorator('orderNo', {
-                    initialValue: { DocEntryFrom: '', DocEntryTo: '' },
-                  })(<DocEntryFrom />)}
-                </FormItem>
-              </Col>
-              <Col md={5} sm={24}>
                 <FormItem label="日期" {...formLayout}>
                   {getFieldDecorator('dateArr', { rules: [{ type: 'array' }] })(
                     <RangePicker style={{ width: '100%' }} />
@@ -674,10 +655,25 @@ class SalesQuotationSku extends PureComponent {
                 </FormItem>
               </Col>
               <Col md={5} sm={24}>
-                <FormItem key="BaseEntry" {...formLayout} label="客询价单">
-                  {getFieldDecorator('BaseEntry', {
-                    initialValue: { DocEntryFrom: '', DocEntryTo: '' },
-                  })(<DocEntryFrom />)}
+                <FormItem {...formLayout} label="单号">
+                  <FormItem className="lineFormItem" key="DocEntryFrom">
+                    {getFieldDecorator('DocEntryFrom')(<Input placeholder="开始单号" />)}
+                  </FormItem>
+                  <span className="lineFormItemCenter">-</span>
+                  <FormItem className="lineFormItem" key="DocEntryTo">
+                    {getFieldDecorator('DocEntryTo')(<Input placeholder="结束单号" />)}
+                  </FormItem>
+                </FormItem>
+              </Col>
+              <Col md={5} sm={24}>
+                <FormItem {...formLayout} label="客询价单">
+                  <FormItem className="lineFormItem" key="BaseEntryFrom">
+                    {getFieldDecorator('BaseEntryFrom')(<Input placeholder="开始单号" />)}
+                  </FormItem>
+                  <span className="lineFormItemCenter">-</span>
+                  <FormItem className="lineFormItem" key="BaseEntryTo">
+                    {getFieldDecorator('BaseEntryTo')(<Input placeholder="结束单号" />)}
+                  </FormItem>
                 </FormItem>
               </Col>
               <Col md={5} sm={24}>
@@ -776,6 +772,7 @@ class SalesQuotationSku extends PureComponent {
               rowSelection={{
                 onSelectRow: this.onSelectRow,
               }}
+              selectedRows={selectedRows}
               onChange={this.handleStandardTableChange}
             />
           </div>
@@ -797,7 +794,7 @@ class SalesQuotationSku extends PureComponent {
           </Button>
           <Comparison
             type="TI_Z029"
-            key="Key"
+            rowkey="Key"
             dataSource={selectedRows.length ? selectedRows : SalesQuotationSkuList}
           />
         </FooterToolbar>

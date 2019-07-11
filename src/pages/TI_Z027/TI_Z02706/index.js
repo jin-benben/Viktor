@@ -7,7 +7,6 @@ import { Row, Col, Card, Form, Input, Button, Tooltip, Select, DatePicker, Icon,
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import StandardTable from '@/components/StandardTable';
-import DocEntryFrom from '@/components/DocEntryFrom';
 import Organization from '@/components/Organization/multiple';
 import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
 import MyPageHeader from '../components/pageHeader';
@@ -154,7 +153,7 @@ class supplierQuotation extends PureComponent {
       dataIndex: 'CreateDate',
       render: val => (
         <Ellipsis tooltip lines={1}>
-          <span>{val ? moment(val).format('YYYY-MM-DD HH-DD-MM') : ''}</span>
+          <span>{val ? moment(val).format('YYYY-MM-DD HH:DD:MM') : ''}</span>
         </Ellipsis>
       ),
     },
@@ -222,21 +221,12 @@ class supplierQuotation extends PureComponent {
         DocDateFrom = moment(fieldsValue.dateArr[0]).format('YYYY-MM-DD');
         DocDateTo = moment(fieldsValue.dateArr[1]).format('YYYY-MM-DD');
       }
-      let DocEntryFroms = '';
-      let DocEntryTo = '';
-      if (fieldsValue.orderNo) {
-        DocEntryFroms = fieldsValue.orderNo.DocEntryFrom;
-        DocEntryTo = fieldsValue.orderNo.DocEntryTo;
-      }
 
-      delete fieldsValue.orderNo;
       delete fieldsValue.dateArr;
       const queryData = {
         ...fieldsValue,
         DocDateFrom,
         DocDateTo,
-        DocEntryFroms,
-        DocEntryTo,
       };
       dispatch({
         type: 'supplierQuotation/fetch',
@@ -324,10 +314,14 @@ class supplierQuotation extends PureComponent {
                 </FormItem>
               </Col>
               <Col md={5} sm={24}>
-                <FormItem key="orderNo" {...formLayout} label="单号">
-                  {getFieldDecorator('orderNo', {
-                    initialValue: { DocEntryFrom: '', DocEntryTo: '' },
-                  })(<DocEntryFrom />)}
+                <FormItem {...formLayout} label="单号">
+                  <FormItem className="lineFormItem" key="DocEntryFrom">
+                    {getFieldDecorator('DocEntryFrom')(<Input placeholder="开始单号" />)}
+                  </FormItem>
+                  <span className="lineFormItemCenter">-</span>
+                  <FormItem className="lineFormItem" key="DocEntryTo">
+                    {getFieldDecorator('DocEntryTo')(<Input placeholder="结束单号" />)}
+                  </FormItem>
                 </FormItem>
               </Col>
               <Col md={5} sm={24}>
@@ -377,13 +371,6 @@ class supplierQuotation extends PureComponent {
       loading,
       location,
     } = this.props;
-    // let tabwidth=0;
-    // this.columns.map(item=>{
-    //   if(item.width){
-    //     tabwidth+=item.width
-    //   }
-    // })
-    // console.log(tabwidth)
     return (
       <Fragment>
         <Card bordered={false}>

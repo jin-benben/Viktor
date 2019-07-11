@@ -6,7 +6,6 @@ import { Row, Col, Form, Input, Button, DatePicker, Modal, message, Icon } from 
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import request from '@/utils/request';
 import StandardTable from '@/components/StandardTable';
-import DocEntryFrom from '@/components/DocEntryFrom';
 import Organization from '@/components/Organization/multiple';
 import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
 import { getName } from '@/utils/utils';
@@ -230,20 +229,13 @@ class orderLine extends PureComponent {
         DocDateFrom = moment(fieldsValue.dateArr[0]).format('YYYY-MM-DD');
         DocDateTo = moment(fieldsValue.dateArr[1]).format('YYYY-MM-DD');
       }
-      let DocEntryFroms = '';
-      let DocEntryTo = '';
-      if (fieldsValue.orderNo) {
-        DocEntryFroms = fieldsValue.orderNo.DocEntryFrom;
-        DocEntryTo = fieldsValue.orderNo.DocEntryTo;
-      }
+
       // eslint-disable-next-line no-param-reassign
       delete fieldsValue.orderNo;
       const queryData = {
         ...fieldsValue,
         DocDateFrom,
         DocDateTo,
-        DocEntryFroms,
-        DocEntryTo,
       };
 
       this.fetchOrder({
@@ -332,10 +324,14 @@ class orderLine extends PureComponent {
             </FormItem>
           </Col>
           <Col md={6} sm={24}>
-            <FormItem key="orderNo" {...formLayout} label="单号">
-              {getFieldDecorator('orderNo', {
-                initialValue: { DocEntryFrom: '', DocEntryTo: '' },
-              })(<DocEntryFrom />)}
+            <FormItem {...formLayout} label="单号">
+              <FormItem className="lineFormItem" key="DocEntryFrom">
+                {getFieldDecorator('DocEntryFrom')(<Input placeholder="开始单号" />)}
+              </FormItem>
+              <span className="lineFormItemCenter">-</span>
+              <FormItem className="lineFormItem" key="DocEntryTo">
+                {getFieldDecorator('DocEntryTo')(<Input placeholder="结束单号" />)}
+              </FormItem>
             </FormItem>
           </Col>
           <Col md={4} sm={24}>

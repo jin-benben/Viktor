@@ -6,7 +6,6 @@ import { Row, Col, Card, Form, Input, Button, Select, DatePicker } from 'antd';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import StandardTable from '@/components/StandardTable';
 import MyTag from '@/components/Tag';
-import DocEntryFrom from '@/components/DocEntryFrom';
 import { emailSendType } from '@/utils/publicData';
 import { getName } from '@/utils/utils';
 
@@ -60,7 +59,7 @@ class PrintHistory extends PureComponent {
     },
     {
       title: '发送人',
-      width: 300,
+      width: 250,
       dataIndex: 'From',
       render: text => (
         <Ellipsis tooltip lines={1}>
@@ -80,7 +79,7 @@ class PrintHistory extends PureComponent {
     },
     {
       title: '抄送人',
-      width: 300,
+      width: 150,
       dataIndex: 'CCList',
       render: text => (
         <Ellipsis tooltip lines={1}>
@@ -90,8 +89,13 @@ class PrintHistory extends PureComponent {
     },
     {
       title: '主题',
-      width: 200,
+      width: 250,
       dataIndex: 'Title',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '来源类型',
@@ -112,7 +116,6 @@ class PrintHistory extends PureComponent {
     },
     {
       title: '模板名称',
-      width: 150,
       dataIndex: 'EmailTemplateName',
     },
   ];
@@ -169,7 +172,6 @@ class PrintHistory extends PureComponent {
         ...fieldsValue,
         DocDateFrom,
         DocDateTo,
-        ...fieldsValue.orderNo,
       };
       dispatch({
         type: 'sendEmail/fetch',
@@ -226,10 +228,14 @@ class PrintHistory extends PureComponent {
             </FormItem>
           </Col>
           <Col md={5} sm={24}>
-            <FormItem key="orderNo" {...formLayout} label="单号">
-              {getFieldDecorator('orderNo', {
-                initialValue: { DocEntryFrom: '', DocEntryTo: '' },
-              })(<DocEntryFrom />)}
+            <FormItem {...formLayout} label="单号">
+              <FormItem className="lineFormItem" key="DocEntryFrom">
+                {getFieldDecorator('DocEntryFrom')(<Input placeholder="开始单号" />)}
+              </FormItem>
+              <span className="lineFormItemCenter">-</span>
+              <FormItem className="lineFormItem" key="DocEntryTo">
+                {getFieldDecorator('DocEntryTo')(<Input placeholder="结束单号" />)}
+              </FormItem>
             </FormItem>
           </Col>
           <Col md={2} sm={24}>
@@ -261,7 +267,7 @@ class PrintHistory extends PureComponent {
               data={{ list: sendEmailList }}
               pagination={pagination}
               rowKey="DocEntry"
-              scroll={{ x: 1900, y: 600 }}
+              scroll={{ x: 1800 }}
               columns={this.columns}
               onRow={this.handleOnRow}
               onChange={this.handleStandardTableChange}

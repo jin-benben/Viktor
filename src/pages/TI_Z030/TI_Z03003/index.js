@@ -142,7 +142,7 @@ class InquiryEdit extends React.Component {
       dataIndex: 'ProfitLineTotal',
     },
     {
-      title: '要求交期',
+      title: '订单交期',
       width: 100,
       dataIndex: 'DueDate',
       align: 'center',
@@ -185,7 +185,7 @@ class InquiryEdit extends React.Component {
       dataIndex: 'Rweight',
       align: 'center',
       render: (text, record) =>
-        record.lastIndex ? '' : <span>{`${text}[${record.ForeignFreight}]`}</span>,
+        record.lastIndex ? '' : <span>{`${text}(公斤)[${record.ForeignFreight}]`}</span>,
     },
     {
       title: '询价备注',
@@ -611,7 +611,7 @@ class InquiryEdit extends React.Component {
           <Description term="创建日期">
             {moment(agreementDetail.CreateDate).format('YYYY-MM-DD')}
           </Description>
-          <Description term="要求交期">
+          <Description term="订单交期">
             {agreementDetail.DueDate ? moment(agreementDetail.DueDate).format('YYYY-MM-DD') : ''}
           </Description>
           <Description term="有效日期">

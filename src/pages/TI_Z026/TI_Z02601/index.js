@@ -1844,7 +1844,7 @@ class InquiryEdit extends React.Component {
               <Button onClick={this.updateHandle} type="primary" loading={updateloading}>
                 更新
               </Button>
-              <Comparison key="LineID" dataSource={inquiryDetail.TI_Z02602} />
+              <Comparison rowkey="LineID" dataSource={inquiryDetail.TI_Z02602} />
               <Dropdown overlay={this.topMenu} placement="topCenter">
                 <Button type="primary">
                   更多

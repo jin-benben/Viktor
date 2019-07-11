@@ -21,7 +21,6 @@ import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import Link from 'umi/link';
 import StandardTable from '@/components/StandardTable';
-import DocEntryFrom from '@/components/DocEntryFrom';
 import NeedAskPrice from '../components/needAskPrice';
 import Organization from '@/components/Organization/multiple';
 import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
@@ -197,8 +196,9 @@ class orderLine extends PureComponent {
       render: (text, record) => {
         if (!text) return '';
         return (
-          <Ellipsis tooltip lines={1}>{`${text || ''}(${record.Currency || ''})[${record.DocRate ||
-            ''}]`}</Ellipsis>
+          <Ellipsis tooltip lines={1}>
+            {`${text || ''}(${record.Currency || ''})[${record.DocRate || ''}]`}
+          </Ellipsis>
         );
       },
     },
@@ -207,7 +207,7 @@ class orderLine extends PureComponent {
       width: 100,
       dataIndex: 'Rweight',
       align: 'center',
-      render: (text, record) => <span>{`${text}[${record.ForeignFreight}]`}</span>,
+      render: (text, record) => <span>{`${text}(公斤)[${record.ForeignFreight}]`}</span>,
     },
     {
       title: '询行总计',
@@ -386,7 +386,7 @@ class orderLine extends PureComponent {
       dataIndex: 'CreateDate',
       render: val => (
         <Ellipsis tooltip lines={1}>
-          <span>{val ? moment(val).format('YYYY-MM-DD HH-DD-MM') : ''}</span>
+          <span>{val ? moment(val).format('YYYY-MM-DD HH:DD:MM') : ''}</span>
         </Ellipsis>
       ),
     },
@@ -470,6 +470,9 @@ class orderLine extends PureComponent {
         rows: pagination.pageSize,
       },
     });
+    this.setState({
+      selectedRows: [],
+    });
   };
 
   handleSearch = e => {
@@ -501,13 +504,6 @@ class orderLine extends PureComponent {
         TransferDateTimeTo = moment(fieldsValue.TransferDate[1]).format('YYYY-MM-DD');
       }
 
-      let DocEntryFroms = '';
-      let DocEntryTo = '';
-      if (fieldsValue.orderNo) {
-        DocEntryFroms = fieldsValue.orderNo.DocEntryFrom;
-        DocEntryTo = fieldsValue.orderNo.DocEntryTo;
-      }
-      delete fieldsValue.orderNo;
       delete fieldsValue.InquiryCfmDate;
       delete fieldsValue.dateArr;
       delete fieldsValue.TransferDate;
@@ -515,10 +511,10 @@ class orderLine extends PureComponent {
         ...fieldsValue,
         DocDateFrom,
         DocDateTo,
-        DocEntryFrom: DocEntryFroms,
-        DocEntryTo,
         InquiryCfmDateFrom,
         InquiryCfmDateTo,
+        TransferDateTimeFrom,
+        TransferDateTimeTo,
       };
       Object.assign(queryData.Content, { ...newQueryData });
       Object.assign(queryData, { page: 1 });
@@ -672,10 +668,14 @@ class orderLine extends PureComponent {
                 </FormItem>
               </Col>
               <Col md={5} sm={24}>
-                <FormItem key="orderNo" {...formLayout} label="单号">
-                  {getFieldDecorator('orderNo', {
-                    initialValue: { DocEntryFrom: '', DocEntryTo: '' },
-                  })(<DocEntryFrom />)}
+                <FormItem {...formLayout} label="单号">
+                  <FormItem className="lineFormItem" key="DocEntryFrom">
+                    {getFieldDecorator('DocEntryFrom')(<Input placeholder="开始单号" />)}
+                  </FormItem>
+                  <span className="lineFormItemCenter">-</span>
+                  <FormItem className="lineFormItem" key="DocEntryTo">
+                    {getFieldDecorator('DocEntryTo')(<Input placeholder="结束单号" />)}
+                  </FormItem>
                 </FormItem>
               </Col>
               <Col md={5} sm={24}>
@@ -749,13 +749,6 @@ class orderLine extends PureComponent {
     const transferParentMethods = {
       handleModalVisible: this.handleModalVisible,
     };
-    //    let tablwidth=0;
-    // this.columns.map(item=>{
-    //   if(item.width){
-    //     tablwidth+=item.width
-    //   }
-    // })
-    // console.log(tablwidth)
     return (
       <Fragment>
         <Card bordered={false}>
@@ -772,6 +765,7 @@ class orderLine extends PureComponent {
               rowSelection={{
                 onSelectRow: this.onSelectRow,
               }}
+              selectedRows={selectedRows}
               onChange={this.handleStandardTableChange}
             />
             <NeedAskPrice data={needAsk} {...parentMethods} modalVisible={modalVisible} />
@@ -784,7 +778,10 @@ class orderLine extends PureComponent {
           <Button type="primary" onClick={this.toTransfer}>
             转移
           </Button>
-          <Comparison key="Key" dataSource={selectedRows.length ? selectedRows : orderLineList} />
+          <Comparison
+            rowkey="Key"
+            dataSource={selectedRows.length ? selectedRows : orderLineList}
+          />
         </FooterToolbar>
         <Transfer
           SourceEntry={transferLine.DocEntry}

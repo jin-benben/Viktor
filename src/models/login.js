@@ -1,6 +1,6 @@
 import { routerRedux } from 'dva/router';
-import { loginRule, loginOutRule, getMDMCommonalityRule, ddLoginRule } from '@/services';
 import { stringify } from 'qs';
+import { loginRule, loginOutRule, getMDMCommonalityRule, ddLoginRule } from '@/services';
 
 export default {
   namespace: 'login',

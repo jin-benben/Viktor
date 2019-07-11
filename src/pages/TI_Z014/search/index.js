@@ -105,7 +105,6 @@ class inquiryList extends PureComponent {
         ...fieldsValue,
         DocDateFrom,
         DocDateTo,
-        ...fieldsValue.orderNo,
       };
       dispatch({
         type: 'authorityGroup/fetch',

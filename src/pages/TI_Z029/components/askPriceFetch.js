@@ -6,7 +6,6 @@ import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import Link from 'umi/link';
 import request from '@/utils/request';
 import StandardTable from '@/components/StandardTable';
-import DocEntryFrom from '@/components/DocEntryFrom';
 import Organization from '@/components/Organization/multiple';
 import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
 import { getName } from '@/utils/utils';
@@ -251,7 +250,6 @@ class orderLine extends PureComponent {
           ...fieldsValue,
           DocDateFrom,
           DocDateTo,
-          ...fieldsValue.orderNo,
         },
         page: 1,
         rows: 30,
@@ -335,10 +333,14 @@ class orderLine extends PureComponent {
             </FormItem>
           </Col>
           <Col md={6} sm={24}>
-            <FormItem key="orderNo" {...formLayout} label="单号">
-              {getFieldDecorator('orderNo', {
-                initialValue: { DocEntryFrom: '', DocEntryTo: '' },
-              })(<DocEntryFrom />)}
+            <FormItem {...formLayout} label="单号">
+              <FormItem className="lineFormItem" key="DocEntryFrom">
+                {getFieldDecorator('DocEntryFrom')(<Input placeholder="开始单号" />)}
+              </FormItem>
+              <span className="lineFormItemCenter">-</span>
+              <FormItem className="lineFormItem" key="DocEntryTo">
+                {getFieldDecorator('DocEntryTo')(<Input placeholder="结束单号" />)}
+              </FormItem>
             </FormItem>
           </Col>
           <Col md={4} sm={24}>

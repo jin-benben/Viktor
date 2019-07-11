@@ -21,7 +21,6 @@ import {
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import StandardTable from '@/components/StandardTable';
-import DocEntryFrom from '@/components/DocEntryFrom';
 import NeedAskPrice from './components';
 import MDMCommonality from '@/components/Select';
 import OrderPrint from '@/components/Modal/OrderPrint/other';
@@ -316,10 +315,6 @@ class salerConfrim extends PureComponent {
         DeliverDateTo = moment(fieldsValue.deliverArr[1]).format('YYYY-MM-DD');
       }
 
-      let orderNo = {};
-      if (fieldsValue.orderNo) {
-        orderNo = { ...fieldsValue.orderNo };
-      }
       const { DeliverSts, Owner } = fieldsValue;
       const queryData = {
         DocDateFrom,
@@ -328,7 +323,6 @@ class salerConfrim extends PureComponent {
         DeliverDateTo,
         DeliverSts: DeliverSts || 'N',
         Owner,
-        ...orderNo,
       };
       dispatch({
         type: 'salerConfrim/fetch',
@@ -505,10 +499,14 @@ class salerConfrim extends PureComponent {
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={5} sm={24}>
-            <FormItem key="orderNo" {...formLayout} label="单号">
-              {getFieldDecorator('orderNo', {
-                initialValue: { DocEntryFrom: '', DocEntryTo: '' },
-              })(<DocEntryFrom />)}
+            <FormItem {...formLayout} label="单号">
+              <FormItem className="lineFormItem" key="DocEntryFrom">
+                {getFieldDecorator('DocEntryFrom')(<Input placeholder="开始单号" />)}
+              </FormItem>
+              <span className="lineFormItemCenter">-</span>
+              <FormItem className="lineFormItem" key="DocEntryTo">
+                {getFieldDecorator('DocEntryTo')(<Input placeholder="结束单号" />)}
+              </FormItem>
             </FormItem>
           </Col>
           <Col md={5} sm={24}>

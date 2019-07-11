@@ -4,7 +4,6 @@ import moment from 'moment';
 import Link from 'umi/link';
 import { Row, Col, Card, Form, Input, Button, DatePicker } from 'antd';
 import StandardTable from '@/components/StandardTable';
-import DocEntryFrom from '@/components/DocEntryFrom';
 import { getName } from '@/utils/utils';
 
 const { RangePicker } = DatePicker;
@@ -156,7 +155,6 @@ class ExpressHistory extends PureComponent {
         ...fieldsValue,
         DocDateFrom,
         DocDateTo,
-        ...fieldsValue.orderNo,
       };
       dispatch({
         type: 'express/fetch',
@@ -200,24 +198,15 @@ class ExpressHistory extends PureComponent {
               )}
             </FormItem>
           </Col>
-          {/* <Col md={5} sm={24}>
-            <FormItem key="BaseType" {...formLayout} label="单据类型">
-              {getFieldDecorator('BaseType')(
-                <Select placeholder="请选择单据类型！" style={{ width: '100%' }}>
-                  {expressOrderType.map(option => (
-                    <Option key={option.Key} value={option.Key}>
-                      {option.Value}
-                    </Option>
-                  ))}
-                </Select>
-              )}
-            </FormItem>
-          </Col> */}
           <Col md={5} sm={24}>
-            <FormItem key="orderNo" {...formLayout} label="单号">
-              {getFieldDecorator('orderNo', {
-                initialValue: { DocEntryFrom: '', DocEntryTo: '' },
-              })(<DocEntryFrom />)}
+            <FormItem {...formLayout} label="单号">
+              <FormItem className="lineFormItem" key="DocEntryFrom">
+                {getFieldDecorator('DocEntryFrom')(<Input placeholder="开始单号" />)}
+              </FormItem>
+              <span className="lineFormItemCenter">-</span>
+              <FormItem className="lineFormItem" key="DocEntryTo">
+                {getFieldDecorator('DocEntryTo')(<Input placeholder="结束单号" />)}
+              </FormItem>
             </FormItem>
           </Col>
           <Col md={2} sm={24}>

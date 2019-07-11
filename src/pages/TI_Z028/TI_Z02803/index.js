@@ -6,7 +6,6 @@ import moment from 'moment';
 import { Row, Col, Card, Form, Input, Button, DatePicker, Icon } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import MDMCommonality from '@/components/Select';
-import DocEntryFrom from '@/components/DocEntryFrom';
 import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
 import MyPageHeader from '../components/pageHeader';
 import { getName } from '@/utils/utils';
@@ -181,20 +180,12 @@ class TI_Z02803 extends PureComponent {
         DocDateFrom = moment(fieldsValue.dateArr[0]).format('YYYY-MM-DD');
         DocDateTo = moment(fieldsValue.dateArr[1]).format('YYYY-MM-DD');
       }
-      let DocEntryFroms = '';
-      let DocEntryTo = '';
-      if (fieldsValue.orderNo) {
-        DocEntryFroms = fieldsValue.orderNo.DocEntryFrom;
-        DocEntryTo = fieldsValue.orderNo.DocEntryTo;
-      }
-      delete fieldsValue.orderNo;
+
       delete fieldsValue.dateArr;
       const queryData = {
         ...fieldsValue,
         DocDateFrom,
         DocDateTo,
-        DocEntryFroms,
-        DocEntryTo,
       };
       this.getOrder({
         Content: {
@@ -263,10 +254,14 @@ class TI_Z02803 extends PureComponent {
                 </FormItem>
               </Col>
               <Col md={5} sm={24}>
-                <FormItem key="orderNo" {...formLayout} label="单号">
-                  {getFieldDecorator('orderNo', {
-                    initialValue: { DocEntryFrom: '', DocEntryTo: '' },
-                  })(<DocEntryFrom />)}
+                <FormItem {...formLayout} label="单号">
+                  <FormItem className="lineFormItem" key="DocEntryFrom">
+                    {getFieldDecorator('DocEntryFrom')(<Input placeholder="开始单号" />)}
+                  </FormItem>
+                  <span className="lineFormItemCenter">-</span>
+                  <FormItem className="lineFormItem" key="DocEntryTo">
+                    {getFieldDecorator('DocEntryTo')(<Input placeholder="结束单号" />)}
+                  </FormItem>
                 </FormItem>
               </Col>
             </Fragment>

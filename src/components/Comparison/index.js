@@ -78,7 +78,7 @@ class comparison extends PureComponent {
   };
 
   render() {
-    const { dataSource, key } = this.props;
+    const { dataSource, rowkey } = this.props;
     const { modalVisible } = this.state;
     return (
       <Fragment>
@@ -92,7 +92,7 @@ class comparison extends PureComponent {
         >
           <Table
             pagination={false}
-            rowKey={key || 'Key'}
+            rowKey={rowkey || 'Key'}
             bordered
             scroll={{ y: 400 }}
             dataSource={dataSource}

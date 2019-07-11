@@ -45,6 +45,15 @@ export async function tokenOutRule(params) {
   });
 }
 
+export async function changepasswordRule(params) {
+  return request(`/Login/TI_Z004/TI_Z00401`, {
+    method: 'POST',
+    data: {
+      ...params,
+    },
+  });
+}
+
 export async function ddLoginRule(params) {
   return request(`/Login/TI_Z004/TI_Z00405`, {
     method: 'POST',

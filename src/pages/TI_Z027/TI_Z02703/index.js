@@ -125,7 +125,7 @@ class InquiryEdit extends React.Component {
       dataIndex: 'Rweight',
       align: 'center',
       render: (text, record) =>
-        record.lastIndex ? '' : <span>{`${text}[${record.ForeignFreight}]`}</span>,
+        record.lastIndex ? '' : <span>{`${text}(公斤)[${record.ForeignFreight}]`}</span>,
     },
     {
       title: '询价交期',

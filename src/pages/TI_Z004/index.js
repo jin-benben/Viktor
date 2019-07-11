@@ -15,12 +15,15 @@ import {
   Select,
   Checkbox,
   Tag,
+  Icon,
+  Divider,
 } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import Organization from '@/components/Organization';
 import MDMCommonality from '@/components/Select';
 import MyIcon from '@/components/MyIcon';
-import { validatorEmail, validatorPhone, getName } from '@/utils/utils';
+import ChangePassword from '@/components/Password';
+import { validatorEmail, checkPhone, getName } from '@/utils/utils';
 import { formLayout, formItemLayout, roleType } from '@/utils/publicData';
 
 const FormItem = Form.Item;
@@ -33,6 +36,15 @@ const { TextArea } = Input;
 }))
 @Form.create()
 class CreateForm extends PureComponent {
+  validatorPhone = (rule, value, callback) => {
+    const { form } = this.props;
+    if (value && form.getFieldValue('GAreaCode') === '86' && !checkPhone(value)) {
+      callback(new Error('手机号格式不正确'));
+    } else {
+      callback();
+    }
+  };
+
   render() {
     const {
       form: { getFieldDecorator },
@@ -46,6 +58,15 @@ class CreateForm extends PureComponent {
       updateloading,
       addloading,
     } = this.props;
+    const prefixSelector = getFieldDecorator('GAreaCode', {
+      initialValue: formVals.GAreaCode || '86',
+    })(
+      <Select style={{ width: 90 }}>
+        <Option value="86">+86(中)</Option>
+        <Option value="49">+49(德)</Option>
+        <Option value="1">+1(美)</Option>
+      </Select>
+    );
     const okHandle = () => {
       form.validateFields((err, fieldsValue) => {
         if (err) return;
@@ -94,16 +115,16 @@ class CreateForm extends PureComponent {
               </FormItem>
             </Col>
             <Col span={12}>
-              <FormItem key="Mobile" {...formLayout} label="手机号">
+              <FormItem label="手机号" {...formLayout} key="Mobile">
                 {getFieldDecorator('Mobile', {
                   rules: [
                     { required: true, message: '请输入手机号！' },
                     {
-                      validator: validatorPhone,
+                      validator: this.validatorPhone,
                     },
                   ],
                   initialValue: formVals.Mobile,
-                })(<Input placeholder="请输入手机号" />)}
+                })(<Input addonBefore={prefixSelector} placeholder="请输入手机号" />)}
               </FormItem>
             </Col>
             <Col span={12}>
@@ -129,6 +150,7 @@ class CreateForm extends PureComponent {
                 })(<Input placeholder="请输入传真" />)}
               </FormItem>
             </Col>
+
             <Col span={12}>
               <FormItem key="Tel" {...formLayout} label="电话">
                 {getFieldDecorator('Tel', {
@@ -262,6 +284,7 @@ class CreateForm extends PureComponent {
 class Staffs extends PureComponent {
   state = {
     modalVisible: false,
+    passwordModalVisible: false,
     method: 'A',
     formValues: {
       Name: '',
@@ -326,6 +349,12 @@ class Staffs extends PureComponent {
       title: '手机号',
       width: 120,
       dataIndex: 'Mobile',
+      render: (text, record) => (
+        <span style={{ fontSize: 13 }}>
+          {record.GAreaCode ? <span>{`+${record.GAreaCode}-`}</span> : ''}
+          {text}
+        </span>
+      ),
     },
     {
       title: 'Email',
@@ -411,13 +440,17 @@ class Staffs extends PureComponent {
     },
     {
       title: '操作',
-      width: 60,
+      width: 80,
       fixed: 'right',
       align: 'center',
       render: (text, record) => (
         <Fragment>
           <a onClick={() => this.handleUpdateModalVisible(true, record)}>
             <MyIcon type="iconedit" />
+          </a>
+          <Divider type="vertical" />
+          <a onClick={() => this.changePassword(record)}>
+            <Icon type="lock" theme="twoTone" />
           </a>
         </Fragment>
       ),
@@ -515,6 +548,13 @@ class Staffs extends PureComponent {
     });
   };
 
+  changePassword = record => {
+    this.setState({
+      formValues: record,
+      passwordModalVisible: true,
+    });
+  };
+
   handleUpdateModalVisible = (flag, record) => {
     this.setState({
       modalVisible: !!flag,
@@ -585,6 +625,15 @@ class Staffs extends PureComponent {
   handleModalVisible = flag => {
     this.setState({
       modalVisible: !!flag,
+      passwordModalVisible: !!flag,
+      method: 'A',
+      formValues: {},
+    });
+  };
+
+  addStaffs = () => {
+    this.setState({
+      modalVisible: true,
       method: 'A',
       formValues: {},
     });
@@ -635,7 +684,7 @@ class Staffs extends PureComponent {
                 icon="plus"
                 style={{ marginLeft: 8, marginRight: 8 }}
                 type="primary"
-                onClick={() => this.handleModalVisible(true)}
+                onClick={this.addStaffs}
               >
                 新建
               </Button>
@@ -654,7 +703,7 @@ class Staffs extends PureComponent {
       staffs: { staffsList, pagination },
       loading,
     } = this.props;
-    const { modalVisible, formValues, method } = this.state;
+    const { modalVisible, formValues, method, passwordModalVisible } = this.state;
     const parentMethods = {
       handleSubmit: this.handleSubmit,
       handleModalVisible: this.handleModalVisible,
@@ -668,7 +717,7 @@ class Staffs extends PureComponent {
               loading={loading}
               data={{ list: staffsList }}
               rowKey="Code"
-              scroll={{ x: 2100, y: 600 }}
+              scroll={{ x: 2150 }}
               pagination={pagination}
               columns={this.columns}
               onChange={this.handleStandardTableChange}
@@ -680,6 +729,11 @@ class Staffs extends PureComponent {
           formVals={formValues}
           method={method}
           modalVisible={modalVisible}
+        />
+        <ChangePassword
+          Code={formValues.Code}
+          modalVisible={passwordModalVisible}
+          handleModalVisible={this.handleModalVisible}
         />
       </Fragment>
     );

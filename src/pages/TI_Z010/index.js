@@ -162,7 +162,7 @@ class Organization extends PureComponent {
     data.map(item => {
       const popover = (
         <Popover placement="right" content={this.creatNutton(item)} trigger="click">
-          {item.Name}
+          {item.text}
         </Popover>
       );
       if (item.children) {

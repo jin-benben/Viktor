@@ -108,7 +108,7 @@ class ClientAsk extends PureComponent {
       dataIndex: 'CardName',
       width: 300,
       render: (text, recond) => (
-        <Link target="_blank" to={`/sellabout/TI_Z029/detail?DocEntry=${recond.CardCode}`}>
+        <Link target="_blank" to={`/main/TI_Z006/detail?Code=${recond.CardCode}`}>
           {`${recond.CardCode}-${text}`}
         </Link>
       ),

@@ -219,7 +219,6 @@ class inquiryFetchtrackPage extends PureComponent {
         ...fieldsValue,
         DocDateFrom,
         DocDateTo,
-        ...fieldsValue.orderNo,
       };
       dispatch({
         type: 'inquiryFetchtrack/fetch',

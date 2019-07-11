@@ -9,7 +9,6 @@ import Link from 'umi/link';
 import StandardTable from '@/components/StandardTable';
 import MDMCommonality from '@/components/Select';
 import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
-import DocEntryFrom from '@/components/DocEntryFrom';
 import MyPageHeader from '../components/pageHeader';
 import { getName } from '@/utils/utils';
 import styles from '../style.less';
@@ -291,29 +290,11 @@ class TI_Z02804 extends PureComponent {
         DocDateFrom = moment(fieldsValue.dateArr[0]).format('YYYY-MM-DD');
         DocDateTo = moment(fieldsValue.dateArr[1]).format('YYYY-MM-DD');
       }
-      let DocEntryFroms = '';
-      let DocEntryTo = '';
-      if (fieldsValue.orderNo) {
-        DocEntryFroms = fieldsValue.orderNo.DocEntryFrom;
-        DocEntryTo = fieldsValue.orderNo.DocEntryTo;
-      }
-      let BaseEntryFrom = '';
-      let BaseEntryTo = '';
-      if (fieldsValue.BaseEntry) {
-        BaseEntryFrom = fieldsValue.BaseEntry.DocEntryFrom;
-        BaseEntryTo = fieldsValue.BaseEntry.DocEntryTo;
-      }
-      delete fieldsValue.orderNo;
       delete fieldsValue.dateArr;
-      delete fieldsValue.BaseEntry;
       const queryData = {
         ...fieldsValue,
         DocDateFrom,
-        BaseEntryFrom,
-        BaseEntryTo,
         DocDateTo,
-        DocEntryFroms,
-        DocEntryTo,
       };
       dispatch({
         type: 'TI_Z02804/fetch',
@@ -336,7 +317,7 @@ class TI_Z02804 extends PureComponent {
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
-      global: { Purchaser, currentUser, Saler },
+      global: { Saler },
     } = this.props;
     const { expandForm } = this.state;
     const formLayout = {
@@ -371,17 +352,25 @@ class TI_Z02804 extends PureComponent {
           {expandForm ? (
             <Fragment>
               <Col md={5} sm={24}>
-                <FormItem key="orderNo" {...formLayout} label="单号">
-                  {getFieldDecorator('orderNo', {
-                    initialValue: { DocEntryFrom: '', DocEntryTo: '' },
-                  })(<DocEntryFrom />)}
+                <FormItem {...formLayout} label="单号">
+                  <FormItem className="lineFormItem" key="DocEntryFrom">
+                    {getFieldDecorator('DocEntryFrom')(<Input placeholder="开始单号" />)}
+                  </FormItem>
+                  <span className="lineFormItemCenter">-</span>
+                  <FormItem className="lineFormItem" key="DocEntryTo">
+                    {getFieldDecorator('DocEntryTo')(<Input placeholder="结束单号" />)}
+                  </FormItem>
                 </FormItem>
               </Col>
               <Col md={5} sm={24}>
-                <FormItem key="BaseEntry" {...formLayout} label="询价单号">
-                  {getFieldDecorator('BaseEntry', {
-                    initialValue: { DocEntryFrom: '', DocEntryTo: '' },
-                  })(<DocEntryFrom />)}
+                <FormItem {...formLayout} label="询价单号">
+                  <FormItem className="lineFormItem" key="DocEntryFrom">
+                    {getFieldDecorator('BaseEntryFrom')(<Input placeholder="开始单号" />)}
+                  </FormItem>
+                  <span className="lineFormItemCenter">-</span>
+                  <FormItem className="lineFormItem" key="DocEntryTo">
+                    {getFieldDecorator('BaseEntryTo')(<Input placeholder="结束单号" />)}
+                  </FormItem>
                 </FormItem>
               </Col>
             </Fragment>

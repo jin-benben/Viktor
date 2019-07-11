@@ -3,13 +3,12 @@ import { connect } from 'dva';
 import router from 'umi/router';
 import Link from 'umi/link';
 import moment from 'moment';
-import { Row, Col, Card, Form, Input, Button, Tag, Select, DatePicker, Icon, Tooltip } from 'antd';
+import { Row, Col, Card, Form, Input, Button, Tag, Select, DatePicker, Icon } from 'antd';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import StandardTable from '@/components/StandardTable';
 import MyPageHeader from '../components/pageHeader';
 import Organization from '@/components/Organization/multiple';
 import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
-import DocEntryFrom from '@/components/DocEntryFrom';
 import { getName } from '@/utils/utils';
 
 const { RangePicker } = DatePicker;
@@ -153,7 +152,7 @@ class AgreementLine extends PureComponent {
       dataIndex: 'ProfitLineTotal',
     },
     {
-      title: '交期',
+      title: '订单交期',
       width: 100,
       dataIndex: 'DueDate',
       render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
@@ -182,7 +181,7 @@ class AgreementLine extends PureComponent {
       width: 100,
       dataIndex: 'Rweight',
       align: 'center',
-      render: (text, record) => <span>{`${text}[${record.ForeignFreight}]`}</span>,
+      render: (text, record) => <span>{`${text}(公斤)[${record.ForeignFreight}]`}</span>,
     },
     {
       title: '询行总计',
@@ -332,7 +331,7 @@ class AgreementLine extends PureComponent {
       dataIndex: 'CreateDate',
       render: val => (
         <Ellipsis tooltip lines={1}>
-          <span>{val ? moment(val).format('YYYY-MM-DD HH-DD-MM') : ''}</span>
+          <span>{val ? moment(val).format('YYYY-MM-DD HH:DD:MM') : ''}</span>
         </Ellipsis>
       ),
     },
@@ -391,7 +390,7 @@ class AgreementLine extends PureComponent {
       type: 'global/getMDMCommonality',
       payload: {
         Content: {
-          CodeList: ['Saler', 'Purchaser', 'WhsCode'],
+          CodeList: ['Saler', 'Purchaser', 'WhsCode', 'TI_Z042'],
         },
       },
     });
@@ -428,29 +427,13 @@ class AgreementLine extends PureComponent {
         DocDateFrom = moment(fieldsValue.dateArr[0]).format('YYYY-MM-DD');
         DocDateTo = moment(fieldsValue.dateArr[1]).format('YYYY-MM-DD');
       }
-      let DocEntryFroms = '';
-      let DocEntryTo = '';
-      if (fieldsValue.orderNo) {
-        DocEntryFroms = fieldsValue.orderNo.DocEntryFrom;
-        DocEntryTo = fieldsValue.orderNo.DocEntryTo;
-      }
-      let BaseEntryFrom = '';
-      let BaseEntryTo = '';
-      if (fieldsValue.BaseEntry) {
-        BaseEntryFrom = fieldsValue.BaseEntry.DocEntryFrom;
-        BaseEntryTo = fieldsValue.BaseEntry.DocEntryTo;
-      }
-      delete fieldsValue.orderNo;
+
       delete fieldsValue.dateArr;
-      delete fieldsValue.BaseEntry;
+
       const queryData = {
         ...fieldsValue,
         DocDateFrom,
-        BaseEntryFrom,
-        BaseEntryTo,
         DocDateTo,
-        DocEntryFroms,
-        DocEntryTo,
       };
       dispatch({
         type: 'agreementLine/fetch',
@@ -543,17 +526,25 @@ class AgreementLine extends PureComponent {
                 </FormItem>
               </Col>
               <Col md={5} sm={24}>
-                <FormItem key="orderNo" {...formLayout} label="单号">
-                  {getFieldDecorator('orderNo', {
-                    initialValue: { DocEntryFrom: '', DocEntryTo: '' },
-                  })(<DocEntryFrom />)}
+                <FormItem {...formLayout} label="单号">
+                  <FormItem className="lineFormItem" key="DocEntryFrom">
+                    {getFieldDecorator('DocEntryFrom')(<Input placeholder="开始单号" />)}
+                  </FormItem>
+                  <span className="lineFormItemCenter">-</span>
+                  <FormItem className="lineFormItem" key="DocEntryTo">
+                    {getFieldDecorator('DocEntryTo')(<Input placeholder="结束单号" />)}
+                  </FormItem>
                 </FormItem>
               </Col>
               <Col md={5} sm={24}>
-                <FormItem key="BaseEntry" {...formLayout} label="客询价单">
-                  {getFieldDecorator('BaseEntry', {
-                    initialValue: { DocEntryFrom: '', DocEntryTo: '' },
-                  })(<DocEntryFrom />)}
+                <FormItem {...formLayout} label="客询价单">
+                  <FormItem className="lineFormItem" key="BaseEntryFrom">
+                    {getFieldDecorator('BaseEntryFrom')(<Input placeholder="开始单号" />)}
+                  </FormItem>
+                  <span className="lineFormItemCenter">-</span>
+                  <FormItem className="lineFormItem" key="BaseEntryTo">
+                    {getFieldDecorator('BaseEntryTo')(<Input placeholder="结束单号" />)}
+                  </FormItem>
                 </FormItem>
               </Col>
               <Col md={5} sm={24}>
@@ -561,12 +552,6 @@ class AgreementLine extends PureComponent {
                   {getFieldDecorator('DeptList')(<Organization />)}
                 </FormItem>
               </Col>
-
-              {/* <Col md={5} sm={24}>
-                <FormItem label="采购" {...formLayout}>
-                  {getFieldDecorator('Purchaser')(<MDMCommonality data={Purchaser} />)}
-                </FormItem>
-              </Col> */}
             </Fragment>
           ) : null}
           <Col md={4} sm={24}>

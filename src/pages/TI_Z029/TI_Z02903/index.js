@@ -148,7 +148,7 @@ class InquiryEdit extends Component {
       dataIndex: 'ProfitLineTotal',
     },
     {
-      title: '要求交期',
+      title: '报价交期',
       width: 100,
       dataIndex: 'DueDate',
       align: 'center',
@@ -173,7 +173,7 @@ class InquiryEdit extends Component {
       dataIndex: 'Rweight',
       align: 'center',
       render: (text, record) =>
-        record.lastIndex ? '' : <span>{`${text}[${record.ForeignFreight}]`}</span>,
+        record.lastIndex ? '' : <span>{`${text}(公斤)[${record.ForeignFreight}]`}</span>,
     },
     {
       title: '询行总计',
@@ -627,7 +627,7 @@ class InquiryEdit extends Component {
           <Description term="创建日期">
             {moment(formVals.CreateDate).format('YYYY-MM-DD')}
           </Description>
-          <Description term="要求交期">{formVals.DueDate}</Description>
+          <Description term="报价交期">{formVals.DueDate}</Description>
           <Description term="有效日期">
             {formVals.ToDate ? moment(formVals.ToDate).format('YYYY-MM-DD') : ''}
           </Description>
