@@ -15,6 +15,7 @@ import {
   Icon,
   message,
   Tooltip,
+  Badge,
 } from 'antd';
 import Link from 'umi/link';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
@@ -27,6 +28,7 @@ import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
 import ProcessorSelect from '@/components/Select/SalerPurchaser';
 import Comparison from '@/components/Comparison';
 import MyPageHeader from '../components/pageHeader';
+import AttachmentModal from '@/components/Attachment/modal';
 import { getName } from '@/utils/utils';
 
 const { RangePicker } = DatePicker;
@@ -46,6 +48,8 @@ class SalesQuotationSku extends PureComponent {
     expandForm: false,
     needmodalVisible: false,
     transferModalVisible: false,
+    attachmentVisible: false,
+    prviewList: [],
     transferLine: {},
     selectedRows: [],
   };
@@ -56,6 +60,8 @@ class SalesQuotationSku extends PureComponent {
       width: 100,
       fixed: 'left',
       dataIndex: 'DocEntry',
+      sorter: true,
+      align: 'center',
       render: (text, recond) => (
         <Link target="_blank" to={`/sellabout/TI_Z029/detail?DocEntry=${text}`}>
           {`${text}-${recond.LineID}`}
@@ -66,6 +72,7 @@ class SalesQuotationSku extends PureComponent {
       title: '状态',
       width: 140,
       dataIndex: 'LineStatus',
+      sorter: true,
       align: 'center',
       render: (text, record) =>
         record.lastIndex ? null : (
@@ -95,6 +102,8 @@ class SalesQuotationSku extends PureComponent {
       title: '客户',
       width: 150,
       dataIndex: 'CardName',
+      sorter: true,
+      align: 'center',
       render: text => (
         <Ellipsis tooltip lines={1}>
           {text}
@@ -123,20 +132,20 @@ class SalesQuotationSku extends PureComponent {
     },
     {
       title: '物料',
-      width: 300,
-      dataIndex: 'SKU',
+      dataIndex: 'SKUName',
+      sorter: true,
       align: 'center',
-
+      width: 300,
       render: (text, record) => (
         <Ellipsis tooltip lines={1}>
           {text ? (
-            <Link target="_blank" to={`/main/product/TI_Z009/TI_Z00903?Code${text}`}>
-              {text}-
+            <Link target="_blank" to={`/main/product/TI_Z009/TI_Z00903?Code${record.SKU}`}>
+              {record.SKU}-
             </Link>
           ) : (
             ''
           )}
-          {record.SKUName}
+          {text}
         </Ellipsis>
       ),
     },
@@ -157,11 +166,13 @@ class SalesQuotationSku extends PureComponent {
       title: '价格',
       width: 80,
       dataIndex: 'Price',
+      sorter: true,
       align: 'center',
     },
     {
       title: '行总计',
       width: 100,
+      sorter: true,
       align: 'center',
       dataIndex: 'LineTotal',
       render: (text, record) =>
@@ -196,30 +207,39 @@ class SalesQuotationSku extends PureComponent {
       width: 100,
       dataIndex: 'DueDate',
       align: 'center',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '询价价格',
       width: 120,
       dataIndex: 'InquiryPrice',
+      sorter: true,
       align: 'center',
       render: (text, record) => {
         if (!text) return '';
         return (
-          <Ellipsis tooltip lines={1}>{`${text || ''}(${record.Currency || ''})[${record.DocRate ||
-            ''}]`}</Ellipsis>
+          <Ellipsis tooltip lines={1}>
+            {`${text || ''}(${record.Currency || ''})[${record.DocRate || ''}]`}
+          </Ellipsis>
         );
       },
     },
     {
       title: '重量[运费]',
       width: 120,
-      dataIndex: 'Rweight',
+      dataIndex: 'ForeignFreight',
+      sorter: true,
       align: 'center',
-      render: (text, record) => <span>{`${text}(公斤)[${record.ForeignFreight}]`}</span>,
+      render: (text, record) => <span>{`${record.Rweight}(公斤)[${text}]`}</span>,
     },
     {
       title: '询行总计',
       width: 150,
+      sorter: true,
       align: 'center',
       dataIndex: 'InquiryLineTotal',
       render: (text, record) => (
@@ -245,12 +265,19 @@ class SalesQuotationSku extends PureComponent {
       title: '询价交期',
       width: 100,
       dataIndex: 'InquiryDueDate',
+      sorter: true,
       align: 'center',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '销售员',
       width: 120,
       dataIndex: 'Owner',
+      sorter: true,
       align: 'center',
       render: text => {
         const {
@@ -263,6 +290,7 @@ class SalesQuotationSku extends PureComponent {
       title: '采购员',
       width: 120,
       dataIndex: 'Purchaser',
+      sorter: true,
       align: 'center',
       render: text => {
         const {
@@ -275,6 +303,7 @@ class SalesQuotationSku extends PureComponent {
       title: '产地',
       width: 80,
       dataIndex: 'ManLocation',
+      sorter: true,
       align: 'center',
       render: text => {
         const {
@@ -362,6 +391,8 @@ class SalesQuotationSku extends PureComponent {
       title: '创建日期',
       width: 100,
       dataIndex: 'CreateDate',
+      sorter: true,
+      align: 'center',
       render: val => (
         <Ellipsis tooltip lines={1}>
           <span>{val ? moment(val).format('YYYY-MM-DD HH:DD:MM') : ''}</span>
@@ -406,6 +437,25 @@ class SalesQuotationSku extends PureComponent {
           ''
         ),
     },
+    {
+      title: '操作',
+      fixed: 'right',
+      align: 'center',
+      width: 80,
+      render: (text, record) =>
+        record.TI_Z02604.length ? (
+          <Badge count={record.TI_Z02604.length} className="attachBadge">
+            <Icon
+              title="预览"
+              type="eye"
+              onClick={() => this.lookLineAttachment(record)}
+              style={{ color: '#08c', marginRight: 5 }}
+            />
+          </Badge>
+        ) : (
+          ''
+        ),
+    },
   ];
 
   componentDidMount() {
@@ -432,17 +482,28 @@ class SalesQuotationSku extends PureComponent {
     });
   }
 
-  handleStandardTableChange = pagination => {
+  lookLineAttachment = record => {
+    this.setState({ attachmentVisible: true, prviewList: record.TI_Z02604 });
+  };
+
+  handleStandardTableChange = (pagination, filters, sorter) => {
     const {
       dispatch,
       SalesQuotationSku: { queryData },
     } = this.props;
+    const { field, order } = sorter;
+    let sord = 'desc';
+    if (order === 'ascend') {
+      sord = 'asc';
+    }
     dispatch({
       type: 'SalesQuotationSku/fetch',
       payload: {
         ...queryData,
         page: pagination.current,
         rows: pagination.pageSize,
+        sidx: field || 'DocEntry',
+        sord,
       },
     });
     this.setState({
@@ -574,7 +635,11 @@ class SalesQuotationSku extends PureComponent {
   };
 
   handleModalVisible = flag => {
-    this.setState({ needmodalVisible: !!flag, transferModalVisible: !!flag });
+    this.setState({
+      needmodalVisible: !!flag,
+      transferModalVisible: !!flag,
+      attachmentVisible: !!flag,
+    });
   };
 
   renderSimpleForm() {
@@ -740,22 +805,19 @@ class SalesQuotationSku extends PureComponent {
       loading,
       location,
     } = this.props;
-    const { needmodalVisible, selectedRows, transferModalVisible, transferLine } = this.state;
+    const {
+      needmodalVisible,
+      selectedRows,
+      transferModalVisible,
+      transferLine,
+      attachmentVisible,
+      prviewList,
+    } = this.state;
     const needParentMethods = {
       handleSubmit: this.submitNeedLine,
       handleModalVisible: this.handleModalVisible,
     };
-    const transferParentMethods = {
-      handleModalVisible: this.handleModalVisible,
-    };
 
-    //   let tablwidth=0;
-    // this.columns.map(item=>{
-    //   if(item.width){
-    //     tablwidth+=item.width
-    //   }
-    // })
-    // console.log(tablwidth)
     return (
       <Fragment>
         <Card bordered={false}>
@@ -766,7 +828,7 @@ class SalesQuotationSku extends PureComponent {
               loading={loading}
               data={{ list: SalesQuotationSkuList }}
               pagination={pagination}
-              scroll={{ x: 3900 }}
+              scroll={{ x: 3800 }}
               rowKey="Key"
               columns={this.columns}
               rowSelection={{
@@ -783,7 +845,12 @@ class SalesQuotationSku extends PureComponent {
           SourceEntry={transferLine.DocEntry}
           SourceType="TI_Z029"
           modalVisible={transferModalVisible}
-          {...transferParentMethods}
+          handleModalVisible={this.handleModalVisible}
+        />
+        <AttachmentModal
+          attachmentVisible={attachmentVisible}
+          prviewList={prviewList}
+          handleModalVisible={this.handleModalVisible}
         />
         <FooterToolbar>
           <Button onClick={this.toConfrim} type="primary">

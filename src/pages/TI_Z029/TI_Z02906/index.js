@@ -34,8 +34,9 @@ class SalesQuotation extends PureComponent {
     {
       title: '单号',
       width: 80,
-      fixed: 'left',
       dataIndex: 'DocEntry',
+      sorter: true,
+      align: 'center',
       render: text => (
         <Link target="_blank" to={`/sellabout/TI_Z029/detail?DocEntry=${text}`}>
           {text}
@@ -45,12 +46,16 @@ class SalesQuotation extends PureComponent {
     {
       title: '单据日期',
       dataIndex: 'DocDate',
+      sorter: true,
+      align: 'center',
       width: 100,
       render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
     },
     {
       title: '创建日期',
       width: 100,
+      sorter: true,
+      align: 'center',
       dataIndex: 'CreateDate',
       render: val => (
         <Ellipsis tooltip lines={1}>
@@ -83,6 +88,8 @@ class SalesQuotation extends PureComponent {
     {
       title: '客户',
       dataIndex: 'CardName',
+      sorter: true,
+      align: 'center',
       width: 200,
       render: text => (
         <Ellipsis tooltip lines={1}>
@@ -93,7 +100,7 @@ class SalesQuotation extends PureComponent {
 
     {
       title: '联系人',
-      width: 150,
+      width: 80,
       dataIndex: 'Contacts',
       render: (text, record) => (
         <Tooltip
@@ -111,19 +118,21 @@ class SalesQuotation extends PureComponent {
         </Tooltip>
       ),
     },
-    {
-      title: '送货地址',
-      dataIndex: 'address',
-      render: (text, record) => (
-        <Ellipsis tooltip lines={1}>
-          {`${record.Province}${record.City}${record.Area}${record.Address}`}
-        </Ellipsis>
-      ),
-    },
+    // {
+    //   title: '送货地址',
+    //   dataIndex: 'address',
+    //   render: (text, record) => (
+    //     <Ellipsis tooltip lines={1}>
+    //       {`${record.Province}${record.City}${record.Area}${record.Address}`}
+    //     </Ellipsis>
+    //   ),
+    // },
     {
       title: '销售员',
       width: 120,
       dataIndex: 'Owner',
+      sorter: true,
+      align: 'center',
       render: text => {
         const {
           global: { Saler },
@@ -133,7 +142,9 @@ class SalesQuotation extends PureComponent {
     },
     {
       title: '单据总计',
-      width: 80,
+      width: 100,
+      sorter: true,
+      align: 'center',
       dataIndex: 'DocTotal',
     },
     {
@@ -187,17 +198,24 @@ class SalesQuotation extends PureComponent {
     });
   }
 
-  handleStandardTableChange = pagination => {
+  handleStandardTableChange = (pagination, filters, sorter) => {
     const {
       dispatch,
       SalesQuotation: { queryData },
     } = this.props;
+    const { field, order } = sorter;
+    let sord = 'desc';
+    if (order === 'ascend') {
+      sord = 'asc';
+    }
     dispatch({
       type: 'SalesQuotation/fetch',
       payload: {
         ...queryData,
         page: pagination.current,
         rows: pagination.pageSize,
+        sidx: field || 'DocEntry',
+        sord,
       },
     });
   };
@@ -386,7 +404,7 @@ class SalesQuotation extends PureComponent {
               data={{ list: SalesQuotationList }}
               pagination={pagination}
               rowKey="DocEntry"
-              scroll={{ x: 1600 }}
+              scroll={{ x: 1300 }}
               columns={this.columns}
               onChange={this.handleStandardTableChange}
             />

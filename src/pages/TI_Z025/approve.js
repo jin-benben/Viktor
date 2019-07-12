@@ -2,12 +2,12 @@ import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import Link from 'umi/link';
 import moment from 'moment';
-import { Row, Col, Card, Form, Select, Button, message, Table } from 'antd';
+import { Row, Col, Card, Form, Button, message, Table } from 'antd';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
+import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
 
 const FormItem = Form.Item;
-const { Option } = Select;
 
 /* eslint react/no-multi-comp:0 */
 @connect(({ batchManage, loading, global }) => ({
@@ -96,8 +96,18 @@ class BatchUpload extends PureComponent {
   componentDidMount() {
     const {
       dispatch,
+      global: { currentUser },
       batchManage: { queryData },
     } = this.props;
+    Object.assign(queryData.Content, { SlpCode: [currentUser.Owner] });
+    dispatch({
+      type: 'batchManage/save',
+      payload: {
+        queryData: {
+          ...queryData,
+        },
+      },
+    });
     dispatch({
       type: 'batchManage/approvefetch',
       payload: {
@@ -105,12 +115,7 @@ class BatchUpload extends PureComponent {
       },
     });
     dispatch({
-      type: 'global/getMDMCommonality',
-      payload: {
-        Content: {
-          CodeList: ['Saler'],
-        },
-      },
+      type: 'global/getAuthority',
     });
   }
 
@@ -200,8 +205,9 @@ class BatchUpload extends PureComponent {
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
-      global: { Saler },
+      batchManage: { queryData },
     } = this.props;
+    const { SlpCode } = queryData.Content;
     const formLayout = {
       labelCol: { span: 8 },
       wrapperCol: { span: 16 },
@@ -209,22 +215,10 @@ class BatchUpload extends PureComponent {
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={6} sm={24}>
+          <Col md={8} sm={24}>
             <FormItem key="SlpCode" {...formLayout} label="销售员">
-              {getFieldDecorator('SlpCode')(
-                <Select
-                  showArrow={false}
-                  mode="multiple"
-                  placeholder="选择名称"
-                  filterOption={false}
-                  style={{ width: '100%' }}
-                >
-                  {Saler.map(option => (
-                    <Option key={option.Key} value={option.Key}>
-                      {option.Value}
-                    </Option>
-                  ))}
-                </Select>
+              {getFieldDecorator('SlpCode', { initialValue: SlpCode })(
+                <SalerPurchaser initialValue={SlpCode} />
               )}
             </FormItem>
           </Col>

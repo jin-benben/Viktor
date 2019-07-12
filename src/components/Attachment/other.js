@@ -1,8 +1,23 @@
 import React, { PureComponent } from 'react';
 import { Table } from 'antd';
+import { baseType } from '@/utils/publicData';
+import { getName } from '@/utils/utils';
 
 class Attachment extends PureComponent {
   attachmentColumns = [
+    {
+      title: '来源类型',
+      align: 'center',
+      width: 100,
+      dataIndex: 'BaseType',
+      render: text => <span>{getName(baseType, text)}</span>,
+    },
+    {
+      title: '来源单号',
+      align: 'center',
+      width: 100,
+      dataIndex: 'BaseEntry',
+    },
     {
       title: '附件代码',
       align: 'center',
@@ -33,13 +48,6 @@ class Attachment extends PureComponent {
       ),
     },
   ];
-
-  deleteLine = (record, index) => {
-    const { deleteLineFun } = this.props;
-    if (deleteLineFun) {
-      deleteLineFun(record, index);
-    }
-  };
 
   render() {
     const { dataSource } = this.props;

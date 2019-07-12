@@ -33,6 +33,8 @@ class agreementOrder extends PureComponent {
       title: '单号',
       width: 80,
       fixed: 'left',
+      sorter: true,
+      align: 'center',
       dataIndex: 'DocEntry',
       render: text => (
         <Link target="_blank" to={`/sellabout/TI_Z030/detail?DocEntry=${text}`}>
@@ -44,11 +46,15 @@ class agreementOrder extends PureComponent {
       title: '单据日期',
       dataIndex: 'DocDate',
       width: 100,
+      sorter: true,
+      align: 'center',
       render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
     },
     {
       title: '创建日期',
-      width: 100,
+      width: 150,
+      sorter: true,
+      align: 'center',
       dataIndex: 'CreateDate',
       render: val => (
         <Ellipsis tooltip lines={1}>
@@ -83,6 +89,8 @@ class agreementOrder extends PureComponent {
       title: '客户',
       width: 300,
       dataIndex: 'CardName',
+      sorter: true,
+      align: 'center',
       render: text => (
         <Ellipsis tooltip lines={1}>
           {text}
@@ -92,7 +100,7 @@ class agreementOrder extends PureComponent {
 
     {
       title: '联系人',
-      width: 150,
+      width: 100,
       dataIndex: 'Contacts',
       render: (text, record) => (
         <Tooltip
@@ -124,6 +132,8 @@ class agreementOrder extends PureComponent {
       title: '销售员',
       width: 120,
       dataIndex: 'Owner',
+      sorter: true,
+      align: 'center',
       render: text => {
         const {
           global: { Saler },
@@ -135,6 +145,8 @@ class agreementOrder extends PureComponent {
       title: '单据总计',
       width: 100,
       dataIndex: 'DocTotal',
+      sorter: true,
+      align: 'center',
     },
     {
       title: '成本总计',
@@ -145,6 +157,11 @@ class agreementOrder extends PureComponent {
       title: '客户参考号',
       width: 100,
       dataIndex: 'NumAtCard',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '备注',
@@ -182,17 +199,24 @@ class agreementOrder extends PureComponent {
     });
   }
 
-  handleStandardTableChange = pagination => {
+  handleStandardTableChange = (pagination, filters, sorter) => {
     const {
       dispatch,
       agreementOrder: { queryData },
     } = this.props;
+    const { field, order } = sorter;
+    let sord = 'desc';
+    if (order === 'ascend') {
+      sord = 'asc';
+    }
     dispatch({
       type: 'agreementOrder/fetch',
       payload: {
         ...queryData,
         page: pagination.current,
         rows: pagination.pageSize,
+        sidx: field || 'DocEntry',
+        sord,
       },
     });
   };

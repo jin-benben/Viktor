@@ -10,6 +10,7 @@ import StandardTable from '@/components/StandardTable';
 import MDMCommonality from '@/components/Select';
 import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
 import MyPageHeader from '../components/pageHeader';
+
 import { getName } from '@/utils/utils';
 import styles from '../style.less';
 

@@ -5,6 +5,7 @@ import moment from 'moment';
 import { Row, Col, Card, Form, Input, Button, DatePicker, Tabs, Tag } from 'antd';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import StandardTable from '@/components/StandardTable';
+import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
 import { getName } from '@/utils/utils';
 
 const FormItem = Form.Item;
@@ -245,6 +246,7 @@ class TransactionSearch extends PureComponent {
     },
     {
       title: '客户',
+      width: 200,
       dataIndex: 'CardName',
     },
     {
@@ -373,6 +375,10 @@ class TransactionSearch extends PureComponent {
           CodeList: ['Saler', 'Company', 'Trnsp', 'Purchaser'],
         },
       },
+    });
+
+    dispatch({
+      type: 'global/getAuthority',
     });
 
     this.whichSerch(activeKey, queryData);
@@ -525,7 +531,11 @@ class TransactionSearch extends PureComponent {
               )}
             </FormItem>
           </Col>
-
+          <Col md={5} sm={24}>
+            <FormItem key="SlpCode" {...formLayout} label="销售员">
+              {getFieldDecorator('SlpCode')(<SalerPurchaser />)}
+            </FormItem>
+          </Col>
           <Col md={5} sm={24}>
             <FormItem key="searchBtn">
               <span className="submitButtons">

@@ -457,8 +457,9 @@ class InquiryEdit extends React.Component {
         if (record.lastIndex) return '';
         if (!text) return '';
         return (
-          <Ellipsis tooltip lines={1}>{`${text || ''}(${record.Currency || ''})[${record.DocRate ||
-            ''}]`}</Ellipsis>
+          <Ellipsis tooltip lines={1}>
+            {`${text || ''}(${record.Currency || ''})[${record.DocRate || ''}]`}
+          </Ellipsis>
         );
       },
     },

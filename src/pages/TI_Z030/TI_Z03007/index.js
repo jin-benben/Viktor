@@ -3,12 +3,13 @@ import { connect } from 'dva';
 import router from 'umi/router';
 import Link from 'umi/link';
 import moment from 'moment';
-import { Row, Col, Card, Form, Input, Button, Tag, Select, DatePicker, Icon } from 'antd';
+import { Row, Col, Card, Form, Input, Button, Tag, Select, DatePicker, Icon, Badge } from 'antd';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import StandardTable from '@/components/StandardTable';
 import MyPageHeader from '../components/pageHeader';
 import Organization from '@/components/Organization/multiple';
 import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
+import AttachmentModal from '@/components/Attachment/modal';
 import { getName } from '@/utils/utils';
 
 const { RangePicker } = DatePicker;
@@ -25,6 +26,8 @@ const { Option } = Select;
 class AgreementLine extends PureComponent {
   state = {
     expandForm: false,
+    attachmentVisible: false,
+    prviewList: [],
   };
 
   columns = [
@@ -33,6 +36,8 @@ class AgreementLine extends PureComponent {
       width: 100,
       fixed: 'left',
       dataIndex: 'DocEntry',
+      sorter: true,
+      align: 'center',
       render: (text, recond) => (
         <Link target="_blank" to={`/sellabout/TI_Z030/detail?DocEntry=${text}`}>
           {`${text}-${recond.LineID}`}
@@ -43,6 +48,7 @@ class AgreementLine extends PureComponent {
       title: '状态',
       width: 140,
       dataIndex: 'LineStatus',
+      sorter: true,
       align: 'center',
       render: (text, record) =>
         record.lastIndex ? null : (
@@ -71,6 +77,8 @@ class AgreementLine extends PureComponent {
     {
       title: '客户',
       width: 150,
+      sorter: true,
+      align: 'center',
       dataIndex: 'CardName',
       render: text => (
         <Ellipsis tooltip lines={1}>
@@ -78,27 +86,24 @@ class AgreementLine extends PureComponent {
         </Ellipsis>
       ),
     },
-
     {
       title: '物料',
-      dataIndex: 'SKU',
+      dataIndex: 'SKUName',
+      sorter: true,
       align: 'center',
       width: 300,
-      render: (text, record) =>
-        record.lastIndex ? (
-          ''
-        ) : (
-          <Ellipsis tooltip lines={1}>
-            {text ? (
-              <Link target="_blank" to={`/main/product/TI_Z009/TI_Z00903?Code${text}`}>
-                {text}-
-              </Link>
-            ) : (
-              ''
-            )}
-            {record.SKUName}
-          </Ellipsis>
-        ),
+      render: (text, record) => (
+        <Ellipsis tooltip lines={1}>
+          {text ? (
+            <Link target="_blank" to={`/main/product/TI_Z009/TI_Z00903?Code${record.SKU}`}>
+              {record.SKU}-
+            </Link>
+          ) : (
+            ''
+          )}
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '数量',
@@ -115,8 +120,9 @@ class AgreementLine extends PureComponent {
     },
     {
       title: '价格',
-      width: 80,
+      width: 100,
       dataIndex: 'Price',
+      sorter: true,
       align: 'center',
     },
     {
@@ -167,25 +173,29 @@ class AgreementLine extends PureComponent {
       title: '询价价格',
       width: 100,
       dataIndex: 'InquiryPrice',
+      sorter: true,
       align: 'center',
       render: (text, record) => {
         if (!text) return '';
         return (
-          <Ellipsis tooltip lines={1}>{`${text || ''}(${record.Currency || ''})[${record.DocRate ||
-            ''}]`}</Ellipsis>
+          <Ellipsis tooltip lines={1}>
+            {`${text || ''}(${record.Currency || ''})[${record.DocRate || ''}]`}
+          </Ellipsis>
         );
       },
     },
     {
       title: '重量[运费]',
-      width: 100,
-      dataIndex: 'Rweight',
+      width: 120,
+      dataIndex: 'ForeignFreight',
+      sorter: true,
       align: 'center',
-      render: (text, record) => <span>{`${text}(公斤)[${record.ForeignFreight}]`}</span>,
+      render: (text, record) => <span>{`${record.Rweight}(公斤)[${text}]`}</span>,
     },
     {
       title: '询行总计',
       width: 100,
+      sorter: true,
       align: 'center',
       dataIndex: 'InquiryLineTotal',
       render: (text, record) => (
@@ -211,12 +221,14 @@ class AgreementLine extends PureComponent {
       title: '询价交期',
       width: 100,
       dataIndex: 'InquiryDueDate',
+      sorter: true,
       align: 'center',
     },
     {
       title: '销售员',
       width: 120,
       dataIndex: 'Owner',
+      sorter: true,
       align: 'center',
       render: text => {
         const {
@@ -229,6 +241,7 @@ class AgreementLine extends PureComponent {
       title: '采购员',
       width: 120,
       dataIndex: 'Purchaser',
+      sorter: true,
       align: 'center',
       render: text => {
         const {
@@ -241,6 +254,7 @@ class AgreementLine extends PureComponent {
       title: '产地',
       width: 80,
       dataIndex: 'ManLocation',
+      sorter: true,
       align: 'center',
       render: text => {
         const {
@@ -328,6 +342,8 @@ class AgreementLine extends PureComponent {
     {
       title: '创建日期',
       width: 100,
+      sorter: true,
+      align: 'center',
       dataIndex: 'CreateDate',
       render: val => (
         <Ellipsis tooltip lines={1}>
@@ -373,6 +389,25 @@ class AgreementLine extends PureComponent {
           ''
         ),
     },
+    {
+      title: '操作',
+      fixed: 'right',
+      align: 'center',
+      width: 80,
+      render: (text, record) =>
+        record.TI_Z02604.length ? (
+          <Badge count={record.TI_Z02604.length} className="attachBadge">
+            <Icon
+              title="预览"
+              type="eye"
+              onClick={() => this.lookLineAttachment(record)}
+              style={{ color: '#08c', marginRight: 5 }}
+            />
+          </Badge>
+        ) : (
+          ''
+        ),
+    },
   ];
 
   componentDidMount() {
@@ -399,19 +434,30 @@ class AgreementLine extends PureComponent {
     });
   }
 
-  handleStandardTableChange = pagination => {
+  handleStandardTableChange = (pagination, filters, sorter) => {
     const {
       dispatch,
       agreementLine: { queryData },
     } = this.props;
+    const { field, order } = sorter;
+    let sord = 'desc';
+    if (order === 'ascend') {
+      sord = 'asc';
+    }
     dispatch({
       type: 'agreementLine/fetch',
       payload: {
         ...queryData,
         page: pagination.current,
         rows: pagination.pageSize,
+        sidx: field || 'DocEntry',
+        sord,
       },
     });
+  };
+
+  lookLineAttachment = record => {
+    this.setState({ attachmentVisible: true, prviewList: record.TI_Z02604 });
   };
 
   handleSearch = e => {
@@ -457,6 +503,12 @@ class AgreementLine extends PureComponent {
     const { expandForm } = this.state;
     this.setState({
       expandForm: !expandForm,
+    });
+  };
+
+  handleModalVisible = flag => {
+    this.setState({
+      attachmentVisible: !!flag,
     });
   };
 
@@ -593,7 +645,7 @@ class AgreementLine extends PureComponent {
       loading,
       location,
     } = this.props;
-
+    const { attachmentVisible, prviewList } = this.state;
     return (
       <Card bordered={false}>
         <MyPageHeader {...location} />
@@ -609,6 +661,11 @@ class AgreementLine extends PureComponent {
             onChange={this.handleStandardTableChange}
           />
         </div>
+        <AttachmentModal
+          attachmentVisible={attachmentVisible}
+          prviewList={prviewList}
+          handleModalVisible={this.handleModalVisible}
+        />
       </Card>
     );
   }

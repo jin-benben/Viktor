@@ -38,7 +38,7 @@ class CompanyModal extends PureComponent {
   columns = [
     {
       title: '客户代码',
-      width: 100,
+      width: 200,
       dataIndex: 'Code',
     },
     {
@@ -47,14 +47,14 @@ class CompanyModal extends PureComponent {
     },
   ];
 
-  static getDerivedStateFromProps(nextProps, prevState) {
-    if (!prevState.companyList.length && prevState.companyList !== nextProps.global.CustomerList) {
-      return {
-        companyList: nextProps.global.CustomerList,
-      };
-    }
-    return null;
-  }
+  // static getDerivedStateFromProps(nextProps, prevState) {
+  //   if (!prevState.companyList.length && prevState.companyList !== nextProps.global.CustomerList) {
+  //     return {
+  //       companyList: nextProps.global.CustomerList,
+  //     };
+  //   }
+  //   return null;
+  // }
 
   okHandle = () => {
     const { selectedRows } = this.state;
@@ -115,7 +115,7 @@ class CompanyModal extends PureComponent {
         this.setState({
           companyList: [...rows],
           queryData: { ...params },
-          pagination: { ...pagination, total: records, current: page },
+          pagination: { ...pagination, total: records, current: page, pageSize: params.rows },
         });
       } else {
         this.setState({

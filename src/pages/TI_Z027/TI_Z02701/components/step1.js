@@ -2,7 +2,20 @@
 /* eslint-disable no-param-reassign */
 import React, { Fragment } from 'react';
 import moment from 'moment';
-import { Row, Col, Form, Input, Table, Button, DatePicker, message, Icon, Tag, Select } from 'antd';
+import {
+  Row,
+  Col,
+  Form,
+  Input,
+  Table,
+  Button,
+  DatePicker,
+  message,
+  Icon,
+  Tag,
+  Select,
+  Badge,
+} from 'antd';
 import { connect } from 'dva';
 import Link from 'umi/link';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
@@ -11,6 +24,7 @@ import MDMCommonality from '@/components/Select';
 import Organization from '@/components/Organization/multiple';
 import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
 import { getName } from '@/utils/utils';
+import AttachmentModal from '@/components/Attachment/modal';
 import styles from '../style.less';
 import request from '@/utils/request';
 
@@ -65,33 +79,16 @@ class NeedTabl extends React.Component {
       ),
     },
     {
-      title: () => {
-        const {
-          queryData: { sord },
-        } = this.state;
-        const active = sord === 'Desc';
-        return (
-          <Fragment>
-            单号
-            <span className="sordBox">
-              <Icon className={`sordBoxUp ${active ? 'active' : ''}`} type="caret-up" />
-              <Icon className={`sordBoxDowm ${active ? 'active' : ''}`} type="caret-down" />
-            </span>
-          </Fragment>
-        );
-      },
+      title: '单号',
       width: 100,
+      sorter: true,
+      align: 'center',
       dataIndex: 'DocEntry',
       render: (val, record) => (
         <Link target="_blank" to={`/sellabout/TI_Z026/detail?DocEntry=${val}`}>
           {`${val}-${record.LineID}`}
         </Link>
       ),
-      onHeaderCell: column => ({
-        onClick: () => {
-          this.headerRowClick(column);
-        }, // 点击表头行
-      }),
     },
     {
       title: '单据日期',
@@ -118,29 +115,11 @@ class NeedTabl extends React.Component {
         ),
     },
     {
-      title: () => {
-        const {
-          queryData: { sord },
-        } = this.state;
-        const active = sord === 'Desc';
-        return (
-          <Fragment>
-            物料
-            <span className="sordBox">
-              <Icon className={`sordBoxUp ${active ? 'active' : ''}`} type="caret-up" />
-              <Icon className={`sordBoxDowm ${active ? 'active' : ''}`} type="caret-down" />
-            </span>
-          </Fragment>
-        );
-      },
+      title: '物料',
       dataIndex: 'SKUName',
+      sorter: true,
       align: 'center',
       width: 300,
-      onHeaderCell: column => ({
-        onClick: () => {
-          this.headerRowClick(column);
-        }, // 点击表头行
-      }),
       render: (text, record) =>
         record.lastIndex ? (
           ''
@@ -177,8 +156,10 @@ class NeedTabl extends React.Component {
 
     {
       title: '销售员',
-      width: 100,
+      width: 120,
       dataIndex: 'Owner',
+      sorter: true,
+      align: 'center',
       render: text => {
         const {
           global: { Saler },
@@ -188,7 +169,9 @@ class NeedTabl extends React.Component {
     },
     {
       title: '采购员',
-      width: 100,
+      width: 120,
+      sorter: true,
+      align: 'center',
       dataIndex: 'Purchaser',
       render: text => {
         const {
@@ -199,7 +182,9 @@ class NeedTabl extends React.Component {
     },
     {
       title: '处理人',
-      width: 100,
+      width: 120,
+      sorter: true,
+      align: 'center',
       dataIndex: 'Processor',
       render: val => {
         const {
@@ -211,6 +196,8 @@ class NeedTabl extends React.Component {
     {
       title: '转移备注',
       width: 100,
+      sorter: true,
+      align: 'center',
       dataIndex: 'TransferComment',
       render: text => (
         <Ellipsis tooltip lines={1}>
@@ -231,7 +218,7 @@ class NeedTabl extends React.Component {
     },
     {
       title: '交易公司',
-      width: 150,
+      width: 100,
       dataIndex: 'CompanyCode',
       render: text => {
         const {
@@ -259,6 +246,25 @@ class NeedTabl extends React.Component {
           {text}
         </Ellipsis>
       ),
+    },
+    {
+      title: '操作',
+      fixed: 'right',
+      align: 'center',
+      width: 80,
+      render: (text, record) =>
+        record.TI_Z02604.length ? (
+          <Badge count={record.TI_Z02604.length} className="attachBadge">
+            <Icon
+              title="预览"
+              type="eye"
+              onClick={() => this.lookLineAttachment(record)}
+              style={{ color: '#08c', marginRight: 5 }}
+            />
+          </Badge>
+        ) : (
+          ''
+        ),
     },
   ];
 
@@ -308,10 +314,25 @@ class NeedTabl extends React.Component {
     }
   };
 
-  handleStandardTableChange = params => {
-    const { current, pageSize } = params;
+  lookLineAttachment = record => {
+    this.setState({ attachmentVisible: true, prviewList: record.TI_Z02604 });
+  };
+
+  handleStandardTableChange = (paginations, filters, sorter) => {
+    const { field, order } = sorter;
+    let sord = 'desc';
+    if (order === 'ascend') {
+      sord = 'asc';
+    }
+    const { current, pageSize } = paginations;
     const { queryData, pagination } = this.state;
-    const newdata = { ...queryData, page: current, rows: pageSize };
+    const newdata = {
+      ...queryData,
+      page: current,
+      rows: pageSize,
+      sidx: field || 'DocEntry',
+      sord,
+    };
     Object.assign(pagination, { pageSize });
     this.setState({ queryData: { ...newdata }, pagination });
     this.fetchOrder(newdata);
@@ -323,20 +344,6 @@ class NeedTabl extends React.Component {
     this.setState({
       expandForm: !expandForm,
     });
-  };
-
-  // 点击表头
-  headerRowClick = column => {
-    const { dataIndex } = column;
-    const {
-      queryData,
-      queryData: { sord },
-    } = this.state;
-    Object.assign(queryData, { sidx: dataIndex, page: 1, sord: sord === 'Desc' ? 'Asc' : 'Desc' });
-    this.setState({
-      queryData: { ...queryData },
-    });
-    this.fetchOrder(queryData);
   };
 
   // change 客户
@@ -404,6 +411,12 @@ class NeedTabl extends React.Component {
       onSelectRow(selectedRows);
     }
     this.setState({ selectedRowKeys: [...selectedRowKeys] });
+  };
+
+  handleModalVisible = flag => {
+    this.setState({
+      attachmentVisible: !!flag,
+    });
   };
 
   renderSimpleForm() {
@@ -500,7 +513,14 @@ class NeedTabl extends React.Component {
   }
 
   render() {
-    const { pagination, orderLineList, selectedRowKeys, loading } = this.state;
+    const {
+      pagination,
+      orderLineList,
+      selectedRowKeys,
+      loading,
+      attachmentVisible,
+      prviewList,
+    } = this.state;
     const height = document.body.offsetHeight - 56 - 64 - 56 - 24 - 32 - 30;
     return (
       <Fragment>
@@ -512,7 +532,7 @@ class NeedTabl extends React.Component {
             dataSource={orderLineList}
             rowKey="Key"
             pagination={pagination}
-            scroll={{ x: 1920, y: height }}
+            scroll={{ x: 2000, y: height }}
             rowSelection={{
               onChange: this.onSelectRow,
               selectedRowKeys,
@@ -521,6 +541,11 @@ class NeedTabl extends React.Component {
             columns={this.columns}
           />
         </div>
+        <AttachmentModal
+          attachmentVisible={attachmentVisible}
+          prviewList={prviewList}
+          handleModalVisible={this.handleModalVisible}
+        />
       </Fragment>
     );
   }

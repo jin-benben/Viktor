@@ -34,6 +34,8 @@ class supplierQuotation extends PureComponent {
       title: '单号',
       width: 80,
       dataIndex: 'DocEntry',
+      sorter: true,
+      align: 'center',
       fixed: 'left',
       render: text => (
         <Link target="_blank" to={`/purchase/TI_Z027/detail?DocEntry=${text}`}>
@@ -45,6 +47,8 @@ class supplierQuotation extends PureComponent {
       title: '单据日期',
       width: 100,
       dataIndex: 'DocDate',
+      sorter: true,
+      align: 'center',
       render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
     },
     {
@@ -72,6 +76,8 @@ class supplierQuotation extends PureComponent {
     {
       title: '供应商',
       dataIndex: 'CardName',
+      sorter: true,
+      align: 'center',
       render: text => (
         <Ellipsis tooltip lines={1}>
           {text}
@@ -113,6 +119,8 @@ class supplierQuotation extends PureComponent {
       title: '采购员',
       width: 120,
       dataIndex: 'Owner',
+      sorter: true,
+      align: 'center',
       render: text => {
         const {
           global: { Purchaser },
@@ -134,11 +142,15 @@ class supplierQuotation extends PureComponent {
     {
       title: '询价总计',
       width: 100,
+      sorter: true,
+      align: 'center',
       dataIndex: 'InquiryDocTotal',
     },
     {
       title: '本币总计',
       width: 100,
+      sorter: true,
+      align: 'center',
       dataIndex: 'InquiryDocTotalLocal',
     },
     {
@@ -149,6 +161,8 @@ class supplierQuotation extends PureComponent {
     },
     {
       title: '创建日期',
+      sorter: true,
+      align: 'center',
       width: 100,
       dataIndex: 'CreateDate',
       render: val => (
@@ -193,17 +207,24 @@ class supplierQuotation extends PureComponent {
     });
   }
 
-  handleStandardTableChange = pagination => {
+  handleStandardTableChange = (pagination, filters, sorter) => {
     const {
       dispatch,
       supplierQuotation: { queryData },
     } = this.props;
+    const { field, order } = sorter;
+    let sord = 'desc';
+    if (order === 'ascend') {
+      sord = 'asc';
+    }
     dispatch({
       type: 'supplierQuotation/fetch',
       payload: {
         ...queryData,
         page: pagination.current,
         rows: pagination.pageSize,
+        sidx: field || 'DocEntry',
+        sord,
       },
     });
   };

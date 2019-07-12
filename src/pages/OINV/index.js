@@ -466,7 +466,7 @@ class OINVConfrim extends PureComponent {
 
   okHandle = () => {
     const { selectPrint } = this.state;
-    const DocEntryList = selectPrint.map(item => item.BaseEntry);
+    const DocEntryList = selectPrint.map(item => item.DocEntry);
     if (DocEntryList.length) {
       this.setState({
         modalVisible2: true,

@@ -36,6 +36,7 @@ class inquiryListPage extends PureComponent {
       title: '单号',
       width: 80,
       dataIndex: 'DocEntry',
+      sorter: true,
       render: text => (
         <Link target="_blank" to={`/sellabout/TI_Z026/detail?DocEntry=${text}`}>
           {text}
@@ -45,6 +46,7 @@ class inquiryListPage extends PureComponent {
     {
       title: '单据日期',
       width: 100,
+      sorter: true,
       dataIndex: 'DocDate',
       render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
     },
@@ -88,6 +90,8 @@ class inquiryListPage extends PureComponent {
     {
       title: '客户',
       dataIndex: 'CardName',
+      sorter: true,
+      align: 'center',
       render: text => (
         <Ellipsis tooltip lines={1}>
           {text}
@@ -144,6 +148,8 @@ class inquiryListPage extends PureComponent {
     {
       title: '销售总计',
       width: 100,
+      sorter: true,
+      align: 'center',
       dataIndex: 'DocTotal',
     },
     {
@@ -174,6 +180,7 @@ class inquiryListPage extends PureComponent {
     {
       title: '创建日期',
       width: 100,
+      sorter: true,
       dataIndex: 'CreateDate',
       render: val => (
         <Ellipsis tooltip lines={1}>
@@ -209,17 +216,24 @@ class inquiryListPage extends PureComponent {
     });
   }
 
-  handleStandardTableChange = pagination => {
+  handleStandardTableChange = (pagination, filters, sorter) => {
     const {
       dispatch,
       inquiryFetch: { queryData },
     } = this.props;
+    const { field, order } = sorter;
+    let sord = 'desc';
+    if (order === 'ascend') {
+      sord = 'asc';
+    }
     dispatch({
       type: 'inquiryFetch/fetch',
       payload: {
         ...queryData,
         page: pagination.current,
         rows: pagination.pageSize,
+        sidx: field || 'DocEntry',
+        sord,
       },
     });
   };
@@ -392,7 +406,7 @@ class inquiryListPage extends PureComponent {
       loading,
       location,
     } = this.props;
-    console.log(pagination);
+
     return (
       <Fragment>
         <Card bordered={false}>

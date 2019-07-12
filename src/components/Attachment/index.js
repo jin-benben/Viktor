@@ -59,7 +59,6 @@ class Attachment extends Component {
       width: 80,
       render: (text, record, index) => {
         const { iscan } = this.props;
-        console.log(iscan);
         return (
           <Fragment>
             {iscan ? (

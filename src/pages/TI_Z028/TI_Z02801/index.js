@@ -19,8 +19,8 @@ import {
   Radio,
   Table,
   Select,
+  Badge,
 } from 'antd';
-
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import MDMCommonality from '@/components/Select';
@@ -28,6 +28,7 @@ import Organization from '@/components/Organization/multiple';
 import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
 import OrderPreview from './components';
 import MyPageHeader from '../components/pageHeader';
+import AttachmentModal from '@/components/Attachment/modal';
 import { getName } from '@/utils/utils';
 import styles from '../style.less';
 
@@ -54,12 +55,6 @@ class TI_Z02801 extends React.Component {
         </Link>
       ),
     },
-    // {
-    //   title: '单据日期',
-    //   dataIndex: 'DocDate',
-    //   width: 100,
-    //   render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
-    // },
     {
       title: '销售员',
       width: 120,
@@ -180,12 +175,32 @@ class TI_Z02801 extends React.Component {
         </Ellipsis>
       ),
     },
+    {
+      title: '操作',
+      align: 'center',
+      width: 80,
+      render: (text, record) =>
+        record.TI_Z02604.length ? (
+          <Badge count={record.TI_Z02604.length} className="attachBadge">
+            <Icon
+              title="预览"
+              type="eye"
+              onClick={() => this.lookLineAttachment(record)}
+              style={{ color: '#08c', marginRight: 5 }}
+            />
+          </Badge>
+        ) : (
+          ''
+        ),
+    },
   ];
 
   state = {
     selectedRows: [],
     orderLineList: [],
     modalVisible: false,
+    attachmentVisible: false,
+    prviewList: [],
     expandForm: false,
     selectedRowKeys: [],
   };
@@ -311,6 +326,10 @@ class TI_Z02801 extends React.Component {
     </Radio.Group>
   );
 
+  lookLineAttachment = record => {
+    this.setState({ attachmentVisible: true, prviewList: record.TI_Z02604 });
+  };
+
   //  选择最优供应商radio
   childChange = (item, record, index) => {
     const CardCode = item.target.value;
@@ -427,7 +446,10 @@ class TI_Z02801 extends React.Component {
   };
 
   handleModalVisible = flag => {
-    this.setState({ modalVisible: !!flag });
+    this.setState({
+      attachmentVisible: !!flag,
+      modalVisible: !!flag,
+    });
   };
 
   // form表单
@@ -520,7 +542,14 @@ class TI_Z02801 extends React.Component {
       location,
     } = this.props;
 
-    const { modalVisible, selectedRows, orderLineList, selectedRowKeys } = this.state;
+    const {
+      modalVisible,
+      selectedRows,
+      orderLineList,
+      selectedRowKeys,
+      attachmentVisible,
+      prviewList,
+    } = this.state;
 
     const columns = this.columns.map(item => {
       const newitem = item;
@@ -564,6 +593,11 @@ class TI_Z02801 extends React.Component {
             />
           </div>
         </Card>
+        <AttachmentModal
+          attachmentVisible={attachmentVisible}
+          prviewList={prviewList}
+          handleModalVisible={this.handleModalVisible}
+        />
         <FooterToolbar>
           <Button type="primary" onClick={this.confrimModel}>
             确认

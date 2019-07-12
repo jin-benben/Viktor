@@ -16,6 +16,7 @@ import {
   Tooltip,
   message,
   Tag,
+  Badge,
 } from 'antd';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
@@ -29,6 +30,7 @@ import MyPageHeader from '../components/pageHeader';
 import MDMCommonality from '@/components/Select';
 import ProcessorSelect from '@/components/Select/SalerPurchaser';
 import Comparison from '@/components/Comparison';
+import AttachmentModal from '@/components/Attachment/modal';
 import { lineStatus } from '@/utils/publicData';
 import { getName } from '@/utils/utils';
 
@@ -49,6 +51,8 @@ class orderLine extends PureComponent {
     expandForm: false,
     modalVisible: false,
     transferModalVisible: false,
+    attachmentVisible: false,
+    prviewList: [],
     selectedRows: [],
     needAsk: [],
     transferLine: {
@@ -61,6 +65,8 @@ class orderLine extends PureComponent {
       title: '单号',
       width: 100,
       fixed: 'left',
+      sorter: true,
+      align: 'center',
       dataIndex: 'DocEntry',
       render: (text, recond) => (
         <Link target="_blank" to={`/sellabout/TI_Z026/detail?DocEntry=${text}`}>
@@ -71,6 +77,8 @@ class orderLine extends PureComponent {
     {
       title: '单据日期',
       dataIndex: 'DocDate',
+      sorter: true,
+      align: 'center',
       width: 100,
       render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
     },
@@ -78,6 +86,7 @@ class orderLine extends PureComponent {
       title: '行状态',
       width: 250,
       dataIndex: 'LineStatus',
+      sorter: true,
       align: 'center',
       render: (text, record) =>
         record.lastIndex ? null : (
@@ -109,7 +118,9 @@ class orderLine extends PureComponent {
     },
     {
       title: '客户',
-      width: 150,
+      width: 180,
+      sorter: true,
+      align: 'center',
       dataIndex: 'CardName',
       render: text => (
         <Ellipsis tooltip lines={1}>
@@ -120,24 +131,22 @@ class orderLine extends PureComponent {
 
     {
       title: '物料',
-      dataIndex: 'SKU',
+      dataIndex: 'SKUName',
+      sorter: true,
       align: 'center',
       width: 300,
-      render: (text, record) =>
-        record.lastIndex ? (
-          ''
-        ) : (
-          <Ellipsis tooltip lines={1}>
-            {text ? (
-              <Link target="_blank" to={`/main/product/TI_Z009/TI_Z00903?Code${text}`}>
-                {text}-
-              </Link>
-            ) : (
-              ''
-            )}
-            {record.SKUName}
-          </Ellipsis>
-        ),
+      render: (text, record) => (
+        <Ellipsis tooltip lines={1}>
+          {text ? (
+            <Link target="_blank" to={`/main/product/TI_Z009/TI_Z00903?Code${record.SKU}`}>
+              {record.SKU}-
+            </Link>
+          ) : (
+            ''
+          )}
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '名称(外)',
@@ -160,11 +169,13 @@ class orderLine extends PureComponent {
       title: '价格',
       width: 80,
       dataIndex: 'Price',
+      sorter: true,
       align: 'center',
     },
     {
       title: '行总计',
       width: 100,
+      sorter: true,
       align: 'center',
       dataIndex: 'LineTotal',
       render: (text, record) =>
@@ -183,8 +194,9 @@ class orderLine extends PureComponent {
     },
     {
       title: '采报价日期',
-      width: 100,
+      width: 120,
       dataIndex: 'InquiryCfmDate',
+      sorter: true,
       align: 'center',
       render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
     },
@@ -192,6 +204,7 @@ class orderLine extends PureComponent {
       title: '询价价格',
       width: 100,
       dataIndex: 'InquiryPrice',
+      sorter: true,
       align: 'center',
       render: (text, record) => {
         if (!text) return '';
@@ -204,14 +217,16 @@ class orderLine extends PureComponent {
     },
     {
       title: '重量[运费]',
-      width: 100,
-      dataIndex: 'Rweight',
+      width: 120,
+      dataIndex: 'ForeignFreight',
+      sorter: true,
       align: 'center',
-      render: (text, record) => <span>{`${text}(公斤)[${record.ForeignFreight}]`}</span>,
+      render: (text, record) => <span>{`${record.Rweight}(公斤)[${text}]`}</span>,
     },
     {
       title: '询行总计',
       width: 100,
+      sorter: true,
       align: 'center',
       dataIndex: 'InquiryLineTotal',
       render: (text, record) => (
@@ -227,18 +242,23 @@ class orderLine extends PureComponent {
       dataIndex: 'InquiryComment',
       width: 100,
       align: 'center',
-      render: (text, record) =>
-        record.lastIndex ? null : (
-          <Ellipsis tooltip lines={1}>
-            {text}
-          </Ellipsis>
-        ),
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '询价交期',
-      width: 100,
+      width: 120,
       dataIndex: 'InquiryDueDate',
+      sorter: true,
       align: 'center',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
 
     {
@@ -251,6 +271,7 @@ class orderLine extends PureComponent {
       title: '产地',
       width: 80,
       dataIndex: 'ManLocation',
+      sorter: true,
       align: 'center',
       render: text => {
         const {
@@ -325,20 +346,12 @@ class orderLine extends PureComponent {
         </Tooltip>
       ),
     },
-    {
-      title: '客户参考号',
-      width: 100,
-      dataIndex: 'NumAtCard',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
+
     {
       title: '采购员',
       width: 120,
       dataIndex: 'Purchaser',
+      sorter: true,
       align: 'center',
       render: text => {
         const {
@@ -351,6 +364,7 @@ class orderLine extends PureComponent {
       title: '销售员',
       width: 120,
       dataIndex: 'Owner',
+      sorter: true,
       align: 'center',
       render: text => {
         const {
@@ -363,6 +377,8 @@ class orderLine extends PureComponent {
       title: '处理人',
       width: 120,
       dataIndex: 'Processor',
+      sorter: true,
+      align: 'center',
       render: val => {
         const {
           global: { TI_Z004 },
@@ -372,7 +388,9 @@ class orderLine extends PureComponent {
     },
     {
       title: '转移备注',
-      width: 100,
+      width: 120,
+      sorter: true,
+      align: 'center',
       dataIndex: 'TransferComment',
       render: text => (
         <Ellipsis tooltip lines={1}>
@@ -381,8 +399,18 @@ class orderLine extends PureComponent {
       ),
     },
     {
+      title: '转移日期',
+      dataIndex: 'TransferDateTime',
+      width: 100,
+      sorter: true,
+      align: 'center',
+      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
+    },
+    {
       title: '创建日期',
       width: 100,
+      sorter: true,
+      align: 'center',
       dataIndex: 'CreateDate',
       render: val => (
         <Ellipsis tooltip lines={1}>
@@ -429,6 +457,25 @@ class orderLine extends PureComponent {
           ''
         ),
     },
+    {
+      title: '操作',
+      fixed: 'right',
+      align: 'center',
+      width: 80,
+      render: (text, record) =>
+        record.TI_Z02604.length ? (
+          <Badge count={record.TI_Z02604.length} className="attachBadge">
+            <Icon
+              title="预览"
+              type="eye"
+              onClick={() => this.lookLineAttachment(record)}
+              style={{ color: '#08c', marginRight: 5 }}
+            />
+          </Badge>
+        ) : (
+          ''
+        ),
+    },
   ];
 
   componentDidMount() {
@@ -457,22 +504,33 @@ class orderLine extends PureComponent {
     });
   }
 
-  handleStandardTableChange = pagination => {
+  handleStandardTableChange = (pagination, filters, sorter) => {
     const {
       dispatch,
       orderLine: { queryData },
     } = this.props;
+    const { field, order } = sorter;
+    let sord = 'desc';
+    if (order === 'ascend') {
+      sord = 'asc';
+    }
     dispatch({
       type: 'orderLine/fetch',
       payload: {
         ...queryData,
         page: pagination.current,
         rows: pagination.pageSize,
+        sidx: field || 'DocEntry',
+        sord,
       },
     });
     this.setState({
       selectedRows: [],
     });
+  };
+
+  lookLineAttachment = record => {
+    this.setState({ attachmentVisible: true, prviewList: record.TI_Z02604 });
   };
 
   handleSearch = e => {
@@ -560,7 +618,11 @@ class orderLine extends PureComponent {
 
   // 需询价弹窗
   handleModalVisible = flag => {
-    this.setState({ modalVisible: !!flag, transferModalVisible: !!flag });
+    this.setState({
+      modalVisible: !!flag,
+      transferModalVisible: !!flag,
+      attachmentVisible: !!flag,
+    });
   };
 
   toTransfer = () => {
@@ -739,16 +801,21 @@ class orderLine extends PureComponent {
       loading,
       location,
     } = this.props;
-    const { needAsk, modalVisible, transferModalVisible, transferLine, selectedRows } = this.state;
+    const {
+      needAsk,
+      modalVisible,
+      transferModalVisible,
+      transferLine,
+      selectedRows,
+      attachmentVisible,
+      prviewList,
+    } = this.state;
 
     const parentMethods = {
       handleSubmit: this.submitNeedLine,
       handleModalVisible: this.handleModalVisible,
     };
 
-    const transferParentMethods = {
-      handleModalVisible: this.handleModalVisible,
-    };
     return (
       <Fragment>
         <Card bordered={false}>
@@ -760,7 +827,7 @@ class orderLine extends PureComponent {
               data={{ list: orderLineList }}
               pagination={pagination}
               rowKey="Key"
-              scroll={{ x: 3900 }}
+              scroll={{ x: 4000 }}
               columns={this.columns}
               rowSelection={{
                 onSelectRow: this.onSelectRow,
@@ -787,7 +854,12 @@ class orderLine extends PureComponent {
           SourceEntry={transferLine.DocEntry}
           SourceType="TI_Z026"
           modalVisible={transferModalVisible}
-          {...transferParentMethods}
+          handleModalVisible={this.handleModalVisible}
+        />
+        <AttachmentModal
+          attachmentVisible={attachmentVisible}
+          prviewList={prviewList}
+          handleModalVisible={this.handleModalVisible}
         />
       </Fragment>
     );

@@ -58,7 +58,7 @@ class salerConfrim extends PureComponent {
       fixed: 'left',
       dataIndex: 'DocEntry',
       render: text => (
-        <Link to={`/sellabout/odlnordnDetail?DocEntry==${text}&ObjType=15`}>{text}</Link>
+        <Link to={`/sellabout/odlnordnDetail?DocEntry=${text}&ObjType=15`}>{text}</Link>
       ),
     },
     {
@@ -413,10 +413,12 @@ class salerConfrim extends PureComponent {
     if (!selectedRows.length) {
       message.warning('请先选择要打印的单据');
     } else {
+      const DocEntryList = selectedRows.map(item => item.DocEntry);
       this.setState({
-        BaseEntry: selectedRows[0].DocEntry,
+        BaseEntry: 1,
         BaseType: 'ODLN',
         modalVisible2: true,
+        ParameterJson: JSON.stringify({ DocEntry: DocEntryList }),
       });
     }
   };
@@ -470,7 +472,7 @@ class salerConfrim extends PureComponent {
 
   okHandle = () => {
     const { selectPrint } = this.state;
-    const DocEntryList = selectPrint.map(item => item.BaseEntry);
+    const DocEntryList = selectPrint.map(item => item.DocEntry);
     if (DocEntryList.length) {
       this.setState({
         modalVisible2: true,
