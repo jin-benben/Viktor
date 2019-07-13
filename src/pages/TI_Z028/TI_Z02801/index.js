@@ -226,6 +226,7 @@ class TI_Z02801 extends React.Component {
       payload: {
         Content: {
           CodeList: ['Saler', 'Company', 'Purchaser', 'Curr'],
+          Key: '2',
         },
       },
     });

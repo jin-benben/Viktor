@@ -1,18 +1,6 @@
 import React, { Fragment } from 'react';
 import { connect } from 'dva';
-import {
-  Card,
-  Tabs,
-  Button,
-  Icon,
-  message,
-  Dropdown,
-  Menu,
-  Collapse,
-  Empty,
-  Tag,
-  Badge,
-} from 'antd';
+import { Card, Tabs, Button, Icon, message, Dropdown, Menu, Tag, Badge } from 'antd';
 import moment from 'moment';
 import router from 'umi/router';
 import Link from 'umi/link';
@@ -28,12 +16,12 @@ import Emails from '@/components/Modal/Email';
 import PrintHistory from '@/components/Order/PrintHistory';
 import SendEmail from '@/components/Order/SendEmail';
 import MyPageHeader from '../components/pageHeader';
+import OrderAttach from '@/components/Attachment/order';
 import { getName } from '@/utils/utils';
-import { orderSourceType, linkmanColumns, otherCostCColumns, baseType } from '@/utils/publicData';
+import { orderSourceType, linkmanColumns, otherCostCColumns } from '@/utils/publicData';
 
 const { Description } = DescriptionList;
 const { TabPane } = Tabs;
-const { Panel } = Collapse;
 
 @connect(({ agreementPreview, loading, global }) => ({
   agreementPreview,
@@ -158,8 +146,9 @@ class InquiryEdit extends React.Component {
         if (record.lastIndex) return '';
         if (!text) return '';
         return (
-          <Ellipsis tooltip lines={1}>{`${text || ''}(${record.Currency || ''})[${record.DocRate ||
-            ''}]`}</Ellipsis>
+          <Ellipsis tooltip lines={1}>
+            {`${text || ''}(${record.Currency || ''})[${record.DocRate || ''}]`}
+          </Ellipsis>
         );
       },
     },
@@ -689,50 +678,7 @@ class InquiryEdit extends React.Component {
             />
           </TabPane>
           <TabPane tab="附件" key="4">
-            {agreementDetail.TI_Z02603Fahter.length ? (
-              <Collapse>
-                {agreementDetail.TI_Z02603Fahter.map(item => {
-                  const header = (
-                    <div>
-                      单号：{' '}
-                      <Link
-                        target="_blank"
-                        to={`/sellabout/TI_Z026/detail?DocEntry=${item.DocEntry}`}
-                      >
-                        {item.DocEntry}
-                      </Link>
-                      ; 创建日期：{moment(item.FCreateDate).format('YYYY-MM-DD')}； 创建人
-                      <span>{getName(TI_Z004, item.FCreateUser)}</span>； 更新日期：
-                      {moment(item.FUpdateDate).format('YYYY-MM-DD')}； 更新人:
-                      <span>{getName(TI_Z004, item.FUpdateUser)}</span>
-                    </div>
-                  );
-                  return (
-                    <Panel header={header} key={item.DocEntry}>
-                      {item.TI_Z02603.map(line => (
-                        <ul key={line.OrderID}>
-                          <li>序号:{line.OrderID}</li>
-                          <li>
-                            来源类型:<span>{getName(baseType, line.BaseType)}</span>
-                          </li>
-                          <li>来源单号:{line.BaseEntry}</li>
-                          <li>附件代码:{line.AttachmentCode}</li>
-                          <li>附件描述:{line.AttachmentName}</li>
-                          <li>
-                            附件路径:
-                            <a href={line.AttachmentPath} target="_blank" rel="noopener noreferrer">
-                              {line.AttachmentPath}
-                            </a>
-                          </li>
-                        </ul>
-                      ))}
-                    </Panel>
-                  );
-                })}
-              </Collapse>
-            ) : (
-              <Empty />
-            )}
+            <OrderAttach dataSource={agreementDetail.TI_Z02603Fahter} />
           </TabPane>
           <TabPane tab="其他推送人" key="5">
             <StandardTable

@@ -904,6 +904,7 @@ class InquiryEdit extends React.Component {
       payload: {
         Content: {
           CodeList: ['Saler', 'Purchaser', 'TI_Z042', 'WhsCode', 'Company'],
+          Key: '1',
         },
       },
     });

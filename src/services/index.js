@@ -144,3 +144,12 @@ export async function categoryRule() {
     },
   });
 }
+
+export async function transferHistoryRule(params) {
+  return request(`/OMS/TI_Z043/TI_Z04305`, {
+    method: 'POST',
+    data: {
+      ...params,
+    },
+  });
+}

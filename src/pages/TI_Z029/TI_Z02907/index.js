@@ -29,6 +29,7 @@ import ProcessorSelect from '@/components/Select/SalerPurchaser';
 import Comparison from '@/components/Comparison';
 import MyPageHeader from '../components/pageHeader';
 import AttachmentModal from '@/components/Attachment/modal';
+import TransferHistory from '@/components/TransferHistory';
 import { getName } from '@/utils/utils';
 
 const { RangePicker } = DatePicker;
@@ -49,6 +50,8 @@ class SalesQuotationSku extends PureComponent {
     needmodalVisible: false,
     transferModalVisible: false,
     attachmentVisible: false,
+    historyVisible: false,
+    targetLine: {},
     prviewList: [],
     transferLine: {},
     selectedRows: [],
@@ -388,6 +391,39 @@ class SalesQuotationSku extends PureComponent {
       ),
     },
     {
+      title: '处理人',
+      width: 120,
+      dataIndex: 'Processor',
+      sorter: true,
+      align: 'center',
+      render: val => {
+        const {
+          global: { TI_Z004 },
+        } = this.props;
+        return <span>{getName(TI_Z004, val)}</span>;
+      },
+    },
+    {
+      title: '转移备注',
+      width: 150,
+      sorter: true,
+      align: 'center',
+      dataIndex: 'TransferComment',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
+    },
+    {
+      title: '转移日期',
+      dataIndex: 'TransferDateTime',
+      width: 100,
+      sorter: true,
+      align: 'center',
+      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
+    },
+    {
       title: '创建日期',
       width: 100,
       dataIndex: 'CreateDate',
@@ -443,17 +479,19 @@ class SalesQuotationSku extends PureComponent {
       align: 'center',
       width: 80,
       render: (text, record) =>
-        record.TI_Z02604.length ? (
-          <Badge count={record.TI_Z02604.length} className="attachBadge">
-            <Icon
-              title="预览"
-              type="eye"
-              onClick={() => this.lookLineAttachment(record)}
-              style={{ color: '#08c', marginRight: 5 }}
-            />
-          </Badge>
-        ) : (
-          ''
+        record.lastIndex ? null : (
+          <Fragment>
+            {record.TI_Z02604.length ? (
+              <a onClick={() => this.lookLineAttachment(record)}>
+                <Badge count={record.TI_Z02604.length} title="查看附件" className="attachBadge" />
+              </a>
+            ) : (
+              ''
+            )}
+            <a onClick={() => this.prviewTransferHistory(record)}>
+              <Icon title="查看转移记录" type="history" style={{ color: '#08c', marginLeft: 5 }} />
+            </a>
+          </Fragment>
         ),
     },
   ];
@@ -473,7 +511,7 @@ class SalesQuotationSku extends PureComponent {
       type: 'global/getMDMCommonality',
       payload: {
         Content: {
-          CodeList: ['Saler', 'Purchaser', 'WhsCode', 'TI_Z042'],
+          CodeList: ['Saler', 'Purchaser', 'WhsCode', 'TI_Z042','TI_Z004'],
         },
       },
     });
@@ -634,11 +672,19 @@ class SalesQuotationSku extends PureComponent {
     }
   };
 
+  prviewTransferHistory = recond => {
+    this.setState({
+      targetLine: recond,
+      historyVisible: true,
+    });
+  };
+
   handleModalVisible = flag => {
     this.setState({
       needmodalVisible: !!flag,
       transferModalVisible: !!flag,
       attachmentVisible: !!flag,
+      historyVisible: !!flag,
     });
   };
 
@@ -812,6 +858,8 @@ class SalesQuotationSku extends PureComponent {
       transferLine,
       attachmentVisible,
       prviewList,
+      historyVisible,
+      targetLine,
     } = this.state;
     const needParentMethods = {
       handleSubmit: this.submitNeedLine,
@@ -828,7 +876,7 @@ class SalesQuotationSku extends PureComponent {
               loading={loading}
               data={{ list: SalesQuotationSkuList }}
               pagination={pagination}
-              scroll={{ x: 3800 }}
+              scroll={{ x: 4200 }}
               rowKey="Key"
               columns={this.columns}
               rowSelection={{
@@ -865,6 +913,12 @@ class SalesQuotationSku extends PureComponent {
             dataSource={selectedRows.length ? selectedRows : SalesQuotationSkuList}
           />
         </FooterToolbar>
+        <TransferHistory
+          modalVisible={historyVisible}
+          handleModalVisible={this.handleModalVisible}
+          BaseEntry={targetLine.BaseEntry || ''}
+          BaseLineID={targetLine.BaseLineID || ''}
+        />
       </Fragment>
     );
   }

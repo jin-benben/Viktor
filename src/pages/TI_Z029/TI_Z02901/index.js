@@ -243,8 +243,9 @@ class TI_Z029Component extends React.Component {
         if (record.lastIndex) return '';
         if (!text) return '';
         return (
-          <Ellipsis tooltip lines={1}>{`${text || ''}(${record.Currency || ''})[${record.DocRate ||
-            ''}]`}</Ellipsis>
+          <Ellipsis tooltip lines={1}>
+            {`${text || ''}(${record.Currency || ''})[${record.DocRate || ''}]`}
+          </Ellipsis>
         );
       },
     },
@@ -654,6 +655,7 @@ class TI_Z029Component extends React.Component {
       payload: {
         Content: {
           CodeList: ['Saler', 'Purchaser', 'TI_Z004', 'TI_Z042', 'WhsCode', 'Company'],
+          Key: '1',
         },
       },
     });
@@ -1824,6 +1826,7 @@ class TI_Z029Component extends React.Component {
           </TabPane>
           <TabPane tab="附件" key="4">
             <OrderAttach
+              edit
               dataSource={formVals.TI_Z02603Fahter}
               deleteLine={this.deleteLine}
               skuLineAttachment={this.skuLineAttachment}

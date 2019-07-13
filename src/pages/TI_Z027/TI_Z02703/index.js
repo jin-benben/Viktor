@@ -1,19 +1,6 @@
 import React, { Fragment } from 'react';
 import { connect } from 'dva';
-import {
-  Card,
-  Tabs,
-  Modal,
-  Button,
-  Icon,
-  message,
-  Dropdown,
-  Menu,
-  Collapse,
-  Empty,
-  Tag,
-  Badge,
-} from 'antd';
+import { Card, Tabs, Modal, Button, Icon, message, Dropdown, Menu, Tag, Badge } from 'antd';
 import moment from 'moment';
 import router from 'umi/router';
 import Link from 'umi/link';
@@ -28,12 +15,14 @@ import OrderPrint from '@/components/Modal/OrderPrint';
 import PrintHistory from '@/components/Order/PrintHistory';
 import SendEmail from '@/components/Order/SendEmail';
 import MyPageHeader from '../components/pageHeader';
+import TransferHistory from '@/components/TransferHistory';
+import OrderAttach from '@/components/Attachment/order';
+import AttachmentModal from '@/components/Attachment/modal';
 import { getName } from '@/utils/utils';
 import { baseType } from '@/utils/publicData';
 
 const { Description } = DescriptionList;
 const { TabPane } = Tabs;
-const { Panel } = Collapse;
 
 @connect(({ supplierAskPreview, loading, global }) => ({
   supplierAskPreview,
@@ -218,14 +207,16 @@ class InquiryEdit extends React.Component {
       render: (text, record, index) =>
         record.lastIndex ? null : (
           <Fragment>
-            <Badge count={record.TI_Z02604.length} showZero className="attachBadge">
-              <Icon
-                title="预览"
-                type="eye"
-                onClick={() => this.lookLineAttachment(record, index)}
-                style={{ color: '#08c', marginRight: 5 }}
-              />
-            </Badge>
+            {record.TI_Z02604.length ? (
+              <a onClick={() => this.lookLineAttachment(record, index)}>
+                <Badge count={record.TI_Z02604.length} title="查看附件" className="attachBadge" />
+              </a>
+            ) : (
+              ''
+            )}
+            <a onClick={() => this.prviewTransferHistory(record)}>
+              <Icon title="查看转移记录" type="history" style={{ color: '#08c', marginLeft: 5 }} />
+            </a>
           </Fragment>
         ),
     },
@@ -289,9 +280,15 @@ class InquiryEdit extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      formVals: {}, // 单据信息
+      supplierAskDetail: {
+        TI_Z02702: [],
+        TI_Z02703: [],
+        TI_Z02603Fahter: [],
+      }, // 单据信息
       attachmentVisible: false,
       transferModalVisible: false,
+      historyVisible: false,
+      targetLine: {},
       prviewList: [],
     };
   }
@@ -310,55 +307,15 @@ class InquiryEdit extends React.Component {
     this.getDetail();
   }
 
-  componentWillUnmount() {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'supplierAskPreview/save',
-      payload: {
-        inquiryDetail: {
-          Comment: '',
-          SDocStatus: '',
-          PDocStatus: '',
-          Closed: '',
-          ClosedBy: '',
-          SourceType: '1',
-          OrderType: '1',
-          DocDate: new Date(),
-          CreateDate: new Date(),
-          CardCode: '',
-          CardName: '',
-          UserID: '1',
-          Contacts: '',
-          CellphoneNO: '',
-          PhoneNO: '',
-          Email: '',
-          CompanyCode: '',
-          DueDate: '',
-          ToDate: null,
-          InquiryDocTotal: '',
-          DocTotal: '',
-          NumAtCard: '',
-          Owner: '',
-          IsInquiry: '',
-          TI_Z02702: [],
-          TI_Z02703: [],
-          TI_Z02603Fahter: [],
-        },
-      },
+  prviewTransferHistory = recond => {
+    this.setState({
+      targetLine: recond,
+      historyVisible: true,
     });
-  }
-
-  static getDerivedStateFromProps(nextProps, prevState) {
-    if (nextProps.supplierAskPreview.supplierAskDetail !== prevState.formVals) {
-      return {
-        formVals: nextProps.supplierAskPreview.supplierAskDetail,
-      };
-    }
-    return null;
-  }
+  };
 
   topMenu = () => {
-    const { formVals } = this.state;
+    const { supplierAskDetail } = this.state;
     return (
       <Menu>
         <Menu.Item>
@@ -369,17 +326,17 @@ class InquiryEdit extends React.Component {
         <Menu.Item>
           <Link
             target="_blank"
-            to={`/purchase/TI_Z028/TI_Z02801?PInquiryEntry=${formVals.DocEntry}`}
+            to={`/purchase/TI_Z028/TI_Z02801?PInquiryEntry=${supplierAskDetail.DocEntry}`}
           >
             添加到询价确认单
           </Link>
         </Menu.Item>
 
         <Menu.Item>
-          <OrderPrint BaseEntry={formVals.DocEntry} BaseType="TI_Z027" />
+          <OrderPrint BaseEntry={supplierAskDetail.DocEntry} BaseType="TI_Z027" />
         </Menu.Item>
         <Menu.Item>
-          <Emails BaseEntry={formVals.DocEntry} BaseType="TI_Z027" />
+          <Emails BaseEntry={supplierAskDetail.DocEntry} BaseType="TI_Z027" />
         </Menu.Item>
         <Menu.Item>
           <a href="javacript:void(0)" onClick={() => this.setState({ transferModalVisible: true })}>
@@ -395,7 +352,11 @@ class InquiryEdit extends React.Component {
   };
 
   handleModalVisible = flag => {
-    this.setState({ attachmentVisible: !!flag, transferModalVisible: !!flag });
+    this.setState({
+      attachmentVisible: !!flag,
+      transferModalVisible: !!flag,
+      historyVisible: !!flag,
+    });
   };
 
   // 获取单据详情
@@ -412,6 +373,13 @@ class InquiryEdit extends React.Component {
             DocEntry: query.DocEntry,
           },
         },
+        callback: response => {
+          if (response && response.Status === 200) {
+            this.setState({
+              supplierAskDetail: response.Content,
+            });
+          }
+        },
       });
     }
   };
@@ -421,7 +389,7 @@ class InquiryEdit extends React.Component {
   cancelSubmit = ClosedComment => {
     const { dispatch } = this.props;
     const {
-      formVals: { DocEntry, UpdateTimestamp },
+      supplierAskDetail: { DocEntry, UpdateTimestamp },
     } = this.state;
     dispatch({
       type: 'supplierAskPreview/cancel',
@@ -442,9 +410,9 @@ class InquiryEdit extends React.Component {
   };
 
   toUpdate = () => {
-    const { formVals } = this.state;
-    if (formVals.Closed !== 'Y') {
-      router.push(`/purchase/TI_Z027/update?DocEntry=${formVals.DocEntry}`);
+    const { supplierAskDetail } = this.state;
+    if (supplierAskDetail.Closed !== 'Y') {
+      router.push(`/purchase/TI_Z027/update?DocEntry=${supplierAskDetail.DocEntry}`);
     } else {
       message.warn('此单已被关闭，暂不可编辑');
     }
@@ -456,66 +424,72 @@ class InquiryEdit extends React.Component {
       location: { query },
       location,
     } = this.props;
-    const { formVals, attachmentVisible, prviewList, transferModalVisible } = this.state;
+    const {
+      supplierAskDetail,
+      attachmentVisible,
+      prviewList,
+      transferModalVisible,
+      historyVisible,
+      targetLine,
+    } = this.state;
 
-    const newdata = [...formVals.TI_Z02702];
+    const newdata = [...supplierAskDetail.TI_Z02702];
     if (newdata.length > 0) {
       newdata.push({
         LineID: newdata[newdata.length - 1].LineID + 1,
         lastIndex: true,
-        LineTotal: formVals.InquiryDocTotal,
-        InquiryLineTotalLocal: formVals.InquiryDocTotalLocal,
+        LineTotal: supplierAskDetail.InquiryDocTotal,
+        InquiryLineTotalLocal: supplierAskDetail.InquiryDocTotalLocal,
       });
     }
 
-    const transferParentMethods = {
-      handleModalVisible: this.handleModalVisible,
-    };
     return (
       <Card bordered={false}>
         <MyPageHeader {...location} />
         <DescriptionList style={{ marginBottom: 24 }}>
-          <Description term="单号">{formVals.DocEntry}</Description>
+          <Description term="单号">{supplierAskDetail.DocEntry}</Description>
           <Description term="供应商">
-            <Link to={`/main/TI_Z007/detail?Code=${formVals.CardCode}`}>
-              {`${formVals.CardName}(${formVals.CardCode})`}
+            <Link to={`/main/TI_Z007/detail?Code=${supplierAskDetail.CardCode}`}>
+              {`${supplierAskDetail.CardName}(${supplierAskDetail.CardCode})`}
             </Link>
           </Description>
-          <Description term="单据日期">{moment(formVals.DocDate).format('YYYY-MM-DD')}</Description>
+          <Description term="单据日期">
+            {moment(supplierAskDetail.DocDate).format('YYYY-MM-DD')}
+          </Description>
           <Description term="创建日期">
-            {moment(formVals.CreateDate).format('YYYY-MM-DD')}
+            {moment(supplierAskDetail.CreateDate).format('YYYY-MM-DD')}
           </Description>
           <Description term="有效日期">
-            {formVals.ToDate ? moment(formVals.ToDate).format('YYYY-MM-DD') : ''}
+            {supplierAskDetail.ToDate ? moment(supplierAskDetail.ToDate).format('YYYY-MM-DD') : ''}
           </Description>
-          <Description term="联系人">{formVals.Contacts}</Description>
-          <Description term="备注">{formVals.Comment}</Description>
+          <Description term="联系人">{supplierAskDetail.Contacts}</Description>
+          <Description term="备注">{supplierAskDetail.Comment}</Description>
           <Description term="创建人">
-            <span>{getName(TI_Z004, formVals.CreateUser)}</span>
+            <span>{getName(TI_Z004, supplierAskDetail.CreateUser)}</span>
           </Description>
           <Description term="采购">
-            <span>{getName(Purchaser, formVals.Owner)}</span>
+            <span>{getName(Purchaser, supplierAskDetail.Owner)}</span>
           </Description>
           <Description term="交易公司">
-            <span>{getName(Company, formVals.CompanyCode)}</span>
+            <span>{getName(Company, supplierAskDetail.CompanyCode)}</span>
           </Description>
 
           <Description term="交易币种">
-            <span>{getName(Curr, formVals.Currency)}</span>
+            <span>{getName(Curr, supplierAskDetail.Currency)}</span>
           </Description>
-          <Description term="单据汇率">{formVals.DocRate}</Description>
-          <Description term="客户参考号">{formVals.NumAtCard}</Description>
+          <Description term="单据汇率">{supplierAskDetail.DocRate}</Description>
+          <Description term="客户参考号">{supplierAskDetail.NumAtCard}</Description>
           <Description term="单据状态">
-            {formVals.Closed === 'Y' ? (
+            {supplierAskDetail.Closed === 'Y' ? (
               <Tag color="red">已关闭</Tag>
             ) : (
               <Fragment>
-                {formVals.DocStatus === 'C' ? (
+                {supplierAskDetail.DocStatus === 'C' ? (
                   <Tag color="green">已报价</Tag>
                 ) : (
                   <Tag color="gold">未报价</Tag>
                 )}
-                {formVals.SendEmailStatus === 'C' ? (
+                {supplierAskDetail.SendEmailStatus === 'C' ? (
                   <Tag color="green">已发送</Tag>
                 ) : (
                   <Tag color="gold">未发送</Tag>
@@ -523,10 +497,10 @@ class InquiryEdit extends React.Component {
               </Fragment>
             )}
           </Description>
-          {formVals.Closed === 'N' ? null : (
+          {supplierAskDetail.Closed === 'N' ? null : (
             <Fragment>
-              <Description term="关闭原因">{formVals.ClosedComment}</Description>
-              <Description term="关闭人">{formVals.ClosedBy}</Description>
+              <Description term="关闭原因">{supplierAskDetail.ClosedComment}</Description>
+              <Description term="关闭人">{supplierAskDetail.ClosedBy}</Description>
             </Fragment>
           )}
         </DescriptionList>
@@ -541,56 +515,13 @@ class InquiryEdit extends React.Component {
           </TabPane>
           <TabPane tab="常规" key="2">
             <DescriptionList style={{ marginBottom: 24 }}>
-              <Description term="手机号码">{formVals.CellphoneNO}</Description>
-              <Description term="联系人电话">{formVals.PhoneNO}</Description>
-              <Description term="联系人邮箱">{formVals.Email}</Description>
+              <Description term="手机号码">{supplierAskDetail.CellphoneNO}</Description>
+              <Description term="联系人电话">{supplierAskDetail.PhoneNO}</Description>
+              <Description term="联系人邮箱">{supplierAskDetail.Email}</Description>
             </DescriptionList>
           </TabPane>
           <TabPane tab="附件" key="3">
-            {formVals.TI_Z02603Fahter.length ? (
-              <Collapse>
-                {formVals.TI_Z02603Fahter.map(item => {
-                  const header = (
-                    <div>
-                      单号：{' '}
-                      <Link
-                        target="_blank"
-                        to={`/sellabout/TI_Z026/detail?DocEntry=${item.DocEntry}`}
-                      >
-                        {item.DocEntry}
-                      </Link>
-                      ; 创建日期：{moment(item.FCreateDate).format('YYYY-MM-DD')}； 创建人
-                      <span>{getName(TI_Z004, item.FCreateUser)}</span>； 更新日期：
-                      {moment(item.FUpdateDate).format('YYYY-MM-DD')}； 更新人:
-                      <span>{getName(TI_Z004, item.FUpdateUser)}</span>
-                    </div>
-                  );
-                  return (
-                    <Panel header={header} key={item.DocEntry}>
-                      {item.TI_Z02603.map(line => (
-                        <ul key={line.OrderID}>
-                          <li>序号:{line.OrderID}</li>
-                          <li>
-                            来源类型:<span>{getName(baseType, line.BaseType)}</span>
-                          </li>
-                          <li>来源单号:{line.BaseEntry}</li>
-                          <li>附件代码:{line.AttachmentCode}</li>
-                          <li>附件描述:{line.AttachmentName}</li>
-                          <li>
-                            附件路径:
-                            <a href={line.AttachmentPath} target="_blank" rel="noopener noreferrer">
-                              {line.AttachmentPath}
-                            </a>
-                          </li>
-                        </ul>
-                      ))}
-                    </Panel>
-                  );
-                })}
-              </Collapse>
-            ) : (
-              <Empty />
-            )}
+            <OrderAttach dataSource={supplierAskDetail.TI_Z02603Fahter} />
           </TabPane>
           <TabPane tab="打印记录" key="4">
             <PrintHistory QueryType="2" QueryKey={query.DocEntry} />
@@ -599,23 +530,11 @@ class InquiryEdit extends React.Component {
             <SendEmail QueryType="2" QueryKey={query.DocEntry} />
           </TabPane>
         </Tabs>
-
-        <Modal
-          width={960}
-          destroyOnClose
-          maskClosable={false}
-          title="物料行附件"
-          visible={attachmentVisible}
-          onOk={() => this.handleModalVisible(false)}
-          onCancel={() => this.handleModalVisible(false)}
-        >
-          <StandardTable
-            data={{ list: prviewList }}
-            rowKey="LineID"
-            columns={this.attachmentColumns}
-          />
-        </Modal>
-
+        <AttachmentModal
+          attachmentVisible={attachmentVisible}
+          prviewList={prviewList}
+          handleModalVisible={this.handleModalVisible}
+        />
         <FooterToolbar>
           <CancelOrder cancelSubmit={this.cancelSubmit} />
           <Button onClick={this.toUpdate} type="primary">
@@ -629,10 +548,16 @@ class InquiryEdit extends React.Component {
           </Dropdown>
         </FooterToolbar>
         <Transfer
-          SourceEntry={formVals.DocEntry}
+          SourceEntry={supplierAskDetail.DocEntry}
           SourceType="TI_Z027"
           modalVisible={transferModalVisible}
-          {...transferParentMethods}
+          handleModalVisible={this.handleModalVisible}
+        />
+        <TransferHistory
+          modalVisible={historyVisible}
+          handleModalVisible={this.handleModalVisible}
+          BaseEntry={targetLine.BaseEntry || ''}
+          BaseLineID={targetLine.BaseLineID || ''}
         />
       </Card>
     );

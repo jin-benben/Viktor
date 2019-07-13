@@ -11,6 +11,7 @@ import {
   processorRule,
   authorityRule,
   changepasswordRule,
+  transferHistoryRule,
 } from '@/services';
 
 export default {
@@ -265,6 +266,11 @@ export default {
     },
     *changepassword({ payload, callback }, { call }) {
       const response = yield call(changepasswordRule, payload);
+      if (callback) callback(response);
+    },
+    // 获取客户询价单转移记录
+    *transferHistroy({ payload, callback }, { call }) {
+      const response = yield call(transferHistoryRule, payload);
       if (callback) callback(response);
     },
   },

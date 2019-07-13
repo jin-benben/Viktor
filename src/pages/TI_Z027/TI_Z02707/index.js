@@ -27,6 +27,7 @@ import ProcessorSelect from '@/components/Select/SalerPurchaser';
 import Transfer from '@/components/Transfer';
 import MyPageHeader from '../components/pageHeader';
 import AttachmentModal from '@/components/Attachment/modal';
+import TransferHistory from '@/components/TransferHistory';
 import { getName } from '@/utils/utils';
 
 const { RangePicker } = DatePicker;
@@ -332,17 +333,19 @@ class supplierQuotationSku extends PureComponent {
       align: 'center',
       width: 80,
       render: (text, record) =>
-        record.TI_Z02604.length ? (
-          <Badge count={record.TI_Z02604.length} className="attachBadge">
-            <Icon
-              title="预览"
-              type="eye"
-              onClick={() => this.lookLineAttachment(record)}
-              style={{ color: '#08c', marginRight: 5 }}
-            />
-          </Badge>
-        ) : (
-          ''
+        record.lastIndex ? null : (
+          <Fragment>
+            {record.TI_Z02604.length ? (
+              <a onClick={() => this.lookLineAttachment(record)}>
+                <Badge count={record.TI_Z02604.length} title="查看附件" className="attachBadge" />
+              </a>
+            ) : (
+              ''
+            )}
+            <a onClick={() => this.prviewTransferHistory(record)}>
+              <Icon title="查看转移记录" type="history" style={{ color: '#08c', marginLeft: 5 }} />
+            </a>
+          </Fragment>
         ),
     },
   ];
@@ -351,6 +354,8 @@ class supplierQuotationSku extends PureComponent {
     expandForm: false,
     transferModalVisible: false,
     attachmentVisible: false,
+    historyVisible: false,
+    targetLine: {},
     selectedRows: [],
     prviewList: [],
     transferLine: '',
@@ -479,6 +484,14 @@ class supplierQuotationSku extends PureComponent {
     this.setState({
       transferModalVisible: !!flag,
       attachmentVisible: !!flag,
+      historyVisible: !!flag,
+    });
+  };
+
+  prviewTransferHistory = recond => {
+    this.setState({
+      targetLine: recond,
+      historyVisible: true,
     });
   };
 
@@ -645,7 +658,14 @@ class supplierQuotationSku extends PureComponent {
       loading,
       location,
     } = this.props;
-    const { transferModalVisible, transferLine, attachmentVisible, prviewList } = this.state;
+    const {
+      transferModalVisible,
+      transferLine,
+      attachmentVisible,
+      prviewList,
+      targetLine,
+      historyVisible,
+    } = this.state;
 
     return (
       <Fragment>
@@ -691,6 +711,12 @@ class supplierQuotationSku extends PureComponent {
           attachmentVisible={attachmentVisible}
           prviewList={prviewList}
           handleModalVisible={this.handleModalVisible}
+        />
+        <TransferHistory
+          modalVisible={historyVisible}
+          handleModalVisible={this.handleModalVisible}
+          BaseEntry={targetLine.BaseEntry || ''}
+          BaseLineID={targetLine.BaseLineID || ''}
         />
       </Fragment>
     );

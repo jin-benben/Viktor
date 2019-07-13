@@ -17,6 +17,7 @@ class OrderAttach extends PureComponent {
       dataSource,
       deleteLine,
       skuLineAttachment,
+      edit,
     } = this.props;
     return (
       <Fragment>
@@ -33,13 +34,17 @@ class OrderAttach extends PureComponent {
                   <span>{getName(TI_Z004, item.FCreateUser)}</span>； 更新日期：
                   {moment(item.FUpdateDate).format('YYYY-MM-DD')}； 更新人:
                   <span>{getName(TI_Z004, item.FUpdateUser)}</span>
-                  <Icon
-                    title="上传附件"
-                    className="icons"
-                    style={{ color: '#08c', marginRight: 5, marginLeft: 5 }}
-                    type="cloud-upload"
-                    onClick={() => skuLineAttachment(item, '', false)}
-                  />
+                  {edit ? (
+                    <Icon
+                      title="上传附件"
+                      className="icons"
+                      style={{ color: '#08c', marginRight: 5, marginLeft: 5 }}
+                      type="cloud-upload"
+                      onClick={() => skuLineAttachment(item, '', false)}
+                    />
+                  ) : (
+                    ''
+                  )}
                 </div>
               );
               return (
@@ -60,13 +65,17 @@ class OrderAttach extends PureComponent {
                         </a>
                       </li>
                       <li>
-                        操作:{' '}
-                        <Icon
-                          title="删除行"
-                          type="delete"
-                          theme="twoTone"
-                          onClick={() => deleteLine(item, index, false)}
-                        />
+                        操作:
+                        {edit ? (
+                          <Icon
+                            title="删除行"
+                            type="delete"
+                            theme="twoTone"
+                            onClick={() => deleteLine(item, index, false)}
+                          />
+                        ) : (
+                          ''
+                        )}
                       </li>
                     </ul>
                   ))}

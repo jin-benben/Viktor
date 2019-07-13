@@ -31,6 +31,7 @@ import MDMCommonality from '@/components/Select';
 import ProcessorSelect from '@/components/Select/SalerPurchaser';
 import Comparison from '@/components/Comparison';
 import AttachmentModal from '@/components/Attachment/modal';
+import TransferHistory from '@/components/TransferHistory';
 import { lineStatus } from '@/utils/publicData';
 import { getName } from '@/utils/utils';
 
@@ -52,6 +53,8 @@ class orderLine extends PureComponent {
     modalVisible: false,
     transferModalVisible: false,
     attachmentVisible: false,
+    historyVisible: false,
+    targetLine: {},
     prviewList: [],
     selectedRows: [],
     needAsk: [],
@@ -462,19 +465,21 @@ class orderLine extends PureComponent {
       fixed: 'right',
       align: 'center',
       width: 80,
-      render: (text, record) =>
-        record.TI_Z02604.length ? (
-          <Badge count={record.TI_Z02604.length} className="attachBadge">
-            <Icon
-              title="预览"
-              type="eye"
-              onClick={() => this.lookLineAttachment(record)}
-              style={{ color: '#08c', marginRight: 5 }}
-            />
-          </Badge>
-        ) : (
-          ''
-        ),
+      render: (text, record) => (
+        <Fragment>
+          {record.TI_Z02604.length ? (
+            <a onClick={() => this.lookLineAttachment(record)}>
+              {' '}
+              <Badge count={record.TI_Z02604.length} title="查看附件" className="attachBadge" />
+            </a>
+          ) : (
+            ''
+          )}
+          <a onClick={() => this.prviewTransferHistory(record)}>
+            <Icon title="查看转移记录" type="history" style={{ color: '#08c', marginLeft: 5 }} />
+          </a>
+        </Fragment>
+      ),
     },
   ];
 
@@ -593,6 +598,13 @@ class orderLine extends PureComponent {
     });
   };
 
+  prviewTransferHistory = recond => {
+    this.setState({
+      targetLine: recond,
+      historyVisible: true,
+    });
+  };
+
   onSelectRow = selectedRows => {
     this.setState({ selectedRows: [...selectedRows] });
   };
@@ -622,6 +634,7 @@ class orderLine extends PureComponent {
       modalVisible: !!flag,
       transferModalVisible: !!flag,
       attachmentVisible: !!flag,
+      historyVisible: !!flag,
     });
   };
 
@@ -809,6 +822,8 @@ class orderLine extends PureComponent {
       selectedRows,
       attachmentVisible,
       prviewList,
+      targetLine,
+      historyVisible,
     } = this.state;
 
     const parentMethods = {
@@ -860,6 +875,13 @@ class orderLine extends PureComponent {
           attachmentVisible={attachmentVisible}
           prviewList={prviewList}
           handleModalVisible={this.handleModalVisible}
+        />
+
+        <TransferHistory
+          modalVisible={historyVisible}
+          handleModalVisible={this.handleModalVisible}
+          BaseEntry={targetLine.DocEntry || ''}
+          BaseLineID={targetLine.LineID || ''}
         />
       </Fragment>
     );

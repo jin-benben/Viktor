@@ -531,6 +531,7 @@ class OINVConfrim extends PureComponent {
                     <Select placeholder="请选择发货状态">
                       <Option value="Y">已发货</Option>
                       <Option value="N">未发货</Option>
+                      <Option value="">全部</Option>
                     </Select>
                   )}
                 </FormItem>
@@ -541,6 +542,7 @@ class OINVConfrim extends PureComponent {
                     <Select placeholder="请选择打印状态">
                       <Option value="Y">已打印</Option>
                       <Option value="N">未打印</Option>
+                      <Option value="">全部</Option>
                     </Select>
                   )}
                 </FormItem>

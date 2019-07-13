@@ -15,6 +15,7 @@ import SendEmail from '@/components/Order/SendEmail';
 import Transfer from '@/components/Transfer';
 import Attachment from '@/components/Attachment';
 import MyPageHeader from '../components/pageHeader';
+import TransferHistory from '@/components/TransferHistory';
 import { getName } from '@/utils/utils';
 import { orderSourceType, linkmanColumns, lineStatus } from '@/utils/publicData';
 
@@ -104,8 +105,9 @@ class InquiryEdit extends PureComponent {
         if (record.lastIndex) return '';
         if (!text) return '';
         return (
-          <Ellipsis tooltip lines={1}>{`${text || ''}(${record.Currency || ''})[${record.DocRate ||
-            ''}]`}</Ellipsis>
+          <Ellipsis tooltip lines={1}>
+            {`${text || ''}(${record.Currency || ''})[${record.DocRate || ''}]`}
+          </Ellipsis>
         );
       },
     },
@@ -335,14 +337,16 @@ class InquiryEdit extends PureComponent {
       render: (text, record, index) =>
         record.lastIndex ? null : (
           <Fragment>
-            <Badge count={record.TI_Z02604.length} showZero className="attachBadge">
-              <Icon
-                title="预览"
-                type="eye"
-                onClick={() => this.lookLineAttachment(record, index)}
-                style={{ color: '#08c', marginRight: 5 }}
-              />
-            </Badge>
+            {record.TI_Z02604.length ? (
+              <a onClick={() => this.lookLineAttachment(record, index)}>
+                <Badge count={record.TI_Z02604.length} title="查看附件" className="attachBadge" />
+              </a>
+            ) : (
+              ''
+            )}
+            <a onClick={() => this.prviewTransferHistory(record)}>
+              <Icon title="查看转移记录" type="history" style={{ color: '#08c', marginLeft: 5 }} />
+            </a>
           </Fragment>
         ),
     },
@@ -358,7 +362,9 @@ class InquiryEdit extends PureComponent {
       selectedRows: [],
       needmodalVisible: false,
       transferModalVisible: false, // 转移modal
+      historyVisible: false,
       prviewList: [],
+      targetLine: {},
     };
   }
 
@@ -406,6 +412,13 @@ class InquiryEdit extends PureComponent {
     return null;
   }
 
+  prviewTransferHistory = recond => {
+    this.setState({
+      targetLine: recond,
+      historyVisible: true,
+    });
+  };
+
   topMenu = () => {
     const { formVals } = this.state;
     return (
@@ -443,6 +456,7 @@ class InquiryEdit extends PureComponent {
       attachmentVisible: !!flag,
       needmodalVisible: !!flag,
       transferModalVisible: !!flag,
+      historyVisible: !!flag,
     });
   };
 
@@ -533,6 +547,8 @@ class InquiryEdit extends PureComponent {
       selectedRows,
       needmodalVisible,
       transferModalVisible,
+      historyVisible,
+      targetLine,
     } = this.state;
     const newdata = [...formVals.TI_Z02602];
     if (newdata.length > 0) {
@@ -682,18 +698,20 @@ class InquiryEdit extends PureComponent {
           ) : (
             ''
           )}
-          <NeedAskPrice
-            data={selectedRows}
-            {...needParentMethods}
-            modalVisible={needmodalVisible}
-          />
-          <Transfer
-            SourceEntry={formVals.DocEntry}
-            SourceType="TI_Z026"
-            modalVisible={transferModalVisible}
-            {...transferParentMethods}
-          />
         </FooterToolbar>
+        <NeedAskPrice data={selectedRows} {...needParentMethods} modalVisible={needmodalVisible} />
+        <Transfer
+          SourceEntry={formVals.DocEntry}
+          SourceType="TI_Z026"
+          modalVisible={transferModalVisible}
+          {...transferParentMethods}
+        />
+        <TransferHistory
+          modalVisible={historyVisible}
+          handleModalVisible={this.handleModalVisible}
+          BaseEntry={targetLine.DocEntry || ''}
+          BaseLineID={targetLine.LineID || ''}
+        />
       </Card>
     );
   }

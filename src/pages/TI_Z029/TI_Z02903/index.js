@@ -1,18 +1,6 @@
 import React, { Fragment, Component } from 'react';
 import { connect } from 'dva';
-import {
-  Card,
-  Tabs,
-  Button,
-  Icon,
-  message,
-  Dropdown,
-  Menu,
-  Collapse,
-  Empty,
-  Tag,
-  Badge,
-} from 'antd';
+import { Card, Tabs, Button, Icon, message, Dropdown, Menu, Tag, Badge } from 'antd';
 import moment from 'moment';
 import router from 'umi/router';
 import Link from 'umi/link';
@@ -29,12 +17,13 @@ import Transfer from '@/components/Transfer';
 import PrintHistory from '@/components/Order/PrintHistory';
 import SendEmail from '@/components/Order/SendEmail';
 import MyPageHeader from '../components/pageHeader';
+import TransferHistory from '@/components/TransferHistory';
+import OrderAttach from '@/components/Attachment/order';
 import { getName } from '@/utils/utils';
-import { orderSourceType, linkmanColumns, otherCostCColumns, baseType } from '@/utils/publicData';
+import { orderSourceType, linkmanColumns, otherCostCColumns } from '@/utils/publicData';
 
 const { Description } = DescriptionList;
 const { TabPane } = Tabs;
-const { Panel } = Collapse;
 
 @connect(({ SalesQuotationPreview, loading, global }) => ({
   SalesQuotationPreview,
@@ -162,8 +151,9 @@ class InquiryEdit extends Component {
         if (record.lastIndex) return '';
         if (!text) return '';
         return (
-          <Ellipsis tooltip lines={1}>{`${text || ''}(${record.Currency || ''})[${record.DocRate ||
-            ''}]`}</Ellipsis>
+          <Ellipsis tooltip lines={1}>
+            {`${text || ''}(${record.Currency || ''})[${record.DocRate || ''}]`}
+          </Ellipsis>
         );
       },
     },
@@ -364,14 +354,16 @@ class InquiryEdit extends Component {
       render: (text, record, index) =>
         record.lastIndex ? null : (
           <Fragment>
-            <Badge count={record.TI_Z02604.length} showZero className="attachBadge">
-              <Icon
-                title="预览"
-                type="eye"
-                onClick={() => this.lookLineAttachment(record, index)}
-                style={{ color: '#08c', marginRight: 5 }}
-              />
-            </Badge>
+            {record.TI_Z02604.length ? (
+              <a onClick={() => this.lookLineAttachment(record, index)}>
+                <Badge count={record.TI_Z02604.length} title="查看附件" className="attachBadge" />
+              </a>
+            ) : (
+              ''
+            )}
+            <a onClick={() => this.prviewTransferHistory(record)}>
+              <Icon title="查看转移记录" type="history" style={{ color: '#08c', marginLeft: 5 }} />
+            </a>
           </Fragment>
         ),
     },
@@ -461,11 +453,19 @@ class InquiryEdit extends Component {
     this.setState({ attachmentVisible: true, targetLine: record });
   };
 
+  prviewTransferHistory = recond => {
+    this.setState({
+      targetLine: recond,
+      historyVisible: true,
+    });
+  };
+
   handleModalVisible = flag => {
     this.setState({
       attachmentVisible: !!flag,
       needmodalVisible: !!flag,
       transferModalVisible: !!flag,
+      historyVisible: !!flag,
     });
   };
 
@@ -589,9 +589,10 @@ class InquiryEdit extends Component {
       formVals,
       attachmentVisible,
       needmodalVisible,
-      targetLine,
       transferModalVisible,
       ApproveStsList,
+      targetLine,
+      historyVisible,
     } = this.state;
 
     const needParentMethods = {
@@ -694,50 +695,7 @@ class InquiryEdit extends Component {
             />
           </TabPane>
           <TabPane tab="附件" key="4">
-            {formVals.TI_Z02603Fahter.length ? (
-              <Collapse>
-                {formVals.TI_Z02603Fahter.map(item => {
-                  const header = (
-                    <div>
-                      单号：{' '}
-                      <Link
-                        target="_blank"
-                        to={`/sellabout/TI_Z026/detail?DocEntry=${item.DocEntry}`}
-                      >
-                        {item.DocEntry}
-                      </Link>
-                      ; 创建日期：{moment(item.FCreateDate).format('YYYY-MM-DD')}； 创建人
-                      <span>{getName(TI_Z004, item.FCreateUser)}</span>； 更新日期：
-                      {moment(item.FUpdateDate).format('YYYY-MM-DD')}； 更新人:
-                      <span>{getName(TI_Z004, item.FUpdateUser)}</span>
-                    </div>
-                  );
-                  return (
-                    <Panel header={header} key={item.DocEntry}>
-                      {item.TI_Z02603.map(line => (
-                        <ul key={line.OrderID}>
-                          <li>序号:{line.OrderID}</li>
-                          <li>
-                            来源类型:<span>{getName(baseType, line.BaseType)}</span>
-                          </li>
-                          <li>来源单号:{line.BaseEntry}</li>
-                          <li>附件代码:{line.AttachmentCode}</li>
-                          <li>附件描述:{line.AttachmentName}</li>
-                          <li>
-                            附件路径:
-                            <a href={line.AttachmentPath} target="_blank" rel="noopener noreferrer">
-                              {line.AttachmentPath}
-                            </a>
-                          </li>
-                        </ul>
-                      ))}
-                    </Panel>
-                  );
-                })}
-              </Collapse>
-            ) : (
-              <Empty />
-            )}
+            <OrderAttach dataSource={formVals.TI_Z02603Fahter} />
           </TabPane>
           <TabPane tab="其他推送人" key="5">
             <StandardTable
@@ -770,19 +728,25 @@ class InquiryEdit extends Component {
               <Icon type="ellipsis" />
             </Button>
           </Dropdown>
-          <NeedAskPrice
-            data={ApproveStsList}
-            {...needParentMethods}
-            rowKey="LineID"
-            modalVisible={needmodalVisible}
-          />
-          <Transfer
-            SourceEntry={formVals.DocEntry}
-            SourceType="TI_Z029"
-            modalVisible={transferModalVisible}
-            {...transferParentMethods}
-          />
         </FooterToolbar>
+        <NeedAskPrice
+          data={ApproveStsList}
+          {...needParentMethods}
+          rowKey="LineID"
+          modalVisible={needmodalVisible}
+        />
+        <Transfer
+          SourceEntry={formVals.DocEntry}
+          SourceType="TI_Z029"
+          modalVisible={transferModalVisible}
+          {...transferParentMethods}
+        />
+        <TransferHistory
+          modalVisible={historyVisible}
+          handleModalVisible={this.handleModalVisible}
+          BaseEntry={targetLine.BaseEntry || ''}
+          BaseLineID={targetLine.BaseLineID || ''}
+        />
       </Card>
     );
   }

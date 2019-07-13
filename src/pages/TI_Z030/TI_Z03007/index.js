@@ -393,7 +393,7 @@ class AgreementLine extends PureComponent {
       title: '操作',
       fixed: 'right',
       align: 'center',
-      width: 80,
+      width: 50,
       render: (text, record) =>
         record.TI_Z02604.length ? (
           <Badge count={record.TI_Z02604.length} className="attachBadge">

@@ -160,8 +160,17 @@ class CompanyEdit extends React.Component {
       type: 'global/getMDMCommonality',
       payload: {
         Content: {
-          CodeList: ['Company', 'PayMent', 'Curr', 'Supplier'],
+          CodeList: ['PayMent', 'Curr', 'Supplier'],
           Key: 'p',
+        },
+      },
+    });
+    dispatch({
+      type: 'global/getMDMCommonality',
+      payload: {
+        Content: {
+          CodeList: ['Company'],
+          Key: '2',
         },
       },
     });

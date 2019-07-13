@@ -17,9 +17,7 @@ import {
   message,
   DatePicker,
   Popconfirm,
-  Collapse,
   Select,
-  Empty,
   Badge,
   Dropdown,
   Menu,
@@ -39,13 +37,12 @@ import Attachment from '@/components/Attachment';
 import SupplierSelect from '@/components/Select/Supplier';
 import Emails from '@/components/Modal/Email';
 import MyPageHeader from '../components/pageHeader';
-import { getName } from '@/utils/utils';
-import { baseType } from '@/utils/publicData';
+import OrderAttach from '@/components/Attachment/order';
 
 const { TabPane } = Tabs;
 const FormItem = Form.Item;
 const { Option } = Select;
-const { Panel } = Collapse;
+
 @connect(({ supplierAskDetail, loading, global }) => ({
   supplierAskDetail,
   global,
@@ -334,60 +331,6 @@ class InquiryEdit extends React.Component {
     },
   ];
 
-  attachmentColumns = [
-    {
-      title: '序号',
-      width: 80,
-      align: 'center',
-      dataIndex: 'LineID',
-    },
-    {
-      title: '来源类型',
-      align: 'center',
-      dataIndex: 'BaseType',
-      render: text => <span>{text === '1' ? '正常订单' : '未知'}</span>,
-    },
-    {
-      title: '来源单号',
-      align: 'center',
-      dataIndex: 'BaseEntry',
-    },
-    {
-      title: '附件代码',
-      align: 'center',
-      dataIndex: 'AttachmentCode',
-    },
-    {
-      title: '附件描述',
-      align: 'center',
-      dataIndex: 'AttachmentName',
-    },
-    {
-      title: '附件路径',
-      align: 'center',
-      dataIndex: 'AttachmentPath',
-      render: text => <div style={{ wordWrap: 'break-word', wordBreak: 'break-all' }}>{text}</div>,
-    },
-
-    {
-      title: '操作',
-      align: 'center',
-      render: (text, record, index) => (
-        <Fragment>
-          <a target="_blnk" href={record.AttachmentPath}>
-            <Icon title="预览" type="eye" style={{ color: '#08c', marginRight: 5 }} />
-          </a>
-          <Icon
-            title="删除行"
-            type="delete"
-            theme="twoTone"
-            onClick={() => this.deleteLine(record, index)}
-          />
-        </Fragment>
-      ),
-    },
-  ];
-
   constructor(props) {
     super(props);
     this.state = {
@@ -431,6 +374,7 @@ class InquiryEdit extends React.Component {
       payload: {
         Content: {
           CodeList: ['Saler', 'Company', 'Purchaser', 'Curr', 'TI_Z004', 'TI_Z042', 'WhsCode'],
+          Key: '2',
         },
       },
     });
@@ -860,7 +804,7 @@ class InquiryEdit extends React.Component {
   render() {
     const {
       form: { getFieldDecorator },
-      global: { Purchaser, Curr, Company, TI_Z004 },
+      global: { Purchaser, Curr, Company },
       location,
     } = this.props;
     const {
@@ -1078,66 +1022,12 @@ class InquiryEdit extends React.Component {
             </Row>
           </TabPane>
           <TabPane tab="附件" key="3">
-            {formVals.TI_Z02603Fahter.length ? (
-              <Collapse>
-                {formVals.TI_Z02603Fahter.map(item => {
-                  const header = (
-                    <div>
-                      单号：{' '}
-                      <Link
-                        target="_blank"
-                        to={`/sellabout/TI_Z026/detail?DocEntry=${item.DocEntry}`}
-                      >
-                        {item.DocEntry}
-                      </Link>
-                      ; 创建日期：{moment(item.FCreateDate).format('YYYY-MM-DD')}； 创建人
-                      <span>{getName(TI_Z004, item.FCreateUser)}</span>； 更新日期：
-                      {moment(item.FUpdateDate).format('YYYY-MM-DD')}； 更新人:
-                      <span>{getName(TI_Z004, item.FUpdateUser)}</span>
-                      <Icon
-                        title="上传附件"
-                        className="icons"
-                        style={{ color: '#08c', marginRight: 5, marginLeft: 5 }}
-                        type="cloud-upload"
-                        onClick={() => this.skuLineAttachment(item, '', false)}
-                      />
-                    </div>
-                  );
-                  return (
-                    <Panel header={header} key={item.DocEntry}>
-                      {item.TI_Z02603.map((line, index) => (
-                        <ul key={line.OrderID}>
-                          <li>序号:{line.OrderID}</li>
-                          <li>
-                            来源类型:<span>{getName(baseType, line.BaseType)}</span>
-                          </li>
-                          <li>来源单号:{line.BaseEntry}</li>
-                          <li>附件代码:{line.AttachmentCode}</li>
-                          <li>附件描述:{line.AttachmentName}</li>
-                          <li>
-                            附件路径:
-                            <a href={line.AttachmentPath} target="_blank" rel="noopener noreferrer">
-                              {line.AttachmentPath}
-                            </a>
-                          </li>
-                          <li>
-                            操作:{' '}
-                            <Icon
-                              title="删除行"
-                              type="delete"
-                              theme="twoTone"
-                              onClick={() => this.deleteLine(item, index, false)}
-                            />
-                          </li>
-                        </ul>
-                      ))}
-                    </Panel>
-                  );
-                })}
-              </Collapse>
-            ) : (
-              <Empty />
-            )}
+            <OrderAttach
+              edit
+              dataSource={formVals.TI_Z02603Fahter}
+              deleteLine={this.deleteLine}
+              skuLineAttachment={this.skuLineAttachment}
+            />
           </TabPane>
         </Tabs>
         <FooterToolbar>

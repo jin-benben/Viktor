@@ -2,13 +2,14 @@ import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import Link from 'umi/link';
 import moment from 'moment';
-import { Row, Col, Card, Form, Input, Button, Tag, Select, Table, Modal, Badge } from 'antd';
+import { Row, Col, Card, Form, Input, Button, Tag, Table, Modal, Badge } from 'antd';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
+import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
 import { getName } from '@/utils/utils';
 
 const FormItem = Form.Item;
-const { Option } = Select;
+
 const { Meta } = Card;
 /* eslint react/no-multi-comp:0 */
 @connect(({ batchManage, loading, global }) => ({
@@ -121,8 +122,18 @@ class BatchUpload extends PureComponent {
   componentDidMount() {
     const {
       dispatch,
+      global: { currentUser },
       batchManage: { queryData },
     } = this.props;
+    Object.assign(queryData.Content, { ApproveBy: [currentUser.UserCode] });
+    dispatch({
+      type: 'batchManage/save',
+      payload: {
+        queryData: {
+          ...queryData,
+        },
+      },
+    });
     dispatch({
       type: 'batchManage/uploadfetch',
       payload: {
@@ -136,6 +147,9 @@ class BatchUpload extends PureComponent {
           CodeList: ['TI_Z004'],
         },
       },
+    });
+    dispatch({
+      type: 'global/getAuthority',
     });
   }
 
@@ -232,8 +246,9 @@ class BatchUpload extends PureComponent {
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
-      global: { TI_Z004 },
+      batchManage: { queryData },
     } = this.props;
+    const { ApproveBy } = queryData.Content;
     const formLayout = {
       labelCol: { span: 8 },
       wrapperCol: { span: 16 },
@@ -251,22 +266,11 @@ class BatchUpload extends PureComponent {
               {getFieldDecorator('ItemCode')(<Input placeholder="请输入物料代码" />)}
             </FormItem>
           </Col>
+
           <Col md={6} sm={24}>
-            <FormItem key="ApproveBy" {...formLayout} label="审批人">
-              {getFieldDecorator('ApproveBy')(
-                <Select
-                  showArrow={false}
-                  mode="multiple"
-                  placeholder="选择名称"
-                  filterOption={false}
-                  style={{ width: '100%' }}
-                >
-                  {TI_Z004.map(option => (
-                    <Option key={option.Key} value={option.Key}>
-                      {option.Value}
-                    </Option>
-                  ))}
-                </Select>
+            <FormItem key="ApproveBy" {...formLayout} label="审核人">
+              {getFieldDecorator('ApproveBy', { initialValue: ApproveBy })(
+                <SalerPurchaser initialValue={ApproveBy} type="Code" />
               )}
             </FormItem>
           </Col>

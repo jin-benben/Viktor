@@ -34,6 +34,8 @@ class SalerPurchaser extends PureComponent {
 
   render() {
     const { value } = this.state;
+    const { type } = this.props;
+    const TypeKey = type || 'SlpCode';
     const {
       global: { OSLPList },
     } = this.props;
@@ -49,7 +51,7 @@ class SalerPurchaser extends PureComponent {
         style={{ width: '100%' }}
       >
         {OSLPList.map(option => (
-          <Option key={option.SlpCode} value={option.SlpCode}>
+          <Option key={option[TypeKey]} value={option[TypeKey]}>
             {option.SlpName}
           </Option>
         ))}

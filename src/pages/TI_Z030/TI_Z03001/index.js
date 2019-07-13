@@ -250,8 +250,9 @@ class AgreementEdit extends React.Component {
         if (record.lastIndex) return '';
         if (!text) return '';
         return (
-          <Ellipsis tooltip lines={1}>{`${text || ''}(${record.Currency || ''})[${record.DocRate ||
-            ''}]`}</Ellipsis>
+          <Ellipsis tooltip lines={1}>
+            {`${text || ''}(${record.Currency || ''})[${record.DocRate || ''}]`}
+          </Ellipsis>
         );
       },
     },
@@ -678,6 +679,7 @@ class AgreementEdit extends React.Component {
         payload: {
           Content: {
             CodeList: ['Saler', 'Curr', 'Purchaser', 'TI_Z042', 'TI_Z004', 'WhsCode', 'Company'],
+            Key: '1',
           },
         },
       });
@@ -1816,6 +1818,7 @@ class AgreementEdit extends React.Component {
           </TabPane>
           <TabPane tab="附件" key="4">
             <OrderAttach
+              edit
               dataSource={orderDetail.TI_Z02603Fahter}
               deleteLine={this.deleteLine}
               skuLineAttachment={this.skuLineAttachment}
