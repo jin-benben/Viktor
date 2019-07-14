@@ -7,11 +7,10 @@ const AttachmentModal = props => {
   return (
     <Modal
       width={960}
-      destroyOnClose
+      footer={null}
       maskClosable={false}
       title="物料附件"
       visible={attachmentVisible}
-      onOk={() => handleModalVisible(false)}
       onCancel={() => handleModalVisible(false)}
     >
       <Attachment dataSource={prviewList} />

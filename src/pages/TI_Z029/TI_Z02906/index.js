@@ -177,8 +177,10 @@ class SalesQuotation extends PureComponent {
   componentDidMount() {
     const {
       dispatch,
+      global: { currentUser },
       SalesQuotation: { queryData },
     } = this.props;
+    Object.assign(queryData.Content, { Owner: [currentUser.Owner] });
     dispatch({
       type: 'SalesQuotation/fetch',
       payload: {
@@ -265,8 +267,10 @@ class SalesQuotation extends PureComponent {
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
+      SalesQuotation: { queryData },
     } = this.props;
     const { expandForm } = this.state;
+    const { Owner } = queryData.Content;
     const formLayout = {
       labelCol: { span: 8 },
       wrapperCol: { span: 16 },
@@ -303,7 +307,9 @@ class SalesQuotation extends PureComponent {
           </Col>
           <Col md={5} sm={24}>
             <FormItem key="Owner" {...formLayout} label="销售员">
-              {getFieldDecorator('Owner')(<SalerPurchaser />)}
+              {getFieldDecorator('Owner', { initialValue: Owner })(
+                <SalerPurchaser initialValue={Owner} />
+              )}
             </FormItem>
           </Col>
           {expandForm ? (

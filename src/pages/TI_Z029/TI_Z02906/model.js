@@ -7,6 +7,7 @@ export default {
     SalesQuotationList: [],
     queryData: {
       Content: {
+        Owner: [],
         SearchText: '',
         SearchKey: '',
       },

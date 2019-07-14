@@ -7,6 +7,7 @@ export default {
     SalesQuotationSkuList: [],
     queryData: {
       Content: {
+        Owner: [],
         SearchText: '',
         SearchKey: '',
         QueryType: '1',

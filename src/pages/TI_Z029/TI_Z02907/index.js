@@ -489,7 +489,11 @@ class SalesQuotationSku extends PureComponent {
               ''
             )}
             <a onClick={() => this.prviewTransferHistory(record)}>
-              <Icon title="查看转移记录" type="history" style={{ color: '#08c', marginLeft: 5 }} />
+              <Icon
+                title="查看转移记录"
+                type="history"
+                style={{ color: '#08c', marginLeft: 5, fontSize: 15 }}
+              />
             </a>
           </Fragment>
         ),
@@ -499,8 +503,10 @@ class SalesQuotationSku extends PureComponent {
   componentDidMount() {
     const {
       dispatch,
+      global: { currentUser },
       SalesQuotationSku: { queryData },
     } = this.props;
+    Object.assign(queryData.Content, { Owner: [currentUser.Owner] });
     dispatch({
       type: 'SalesQuotationSku/fetch',
       payload: {
@@ -511,7 +517,7 @@ class SalesQuotationSku extends PureComponent {
       type: 'global/getMDMCommonality',
       payload: {
         Content: {
-          CodeList: ['Saler', 'Purchaser', 'WhsCode', 'TI_Z042','TI_Z004'],
+          CodeList: ['Saler', 'Purchaser', 'WhsCode', 'TI_Z042', 'TI_Z004'],
         },
       },
     });
@@ -691,8 +697,10 @@ class SalesQuotationSku extends PureComponent {
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
+      SalesQuotationSku: { queryData },
       global: { OSLPList },
     } = this.props;
+    const { Owner } = queryData.Content;
     const { expandForm } = this.state;
     const formLayout = {
       labelCol: { span: 8 },
@@ -731,7 +739,9 @@ class SalesQuotationSku extends PureComponent {
           </Col>
           <Col md={5} sm={24}>
             <FormItem key="Owner" {...formLayout} label="销售员">
-              {getFieldDecorator('Owner')(<SalerPurchaser />)}
+              {getFieldDecorator('Owner', { initialValue: Owner })(
+                <SalerPurchaser initialValue={Owner} />
+              )}
             </FormItem>
           </Col>
           {expandForm ? (

@@ -62,7 +62,7 @@ request.interceptors.request.use((url, options) => {
   const currentUser = localStorage.getItem('currentUser')
     ? parse(localStorage.getItem('currentUser'))
     : {};
-  if (currentUser.UserCode && currentUser.Token)
+  if (currentUser.UserCode && currentUser.Token && options.data)
     Object.assign(options.data, { UserCode: currentUser.UserCode, Tonken: currentUser.Token });
   return {
     url: requestUrl(url),
