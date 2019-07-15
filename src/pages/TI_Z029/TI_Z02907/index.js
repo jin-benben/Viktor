@@ -16,6 +16,7 @@ import {
   message,
   Tooltip,
   Badge,
+  Spin,
 } from 'antd';
 import Link from 'umi/link';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
@@ -28,10 +29,12 @@ import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
 import ProcessorSelect from '@/components/Select/SalerPurchaser';
 import Comparison from '@/components/Comparison';
 import MyPageHeader from '../components/pageHeader';
-import AttachmentModal from '@/components/Attachment/modal';
+// import AttachmentModal from '@/components/Attachment/modal';
 import TransferHistory from '@/components/TransferHistory';
+
 import { getName } from '@/utils/utils';
 
+const AttachmentModal = React.lazy(() => import('@/components/Attachment/modal'));
 const { RangePicker } = DatePicker;
 
 const FormItem = Form.Item;
@@ -905,11 +908,13 @@ class SalesQuotationSku extends PureComponent {
           modalVisible={transferModalVisible}
           handleModalVisible={this.handleModalVisible}
         />
-        <AttachmentModal
-          attachmentVisible={attachmentVisible}
-          prviewList={prviewList}
-          handleModalVisible={this.handleModalVisible}
-        />
+        <React.Suspense fallback={<Spin />}>
+          <AttachmentModal
+            attachmentVisible={attachmentVisible}
+            prviewList={prviewList}
+            handleModalVisible={this.handleModalVisible}
+          />
+        </React.Suspense>
         <FooterToolbar>
           <Button onClick={this.toConfrim} type="primary">
             确认销售报价

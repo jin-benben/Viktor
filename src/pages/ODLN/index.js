@@ -315,13 +315,14 @@ class salerConfrim extends PureComponent {
         DeliverDateTo = moment(fieldsValue.deliverArr[1]).format('YYYY-MM-DD');
       }
 
-      const { DeliverSts, Owner } = fieldsValue;
+      const { DeliverSts, Owner, PrintStatus } = fieldsValue;
       const queryData = {
         DocDateFrom,
         DocDateTo,
         DeliverDateFrom,
         DeliverDateTo,
-        DeliverSts: DeliverSts || 'N',
+        DeliverSts,
+        PrintStatus,
         Owner,
       };
       dispatch({

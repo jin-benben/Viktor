@@ -45,6 +45,23 @@ export function getTimeDistance(type) {
     ];
   }
 
+  if (type === 'quarter') {
+    const currentQuarter = moment().quarter(); // 当前是第几季度
+    const currentYear = moment().year(); // 当前年
+    let endMonth = 3 * parseInt(currentQuarter, 0); // 当季度最后一个月
+    if (endMonth < 10) {
+      endMonth = `0${endMonth}`;
+    } else {
+      endMonth += '';
+    }
+    const endMonthDays = moment(`${currentYear}-${endMonth}`).daysInMonth(); // 末尾月天数
+    const endDays = `${currentYear}-${endMonth}-${endMonthDays}`; // 完整年月日整合
+    return [
+      moment(moment(`${currentYear}-01-01`).toDate()).quarter(currentQuarter),
+      moment(endDays),
+    ];
+  }
+
   const year = now.getFullYear();
   return [moment(`${year}-01-01 00:00:00`), moment(`${year}-12-31 23:59:59`)];
 }

@@ -434,14 +434,10 @@ class InquiryEdit extends PureComponent {
           </Link>
         </Menu.Item>
         <Menu.Item>
-          <a href="javacript:void(0)" onClick={this.selectNeed}>
-            确认需采购询价
-          </a>
+          <a onClick={this.selectNeed}>确认需采购询价</a>
         </Menu.Item>
         <Menu.Item>
-          <a href="javacript:void(0)" onClick={() => this.setState({ transferModalVisible: true })}>
-            转移
-          </a>
+          <a onClick={() => this.setState({ transferModalVisible: true })}>转移</a>
         </Menu.Item>
       </Menu>
     );

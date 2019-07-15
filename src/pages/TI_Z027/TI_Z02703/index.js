@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
 import { connect } from 'dva';
-import { Card, Tabs, Modal, Button, Icon, message, Dropdown, Menu, Tag, Badge } from 'antd';
+import { Card, Tabs, Button, Icon, message, Dropdown, Menu, Tag, Badge } from 'antd';
 import moment from 'moment';
 import router from 'umi/router';
 import Link from 'umi/link';

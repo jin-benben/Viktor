@@ -1024,69 +1024,68 @@ class TI_Z029Component extends React.Component {
   };
 
   // 获取上传成功附件，插入到对应数组
-  handleSubmit = fieldsValue => {
-    const { AttachmentPath, AttachmentCode, AttachmentName, AttachmentExtension } = fieldsValue;
+  handleSubmit = fileList => {
     const {
       formVals: { DocEntry },
       targetLine,
       isLine,
     } = this.state;
 
-    if (fieldsValue.AttachmentPath) {
-      let attch;
-      if (isLine) {
-        const thisLineChild = targetLine.TI_Z02604;
-        const last = thisLineChild[thisLineChild.length - 1];
-        const ID = last ? last.OrderID + 1 : 1;
-        attch = {
-          Content: {
-            Type: '2',
-            DocEntry: targetLine.BaseEntry,
-            ItemLine: targetLine.BaseLineID,
-            EnclosureList: [
-              ...thisLineChild,
-              {
-                DocEntry: targetLine.BaseEntry,
-                OrderID: ID,
-                ItemLine: targetLine.BaseLineID,
-                BaseType: 'TI_Z029',
-                BaseEntry: DocEntry,
-                BaseLineID: targetLine.LineID,
-                AttachmentCode,
-                AttachmentName,
-                AttachmentPath,
-                AttachmentExtension,
-              },
-            ],
-          },
-        };
-      } else {
-        const lastsku = targetLine.TI_Z02603[targetLine.TI_Z02603.length - 1];
-        attch = {
-          Content: {
-            Type: '1',
-            DocEntry: targetLine.DocEntry,
-            ItemLine: 0,
-            EnclosureList: [
-              ...targetLine.TI_Z02603,
-              {
-                DocEntry: targetLine.DocEntry,
-                OrderID: lastsku ? lastsku.OrderID + 1 : 1,
-                ItemLine: 0,
-                BaseType: 'TI_Z029',
-                BaseEntry: DocEntry,
-                BaseLineID: lastsku ? lastsku.BaseLineID + 1 : 1,
-                AttachmentCode,
-                AttachmentName,
-                AttachmentPath,
-                AttachmentExtension,
-              },
-            ],
-          },
-        };
-      }
-      this.attachmentHandle(attch);
+    let attch;
+    if (isLine) {
+      const thisLineChild = targetLine.TI_Z02604;
+      const last = thisLineChild[thisLineChild.length - 1];
+      const ID = last ? last.OrderID + 1 : 1;
+      attch = {
+        Content: {
+          Type: '2',
+          DocEntry: targetLine.BaseEntry,
+          ItemLine: targetLine.BaseLineID,
+          EnclosureList: [...thisLineChild],
+        },
+      };
+      fileList.map((file, index) => {
+        const { AttachmentPath, AttachmentCode, AttachmentName, AttachmentExtension } = file;
+        attch.EnclosureList.push({
+          DocEntry: targetLine.BaseEntry,
+          OrderID: ID + index,
+          ItemLine: targetLine.BaseLineID,
+          BaseType: 'TI_Z029',
+          BaseEntry: DocEntry,
+          BaseLineID: targetLine.LineID,
+          AttachmentCode,
+          AttachmentName,
+          AttachmentPath,
+          AttachmentExtension,
+        });
+      });
+    } else {
+      const lastsku = targetLine.TI_Z02903[targetLine.TI_Z02903.length - 1];
+      attch = {
+        Content: {
+          Type: '1',
+          DocEntry: targetLine.DocEntry,
+          ItemLine: 0,
+          EnclosureList: [...targetLine.TI_Z02903],
+        },
+      };
+      fileList.map((file, index) => {
+        const { AttachmentPath, AttachmentCode, AttachmentName, AttachmentExtension } = file;
+        attch.EnclosureList.push({
+          DocEntry: targetLine.DocEntry,
+          OrderID: lastsku ? lastsku.OrderID + index + 1 : 1,
+          ItemLine: 0,
+          BaseType: 'TI_Z029',
+          BaseEntry: DocEntry,
+          BaseLineID: lastsku ? lastsku.BaseLineID + 1 : 1,
+          AttachmentCode,
+          AttachmentName,
+          AttachmentPath,
+          AttachmentExtension,
+        });
+      });
     }
+    this.attachmentHandle(attch);
   };
 
   attachmentHandle = params => {
@@ -1209,15 +1208,15 @@ class TI_Z029Component extends React.Component {
       global: { currentUser },
     } = this.props;
     const { formVals } = this.state;
-    let newLineID = 1;
+    let newLineID = 0;
     if (formVals.TI_Z02902.length) {
       newLineID = formVals.TI_Z02902[formVals.TI_Z02902.length - 1].LineID + 1;
     }
-    selectedRows.map((item, index) => {
+    selectedRows.map(item => {
       if (item.SLineStatus === 'C') {
         return false;
       }
-      newLineID += index;
+      newLineID += 1;
       const {
         LineComment,
         SKU,

@@ -1,57 +1,32 @@
 import React, { memo } from 'react';
-import { Row, Col, Table, Tooltip, Card, Icon } from 'antd';
-import { FormattedMessage } from 'umi/locale';
-import { Trend, NumberInfo, Charts } from 'ant-design-pro';
-import numeral from 'numeral';
-import styles from '../style.less';
+import { Row, Col, Table, Card } from 'antd';
+import { NumberInfo, Charts } from 'ant-design-pro';
 
 const { MiniArea } = Charts;
 
 const columns = [
   {
-    title: <FormattedMessage id="analysis.table.rank" defaultMessage="Rank" />,
-    dataIndex: 'index',
-    key: 'index',
+    title: '序号',
+    dataIndex: 'key',
   },
   {
-    title: <FormattedMessage id="analysis.table.search-keyword" defaultMessage="Search keyword" />,
-    dataIndex: 'keyword',
-    key: 'keyword',
-    render: text => <a href="/">{text}</a>,
+    title: '名字',
+    dataIndex: 'x',
   },
   {
-    title: <FormattedMessage id="analysis.table.users" defaultMessage="Users" />,
-    dataIndex: 'count',
-    key: 'count',
-    sorter: (a, b) => a.count - b.count,
-    className: styles.alignRight,
-  },
-  {
-    title: <FormattedMessage id="analysis.table.weekly-range" defaultMessage="Weekly Range" />,
-    dataIndex: 'range',
-    key: 'range',
-    sorter: (a, b) => a.range - b.range,
-    render: (text, record) => (
-      <Trend flag={record.status === 1 ? 'down' : 'up'}>
-        <span style={{ marginRight: 4 }}>{text}%</span>
-      </Trend>
-    ),
-    align: 'right',
+    title: '数量',
+    dataIndex: 'y',
   },
 ];
 
-const TopSearch = memo(({ loading, docProcessData, searchData, dropdownGroup }) => (
+const TopSearch = memo(({ loading, docProcessData, dropdownGroup }) => (
   <Card
     loading={loading}
     bordered={false}
-    title={
-      <FormattedMessage
-        id="analysis.analysis.online-top-search"
-        defaultMessage="Online Top Search"
-      />
-    }
+    title="未处理单据"
     extra={dropdownGroup}
-    style={{ marginTop: 24 }}
+    bodyStyle={{ padding: 24 }}
+    style={{ marginTop: 24, height: 500 }}
   >
     <Row gutter={68}>
       <Col sm={12} xs={24} style={{ marginBottom: 24 }}>
@@ -63,16 +38,30 @@ const TopSearch = memo(({ loading, docProcessData, searchData, dropdownGroup }) 
         <MiniArea line height={45} data={docProcessData.PUserDocInfo} />
       </Col>
     </Row>
-    <Table
-      rowKey={record => record.index}
-      size="small"
-      columns={columns}
-      dataSource={searchData}
-      pagination={{
-        style: { marginBottom: 0 },
-        pageSize: 5,
-      }}
-    />
+    <Row gutter={68}>
+      <Col sm={12} xs={24} style={{ marginBottom: 24 }}>
+        <Table
+          size="small"
+          columns={columns}
+          dataSource={docProcessData.SUserDocInfo}
+          pagination={{
+            style: { marginBottom: 0 },
+            pageSize: 5,
+          }}
+        />
+      </Col>
+      <Col sm={12} xs={24} style={{ marginBottom: 24 }}>
+        <Table
+          size="small"
+          columns={columns}
+          dataSource={docProcessData.PUserDocInfo}
+          pagination={{
+            style: { marginBottom: 0 },
+            pageSize: 5,
+          }}
+        />
+      </Col>
+    </Row>
   </Card>
 ));
 

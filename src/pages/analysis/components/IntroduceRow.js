@@ -15,7 +15,6 @@ const topColResponsiveProps = {
   xl: 6,
   style: { marginBottom: 24 },
 };
-
 const IntroduceRow = memo(
   ({
     loading,

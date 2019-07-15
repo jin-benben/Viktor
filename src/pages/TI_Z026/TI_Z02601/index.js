@@ -814,11 +814,11 @@ class InquiryEdit extends React.Component {
       inquiryDetail: {
         SourceType: '1',
         OrderType: '1',
-        DocDate: moment().format('YYYY/MM/DD'),
-        CreateDate: moment().format('YYYY/MM/DD'),
+        DocDate: moment().format('YYYY-MM-DD'),
+        CreateDate: moment().format('YYYY-MM-DD'),
         ToDate: moment()
           .add('30', 'day')
-          .format('YYYY/MM/DD'),
+          .format('YYYY-MM-DD'),
         TI_Z02602: [],
         TI_Z02605: [],
         Comment: '',
@@ -903,7 +903,7 @@ class InquiryEdit extends React.Component {
       type: 'global/getMDMCommonality',
       payload: {
         Content: {
-          CodeList: ['Saler', 'Purchaser', 'TI_Z042', 'WhsCode', 'Company'],
+          CodeList: ['Saler', 'Purchaser', 'TI_Z042', 'TI_Z004', 'WhsCode', 'Company'],
           Key: '1',
         },
       },
@@ -926,12 +926,23 @@ class InquiryEdit extends React.Component {
           </Link>
         </Menu.Item>
         <Menu.Item>
-          <a href="javacript:void(0)" onClick={this.selectNeed}>
-            确认需采购询价
-          </a>
+          <a onClick={this.selectNeed}>确认需采购询价</a>
+        </Menu.Item>
+        <Menu.Item>
+          <a onClick={this.copySelf}>复制到客户询价单</a>
         </Menu.Item>
       </Menu>
     );
+  };
+
+  copySelf = () => {
+    const { inquiryDetail } = this.state;
+    this.setState({
+      inquiryDetail: {
+        ...inquiryDetail,
+        DocEntry: '',
+      },
+    });
   };
 
   // 获取单据详情
@@ -1154,8 +1165,7 @@ class InquiryEdit extends React.Component {
   };
 
   // 获取上传成功附件，插入到对应数组
-  handleSubmit = fieldsValue => {
-    const { AttachmentPath, AttachmentCode, AttachmentName, AttachmentExtension } = fieldsValue;
+  handleSubmit = fileList => {
     const {
       inquiryDetail,
       inquiryDetail: { DocEntry },
@@ -1164,60 +1174,61 @@ class InquiryEdit extends React.Component {
     } = this.state;
 
     const lastsku = inquiryDetail.TI_Z02603[inquiryDetail.TI_Z02603.length - 1];
-    if (fieldsValue.AttachmentPath) {
-      let attch;
-      if (LineID >= 0) {
-        const thisLineChild = inquiryDetail.TI_Z02602[LineID].TI_Z02604;
-        const last = thisLineChild[thisLineChild.length - 1];
-        const ID = last ? last.OrderID + 1 : 1;
-        attch = {
-          Content: {
-            Type: '2',
-            DocEntry,
-            ItemLine: thisLine.LineID,
-            EnclosureList: [
-              ...thisLineChild,
-              {
-                DocEntry,
-                OrderID: ID,
-                ItemLine: thisLine.LineID,
-                BaseType: 'TI_Z026',
-                BaseEntry: DocEntry,
-                BaseLineID: thisLine.LineID,
-                AttachmentCode,
-                AttachmentName,
-                AttachmentPath,
-                AttachmentExtension,
-              },
-            ],
-          },
-        };
-      } else {
-        attch = {
-          Content: {
-            Type: '1',
-            DocEntry,
-            ItemLine: 0,
-            EnclosureList: [
-              ...inquiryDetail.TI_Z02603,
-              {
-                DocEntry,
-                OrderID: lastsku ? lastsku.OrderID + 1 : 1,
-                ItemLine: 0,
-                BaseType: 'TI_Z026',
-                BaseEntry: DocEntry,
-                BaseLineID: lastsku ? lastsku.BaseLineID + 1 : 1,
-                AttachmentCode,
-                AttachmentName,
-                AttachmentPath,
-                AttachmentExtension,
-              },
-            ],
-          },
-        };
-      }
-      this.attachmentHandle(attch);
+
+    let attch;
+    if (LineID >= 0) {
+      const thisLineChild = inquiryDetail.TI_Z02602[LineID].TI_Z02604;
+      const last = thisLineChild[thisLineChild.length - 1];
+      const ID = last ? last.OrderID + 1 : 1;
+      attch = {
+        Content: {
+          Type: '2',
+          DocEntry,
+          ItemLine: thisLine.LineID,
+          EnclosureList: [...thisLineChild],
+        },
+      };
+      fileList.map((file, index) => {
+        const { AttachmentPath, AttachmentCode, AttachmentName, AttachmentExtension } = file;
+        attch.Content.EnclosureList.push({
+          DocEntry,
+          OrderID: ID + index,
+          ItemLine: thisLine.LineID,
+          BaseType: 'TI_Z026',
+          BaseEntry: DocEntry,
+          BaseLineID: thisLine.LineID,
+          AttachmentCode,
+          AttachmentName,
+          AttachmentPath,
+          AttachmentExtension,
+        });
+      });
+    } else {
+      attch = {
+        Content: {
+          Type: '1',
+          DocEntry,
+          ItemLine: 0,
+          EnclosureList: [...inquiryDetail.TI_Z02603],
+        },
+      };
+      fileList.map((file, index) => {
+        const { AttachmentPath, AttachmentCode, AttachmentName, AttachmentExtension } = file;
+        attch.Content.EnclosureList.push({
+          DocEntry,
+          OrderID: lastsku ? lastsku.OrderID + index + 1 : 1,
+          ItemLine: 0,
+          BaseType: 'TI_Z026',
+          BaseEntry: DocEntry,
+          BaseLineID: lastsku ? lastsku.BaseLineID + 1 : 1,
+          AttachmentCode,
+          AttachmentName,
+          AttachmentPath,
+          AttachmentExtension,
+        });
+      });
     }
+    this.attachmentHandle(attch);
   };
 
   attachmentHandle = params => {

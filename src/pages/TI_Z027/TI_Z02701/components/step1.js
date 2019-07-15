@@ -399,9 +399,9 @@ class NeedTabl extends React.Component {
       };
       Object.assign(queryData.Content, { ...Content });
       this.setState({
-        queryData: { ...queryData, page: 1, rows: 30 },
+        queryData: { ...queryData, page: 1 },
       });
-      this.fetchOrder({ ...queryData, page: 1, rows: 30 });
+      this.fetchOrder({ ...queryData, page: 1 });
     });
   };
 

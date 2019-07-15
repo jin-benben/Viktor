@@ -98,10 +98,23 @@ export default {
         });
       }
       if (docProcessRes && docProcessRes.Status === 200) {
+        const { PUserDocInfo, SUserDocInfo, PDocCount, SDocCount } = docProcessRes.Content;
+        const newPUserDocInfo = PUserDocInfo.map((item, index) => {
+          return { key: index + 1, ...item, y: item.y * 1 };
+        });
+        const newSUserDocInfo = SUserDocInfo.map((item, index) => {
+          return { key: index + 1, ...item, y: item.y * 1 };
+        });
+
         yield put({
           type: 'save',
           payload: {
-            docProcessData: { ...docProcessRes.Content },
+            docProcessData: {
+              PDocCount,
+              SDocCount,
+              PUserDocInfo: newPUserDocInfo,
+              SUserDocInfo: newSUserDocInfo,
+            },
           },
         });
       }
@@ -132,10 +145,12 @@ export default {
     *getCustomerSaleList({ payload }, { call, put }) {
       const response = yield call(customerSaleListRule, payload);
       if (response && response.Status === 200) {
+        const { CustomerSaleList } = response.Content;
+
         yield put({
           type: 'save',
           payload: {
-            customerSaleListData: { ...response.Content },
+            customerSaleListData: CustomerSaleList || [],
           },
         });
       }
@@ -166,16 +181,47 @@ export default {
     },
     clear() {
       return {
-        visitData: [],
-        visitData2: [],
-        salesData: [],
-        searchData: [],
-        offlineData: [],
-        offlineChartData: [],
-        salesTypeData: [],
-        salesTypeDataOnline: [],
-        salesTypeDataOffline: [],
-        radarData: [],
+        monthlySalesData: {
+          DocTotal: 0, // 月销售总计
+          MonthRate: 0, // 销售月同比
+          DayRate: 0, // 销售天同比
+          DayDocTotal: 0, // 金额销售额
+          QuoteDocTotal: 0, // 月报价总计
+          QuoteMonthRate: 0, // 报价周同比
+          QuoteDayRate: 0, // 报价天同比
+          QuoteDayDocTotal: 0, // 金额销售额
+        },
+        monthlyPurchaseData: {
+          DocTotal: 0, // 月采购总计
+          MonthRate: 0, // 采购月同比
+          DayRate: 0, // 采购天同比
+          DayDocTotal: 0, // 金额采购额
+        },
+        allSaleData: {
+          MonthSalesTotalList: [], //  每月销售额
+          SalesPersonTotalList: [], // 销售员销售额列表
+        },
+        allPurchaseData: {
+          MonthPurchaseTotalList: [], //  每月采购额
+          BrandTotalList: [], //  品牌列表
+        },
+        monthlyReceiptData: {
+          DocTotal: 0, // 月销售总计
+          DayDocTotal: 0, // 金额销售额
+          DayReceiptList: [], // 每天收款列表
+        },
+        docProcessData: {
+          PDocCount: 0, // 采购单据未处理行数
+          SDocCount: 0, // 销售单据未处理行数
+          PUserDocInfo: [], // 采购单据未处理行数人员明细
+          SUserDocInfo: [], // 销售单据未处理行数人员明细
+        },
+        customerSaleListData: [],
+        monthlyPaymentRuleData: {
+          DocTotal: 0, // 月销售总计
+          DayDocTotal: 0, // 金额销售额
+          DayPaymentList: [], // 每天付款列表
+        },
       };
     },
   },

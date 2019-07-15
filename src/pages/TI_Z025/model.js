@@ -95,6 +95,9 @@ export default {
             type: 'save',
             payload: {
               batchApproveList: rows,
+              queryData: {
+                ...payload,
+              },
               pagination: {
                 total: records,
                 pageSize: payload.rows,

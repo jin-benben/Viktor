@@ -2,7 +2,7 @@
 
 import React, { PureComponent } from 'react';
 import { Form, Input, Modal } from 'antd';
-import Upload from '@/components/Upload';
+import Upload from './upload';
 
 const { TextArea } = Input;
 const FormItem = Form.Item;
@@ -12,10 +12,7 @@ class OrderAttachUpload extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      AttachmentPath: '',
-      AttachmentCode: '',
-      AttachmentName: '',
-      AttachmentExtension: '',
+      attachmentList: [],
     };
     this.formLayout = {
       labelCol: { span: 7 },
@@ -24,12 +21,9 @@ class OrderAttachUpload extends PureComponent {
   }
 
   // 文件上传成功后回调
-  uploadSuccess = ({ FilePath, FileCode, Extension, FileName }) => {
+  uploadSuccess = fileList => {
     this.setState({
-      AttachmentPath: FilePath,
-      AttachmentCode: FileCode,
-      AttachmentName: FileName,
-      AttachmentExtension: Extension,
+      attachmentList: fileList,
     });
   };
 
@@ -42,6 +36,7 @@ class OrderAttachUpload extends PureComponent {
       handleModalVisible,
       handleSubmit,
     } = this.props;
+    const { attachmentList } = this.state;
     const formItemLayout = {
       labelCol: {
         xs: { span: 24 },
@@ -56,8 +51,18 @@ class OrderAttachUpload extends PureComponent {
 
     const okHandle = () => {
       form.validateFields((err, fieldsValue) => {
-        if (err) return;
-        handleSubmit({ ...this.state, ...fieldsValue });
+        if (err || !attachmentList.length) return;
+        const { AttachmentName } = fieldsValue;
+        const newattachmentList = attachmentList.map(file => {
+          const { FilePath, FileCode, Extension } = file.response;
+          return {
+            AttachmentPath: FilePath,
+            AttachmentCode: FileCode,
+            AttachmentName,
+            AttachmentExtension: Extension,
+          };
+        });
+        handleSubmit(newattachmentList);
       });
     };
     return (
@@ -75,7 +80,7 @@ class OrderAttachUpload extends PureComponent {
             {getFieldDecorator('AttachmentName')(<TextArea placeholder="请输入附件描" />)}
           </FormItem>
           <FormItem key="AttachmentPath" {...this.formLayout} label="上传附件">
-            <Upload onChange={this.uploadSuccess} Folder={Folder} />
+            <Upload multiple onChange={this.uploadSuccess} Folder={Folder} />
           </FormItem>
         </Form>
       </Modal>

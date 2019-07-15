@@ -1,6 +1,7 @@
 import React, { memo } from 'react';
-import { Row, Col, Card, Tabs, DatePicker } from 'antd';
+import { Row, Col, Card, Tabs, DatePicker, Radio } from 'antd';
 import numeral from 'numeral';
+import { Scrollbars } from 'react-custom-scrollbars';
 import { Charts } from 'ant-design-pro';
 import styles from '../style.less';
 
@@ -16,11 +17,15 @@ const SalesCard = memo(
     isActive,
     handleRangePickerChange,
     loading,
+    TopCount,
     selectDate,
+    handleTabChange,
+    changeGroup,
   }) => (
     <Card loading={loading} bordered={false} bodyStyle={{ padding: 0 }}>
       <div className={styles.salesCard}>
         <Tabs
+          onChange={handleTabChange}
           tabBarExtraContent={
             <div className={styles.salesExtraWrap}>
               <div className={styles.salesExtra}>
@@ -32,6 +37,9 @@ const SalesCard = memo(
                 </a>
                 <a className={isActive('month')} onClick={() => selectDate('month')}>
                   本月
+                </a>
+                <a className={isActive('quarter')} onClick={() => selectDate('quarter')}>
+                  本季度
                 </a>
                 <a className={isActive('year')} onClick={() => selectDate('year')}>
                   本年
@@ -49,38 +57,40 @@ const SalesCard = memo(
         >
           <TabPane tab="销售额" key="sales">
             <Row>
-              <Col xl={16} lg={12} md={12} sm={24} xs={24}>
+              <Col xl={14} lg={12} md={12} sm={24} xs={24}>
                 <div className={styles.salesBar}>
                   <Bar height={295} title="销售趋势" data={allSaleData.MonthSalesTotalList} />
                 </div>
               </Col>
-              <Col xl={8} lg={12} md={12} sm={24} xs={24}>
+              <Col xl={10} lg={12} md={12} sm={24} xs={24}>
                 <div className={styles.salesRank}>
                   <h4 className={styles.rankingTitle}>销售员排行</h4>
-                  <ul className={styles.rankingList}>
-                    {allSaleData.SalesPersonTotalList.map((item, i) => (
-                      <li key={item.title}>
-                        <span
-                          className={`${styles.rankingItemNumber} ${i < 3 ? styles.active : ''}`}
-                        >
-                          {i + 1}
-                        </span>
-                        <span className={styles.rankingItemTitle} title={item.title}>
-                          {item.x}
-                        </span>
-                        <span className={styles.rankingItemValue}>
-                          {numeral(item.y).format('0,0')}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
+                  <Scrollbars style={{ minHeight: 380 }}>
+                    <ul className={styles.rankingList}>
+                      {allSaleData.SalesPersonTotalList.map((item, i) => (
+                        <li key={item.x}>
+                          <span
+                            className={`${styles.rankingItemNumber} ${i < 3 ? styles.active : ''}`}
+                          >
+                            {i + 1}
+                          </span>
+                          <span className={styles.rankingItemTitle} title={item.x}>
+                            {item.x}
+                          </span>
+                          <span className={styles.rankingItemValue}>
+                            {numeral(item.y).format('0,0')}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </Scrollbars>
                 </div>
               </Col>
             </Row>
           </TabPane>
-          <TabPane tab="采购额" key="views">
+          <TabPane tab="采购额" key="purchase">
             <Row>
-              <Col xl={16} lg={12} md={12} sm={24} xs={24}>
+              <Col xl={14} lg={12} md={12} sm={24} xs={24}>
                 <div className={styles.salesBar}>
                   <Bar
                     height={292}
@@ -89,24 +99,33 @@ const SalesCard = memo(
                   />
                 </div>
               </Col>
-              <Col xl={8} lg={12} md={12} sm={24} xs={24}>
+              <Col xl={10} lg={12} md={12} sm={24} xs={24}>
                 <div className={styles.salesRank}>
-                  <h4 className={styles.rankingTitle}>品牌排行</h4>
-                  <ul className={styles.rankingList}>
-                    {allPurchaseData.BrandTotalList.map((item, i) => (
-                      <li key={item.title}>
-                        <span
-                          className={`${styles.rankingItemNumber} ${i < 3 ? styles.active : ''}`}
-                        >
-                          {i + 1}
-                        </span>
-                        <span className={styles.rankingItemTitle} title={item.title}>
-                          {item.x}
-                        </span>
-                        <span>{numeral(item.y).format('0,0')}</span>
-                      </li>
-                    ))}
-                  </ul>
+                  <h4 className={`${styles.rankingTitle} ${styles.topGroup}`}>
+                    供应商排行
+                    <Radio.Group onChange={changeGroup} value={TopCount} defaultValue="10">
+                      <Radio.Button value="10">Top10</Radio.Button>
+                      <Radio.Button value="50">Top50</Radio.Button>
+                      <Radio.Button value="100">Top100</Radio.Button>
+                    </Radio.Group>
+                  </h4>
+                  <Scrollbars style={{ minHeight: 380 }}>
+                    <ul className={styles.rankingList}>
+                      {allPurchaseData.BrandTotalList.map((item, i) => (
+                        <li key={item.x}>
+                          <span
+                            className={`${styles.rankingItemNumber} ${i < 3 ? styles.active : ''}`}
+                          >
+                            {i + 1}
+                          </span>
+                          <span className={styles.rankingItemTitle} title={item.x}>
+                            {item.x}
+                          </span>
+                          <span>{numeral(item.y).format('0,0')}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </Scrollbars>
                 </div>
               </Col>
             </Row>
