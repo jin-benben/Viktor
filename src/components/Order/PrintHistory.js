@@ -3,6 +3,7 @@ import { connect } from 'dva';
 import Link from 'umi/link';
 import moment from 'moment';
 import { Row, Col, Card, Form, Input, Button, DatePicker } from 'antd';
+import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import MDMCommonality from '@/components/Select';
 import StandardTable from '@/components/StandardTable';
 import { getName } from '@/utils/utils';
@@ -92,7 +93,11 @@ class ClientAsk extends PureComponent {
       title: '创建日期',
       width: 100,
       dataIndex: 'CreateDate',
-      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
+      render: val => (
+        <Ellipsis tooltip lines={1}>
+          <span>{val ? moment(val).format('YYYY-MM-DD hh:mm:ss') : ''}</span>
+        </Ellipsis>
+      ),
     },
     {
       title: '内容模板',

@@ -6,6 +6,7 @@ import {
   addbrandRule,
   deletebrandRule,
   attachRule,
+  queryRule,
 } from '../service';
 
 export default {
@@ -27,12 +28,13 @@ export default {
         });
       }
     },
-    *add({ payload, callback }, { call, put }) {
+    *add({ payload, callback }, { call }) {
       const response = yield call(addRule, payload);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
+      if (callback) callback(response);
+    },
+
+    *exist({ payload, callback }, { call }) {
+      const response = yield call(queryRule, payload);
       if (callback) callback(response);
     },
 
@@ -45,29 +47,17 @@ export default {
       if (callback) callback(response);
     },
 
-    *deletebrand({ payload, callback }, { call, put }) {
+    *deletebrand({ payload, callback }, { call }) {
       const response = yield call(deletebrandRule, payload);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
       if (callback) callback(response);
     },
-    *addbrand({ payload, callback }, { call, put }) {
+    *addbrand({ payload, callback }, { call }) {
       const response = yield call(addbrandRule, payload);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
       if (callback) callback(response);
     },
 
-    *update({ payload, callback }, { call, put }) {
+    *update({ payload, callback }, { call }) {
       const response = yield call(updateRule, payload);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
       if (callback) callback(response);
     },
   },

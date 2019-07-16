@@ -1,7 +1,20 @@
 /* eslint-disable no-script-url */
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Row, Col, Form, Input, Card, Switch, Tabs, Button, message } from 'antd';
+import {
+  Row,
+  Col,
+  Form,
+  Input,
+  Card,
+  Switch,
+  Tabs,
+  Button,
+  message,
+  AutoComplete,
+  Icon,
+  Divider,
+} from 'antd';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import router from 'umi/router';
 import StandardTable from '@/components/StandardTable';
@@ -17,10 +30,11 @@ import OrctovpmFetch from '@/components/Order/OrctovpmFetch';
 import PrintHistory from '@/components/Order/PrintHistory';
 import MDMCommonality from '@/components/Select';
 import MyPageHeader from '../components/pageHeader';
+import MyIcon from '@/components/MyIcon';
 import { getName } from '@/utils/utils';
 
 const { TabPane } = Tabs;
-
+const { Option } = AutoComplete;
 const FormItem = Form.Item;
 
 @connect(({ companyEdit, loading, global }) => ({
@@ -48,12 +62,12 @@ class CompanyEdit extends PureComponent {
     },
     {
       title: '电话号码',
-      width: 200,
+      width: 100,
       dataIndex: 'PhoneNO',
     },
     {
       title: 'Email',
-      width: 200,
+      width: 100,
       dataIndex: 'Email',
     },
     {
@@ -93,7 +107,11 @@ class CompanyEdit extends PureComponent {
               this.handleUpdateModalVisible(true, record, 'LinkManmodalVisible', 'linkManVal')
             }
           >
-            修改
+            <MyIcon type="iconedit" />
+          </a>
+          <Divider type="vertical" />
+          <a onClick={() => this.addQrCode(record)}>
+            <Icon type="qrcode" />
           </a>
         </Fragment>
       ),
@@ -143,7 +161,7 @@ class CompanyEdit extends PureComponent {
               this.handleUpdateModalVisible(true, record, 'AddressmodalVisible', 'addressVal')
             }
           >
-            修改
+            <MyIcon type="iconedit" />
           </a>
         </Fragment>
       ),
@@ -194,6 +212,7 @@ class CompanyEdit extends PureComponent {
         Saler: '',
         CompanyCode: '',
       },
+      dataSource: [],
     };
     this.formLayout = {
       labelCol: { span: 10 },
@@ -266,6 +285,29 @@ class CompanyEdit extends PureComponent {
     }
     return null;
   }
+
+  addQrCode = record => {
+    const { CellphoneNO, Name, Position } = record;
+    const { formVals } = this.state;
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'companyEdit/qrcode',
+      payload: {
+        Content: {
+          PhoneNo: CellphoneNO,
+          Name,
+          Position,
+          CardName: formVals.Name,
+          CardCode: formVals.Code,
+        },
+      },
+      callback: response => {
+        if (response && response.Status === 200) {
+          message.success('保存成功');
+        }
+      },
+    });
+  };
 
   handleLinkmanSubmit = fields => {
     const { dispatch } = this.props;
@@ -398,6 +440,35 @@ class CompanyEdit extends PureComponent {
     });
   };
 
+  checkExist = value => {
+    const { dispatch } = this.props;
+    if (value) {
+      dispatch({
+        type: 'companyEdit/exist',
+        payload: {
+          Content: {
+            SearchText: value,
+            SearchKey: 'Name',
+            ShowAll: 'Y',
+          },
+          page: 1,
+          rows: 30,
+          sidx: 'Code',
+          sord: 'Desc',
+        },
+        callback: response => {
+          if (response && response.Status === 200) {
+            if (response.Content) {
+              this.setState({
+                dataSource: response.Content.rows,
+              });
+            }
+          }
+        },
+      });
+    }
+  };
+
   tabChange = tabIndex => {
     this.setState({ tabIndex });
   };
@@ -472,6 +543,7 @@ class CompanyEdit extends PureComponent {
       linkManVal,
       AddressmodalVisible,
       addressVal,
+      dataSource,
     } = this.state;
     const formItemLayout = {
       labelCol: {
@@ -507,7 +579,19 @@ class CompanyEdit extends PureComponent {
                 {getFieldDecorator('Name', {
                   rules: [{ required: true, message: '请输入客户名称！' }],
                   initialValue: formVals.Name,
-                })(<Input placeholder="请输入客户名称" />)}
+                })(
+                  <AutoComplete
+                    style={{ width: '100%' }}
+                    onSearch={this.checkExist}
+                    placeholder="请输入客户名称"
+                  >
+                    {dataSource.map(item => (
+                      <Option value={item.Name} key={item.Code}>
+                        {item.Name}
+                      </Option>
+                    ))}
+                  </AutoComplete>
+                )}
               </FormItem>
             </Col>
             <Col lg={8} md={12} sm={24}>
@@ -595,7 +679,7 @@ class CompanyEdit extends PureComponent {
                 <StandardTable
                   data={{ list: formVals.TI_Z00602List }}
                   rowKey="UserID"
-                  scroll={{ x: 1200 }}
+                  scroll={{ x: 1000 }}
                   columns={this.linkmanColumns}
                 />
               </TabPane>

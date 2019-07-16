@@ -167,7 +167,19 @@ class supplierQuotation extends PureComponent {
       dataIndex: 'CreateDate',
       render: val => (
         <Ellipsis tooltip lines={1}>
-          <span>{val ? moment(val).format('YYYY-MM-DD HH:DD:MM') : ''}</span>
+          <span>{val ? moment(val).format('YYYY-MM-DD hh:mm:ss') : ''}</span>
+        </Ellipsis>
+      ),
+    },
+    {
+      title: '邮件发送',
+      width: 100,
+      sorter: true,
+      align: 'center',
+      dataIndex: 'SendEmailDateTime',
+      render: val => (
+        <Ellipsis tooltip lines={1}>
+          <span>{val ? moment(val).format('YYYY-MM-DD hh:mm:ss') : ''}</span>
         </Ellipsis>
       ),
     },
@@ -186,8 +198,10 @@ class supplierQuotation extends PureComponent {
   componentDidMount() {
     const {
       dispatch,
+      global: { currentUser },
       supplierQuotation: { queryData },
     } = this.props;
+    Object.assign(queryData.Content, { Owner: [currentUser.Owner] });
     dispatch({
       type: 'supplierQuotation/fetch',
       payload: {
@@ -280,7 +294,7 @@ class supplierQuotation extends PureComponent {
       supplierQuotation: { queryData },
     } = this.props;
     const { expandForm } = this.state;
-    const { Closed } = queryData.Content;
+    const { Closed, Owner } = queryData.Content;
     const formLayout = {
       labelCol: { span: 8 },
       wrapperCol: { span: 16 },
@@ -317,10 +331,11 @@ class supplierQuotation extends PureComponent {
           </Col>
           <Col md={5} sm={24}>
             <FormItem key="Owner" {...formLayout} label="采购员">
-              {getFieldDecorator('Owner')(<SalerPurchaser />)}
+              {getFieldDecorator('Owner', { initialValue: Owner })(
+                <SalerPurchaser initialValue={Owner} />
+              )}
             </FormItem>
           </Col>
-
           {expandForm ? (
             <Fragment>
               <Col md={5} sm={24}>
@@ -402,7 +417,7 @@ class supplierQuotation extends PureComponent {
               loading={loading}
               data={{ list: supplierQuotationList }}
               pagination={pagination}
-              scroll={{ x: 1550, y: 600 }}
+              scroll={{ x: 1650 }}
               rowKey="DocEntry"
               columns={this.columns}
               onChange={this.handleStandardTableChange}

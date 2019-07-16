@@ -175,7 +175,11 @@ class ClientAsk extends PureComponent {
       title: '发货时间',
       dataIndex: 'U_DeliverDate',
       width: 100,
-      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
+      render: val => (
+        <Ellipsis tooltip lines={1}>
+          <span>{val ? moment(val).format('YYYY-MM-DD hh:mm:ss') : ''}</span>
+        </Ellipsis>
+      ),
     },
     {
       title: '快递单号',

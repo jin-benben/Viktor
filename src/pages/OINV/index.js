@@ -133,7 +133,11 @@ class OINVConfrim extends PureComponent {
       title: '发货时间',
       width: 100,
       dataIndex: 'DeliverDate',
-      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
+      render: val => (
+        <Ellipsis tooltip lines={1}>
+          <span>{val ? moment(val).format('YYYY-MM-DD hh:mm:ss') : ''}</span>
+        </Ellipsis>
+      ),
     },
     {
       title: '发货人',

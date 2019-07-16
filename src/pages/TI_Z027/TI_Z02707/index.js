@@ -303,17 +303,45 @@ class supplierQuotationSku extends PureComponent {
       width: 100,
       sorter: true,
       align: 'center',
-      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
+      render: val => (
+        <Ellipsis tooltip lines={1}>
+          <span>{val ? moment(val).format('YYYY-MM-DD hh:mm:ss') : ''}</span>
+        </Ellipsis>
+      ),
+    },
+    {
+      title: '邮件发送',
+      width: 100,
+      sorter: true,
+      align: 'center',
+      dataIndex: 'SendEmailDateTime',
+      render: val => (
+        <Ellipsis tooltip lines={1}>
+          <span>{val ? moment(val).format('YYYY-MM-DD hh:mm:ss') : ''}</span>
+        </Ellipsis>
+      ),
+    },
+    {
+      title: '采报价日期',
+      width: 120,
+      dataIndex: 'InquiryCfmDate',
+      sorter: true,
+      align: 'center',
+      render: val => (
+        <Ellipsis tooltip lines={1}>
+          <span>{val ? moment(val).format('YYYY-MM-DD hh:mm:ss') : ''}</span>
+        </Ellipsis>
+      ),
     },
     {
       title: '创建日期',
-      width: 100,
+      width: 120,
       sorter: true,
       align: 'center',
       dataIndex: 'CreateDate',
       render: val => (
         <Ellipsis tooltip lines={1}>
-          <span>{val ? moment(val).format('YYYY-MM-DD HH:DD:MM') : ''}</span>
+          <span>{val ? moment(val).format('YYYY-MM-DD hh:mm:ss') : ''}</span>
         </Ellipsis>
       ),
     },
@@ -364,8 +392,10 @@ class supplierQuotationSku extends PureComponent {
   componentDidMount() {
     const {
       dispatch,
+      global: { currentUser },
       supplierQuotationSku: { queryData },
     } = this.props;
+    Object.assign(queryData.Content, { Owner: [currentUser.Owner] });
     dispatch({
       type: 'supplierQuotationSku/fetch',
       payload: {
@@ -501,7 +531,7 @@ class supplierQuotationSku extends PureComponent {
       supplierQuotationSku: { queryData },
       global: { OSLPList },
     } = this.props;
-    const { Closed } = queryData.Content;
+    const { Closed, Owner } = queryData.Content;
     const { expandForm } = this.state;
     const formLayout = {
       labelCol: { span: 8 },
@@ -539,13 +569,9 @@ class supplierQuotationSku extends PureComponent {
             </FormItem>
           </Col>
           <Col md={5} sm={24}>
-            <FormItem key="PriceRStatus" {...formLayout} label=" 价格状态">
-              {getFieldDecorator('PriceRStatus')(
-                <Select placeholder="请选择">
-                  <Option value="C">已返回</Option>
-                  <Option value="O">未返回</Option>
-                  <Option value="">全部</Option>
-                </Select>
+            <FormItem key="Owner" {...formLayout} label="采购员">
+              {getFieldDecorator('Owner', { initialValue: Owner })(
+                <SalerPurchaser initialValue={Owner} />
               )}
             </FormItem>
           </Col>
@@ -563,8 +589,14 @@ class supplierQuotationSku extends PureComponent {
                 </FormItem>
               </Col>
               <Col md={5} sm={24}>
-                <FormItem key="Owner" {...formLayout} label="采购员">
-                  {getFieldDecorator('Owner')(<SalerPurchaser />)}
+                <FormItem key="PriceRStatus" {...formLayout} label=" 价格状态">
+                  {getFieldDecorator('PriceRStatus')(
+                    <Select placeholder="请选择">
+                      <Option value="C">已返回</Option>
+                      <Option value="O">未返回</Option>
+                      <Option value="">全部</Option>
+                    </Select>
+                  )}
                 </FormItem>
               </Col>
               <Col md={5} sm={24}>
@@ -678,7 +710,7 @@ class supplierQuotationSku extends PureComponent {
               data={{ list: supplierQuotationSkuList }}
               pagination={pagination}
               rowKey="Key"
-              scroll={{ x: 3100 }}
+              scroll={{ x: 3320 }}
               rowSelection={{
                 type: 'radio',
                 onSelectRow: this.onSelectRow,

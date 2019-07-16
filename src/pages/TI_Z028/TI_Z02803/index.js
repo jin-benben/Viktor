@@ -4,6 +4,7 @@ import router from 'umi/router';
 import Link from 'umi/link';
 import moment from 'moment';
 import { Row, Col, Card, Form, Input, Button, DatePicker, Icon } from 'antd';
+import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import StandardTable from '@/components/StandardTable';
 import MDMCommonality from '@/components/Select';
 import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
@@ -52,7 +53,11 @@ class TI_Z02803 extends PureComponent {
       dataIndex: 'CreateDate',
       width: 100,
       align: 'center',
-      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
+      render: val => (
+        <Ellipsis tooltip lines={1}>
+          <span>{val ? moment(val).format('YYYY-MM-DD hh:mm:ss') : ''}</span>
+        </Ellipsis>
+      ),
     },
     {
       title: '采购员',

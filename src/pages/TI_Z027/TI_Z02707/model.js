@@ -7,6 +7,7 @@ export default {
     supplierQuotationSkuList: [],
     queryData: {
       Content: {
+        Owner: [],
         SearchText: '',
         SearchKey: '',
       },

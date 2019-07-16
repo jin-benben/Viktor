@@ -97,21 +97,21 @@ class TransactionSearch extends PureComponent {
       dataIndex: 'DocTotal',
       width: 100,
     },
-    {
-      title: '交易公司',
-      dataIndex: 'U_CompanyCode',
-      width: 100,
-      render: text => {
-        const {
-          global: { Company },
-        } = this.props;
-        return <span>{getName(Company, text)}</span>;
-      },
-    },
+    // {
+    //   title: '交易公司',
+    //   dataIndex: 'U_CompanyCode',
+    //   width: 100,
+    //   render: text => {
+    //     const {
+    //       global: { Company },
+    //     } = this.props;
+    //     return <span>{getName(Company, text)}</span>;
+    //   },
+    // },
     {
       title: '销售员',
       dataIndex: 'SlpCode',
-      width: 80,
+      width: 120,
       render: text => {
         const {
           global: { Saler },
@@ -216,7 +216,7 @@ class TransactionSearch extends PureComponent {
     {
       title: '销售员',
       dataIndex: 'SlpCode',
-      width: 80,
+      width: 120,
       render: text => {
         const {
           global: { Saler },
@@ -283,18 +283,27 @@ class TransactionSearch extends PureComponent {
     {
       title: '发货人',
       dataIndex: 'U_DeliverUser',
-      width: 80,
+      width: 120,
     },
     {
       title: '发货时间',
       dataIndex: 'U_DeliverDate',
       width: 100,
-      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
+      render: val => (
+        <Ellipsis tooltip lines={1}>
+          <span>{val ? moment(val).format('YYYY-MM-DD hh:mm:ss') : ''}</span>
+        </Ellipsis>
+      ),
     },
     {
       title: '快递单号',
       dataIndex: 'U_ExpressNumber',
       width: 100,
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '运输类型',
@@ -617,7 +626,7 @@ class TransactionSearch extends PureComponent {
                   data={{ list: odlnordnList }}
                   pagination={pagination3}
                   rowKey="key"
-                  scroll={{ x: 2100, y: 600 }}
+                  scroll={{ x: 2200, y: 600 }}
                   columns={this.columns3}
                   onChange={this.handleStandardTableChange}
                 />

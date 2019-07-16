@@ -1,54 +1,72 @@
-import { queryRule, removeRule, addRule, updateRule } from './service';
+import { queryRule, querySingleRule } from './service';
 
 export default {
-  namespace: 'tableList',
+  namespace: 'wxbind',
 
   state: {
-    data: {
-      list: [],
-      pagination: {},
+    wxbindList: [],
+    pagination: {
+      showSizeChanger: true,
+      showTotal: total => `共 ${total} 条`,
+      pageSizeOptions: ['30', '60', '90'],
+      total: 0,
+      pageSize: 30,
+      current: 1,
+    },
+    wxbindDetail: {
+      Code: '',
     },
   },
 
   effects: {
     *fetch({ payload }, { call, put }) {
       const response = yield call(queryRule, payload);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
+      if (response && response.Status === 200) {
+        if (!response.Content) {
+          yield put({
+            type: 'save',
+            payload: {
+              wxbindList: [],
+              pagination: {
+                total: 0,
+              },
+            },
+          });
+        } else {
+          const { rows, records, page } = response.Content;
+          yield put({
+            type: 'save',
+            payload: {
+              wxbindList: rows,
+              pagination: {
+                total: records,
+                pageSize: payload.rows,
+                current: page,
+              },
+            },
+          });
+        }
+      }
     },
-    *add({ payload, callback }, { call, put }) {
-      const response = yield call(addRule, payload);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
-      if (callback) callback();
-    },
-    *remove({ payload, callback }, { call, put }) {
-      const response = yield call(removeRule, payload);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
-      if (callback) callback();
-    },
-    *update({ payload, callback }, { call, put }) {
-      const response = yield call(updateRule, payload);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
-      if (callback) callback();
+
+    *singlefetch({ payload }, { call, put }) {
+      const response = yield call(querySingleRule, payload);
+      if (response && response.Status === 200) {
+        yield put({
+          type: 'save',
+          payload: {
+            wxbindDetail: response.Content,
+          },
+        });
+      }
     },
   },
 
   reducers: {
-    save(state, action) {
+    save(state, { payload }) {
       return {
         ...state,
-        data: action.payload,
+        ...payload,
       };
     },
   },

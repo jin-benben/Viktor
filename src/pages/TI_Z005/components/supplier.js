@@ -116,7 +116,7 @@ class SupplierList extends PureComponent {
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8 }}>
-          <Col>
+          <Col lg={4} md={12} sm={24}>
             <FormItem>
               {getFieldDecorator('SearchText')(<Input placeholder="请输入关键字" />)}
             </FormItem>

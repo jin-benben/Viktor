@@ -23,7 +23,7 @@ const IntroduceRow = memo(
     monthlyPaymentRuleData,
     monthlyReceiptData,
   }) => (
-    <Row gutter={24}>
+    <Row gutter={24} className={styles.homeCard}>
       <Col {...topColResponsiveProps}>
         <ChartCard
           bordered={false}
@@ -38,11 +38,11 @@ const IntroduceRow = memo(
           }
           contentHeight={46}
         >
-          <Trend flag="up" style={{ marginRight: 16 }}>
+          <Trend flag={monthlySalesData.DayRate > 0 ? 'up' : 'down'} style={{ marginRight: 16 }}>
             销售天同比
             <span className={styles.trendText}>{monthlySalesData.DayRate}</span>
           </Trend>
-          <Trend flag="down">
+          <Trend flag={monthlySalesData.MonthRate > 0 ? 'up' : 'down'}>
             销售月同比
             <span className={styles.trendText}>{monthlySalesData.MonthRate}</span>
           </Trend>
@@ -62,11 +62,11 @@ const IntroduceRow = memo(
           }
           contentHeight={46}
         >
-          <Trend flag="up" style={{ marginRight: 16 }}>
+          <Trend flag={monthlyPurchaseData.DayRate > 0 ? 'up' : 'down'} style={{ marginRight: 16 }}>
             采购日同比
             <span className={styles.trendText}>{monthlyPurchaseData.DayRate}</span>
           </Trend>
-          <Trend flag="down">
+          <Trend flag={monthlyPurchaseData.MonthRate > 0 ? 'up' : 'down'}>
             采购月同比
             <span className={styles.trendText}>{monthlyPurchaseData.MonthRate}</span>
           </Trend>

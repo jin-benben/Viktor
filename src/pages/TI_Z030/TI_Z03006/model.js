@@ -8,6 +8,7 @@ export default {
     queryData: {
       Content: {
         Closed: 'N',
+        Owner: [],
         SearchText: '',
         SearchKey: '',
       },

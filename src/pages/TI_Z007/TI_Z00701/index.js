@@ -1,7 +1,19 @@
 /* eslint-disable no-script-url */
 import React, { Fragment } from 'react';
 import { connect } from 'dva';
-import { Row, Col, Form, Input, Card, Switch, Tabs, Button, message, Popconfirm } from 'antd';
+import {
+  Row,
+  Col,
+  Form,
+  Input,
+  Card,
+  Switch,
+  Tabs,
+  Button,
+  message,
+  Popconfirm,
+  AutoComplete,
+} from 'antd';
 import router from 'umi/router';
 import Link from 'umi/link';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
@@ -18,7 +30,7 @@ import MyIcon from '@/components/MyIcon';
 import MyPageHeader from '../components/pageHeader';
 
 const { TabPane } = Tabs;
-
+const { Option } = AutoComplete;
 const FormItem = Form.Item;
 
 @connect(({ supplierEdit, loading, global }) => ({
@@ -139,6 +151,7 @@ class CompanyEdit extends React.Component {
         Saler: '',
         CompanyCode: '',
       },
+      dataSource: [],
     };
     this.formLayout = {
       labelCol: { span: 10 },
@@ -211,6 +224,35 @@ class CompanyEdit extends React.Component {
           Content: {
             Code: query.Code,
           },
+        },
+      });
+    }
+  };
+
+  checkExist = value => {
+    const { dispatch } = this.props;
+    if (value) {
+      dispatch({
+        type: 'supplierEdit/exist',
+        payload: {
+          Content: {
+            SearchText: value,
+            SearchKey: 'Name',
+            ShowAll: 'Y',
+          },
+          page: 1,
+          rows: 30,
+          sidx: 'Code',
+          sord: 'Desc',
+        },
+        callback: response => {
+          if (response && response.Status === 200) {
+            if (response.Content) {
+              this.setState({
+                dataSource: response.Content.rows,
+              });
+            }
+          }
         },
       });
     }
@@ -365,31 +407,32 @@ class CompanyEdit extends React.Component {
     this.setState({ tabIndex });
   };
 
-  handleSubmitAttach = fieldsValue => {
-    const { AttachmentPath, AttachmentCode, AttachmentName, AttachmentExtension } = fieldsValue;
+  handleSubmitAttach = fileList => {
     const { dispatch } = this.props;
     const { formVals } = this.state;
-    dispatch({
-      type: 'supplierEdit/attach',
-      payload: {
-        Content: {
-          BaseEntry: formVals.Code,
-          BaseType: 'TI_Z007',
-          AttachmentPath,
-          AttachmentCode,
-          AttachmentName,
-          AttachmentExtension,
+    fileList.map(file => {
+      const { AttachmentPath, AttachmentCode, AttachmentName, AttachmentExtension } = file;
+      dispatch({
+        type: 'supplierEdit/attach',
+        payload: {
+          Content: {
+            BaseEntry: formVals.Code,
+            BaseType: 'TI_Z007',
+            AttachmentPath,
+            AttachmentCode,
+            AttachmentName,
+            AttachmentExtension,
+          },
         },
-      },
-      callback: response => {
-        if (response && response.Status === 200) {
-          message.success('保存成功');
-          this.setState({
-            uploadmodalVisible: false,
-          });
-          this.getDetail();
-        }
-      },
+        callback: response => {
+          if (response && response.Status === 200) {
+            message.success('保存成功');
+            this.setState({
+              uploadmodalVisible: false,
+            });
+          }
+        },
+      });
     });
   };
 
@@ -444,6 +487,7 @@ class CompanyEdit extends React.Component {
       linkManVal,
       brandmodalVisible,
       uploadmodalVisible,
+      dataSource,
     } = this.state;
     const formItemLayout = {
       labelCol: {
@@ -483,7 +527,19 @@ class CompanyEdit extends React.Component {
                 {getFieldDecorator('Name', {
                   rules: [{ required: true, message: '请输入供应商名称！' }],
                   initialValue: formVals.Name,
-                })(<Input placeholder="请输入供应商名称" />)}
+                })(
+                  <AutoComplete
+                    style={{ width: '100%' }}
+                    onSearch={this.checkExist}
+                    placeholder="请输入客户名称"
+                  >
+                    {dataSource.map(item => (
+                      <Option value={item.Name} key={item.Code}>
+                        {item.Name}
+                      </Option>
+                    ))}
+                  </AutoComplete>
+                )}
               </FormItem>
             </Col>
             <Col lg={8} md={12} sm={24}>

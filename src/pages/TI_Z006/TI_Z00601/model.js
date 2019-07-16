@@ -1,4 +1,12 @@
-import { querySingleRule, addRule, updateRule, linkmanRule, addressRule } from '../service';
+import {
+  querySingleRule,
+  addRule,
+  updateRule,
+  linkmanRule,
+  addressRule,
+  queryRule,
+  qrcodeRule,
+} from '../service';
 
 export default {
   namespace: 'companyEdit',
@@ -21,12 +29,8 @@ export default {
         });
       }
     },
-    *add({ payload, callback }, { call, put }) {
+    *add({ payload, callback }, { call }) {
       const response = yield call(addRule, payload);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
       if (callback) callback(response);
     },
 
@@ -39,13 +43,18 @@ export default {
       const response = yield call(addressRule, payload);
       if (callback) callback(response);
     },
+    *qrcode({ payload, callback }, { call }) {
+      const response = yield call(qrcodeRule, payload);
+      if (callback) callback(response);
+    },
 
-    *update({ payload, callback }, { call, put }) {
+    *exist({ payload, callback }, { call }) {
+      const response = yield call(queryRule, payload);
+      if (callback) callback(response);
+    },
+
+    *update({ payload, callback }, { call }) {
       const response = yield call(updateRule, payload);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
       if (callback) callback(response);
     },
   },

@@ -201,7 +201,11 @@ class orderLine extends PureComponent {
       dataIndex: 'InquiryCfmDate',
       sorter: true,
       align: 'center',
-      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
+      render: val => (
+        <Ellipsis tooltip lines={1}>
+          <span>{val ? moment(val).format('YYYY-MM-DD hh:mm:ss') : ''}</span>
+        </Ellipsis>
+      ),
     },
     {
       title: '询价价格',
@@ -407,7 +411,11 @@ class orderLine extends PureComponent {
       width: 100,
       sorter: true,
       align: 'center',
-      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
+      render: val => (
+        <Ellipsis tooltip lines={1}>
+          <span>{val ? moment(val).format('YYYY-MM-DD hh:mm:ss') : ''}</span>
+        </Ellipsis>
+      ),
     },
     {
       title: '创建日期',
@@ -417,7 +425,7 @@ class orderLine extends PureComponent {
       dataIndex: 'CreateDate',
       render: val => (
         <Ellipsis tooltip lines={1}>
-          <span>{val ? moment(val).format('YYYY-MM-DD HH:DD:MM') : ''}</span>
+          <span>{val ? 'YYYY-MM-DD hh:mm:ss' : ''}</span>
         </Ellipsis>
       ),
     },

@@ -58,7 +58,7 @@ class agreementOrder extends PureComponent {
       dataIndex: 'CreateDate',
       render: val => (
         <Ellipsis tooltip lines={1}>
-          <span>{val ? moment(val).format('YYYY-MM-DD HH:DD:MM') : ''}</span>
+          <span>{val ? moment(val).format('YYYY-MM-DD hh:mm:ss') : ''}</span>
         </Ellipsis>
       ),
     },
@@ -178,8 +178,10 @@ class agreementOrder extends PureComponent {
   componentDidMount() {
     const {
       dispatch,
+      global: { currentUser },
       agreementOrder: { queryData },
     } = this.props;
+    Object.assign(queryData.Content, { Owner: [currentUser.Owner] });
     dispatch({
       type: 'agreementOrder/fetch',
       payload: {
@@ -269,7 +271,9 @@ class agreementOrder extends PureComponent {
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
+      agreementOrder: { queryData },
     } = this.props;
+    const { Owner } = queryData.Content;
     const { expandForm } = this.state;
     const formLayout = {
       labelCol: { span: 8 },
@@ -308,10 +312,11 @@ class agreementOrder extends PureComponent {
           </Col>
           <Col md={5} sm={24}>
             <FormItem key="Owner" {...formLayout} label="销售员">
-              {getFieldDecorator('Owner')(<SalerPurchaser />)}
+              {getFieldDecorator('Owner', { initialValue: Owner })(
+                <SalerPurchaser initialValue={Owner} />
+              )}
             </FormItem>
           </Col>
-
           {expandForm ? (
             <Fragment>
               <Col md={5} sm={24}>

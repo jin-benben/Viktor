@@ -53,3 +53,12 @@ export async function updateRule(params) {
     },
   });
 }
+
+export async function qrcodeRule(params) {
+  return request('/MDM/TI_Z032/TI_Z03201', {
+    method: 'POST',
+    data: {
+      ...params,
+    },
+  });
+}

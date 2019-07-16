@@ -347,7 +347,7 @@ class AgreementLine extends PureComponent {
       dataIndex: 'CreateDate',
       render: val => (
         <Ellipsis tooltip lines={1}>
-          <span>{val ? moment(val).format('YYYY-MM-DD HH:DD:MM') : ''}</span>
+          <span>{val ? moment(val).format('YYYY-MM-DD hh:mm:ss') : ''}</span>
         </Ellipsis>
       ),
     },
@@ -413,8 +413,10 @@ class AgreementLine extends PureComponent {
   componentDidMount() {
     const {
       dispatch,
+      global: { currentUser },
       agreementLine: { queryData },
     } = this.props;
+    Object.assign(queryData.Content, { Owner: [currentUser.Owner] });
     dispatch({
       type: 'agreementLine/fetch',
       payload: {
@@ -515,7 +517,9 @@ class AgreementLine extends PureComponent {
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
+      agreementLine: { queryData },
     } = this.props;
+    const { Owner } = queryData.Content;
     const { expandForm } = this.state;
     const formLayout = {
       labelCol: { span: 8 },
@@ -547,10 +551,11 @@ class AgreementLine extends PureComponent {
               )}
             </FormItem>
           </Col>
-
           <Col md={5} sm={24}>
             <FormItem key="Owner" {...formLayout} label="销售员">
-              {getFieldDecorator('Owner')(<SalerPurchaser />)}
+              {getFieldDecorator('Owner', { initialValue: Owner })(
+                <SalerPurchaser initialValue={Owner} />
+              )}
             </FormItem>
           </Col>
           {expandForm ? (

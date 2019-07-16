@@ -3,6 +3,7 @@ import { connect } from 'dva';
 import moment from 'moment';
 import Link from 'umi/link';
 import { Row, Col, Card, Form, Input, Button, DatePicker } from 'antd';
+import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import StandardTable from '@/components/StandardTable';
 import { getName } from '@/utils/utils';
 
@@ -44,7 +45,11 @@ class ExpressHistory extends PureComponent {
       title: '创建日期',
       width: 100,
       dataIndex: 'CreateDate',
-      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
+      render: val => (
+        <Ellipsis tooltip lines={1}>
+          <span>{val ? moment(val).format('YYYY-MM-DD hh:mm:ss') : ''}</span>
+        </Ellipsis>
+      ),
     },
     {
       title: '客户名称',

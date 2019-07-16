@@ -291,6 +291,18 @@ class InquiryEdit extends PureComponent {
         ),
     },
     {
+      title: '转移日期',
+      dataIndex: 'TransferDateTime',
+      width: 100,
+      sorter: true,
+      align: 'center',
+      render: val => (
+        <Ellipsis tooltip lines={1}>
+          <span>{val ? moment(val).format('YYYY-MM-DD hh:mm:ss') : ''}</span>
+        </Ellipsis>
+      ),
+    },
+    {
       title: '销报单号',
       width: 100,
       dataIndex: 'QuoteEntry',
@@ -633,7 +645,7 @@ class InquiryEdit extends PureComponent {
             <StandardTable
               data={{ list: newdata }}
               rowKey="LineID"
-              scroll={{ x: 3100 }}
+              scroll={{ x: 3200 }}
               columns={this.skuColumns}
             />
           </TabPane>

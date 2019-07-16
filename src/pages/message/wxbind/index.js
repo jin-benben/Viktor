@@ -1,131 +1,121 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
-import { Row, Col, Card, Form, Input, Button } from 'antd';
+import { Row, DatePicker, Col, Card, Form, Input, Button, Tag } from 'antd';
 import StandardTable from '@/components/StandardTable';
 
-import styles from './style.less';
-
+const { RangePicker } = DatePicker;
 const FormItem = Form.Item;
 
-const getValue = obj =>
-  Object.keys(obj)
-    .map(key => obj[key])
-    .join(',');
-
-/* eslint react/no-multi-comp:0 */
-@connect(({ tableList, loading }) => ({
-  tableList,
+@connect(({ wxbind, loading }) => ({
+  wxbind,
   loading: loading.models.rule,
 }))
 @Form.create()
-class TableList extends PureComponent {
+class WxBind extends PureComponent {
   columns = [
     {
-      title: 'ID',
-      dataIndex: 'DocEntry',
-      width: 80,
-    },
-    {
       title: '客户代码',
+      width: 80,
       dataIndex: 'CardCode',
     },
     {
       title: '客户名称',
+      width: 300,
       dataIndex: 'CardName',
     },
     {
       title: '姓名',
+      width: 80,
       dataIndex: 'Name',
     },
     {
       title: '手机号码',
+      width: 100,
       dataIndex: 'PhoneNo',
     },
 
     {
       title: '职位',
+      width: 100,
       dataIndex: 'Position',
     },
     {
       title: '绑定微信号',
+      width: 100,
       dataIndex: 'OpenId',
     },
     {
       title: '状态',
       dataIndex: 'Status',
-      render: val => <span>{val === '1' ? '成功' : '失败'}</span>,
+      width: 80,
+      render: val => (
+        <span>{val === '2' ? <Tag color="blue">成功</Tag> : <Tag color="red">失败</Tag>}</span>
+      ),
     },
     {
       title: '绑定时间',
       dataIndex: 'CreateDate',
-      render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>,
-    },
-    {
-      title: '结束时间',
-      dataIndex: 'CreateUser',
+      width: 100,
+      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
   ];
 
+  state = {
+    queryData: {
+      Content: {
+        SearchText: '',
+        SearchKey: 'Name',
+      },
+      page: 1,
+      rows: 30,
+      sidx: 'DocEntry',
+      sord: 'Desc',
+    },
+  };
+
   componentDidMount() {
     const { dispatch } = this.props;
+    const { queryData } = this.state;
     dispatch({
-      type: 'tableList/fetch',
+      type: 'wxbind/fetch',
+      payload: {
+        ...queryData,
+      },
     });
   }
 
-  handleStandardTableChange = (pagination, filtersArg, sorter) => {
+  handleStandardTableChange = pagination => {
     const { dispatch } = this.props;
-    const { formValues } = this.state;
-
-    const filters = Object.keys(filtersArg).reduce((obj, key) => {
-      const newObj = { ...obj };
-      newObj[key] = getValue(filtersArg[key]);
-      return newObj;
-    }, {});
-
-    const params = {
-      currentPage: pagination.current,
-      pageSize: pagination.pageSize,
-      ...formValues,
-      ...filters,
-    };
-    if (sorter.field) {
-      params.sorter = `${sorter.field}_${sorter.order}`;
-    }
-
+    const { queryData } = this.state;
     dispatch({
-      type: 'tableList/fetch',
-      payload: params,
+      type: 'wxbind/fetch',
+      payload: {
+        ...queryData,
+        page: pagination.current,
+        rows: pagination.pageSize,
+      },
     });
   };
 
   handleSearch = e => {
+    // 搜索
     e.preventDefault();
     const { dispatch, form } = this.props;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
-      const values = {
-        ...fieldsValue,
-        updatedAt: fieldsValue.updatedAt && fieldsValue.updatedAt.valueOf(),
-      };
-      this.setState({
-        formValues: values,
-      });
-
       dispatch({
-        type: 'tableList/fetch',
-        payload: values,
+        type: 'wxbind/fetch',
+        payload: {
+          Content: {
+            SearchText: fieldsValue.SearchText,
+          },
+          page: 1,
+          rows: 30,
+          sidx: 'DocEntry',
+          sord: 'Desc',
+        },
       });
-    });
-  };
-
-  handleSubmit = () => {
-    const { form } = this.props;
-    form.validateFields((err, fieldsValue) => {
-      if (err) return;
-      form.resetFields();
-      this.handleAdd(fieldsValue);
     });
   };
 
@@ -136,14 +126,13 @@ class TableList extends PureComponent {
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={8} sm={24}>
-            <FormItem label="规则名称">
-              {getFieldDecorator('name')(<Input placeholder="请输入" />)}
+          <Col md={5} sm={24}>
+            <FormItem>
+              {getFieldDecorator('SearchText')(<Input placeholder="请输入关键字" />)}
             </FormItem>
           </Col>
-
-          <Col md={8} sm={24}>
-            <span className={styles.submitButtons}>
+          <Col md={2} sm={24}>
+            <span className="submitButtons">
               <Button type="primary" htmlType="submit">
                 查询
               </Button>
@@ -156,17 +145,20 @@ class TableList extends PureComponent {
 
   render() {
     const {
-      tableList: { data },
+      wxbind: { wxbindList, pagination },
       loading,
     } = this.props;
     return (
       <Fragment>
         <Card bordered={false}>
-          <div className={styles.tableList}>
-            <div className={styles.tableListForm}>{this.renderSimpleForm()}</div>
+          <div className="tableList">
+            <div className="tableListForm">{this.renderSimpleForm()}</div>
             <StandardTable
               loading={loading}
-              data={data}
+              data={{ list: wxbindList }}
+              pagination={pagination}
+              rowKey="DocEntry"
+              scroll={{ x: 1000 }}
               columns={this.columns}
               onChange={this.handleStandardTableChange}
             />
@@ -177,4 +169,4 @@ class TableList extends PureComponent {
   }
 }
 
-export default TableList;
+export default WxBind;

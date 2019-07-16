@@ -76,6 +76,10 @@ export default {
         });
       }
     },
+    *exist({ payload, callback }, { call }) {
+      const response = yield call(queryRule, payload);
+      if (callback) callback(response);
+    },
     *add({ payload, callback }, { call }) {
       const response = yield call(addRule, payload);
       if (callback) callback(response);

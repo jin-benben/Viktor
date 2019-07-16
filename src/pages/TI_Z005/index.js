@@ -1,7 +1,20 @@
 /* eslint-disable no-param-reassign */
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Row, Col, Card, Form, Input, Modal, Button, message, Divider, Select, Icon } from 'antd';
+import {
+  Row,
+  Col,
+  Card,
+  Form,
+  Input,
+  Modal,
+  Button,
+  message,
+  Divider,
+  Select,
+  Icon,
+  AutoComplete,
+} from 'antd';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import StandardTable from '@/components/StandardTable';
 import Supplier from '@/components/Supplier';
@@ -17,9 +30,11 @@ const { TextArea } = Input;
 const FormItem = Form.Item;
 const { Option } = Select;
 
-@connect(({ global, loading }) => ({
+@connect(({ brands, global, loading }) => ({
   global,
-  loading: loading.models.brands,
+  brands,
+  addloading: loading.effects['brands/add'],
+  updateloading: loading.effects['brands/update'],
 }))
 @Form.create()
 class CreateForm extends PureComponent {
@@ -31,27 +46,18 @@ class CreateForm extends PureComponent {
         CardCode: '',
         CardName: '',
       },
+      dataSource: [],
     };
   }
 
   componentDidMount() {
     const {
       dispatch,
-      global: { Purchaser, SupplierList },
+      global: { SupplierList },
     } = this.props;
     if (!SupplierList.length) {
       dispatch({
         type: 'global/getSupplier',
-      });
-    }
-    if (!Purchaser.length) {
-      dispatch({
-        type: 'global/getMDMCommonality',
-        payload: {
-          Content: {
-            CodeList: ['Purchaser'],
-          },
-        },
       });
     }
   }
@@ -64,6 +70,35 @@ class CreateForm extends PureComponent {
     }
     return null;
   }
+
+  checkExist = value => {
+    const { dispatch } = this.props;
+    if (value) {
+      dispatch({
+        type: 'brands/exist',
+        payload: {
+          Content: {
+            SearchText: value,
+            SearchKey: 'Name',
+            ShowAll: 'Y',
+          },
+          page: 1,
+          rows: 30,
+          sidx: 'Code',
+          sord: 'Desc',
+        },
+        callback: response => {
+          if (response && response.Status === 200) {
+            if (response.Content) {
+              this.setState({
+                dataSource: response.Content.rows,
+              });
+            }
+          }
+        },
+      });
+    }
+  };
 
   changePicture = ({ FilePath, FilePathX }) => {
     const { formVals } = this.props;
@@ -78,9 +113,10 @@ class CreateForm extends PureComponent {
       modalVisible,
       handleModalVisible,
       handleSubmit,
-      loading,
+      addloading,
+      updateloading,
     } = this.props;
-    const { formVals } = this.state;
+    const { formVals, dataSource } = this.state;
 
     const okHandle = () => {
       form.validateFields((err, fieldsValue) => {
@@ -93,7 +129,7 @@ class CreateForm extends PureComponent {
     return (
       <Modal
         width={640}
-        confirmLoading={loading}
+        confirmLoading={addloading || updateloading}
         destroyOnClose
         title="品牌编辑"
         maskClosable={false}
@@ -106,7 +142,19 @@ class CreateForm extends PureComponent {
             {getFieldDecorator('Name', {
               rules: [{ required: true, message: '请输入名称！' }],
               initialValue: formVals.Name,
-            })(<Input placeholder="请输入名称！" />)}
+            })(
+              <AutoComplete
+                style={{ width: '100%' }}
+                onSearch={this.checkExist}
+                placeholder="请输入名称！"
+              >
+                {dataSource.map(item => (
+                  <AutoComplete.Option value={item.Name} key={item.Code}>
+                    {item.Name}
+                  </AutoComplete.Option>
+                ))}
+              </AutoComplete>
+            )}
           </FormItem>
           <FormItem key="Purchaser" {...formLayout} label="采购员">
             {getFieldDecorator('Purchaser', {
@@ -299,6 +347,14 @@ class BrandList extends PureComponent {
         ...queryData,
       },
     });
+    dispatch({
+      type: 'global/getMDMCommonality',
+      payload: {
+        Content: {
+          CodeList: ['Purchaser'],
+        },
+      },
+    });
   }
 
   handleStandardTableChange = pagination => {
@@ -345,30 +401,32 @@ class BrandList extends PureComponent {
     });
   };
 
-  handleSubmitAttach = fieldsValue => {
-    const { AttachmentPath, AttachmentCode, AttachmentName, AttachmentExtension } = fieldsValue;
+  handleSubmitAttach = fileList => {
     const { dispatch } = this.props;
     const { BaseEntry } = this.state;
-    dispatch({
-      type: 'brands/attach',
-      payload: {
-        Content: {
-          BaseEntry,
-          BaseType: 'TI_Z005',
-          AttachmentPath,
-          AttachmentCode,
-          AttachmentName,
-          AttachmentExtension,
+    fileList.map(file => {
+      const { AttachmentPath, AttachmentCode, AttachmentName, AttachmentExtension } = file;
+      dispatch({
+        type: 'brands/attach',
+        payload: {
+          Content: {
+            BaseEntry,
+            BaseType: 'TI_Z005',
+            AttachmentPath,
+            AttachmentCode,
+            AttachmentName,
+            AttachmentExtension,
+          },
         },
-      },
-      callback: response => {
-        if (response && response.Status === 200) {
-          message.success('保存成功');
-          this.setState({
-            uploadmodalVisible: false,
-          });
-        }
-      },
+        callback: response => {
+          if (response && response.Status === 200) {
+            message.success('保存成功');
+            this.setState({
+              uploadmodalVisible: false,
+            });
+          }
+        },
+      });
     });
   };
 
@@ -483,6 +541,7 @@ class BrandList extends PureComponent {
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
+      global: { Purchaser },
     } = this.props;
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
@@ -490,6 +549,25 @@ class BrandList extends PureComponent {
           <Col md={5} sm={24}>
             <FormItem>
               {getFieldDecorator('SearchText')(<Input placeholder="请输入关键字" />)}
+            </FormItem>
+          </Col>
+          <Col md={6} sm={24}>
+            <FormItem key="Purchaser" {...formLayout} label="销售员">
+              {getFieldDecorator('Purchaser')(
+                <Select
+                  showArrow={false}
+                  mode="multiple"
+                  placeholder="输入名称"
+                  filterOption={false}
+                  style={{ width: '100%' }}
+                >
+                  {Purchaser.map(option => (
+                    <Option key={option.Key} value={option.Key}>
+                      {option.Value}
+                    </Option>
+                  ))}
+                </Select>
+              )}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>

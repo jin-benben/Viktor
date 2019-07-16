@@ -80,23 +80,22 @@ class SalesQuotationSku extends PureComponent {
       dataIndex: 'LineStatus',
       sorter: true,
       align: 'center',
-      render: (text, record) =>
-        record.lastIndex ? null : (
-          <Fragment>
-            {record.Closed === 'Y' ? (
-              <Tag color="red">已关闭</Tag>
-            ) : (
-              <Fragment>
-                {record.ApproveSts === 'Y' ? (
-                  <Tag color="green">已发送</Tag>
-                ) : (
-                  <Tag color="gold">未发送</Tag>
-                )}
-                {text === 'C' ? <Tag color="green">已合同</Tag> : <Tag color="gold">未合同</Tag>}
-              </Fragment>
-            )}
-          </Fragment>
-        ),
+      render: (text, record) => (
+        <Fragment>
+          {record.Closed === 'Y' ? (
+            <Tag color="red">已关闭</Tag>
+          ) : (
+            <Fragment>
+              {record.ApproveSts === 'Y' ? (
+                <Tag color="green">已发送</Tag>
+              ) : (
+                <Tag color="gold">未发送</Tag>
+              )}
+              {text === 'C' ? <Tag color="green">已合同</Tag> : <Tag color="gold">未合同</Tag>}
+            </Fragment>
+          )}
+        </Fragment>
+      ),
     },
     {
       title: '单据日期',
@@ -114,26 +113,6 @@ class SalesQuotationSku extends PureComponent {
         <Ellipsis tooltip lines={1}>
           {text}
         </Ellipsis>
-      ),
-    },
-    {
-      title: '联系人',
-      width: 150,
-      dataIndex: 'Contacts',
-      render: (text, record) => (
-        <Tooltip
-          title={
-            <Fragment>
-              {record.CellphoneNO}
-              <br />
-              {record.Email}
-              <br />
-              {record.PhoneNO}
-            </Fragment>
-          }
-        >
-          {text}
-        </Tooltip>
       ),
     },
     {
@@ -181,8 +160,6 @@ class SalesQuotationSku extends PureComponent {
       sorter: true,
       align: 'center',
       dataIndex: 'LineTotal',
-      render: (text, record) =>
-        record.lastIndex ? <span style={{ fontWeight: 'bolder' }}>{text}</span> : text,
     },
     {
       title: '总费用',
@@ -195,12 +172,11 @@ class SalesQuotationSku extends PureComponent {
       width: 100,
       align: 'center',
       dataIndex: 'OtherComment',
-      render: (text, record) =>
-        record.lastIndex ? null : (
-          <Ellipsis tooltip lines={1}>
-            {text}
-          </Ellipsis>
-        ),
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '行利润',
@@ -424,7 +400,11 @@ class SalesQuotationSku extends PureComponent {
       width: 100,
       sorter: true,
       align: 'center',
-      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
+      render: val => (
+        <Ellipsis tooltip lines={1}>
+          <span>{val ? moment(val).format('YYYY-MM-DD hh:mm:ss') : ''}</span>
+        </Ellipsis>
+      ),
     },
     {
       title: '创建日期',
@@ -434,7 +414,7 @@ class SalesQuotationSku extends PureComponent {
       align: 'center',
       render: val => (
         <Ellipsis tooltip lines={1}>
-          <span>{val ? moment(val).format('YYYY-MM-DD HH:DD:MM') : ''}</span>
+          <span>{val ? moment(val).format('YYYY-MM-DD hh:mm:ss') : ''}</span>
         </Ellipsis>
       ),
     },
@@ -450,56 +430,48 @@ class SalesQuotationSku extends PureComponent {
     },
     {
       title: '销合单号',
-      width: 100,
+      width: 80,
       align: 'center',
       dataIndex: 'ContractEntry',
-      render: (text, recond) =>
-        text ? (
-          <Link target="_blank" to={`/sellabout/TI_Z030/detail?DocEntry=${text}`}>
-            {`${text}-${recond.ContractLine}`}
-          </Link>
-        ) : (
-          ''
-        ),
+      render: (text, recond) => (
+        <Link target="_blank" to={`/sellabout/TI_Z030/detail?DocEntry=${text}`}>
+          {`${text}-${recond.ContractLine}`}
+        </Link>
+      ),
     },
     {
       title: '销订单号',
-
       align: 'center',
       dataIndex: 'SoEntry',
-      render: (text, recond) =>
-        text ? (
-          <Link target="_blank" to={`/sellabout/orderdetail?DocEntry=${text}`}>
-            {`${text}-${recond.SoLine}`}
-          </Link>
-        ) : (
-          ''
-        ),
+      render: (text, recond) => (
+        <Link target="_blank" to={`/sellabout/orderdetail?DocEntry=${text}`}>
+          {`${text}-${recond.SoLine}`}
+        </Link>
+      ),
     },
     {
       title: '操作',
       fixed: 'right',
       align: 'center',
       width: 80,
-      render: (text, record) =>
-        record.lastIndex ? null : (
-          <Fragment>
-            {record.TI_Z02604.length ? (
-              <a onClick={() => this.lookLineAttachment(record)}>
-                <Badge count={record.TI_Z02604.length} title="查看附件" className="attachBadge" />
-              </a>
-            ) : (
-              ''
-            )}
-            <a onClick={() => this.prviewTransferHistory(record)}>
-              <Icon
-                title="查看转移记录"
-                type="history"
-                style={{ color: '#08c', marginLeft: 5, fontSize: 15 }}
-              />
+      render: (text, record) => (
+        <Fragment>
+          {record.TI_Z02604.length ? (
+            <a onClick={() => this.lookLineAttachment(record)}>
+              <Badge count={record.TI_Z02604.length} title="查看附件" className="attachBadge" />
             </a>
-          </Fragment>
-        ),
+          ) : (
+            ''
+          )}
+          <a onClick={() => this.prviewTransferHistory(record)}>
+            <Icon
+              title="查看转移记录"
+              type="history"
+              style={{ color: '#08c', marginLeft: 5, fontSize: 15 }}
+            />
+          </a>
+        </Fragment>
+      ),
     },
   ];
 
@@ -889,7 +861,7 @@ class SalesQuotationSku extends PureComponent {
               loading={loading}
               data={{ list: SalesQuotationSkuList }}
               pagination={pagination}
-              scroll={{ x: 4200 }}
+              scroll={{ x: 4000 }}
               rowKey="Key"
               columns={this.columns}
               rowSelection={{

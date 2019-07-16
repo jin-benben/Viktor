@@ -3,6 +3,7 @@ import { connect } from 'dva';
 import moment from 'moment';
 import Link from 'umi/link';
 import { Row, Col, Card, Form, Input, Button, Select, DatePicker } from 'antd';
+import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import StandardTable from '@/components/StandardTable';
 import { printOrderType, printType } from '@/utils/publicData';
 import { getName } from '@/utils/utils';
@@ -46,7 +47,11 @@ class PrintHistory extends PureComponent {
       title: '创建日期',
       width: 100,
       dataIndex: 'CreateDate',
-      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
+      render: val => (
+        <Ellipsis tooltip lines={1}>
+          <span>{val ? moment(val).format('YYYY-MM-DD hh:mm:ss') : ''}</span>
+        </Ellipsis>
+      ),
     },
     {
       title: '内容模板',

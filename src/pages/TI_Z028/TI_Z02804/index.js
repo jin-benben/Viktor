@@ -40,7 +40,11 @@ class TI_Z02804 extends PureComponent {
       title: '单据日期',
       dataIndex: 'CreateDate',
       width: 100,
-      render: val => <span>{val ? moment(val).format('YYYY-MM-DD') : ''}</span>,
+      render: val => (
+        <Ellipsis tooltip lines={1}>
+          <span>{val ? moment(val).format('YYYY-MM-DD hh:mm:ss') : ''}</span>
+        </Ellipsis>
+      ),
     },
     {
       title: '客询价单',
@@ -161,8 +165,10 @@ class TI_Z02804 extends PureComponent {
   componentDidMount() {
     const {
       dispatch,
+      global: { currentUser },
       TI_Z02804: { queryData },
     } = this.props;
+    Object.assign(queryData.Content, { Owner: [currentUser.Owner] });
     dispatch({
       type: 'TI_Z02804/fetch',
       payload: {
@@ -318,9 +324,11 @@ class TI_Z02804 extends PureComponent {
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
+      TI_Z02804: { queryData },
       global: { Saler },
     } = this.props;
     const { expandForm } = this.state;
+    const { Owner } = queryData.Content;
     const formLayout = {
       labelCol: { span: 8 },
       wrapperCol: { span: 16 },
@@ -342,7 +350,9 @@ class TI_Z02804 extends PureComponent {
           </Col>
           <Col md={5} sm={24}>
             <FormItem key="Owner" {...formLayout} label="采购员">
-              {getFieldDecorator('Owner')(<SalerPurchaser />)}
+              {getFieldDecorator('Owner', { initialValue: Owner })(
+                <SalerPurchaser initialValue={Owner} />
+              )}
             </FormItem>
           </Col>
           <Col md={5} sm={24}>
