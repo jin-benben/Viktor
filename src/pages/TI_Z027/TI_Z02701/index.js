@@ -11,6 +11,7 @@ import NeedTabl from './components/step1';
 import ConfirmTabl from './components/step2';
 import OrderModal from './components/orderModal';
 import MyPageHeader from '../components/pageHeader';
+import Transfer from '@/components/Transfer';
 import styles from './style.less';
 import request from '@/utils/request';
 
@@ -30,6 +31,7 @@ class SupplierAsk extends Component {
     confimSelectedRows: [], // 选中列组合列
     lastConfrimList: [], // 最终确认列
     modalVisible: false,
+    transferModalVisible:false,
   };
 
   resultColumns = [
@@ -353,7 +355,9 @@ class SupplierAsk extends Component {
   selectNeed = () => {
     const { selectedRows } = this.state;
     if (selectedRows.length) {
-      this.handleModalVisible(true);
+      this.setState({
+        modalVisible:true
+      })
     } else {
       message.warning('请先选择');
     }
@@ -361,11 +365,25 @@ class SupplierAsk extends Component {
 
   // 需询价弹窗
   handleModalVisible = flag => {
-    this.setState({ modalVisible: !!flag });
+    this.setState({ 
+      modalVisible: !!flag,
+      transferModalVisible: !!flag
+    });
   };
 
   lastConfrim = lastConfrimList => {
     this.setState({ lastConfrimList: [...lastConfrimList] });
+  };
+
+  toTransfer = () => {
+    const { selectedRows } = this.state;
+    if (selectedRows.length) {
+      this.setState({
+        transferModalVisible: true,
+      });
+    } else {
+      message.warning('请先选择转移的行');
+    }
   };
 
   footerBtn = () => {
@@ -388,9 +406,15 @@ class SupplierAsk extends Component {
     switch (current) {
       case 0:
         return (
-          <Button onClick={this.selectNeed} type="primary">
-            下一步
-          </Button>
+          <Fragment>
+            <Button onClick={this.selectNeed} type="primary">
+              下一步
+            </Button>
+            <Button type="primary" onClick={this.toTransfer}>
+              转移
+            </Button>
+            
+          </Fragment>
         );
       case 1:
         return secondButton;
@@ -410,7 +434,7 @@ class SupplierAsk extends Component {
   };
 
   render() {
-    const { current, selectedRows, modalVisible, responsTable, confimSelectedRows } = this.state;
+    const { current, selectedRows, modalVisible, responsTable, confimSelectedRows,transferModalVisible } = this.state;
     const { location } = this.props;
     const parentMethods = {
       handleSubmit: this.submitSelect,
@@ -439,6 +463,12 @@ class SupplierAsk extends Component {
         </div>
         <OrderModal data={selectedRows} {...parentMethods} modalVisible={modalVisible} />
         <FooterToolbar>{this.footerBtn()}</FooterToolbar>
+        <Transfer
+          SourceEntry={selectedRows[0]?selectedRows[0].DocEntry:''}
+          SourceType="TI_Z026"
+          modalVisible={transferModalVisible}
+          handleModalVisible={this.handleModalVisible}
+        />
       </Card>
     );
   }

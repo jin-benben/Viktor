@@ -305,34 +305,45 @@ class supplierQuotationSku extends PureComponent {
       align: 'center',
       render: val => (
         <Ellipsis tooltip lines={1}>
-          <span>{val ? moment(val).format('YYYY-MM-DD hh:mm:ss') : ''}</span>
+          <span>{val ? moment(val).format('YYYY-MM-DD HH:MM:SS') : ''}</span>
         </Ellipsis>
       ),
     },
     {
       title: '邮件发送',
       width: 100,
-      sorter: true,
       align: 'center',
       dataIndex: 'SendEmailDateTime',
       render: val => (
         <Ellipsis tooltip lines={1}>
-          <span>{val ? moment(val).format('YYYY-MM-DD hh:mm:ss') : ''}</span>
+          <span>{val ? moment(val).format('YYYY-MM-DD HH:MM:SS') : ''}</span>
         </Ellipsis>
       ),
     },
     {
-      title: '采报价日期',
+      title: '采确认日期',
       width: 120,
       dataIndex: 'InquiryCfmDate',
-      sorter: true,
       align: 'center',
       render: val => (
         <Ellipsis tooltip lines={1}>
-          <span>{val ? moment(val).format('YYYY-MM-DD hh:mm:ss') : ''}</span>
+          <span>{val ? moment(val).format('YYYY-MM-DD HH:MM:SS') : ''}</span>
         </Ellipsis>
       ),
     },
+    {
+      title: '确认人',
+      width: 120,
+      dataIndex: 'InquiryCfmUser',
+      align: 'center',
+      render: val => {
+        const {
+          global: { TI_Z004 },
+        } = this.props;
+        return <span>{getName(TI_Z004, val)}</span>;
+      },
+    },
+    
     {
       title: '创建日期',
       width: 120,
@@ -341,7 +352,7 @@ class supplierQuotationSku extends PureComponent {
       dataIndex: 'CreateDate',
       render: val => (
         <Ellipsis tooltip lines={1}>
-          <span>{val ? moment(val).format('YYYY-MM-DD hh:mm:ss') : ''}</span>
+          <span>{val ? moment(val).format('YYYY-MM-DD HH:MM:SS') : ''}</span>
         </Ellipsis>
       ),
     },
@@ -710,7 +721,7 @@ class supplierQuotationSku extends PureComponent {
               data={{ list: supplierQuotationSkuList }}
               pagination={pagination}
               rowKey="Key"
-              scroll={{ x: 3320 }}
+              scroll={{ x: 3420 }}
               rowSelection={{
                 type: 'radio',
                 onSelectRow: this.onSelectRow,

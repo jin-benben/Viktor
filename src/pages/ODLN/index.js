@@ -126,7 +126,7 @@ class salerConfrim extends PureComponent {
       dataIndex: 'DeliverDate',
       render: val => (
         <Ellipsis tooltip lines={1}>
-          <span>{val ? moment(val).format('YYYY-MM-DD hh:mm:ss') : ''}</span>
+          <span>{val ? moment(val).format('YYYY-MM-DD HH:MM:SS') : ''}</span>
         </Ellipsis>
       ),
     },

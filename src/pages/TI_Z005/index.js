@@ -552,7 +552,7 @@ class BrandList extends PureComponent {
             </FormItem>
           </Col>
           <Col md={6} sm={24}>
-            <FormItem key="Purchaser" {...formLayout} label="销售员">
+            <FormItem key="Purchaser" {...formLayout} label="采购员">
               {getFieldDecorator('Purchaser')(
                 <Select
                   showArrow={false}

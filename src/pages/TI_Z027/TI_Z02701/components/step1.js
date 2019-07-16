@@ -153,7 +153,18 @@ class NeedTabl extends React.Component {
         </Ellipsis>
       ),
     },
-
+    {
+      title: '转移备注',
+      width: 100,
+      sorter: true,
+      align: 'center',
+      dataIndex: 'TransferComment',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
+    },
     {
       title: '销售员',
       width: 120,
@@ -193,18 +204,7 @@ class NeedTabl extends React.Component {
         return <span>{getName(TI_Z004, val)}</span>;
       },
     },
-    {
-      title: '转移备注',
-      width: 100,
-      sorter: true,
-      align: 'center',
-      dataIndex: 'TransferComment',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
+    
     {
       title: '仓库',
       width: 120,
