@@ -35,21 +35,14 @@ export function requestUrl(url) {
 
 export function getName(arr, code) {
   let newCode = code;
-  if (!code) {
+  if (!code||!arr.length) {
     return '';
   }
   if (typeof code !== 'string') {
     newCode = code.toString();
   }
-  let name;
-  // eslint-disable-next-line array-callback-return
-  arr.some(item => {
-    if (item.Key === newCode) {
-      name = item.Value;
-      return true;
-    }
-  });
-  return name;
+  const filter = arr.find(item=>item.Key === newCode)
+  return filter.Value;
 }
 
 export function validatorPhone(rule, value, callback) {
