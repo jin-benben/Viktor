@@ -16,13 +16,14 @@ import {
   Tag,
   Input,
   Modal,
-  Table,
+  Table,Radio
 } from 'antd';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import StandardTable from '@/components/StandardTable';
 import NeedAskPrice from './components';
 import MDMCommonality from '@/components/Select';
+import MyIcon from '@/components/MyIcon';
 import OrderPrint from '@/components/Modal/OrderPrint/other';
 import { getName } from '@/utils/utils';
 
@@ -35,7 +36,7 @@ const { Option } = Select;
 @connect(({ salerConfrim, loading, global }) => ({
   salerConfrim,
   global,
-  loading: loading.models.salerConfrim,
+  loading: loading.effects['salerConfrim/fetch'],
 }))
 @Form.create()
 class salerConfrim extends PureComponent {
@@ -44,11 +45,14 @@ class salerConfrim extends PureComponent {
     modalVisible: false,
     modalVisible1: false,
     modalVisible2: false,
+    addressmodalVisible:false,
+    linkmanList:[],
     ParameterJson: '',
     selectedRows: [],
     selectedRowKeys: [],
     responseData: [],
     selectPrint: [],
+    currentLine:''
   };
 
   columns = [
@@ -126,7 +130,7 @@ class salerConfrim extends PureComponent {
       dataIndex: 'DeliverDate',
       render: val => (
         <Ellipsis tooltip lines={1}>
-          <span>{val ? moment(val).format('YYYY-MM-DD HH:MM:SS') : ''}</span>
+          {val}
         </Ellipsis>
       ),
     },
@@ -185,12 +189,35 @@ class salerConfrim extends PureComponent {
       ),
     },
     {
+      title: '备注',
+      dataIndex: 'Comment',
+      width: 100,
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
+    },
+    {
       title: '收货地址',
       dataIndex: 'Address',
       render: text => (
         <Ellipsis tooltip lines={1}>
           {text}
         </Ellipsis>
+      ),
+    },
+    {
+      title: '操作',
+      width: 50,
+      fixed: 'right',
+      align: 'center',
+      render: (text, record,index) => (
+        <Fragment>
+          <a onClick={() => this.changeAddress(record,index)} title="修改地址">
+            <MyIcon type="iconedit" />
+          </a>
+        </Fragment>
       ),
     },
   ];
@@ -262,6 +289,44 @@ class salerConfrim extends PureComponent {
     });
   }
 
+  changeAddress=(record,index)=>{
+    const {dispatch}=this.props
+    dispatch({
+      type:'salerConfrim/company',
+      payload:{
+        Content:{
+          Code:record.CardCode
+        }
+      },
+      callback:response=>{
+        if(response&&response.Status===200){
+          this.setState({
+            addressmodalVisible:true,
+            currentLine:index,
+           linkmanList:response.Content.TI_Z00603List
+          })
+        }
+      }
+    })
+   
+  }
+
+  addressChange=e=>{
+    const {value} = e.target
+    const {currentLine}=this.state
+    const { salerConfrim: { orderLineList },dispatch}=this.props
+    Object.assign(orderLineList[currentLine],{ShipToCode:`${value.AddressName}_${value.AddressID}`,Address:value.Address,UserID:value.UserID})
+    dispatch({
+      type:'salerConfrim/save',
+      payload:{
+        orderLineList:[...orderLineList]
+      }
+    })
+    this.setState({
+      addressmodalVisible:false
+    })
+  }
+
   rowChange = (value, record, index, key) => {
     const {
       salerConfrim: { orderLineList },
@@ -325,15 +390,14 @@ class salerConfrim extends PureComponent {
         DocDateTo,
         DeliverDateFrom,
         DeliverDateTo,
-        DeliverSts,
-        PrintStatus,
+        DeliverSts:DeliverSts||'N',
+        PrintStatus:PrintStatus||'N',
         Owner,
       };
       dispatch({
         type: 'salerConfrim/fetch',
         payload: {
           Content: {
-            DeliverSts: 'N',
             SearchText: '',
             SearchKey: 'Name',
             ...queryData,
@@ -410,7 +474,12 @@ class salerConfrim extends PureComponent {
 
   // 需询价弹窗
   handleModalVisible = flag => {
-    this.setState({ modalVisible: !!flag, modalVisible1: !!flag, modalVisible2: !!flag });
+    this.setState({ 
+      modalVisible: !!flag, 
+      modalVisible1: !!flag, 
+      modalVisible2: !!flag, 
+      addressmodalVisible:!!flag
+    });
   };
 
   printODLN = () => {
@@ -600,10 +669,10 @@ class salerConfrim extends PureComponent {
       modalVisible2,
       selectedRowKeys,
       ParameterJson,
-      BaseEntry,
-      BaseType,
+      BaseEntry,linkmanList,
+      BaseType,addressmodalVisible
     } = this.state;
-
+    console.log(orderLineList)
     const columns = this.columns.map(item => {
       // eslint-disable-next-line no-param-reassign
       item.align = 'Center';
@@ -616,6 +685,8 @@ class salerConfrim extends PureComponent {
       handleModalVisible: this.handleModalVisible,
     };
 
+   
+
     return (
       <Fragment>
         <Card bordered={false}>
@@ -626,7 +697,7 @@ class salerConfrim extends PureComponent {
               data={{ list: orderLineList }}
               pagination={pagination}
               rowKey="DocEntry"
-              scroll={{ x: 1800, y: 500 }}
+              scroll={{ x: 1900, y: 500 }}
               columns={columns}
               rowSelection={{
                 onSelectRow: this.onSelectRow,
@@ -682,6 +753,25 @@ class salerConfrim extends PureComponent {
               </Button>
             </div>
           </div>
+        </Modal>
+        <Modal
+          width={960}
+          destroyOnClose
+          maskClosable={false}
+          title="选择地址"
+          onCancel={() => this.handleModalVisible(false)}
+          footer={null}
+          visible={addressmodalVisible}
+        >
+          <Radio.Group onChange={this.addressChange}>
+            {
+              linkmanList.map(item=>
+                <Row key={item.AddressID} gutter={8}>
+                  <Radio value={item}>{`${item.Province}${item.City}${item.Area}${item.Address} --  ${item.UserName}${item.ReceiverPhone}`}</Radio>
+                </Row>
+              )
+            }
+          </Radio.Group>
         </Modal>
         <OrderPrint
           ParameterJson={ParameterJson}

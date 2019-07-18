@@ -1369,7 +1369,7 @@ class InquiryEdit extends React.Component {
       LineID,
       SKU: '',
       SKUName: '',
-      BrandName: '',
+      BrandName: last?last.BrandName:'',
       ProductName: '',
       ManufactureNO: '',
       ManLocation: '',

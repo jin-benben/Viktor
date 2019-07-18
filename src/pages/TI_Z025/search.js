@@ -49,7 +49,7 @@ class batchManage extends PureComponent {
       width: 100,
       render: val => (
         <Ellipsis tooltip lines={1}>
-          <span>{val ? moment(val).format('YYYY-MM-DD HH:MM:SS') : ''}</span>
+          {val}
         </Ellipsis>
       ),
     },
@@ -96,7 +96,7 @@ class batchManage extends PureComponent {
       width: 100,
       render: val => (
         <Ellipsis tooltip lines={1}>
-          <span>{val ? moment(val).format('YYYY-MM-DD HH:MM:SS') : ''}</span>
+          {val}
         </Ellipsis>
       ),
     },
@@ -106,7 +106,7 @@ class batchManage extends PureComponent {
       width: 100,
       render: val => (
         <Ellipsis tooltip lines={1}>
-          <span>{val ? moment(val).format('YYYY-MM-DD HH:MM:SS') : ''}</span>
+          {val}
         </Ellipsis>
       ),
     },

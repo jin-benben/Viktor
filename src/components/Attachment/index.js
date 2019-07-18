@@ -40,7 +40,6 @@ class Attachment extends Component {
       align: 'center',
       width: 100,
       dataIndex: 'CreateDate',
-      render: text => <span>{moment(text).format('YYYY-MM-DD HH:MM:SS')}</span>,
     },
     {
       title: '附件描述',

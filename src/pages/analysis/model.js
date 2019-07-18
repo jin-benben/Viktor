@@ -7,6 +7,7 @@ import {
   docProcessRule,
   customerSaleListRule,
   monthlyPaymentRule,
+  noDocProcessRule,
 } from './service';
 
 export default {
@@ -43,6 +44,17 @@ export default {
       DayReceiptList: [], // 每天收款列表
     },
     docProcessData: {
+      PDocCount: 0, // 采购单据已处理行数
+      SDocCount: 0, // 销售单据已处理行数
+      SCount1:0,
+      SCount2:0,
+      SCount3:0,
+      PCount1:0,
+      PCount2:0,
+      PUserDocInfo: [], // 采购单据已处理行数人员明细
+      SUserDocInfo: [], // 销售单据已处理行数人员明细
+    },
+    noDocProcessData: {
       PDocCount: 0, // 采购单据未处理行数
       SDocCount: 0, // 销售单据未处理行数
       PUserDocInfo: [], // 采购单据未处理行数人员明细
@@ -66,12 +78,14 @@ export default {
         monthlyReceiptRes,
         docProcessRes,
         monthlyPaymentRes,
+        nodocProcessRes,
       ] = yield all([
         call(monthlySalesRule, payload),
         call(monthlyPurchaseRule, payload),
         call(monthlyReceiptRule, payload),
         call(docProcessRule, payload),
         call(monthlyPaymentRule, payload),
+        call(noDocProcessRule, payload),
       ]);
       if (monthlySalesRes && monthlySalesRes.Status === 200) {
         yield put({
@@ -98,20 +112,19 @@ export default {
         });
       }
       if (docProcessRes && docProcessRes.Status === 200) {
-        const { PUserDocInfo, SUserDocInfo, PDocCount, SDocCount } = docProcessRes.Content;
+        const { PUserDocInfo, SUserDocInfo } = docProcessRes.Content;
         const newPUserDocInfo = PUserDocInfo.map((item, index) => {
-          return { key: index + 1, ...item, y: item.y * 1 };
+          return { key: index + 1, ...item, y: item.Total * 1,x:item.Name };
         });
         const newSUserDocInfo = SUserDocInfo.map((item, index) => {
-          return { key: index + 1, ...item, y: item.y * 1 };
+          return { key: index + 1, ...item, y: item.Total * 1,x:item.Name };
         });
 
         yield put({
           type: 'save',
           payload: {
             docProcessData: {
-              PDocCount,
-              SDocCount,
+              ...docProcessRes.Content,
               PUserDocInfo: newPUserDocInfo,
               SUserDocInfo: newSUserDocInfo,
             },
@@ -126,6 +139,27 @@ export default {
           },
         });
       }
+      if (nodocProcessRes && nodocProcessRes.Status === 200) {
+        const { PUserDocInfo, SUserDocInfo, PDocCount, SDocCount } = nodocProcessRes.Content;
+        const newPUserDocInfo = PUserDocInfo.map((item, index) => {
+          return { key: index + 1, ...item, y: item.y * 1 };
+        });
+        const newSUserDocInfo = SUserDocInfo.map((item, index) => {
+          return { key: index + 1, ...item, y: item.y * 1 };
+        });
+
+        yield put({
+          type: 'save',
+          payload: {
+            noDocProcessData: {
+              PDocCount,
+              SDocCount,
+              PUserDocInfo: newPUserDocInfo,
+              SUserDocInfo: newSUserDocInfo,
+            },
+          },
+        });
+      }
     },
     *getAllSaleData({ payload }, { call, put }) {
       const response = yield call(allSaleRule, payload);
@@ -135,7 +169,7 @@ export default {
           type: 'save',
           payload: {
             allSaleData: {
-              SalesPersonTotalList: SalesPersonTotalList || [],
+              SalesPersonTotalList:SalesPersonTotalList  || [],
               MonthSalesTotalList: MonthSalesTotalList || [],
             },
           },
@@ -146,7 +180,6 @@ export default {
       const response = yield call(customerSaleListRule, payload);
       if (response && response.Status === 200) {
         const { CustomerSaleList } = response.Content;
-
         yield put({
           type: 'save',
           payload: {
@@ -211,6 +244,17 @@ export default {
           DayReceiptList: [], // 每天收款列表
         },
         docProcessData: {
+          SCount1:0,
+          SCount2:0,
+          SCount3:0,
+          PCount1:0,
+          PCount2:0,
+          PDocCount: 0, // 采购单据已处理行数
+          SDocCount: 0, // 销售单据已处理行数
+          PUserDocInfo: [], // 采购单据已处理行数人员明细
+          SUserDocInfo: [], // 销售单据已处理行数人员明细
+        },
+        noDocProcessData: {
           PDocCount: 0, // 采购单据未处理行数
           SDocCount: 0, // 销售单据未处理行数
           PUserDocInfo: [], // 采购单据未处理行数人员明细

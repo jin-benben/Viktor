@@ -61,7 +61,6 @@ class DDMessage extends PureComponent {
       title: '创建时间',
       dataIndex: 'CreateDate',
       width: 150,
-      render: val => <span>{moment(val).format('YYYY-MM-DD HH:MM:SS')}</span>,
     },
     {
       title: '创建用户',

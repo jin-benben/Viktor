@@ -117,7 +117,7 @@ class OINVConfrim extends PureComponent {
     },
 
     {
-      title: '发货状态',
+      title: '寄票状态',
       dataIndex: 'DeliverSts',
       width: 80,
       render: text =>
@@ -130,17 +130,17 @@ class OINVConfrim extends PureComponent {
         ),
     },
     {
-      title: '发货时间',
+      title: '寄票时间',
       width: 100,
       dataIndex: 'DeliverDate',
       render: val => (
         <Ellipsis tooltip lines={1}>
-          <span>{val ? moment(val).format('YYYY-MM-DD HH:MM:SS') : ''}</span>
+          {val}
         </Ellipsis>
       ),
     },
     {
-      title: '发货人',
+      title: '寄票人',
       width: 120,
       dataIndex: 'DeliverUser',
     },
@@ -191,6 +191,16 @@ class OINVConfrim extends PureComponent {
         <span>
           {text === 'Y' ? <Tag color="green">已打印</Tag> : <Tag color="blue">未打印</Tag>}
         </span>
+      ),
+    },
+    {
+      title: '备注',
+      dataIndex: 'Comment',
+      width: 100,
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
       ),
     },
     {
@@ -616,7 +626,7 @@ class OINVConfrim extends PureComponent {
               data={{ list: orderLineList }}
               pagination={pagination}
               rowKey="DocEntry"
-              scroll={{ x: 2000, y: 500 }}
+              scroll={{ x: 2100, y: 500 }}
               columns={columns}
               rowSelection={{
                 onSelectRow: this.onSelectRow,

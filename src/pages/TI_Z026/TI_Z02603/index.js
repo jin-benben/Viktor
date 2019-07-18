@@ -298,7 +298,7 @@ class InquiryEdit extends PureComponent {
       align: 'center',
       render: val => (
         <Ellipsis tooltip lines={1}>
-          <span>{val ? moment(val).format('YYYY-MM-DD HH:MM:SS') : ''}</span>
+          {val}
         </Ellipsis>
       ),
     },

@@ -54,6 +54,15 @@ export async function docProcessRule(params) {
   });
 }
 
+export async function noDocProcessRule(params) {
+  return request('/Report/HomePage/DocNoProcess', {
+    method: 'POST',
+    data: {
+      ...params,
+    },
+  });
+}
+
 export async function customerSaleListRule(params) {
   return request('/Report/HomePage/CustomerSaleList', {
     method: 'POST',

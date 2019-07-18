@@ -167,7 +167,7 @@ class supplierQuotation extends PureComponent {
       dataIndex: 'CreateDate',
       render: val => (
         <Ellipsis tooltip lines={1}>
-          <span>{val ? moment(val).format('YYYY-MM-DD HH:MM:SS') : ''}</span>
+          {val}
         </Ellipsis>
       ),
     },
@@ -179,7 +179,7 @@ class supplierQuotation extends PureComponent {
       dataIndex: 'SendEmailDateTime',
       render: val => (
         <Ellipsis tooltip lines={1}>
-          <span>{val ? moment(val).format('YYYY-MM-DD HH:MM:SS') : ''}</span>
+          {val}
         </Ellipsis>
       ),
     },

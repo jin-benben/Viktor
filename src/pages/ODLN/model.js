@@ -1,4 +1,4 @@
-import { queryRule, confirmRule, savePrintRule } from './service';
+import { queryRule, confirmRule, savePrintRule,companyRule } from './service';
 
 export default {
   namespace: 'salerConfrim',
@@ -8,6 +8,7 @@ export default {
     queryData: {
       Content: {
         SearchText: '',
+        PrintStatus:"",
         DeliverSts: 'N',
         SearchKey: '',
       },
@@ -67,6 +68,10 @@ export default {
     },
     *confirm({ payload, callback }, { call }) {
       const response = yield call(confirmRule, payload);
+      if (callback) callback(response);
+    },
+    *company({ payload, callback }, { call }) {
+      const response = yield call(companyRule, payload);
       if (callback) callback(response);
     },
     *print({ payload, callback }, { call }) {

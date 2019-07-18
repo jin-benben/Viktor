@@ -59,7 +59,7 @@ const SalesCard = memo(
             <Row>
               <Col xl={14} lg={12} md={12} sm={24} xs={24}>
                 <div className={styles.salesBar}>
-                  <Bar height={295} title="销售趋势" data={allSaleData.MonthSalesTotalList} />
+                  <Bar height={440} title="销售趋势" data={allSaleData.MonthSalesTotalList} />
                 </div>
               </Col>
               <Col xl={10} lg={12} md={12} sm={24} xs={24}>

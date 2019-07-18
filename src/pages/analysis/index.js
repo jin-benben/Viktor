@@ -10,6 +10,7 @@ import PageLoading from '@/components/PageLoading';
 const IntroduceRow = React.lazy(() => import('./components/IntroduceRow'));
 const SalesCard = React.lazy(() => import('./components/SalesCard'));
 const TopSearch = React.lazy(() => import('./components/TopSearch'));
+const TopSearchNo = React.lazy(() => import('./components/TopSearchNo'));
 const ProportionSales = React.lazy(() => import('./components/ProportionSales'));
 
 @connect(({ analysis, loading }) => ({
@@ -20,7 +21,7 @@ class Analysis extends Component {
   state = {
     currentTabKey: 'sales',
     TopCount: '10',
-    rangePickerValue: getTimeDistance('year'),
+    rangePickerValue: getTimeDistance('month'),
   };
 
   componentDidMount() {
@@ -159,8 +160,8 @@ class Analysis extends Component {
   render() {
     const { rangePickerValue, TopCount } = this.state;
     const { analysis, loading } = this.props;
-    const { allSaleData, allPurchaseData, customerSaleListData, docProcessData } = analysis;
-
+    const { allSaleData, allPurchaseData, customerSaleListData, docProcessData,noDocProcessData } = analysis;
+    console.log(docProcessData)
     const menu = (
       <Menu>
         <Menu.Item>操作一</Menu.Item>
@@ -206,6 +207,18 @@ class Analysis extends Component {
             </Suspense>
           </Col>
           <Col xl={12} lg={24} md={24} sm={24} xs={24}>
+            <Suspense fallback={null}>
+              <TopSearchNo
+                loading={loading}
+                docProcessData={noDocProcessData}
+                selectDate={this.selectDate}
+                dropdownGroup={dropdownGroup}
+              />
+            </Suspense>
+          </Col>
+        </Row>
+        <Row gutter={24}>
+          <Col xl={24} lg={24} md={24} sm={24} xs={24}>
             <Suspense fallback={null}>
               <ProportionSales
                 dropdownGroup={dropdownGroup}

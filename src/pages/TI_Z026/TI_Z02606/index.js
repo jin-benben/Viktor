@@ -184,7 +184,7 @@ class inquiryListPage extends PureComponent {
       dataIndex: 'CreateDate',
       render: val => (
         <Ellipsis tooltip lines={1}>
-          <span>{val ? moment(val).format('YYYY-MM-DD HH:MM:SS') : ''}</span>
+          {val}
         </Ellipsis>
       ),
     },

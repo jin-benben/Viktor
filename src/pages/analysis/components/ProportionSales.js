@@ -20,7 +20,6 @@ const ProportionSales = memo(({ loading, salesPieData }) => (
         minHeight: 380,
       }}
     >
-      <h4 style={{ marginTop: 8, marginBottom: 32 }}>客户</h4>
       <Pie
         hasLegend
         subTitle="销售额"
