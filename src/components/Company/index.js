@@ -76,7 +76,7 @@ class CompanySelect extends PureComponent {
     const { onChange } = this.props;
     if (onChange) {
       const select = data.find(item => item.Code === value.key);
-      onChange(select);
+      onChange(select.Code);
     }
   };
 

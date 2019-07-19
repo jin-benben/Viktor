@@ -13,59 +13,12 @@ import { uploadRule } from '../../TI_Z026/service';
 export default {
   namespace: 'TI_Z029',
 
-  state: {
-    orderDetail: {
-      Comment: '',
-      OrderType: '1',
-
-      Transport: 'N',
-      DocDate: new Date(),
-      CreateDate: new Date(),
-      CardCode: '',
-      CardName: '',
-      Contacts: '',
-      CellphoneNO: '',
-      PhoneNO: '',
-      Email: '',
-      DueDate: '',
-      ToDate: null,
-      InquiryDocTotal: '',
-      ProfitTotal: '',
-      DocTotal: '',
-      ProvinceID: '',
-      Province: '',
-      CityID: '',
-      City: '',
-      AreaID: '',
-      Area: '',
-      Address: '',
-      NumAtCard: '',
-      TI_Z02902: [],
-      TI_Z02904: [],
-      TI_Z02905: [],
-      TI_Z02603Fahter: [],
-    },
-    linkmanList: [],
-    addList: [],
-  },
+  state: {},
 
   effects: {
-    *fetch({ payload }, { call, put }) {
+    *fetch({ payload, callback }, { call }) {
       const response = yield call(querySingleRule, payload);
-      if (response && response.Status === 200) {
-        yield put({
-          type: 'save',
-          payload: {
-            orderDetail: response.Content,
-          },
-        });
-        yield put({
-          type: 'company',
-          payload: {
-            Content: { Code: response.Content.CardCode },
-          },
-        });
-      }
+      if (callback) callback(response);
     },
     *getBaseEntry({ payload, callback }, { call }) {
       const response = yield call(queryBaseEntryleRule, payload);
@@ -76,17 +29,9 @@ export default {
       const response = yield call(addRule, payload);
       if (callback) callback(response);
     },
-    *company({ payload }, { put, call }) {
+    *company({ payload, callback }, { call }) {
       const response = yield call(companyRule, payload);
-      if (response && response.Status === 200) {
-        yield put({
-          type: 'save',
-          payload: {
-            addList: response.Content.TI_Z00603List,
-            linkmanList: response.Content.TI_Z00602List,
-          },
-        });
-      }
+      if (callback) callback(response);
     },
     *costCheck({ payload, callback }, { call }) {
       const response = yield call(costCheckRule, payload);

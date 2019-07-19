@@ -16,7 +16,8 @@ import {
   Tag,
   Input,
   Modal,
-  Table,Radio
+  Table,
+  Radio,
 } from 'antd';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
@@ -45,14 +46,14 @@ class salerConfrim extends PureComponent {
     modalVisible: false,
     modalVisible1: false,
     modalVisible2: false,
-    addressmodalVisible:false,
-    linkmanList:[],
+    addressmodalVisible: false,
+    linkmanList: [],
     ParameterJson: '',
     selectedRows: [],
     selectedRowKeys: [],
     responseData: [],
     selectPrint: [],
-    currentLine:''
+    currentLine: '',
   };
 
   columns = [
@@ -104,6 +105,11 @@ class salerConfrim extends PureComponent {
       ),
     },
     {
+      title: '总计',
+      width: 100,
+      dataIndex: 'DocTotal',
+    },
+    {
       title: '交易公司',
       width: 150,
       dataIndex: 'CompanyCode',
@@ -147,6 +153,17 @@ class salerConfrim extends PureComponent {
         <Input
           value={text}
           onChange={e => this.rowChange(e.target.value, record, index, 'ExpressNumber')}
+        />
+      ),
+    },
+    {
+      title: '报价金额',
+      width: 100,
+      dataIndex: 'InsureTotal',
+      render: (text, record, index) => (
+        <Input
+          value={text}
+          onChange={e => this.rowChange(e.target.value, record, index, 'InsureTotal')}
         />
       ),
     },
@@ -212,9 +229,9 @@ class salerConfrim extends PureComponent {
       width: 50,
       fixed: 'right',
       align: 'center',
-      render: (text, record,index) => (
+      render: (text, record, index) => (
         <Fragment>
-          <a onClick={() => this.changeAddress(record,index)} title="修改地址">
+          <a onClick={() => this.changeAddress(record, index)} title="修改地址">
             <MyIcon type="iconedit" />
           </a>
         </Fragment>
@@ -289,43 +306,49 @@ class salerConfrim extends PureComponent {
     });
   }
 
-  changeAddress=(record,index)=>{
-    const {dispatch}=this.props
+  changeAddress = (record, index) => {
+    const { dispatch } = this.props;
     dispatch({
-      type:'salerConfrim/company',
-      payload:{
-        Content:{
-          Code:record.CardCode
+      type: 'salerConfrim/company',
+      payload: {
+        Content: {
+          Code: record.CardCode,
+        },
+      },
+      callback: response => {
+        if (response && response.Status === 200) {
+          this.setState({
+            addressmodalVisible: true,
+            currentLine: index,
+            linkmanList: response.Content.TI_Z00603List,
+          });
         }
       },
-      callback:response=>{
-        if(response&&response.Status===200){
-          this.setState({
-            addressmodalVisible:true,
-            currentLine:index,
-           linkmanList:response.Content.TI_Z00603List
-          })
-        }
-      }
-    })
-   
-  }
+    });
+  };
 
-  addressChange=e=>{
-    const {value} = e.target
-    const {currentLine}=this.state
-    const { salerConfrim: { orderLineList },dispatch}=this.props
-    Object.assign(orderLineList[currentLine],{ShipToCode:`${value.AddressName}_${value.AddressID}`,Address:value.Address,UserID:value.UserID})
+  addressChange = e => {
+    const { value } = e.target;
+    const { currentLine } = this.state;
+    const {
+      salerConfrim: { orderLineList },
+      dispatch,
+    } = this.props;
+    Object.assign(orderLineList[currentLine], {
+      ShipToCode: `${value.AddressName}_${value.AddressID}`,
+      Address: value.Address,
+      UserID: value.UserID,
+    });
     dispatch({
-      type:'salerConfrim/save',
-      payload:{
-        orderLineList:[...orderLineList]
-      }
-    })
+      type: 'salerConfrim/save',
+      payload: {
+        orderLineList: [...orderLineList],
+      },
+    });
     this.setState({
-      addressmodalVisible:false
-    })
-  }
+      addressmodalVisible: false,
+    });
+  };
 
   rowChange = (value, record, index, key) => {
     const {
@@ -390,8 +413,8 @@ class salerConfrim extends PureComponent {
         DocDateTo,
         DeliverDateFrom,
         DeliverDateTo,
-        DeliverSts:DeliverSts||'N',
-        PrintStatus:PrintStatus||'N',
+        DeliverSts,
+        PrintStatus,
         Owner,
       };
       dispatch({
@@ -474,11 +497,11 @@ class salerConfrim extends PureComponent {
 
   // 需询价弹窗
   handleModalVisible = flag => {
-    this.setState({ 
-      modalVisible: !!flag, 
-      modalVisible1: !!flag, 
-      modalVisible2: !!flag, 
-      addressmodalVisible:!!flag
+    this.setState({
+      modalVisible: !!flag,
+      modalVisible1: !!flag,
+      modalVisible2: !!flag,
+      addressmodalVisible: !!flag,
     });
   };
 
@@ -506,12 +529,13 @@ class salerConfrim extends PureComponent {
     }
     // eslint-disable-next-line camelcase
     const TI_Z04801RequestItemList = selectedRows.map(item => {
-      const { TrnspCode, DocEntry, ShipToCode } = item;
+      const { TrnspCode, DocEntry, ShipToCode, InsureTotal } = item;
       return {
         BaseType: '15',
         BaseEntry: DocEntry,
         TrnspCode,
         ShipToCode,
+        InsureTotal,
       };
     });
     dispatch({
@@ -669,23 +693,15 @@ class salerConfrim extends PureComponent {
       modalVisible2,
       selectedRowKeys,
       ParameterJson,
-      BaseEntry,linkmanList,
-      BaseType,addressmodalVisible
+      BaseEntry,
+      linkmanList,
+      BaseType,
+      addressmodalVisible,
     } = this.state;
-    console.log(orderLineList)
-    const columns = this.columns.map(item => {
-      // eslint-disable-next-line no-param-reassign
-      item.align = 'Center';
-
-      return item;
-    });
-
     const parentMethods = {
       handleSubmit: this.submitNeedLine,
       handleModalVisible: this.handleModalVisible,
     };
-
-   
 
     return (
       <Fragment>
@@ -697,8 +713,8 @@ class salerConfrim extends PureComponent {
               data={{ list: orderLineList }}
               pagination={pagination}
               rowKey="DocEntry"
-              scroll={{ x: 1900, y: 500 }}
-              columns={columns}
+              scroll={{ x: 2100 }}
+              columns={this.columns}
               rowSelection={{
                 onSelectRow: this.onSelectRow,
               }}
@@ -764,13 +780,13 @@ class salerConfrim extends PureComponent {
           visible={addressmodalVisible}
         >
           <Radio.Group onChange={this.addressChange}>
-            {
-              linkmanList.map(item=>
-                <Row key={item.AddressID} gutter={8}>
-                  <Radio value={item}>{`${item.Province}${item.City}${item.Area}${item.Address} --  ${item.UserName}${item.ReceiverPhone}`}</Radio>
-                </Row>
-              )
-            }
+            {linkmanList.map(item => (
+              <Row key={item.AddressID} gutter={8}>
+                <Radio value={item}>{`${item.Province}${item.City}${item.Area}${item.Address} --  ${
+                  item.UserName
+                }${item.ReceiverPhone}`}</Radio>
+              </Row>
+            ))}
           </Radio.Group>
         </Modal>
         <OrderPrint

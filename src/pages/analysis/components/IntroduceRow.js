@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { Row, Col } from 'antd';
+import { Row, Col, DatePicker } from 'antd';
 import { Charts, Trend } from 'ant-design-pro';
 import numeral from 'numeral';
 import styles from '../style.less';
@@ -22,9 +22,14 @@ const IntroduceRow = memo(
     monthlyPurchaseData,
     monthlyPaymentRuleData,
     monthlyReceiptData,
+    defaultValue,
+    monthlyPayment,
+    monthlySales,
+    monthlyPurchase,
+    monthlyReceipt,
   }) => (
     <Row gutter={24} className={styles.homeCard}>
-      <Col {...topColResponsiveProps}>
+      <Col className={styles.colParent} {...topColResponsiveProps}>
         <ChartCard
           bordered={false}
           title="月销售总计"
@@ -47,8 +52,13 @@ const IntroduceRow = memo(
             <span className={styles.trendText}>{monthlySalesData.MonthRate}</span>
           </Trend>
         </ChartCard>
+        <DatePicker
+          defaultValue={defaultValue}
+          className={styles.datePosition}
+          onChange={(_, dateString) => monthlySales(dateString)}
+        />
       </Col>
-      <Col {...topColResponsiveProps}>
+      <Col className={styles.colParent} {...topColResponsiveProps}>
         <ChartCard
           bordered={false}
           title="月采购总计"
@@ -71,9 +81,14 @@ const IntroduceRow = memo(
             <span className={styles.trendText}>{monthlyPurchaseData.MonthRate}</span>
           </Trend>
         </ChartCard>
+        <DatePicker
+          defaultValue={defaultValue}
+          className={styles.datePosition}
+          onChange={(_, dateString) => monthlyPurchase(dateString)}
+        />
       </Col>
 
-      <Col {...topColResponsiveProps}>
+      <Col className={styles.colParent} {...topColResponsiveProps}>
         <ChartCard
           bordered={false}
           loading={loading}
@@ -86,8 +101,13 @@ const IntroduceRow = memo(
         >
           <MiniArea color="#975FE4" data={monthlyReceiptData.DayReceiptList} />
         </ChartCard>
+        <DatePicker
+          defaultValue={defaultValue}
+          className={styles.datePosition}
+          onChange={(_, dateString) => monthlyReceipt(dateString)}
+        />
       </Col>
-      <Col {...topColResponsiveProps}>
+      <Col className={styles.colParent} {...topColResponsiveProps}>
         <ChartCard
           bordered={false}
           loading={loading}
@@ -98,6 +118,11 @@ const IntroduceRow = memo(
         >
           <MiniBar data={monthlyPaymentRuleData.DayPaymentList} />
         </ChartCard>
+        <DatePicker
+          defaultValue={defaultValue}
+          className={styles.datePosition}
+          onChange={(_, dateString) => monthlyPayment(dateString)}
+        />
       </Col>
     </Row>
   )

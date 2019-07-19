@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { Row, Col, Table, Card } from 'antd';
+import { Row, Col, Table, Card, DatePicker } from 'antd';
 import { NumberInfo, Charts } from 'ant-design-pro';
 
 const { MiniArea } = Charts;
@@ -19,14 +19,17 @@ const columns = [
   },
 ];
 
-
-
-const TopSearch = memo(({ loading, docProcessData, dropdownGroup }) => (
+const TopSearch = memo(({ loading, docProcessData, defaultValue, selectDate }) => (
   <Card
     loading={loading}
     bordered={false}
     title="未处理单据"
-    extra={dropdownGroup}
+    extra={
+      <DatePicker
+        defaultValue={defaultValue}
+        onChange={(_, dateString) => selectDate(dateString)}
+      />
+    }
     bodyStyle={{ padding: 24 }}
     style={{ marginTop: 24, height: 500 }}
   >

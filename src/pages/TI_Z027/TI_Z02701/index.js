@@ -31,7 +31,7 @@ class SupplierAsk extends Component {
     confimSelectedRows: [], // 选中列组合列
     lastConfrimList: [], // 最终确认列
     modalVisible: false,
-    transferModalVisible:false,
+    transferModalVisible: false,
   };
 
   resultColumns = [
@@ -356,8 +356,8 @@ class SupplierAsk extends Component {
     const { selectedRows } = this.state;
     if (selectedRows.length) {
       this.setState({
-        modalVisible:true
-      })
+        modalVisible: true,
+      });
     } else {
       message.warning('请先选择');
     }
@@ -365,9 +365,9 @@ class SupplierAsk extends Component {
 
   // 需询价弹窗
   handleModalVisible = flag => {
-    this.setState({ 
+    this.setState({
       modalVisible: !!flag,
-      transferModalVisible: !!flag
+      transferModalVisible: !!flag,
     });
   };
 
@@ -413,7 +413,6 @@ class SupplierAsk extends Component {
             <Button type="primary" onClick={this.toTransfer}>
               转移
             </Button>
-            
           </Fragment>
         );
       case 1:
@@ -434,7 +433,14 @@ class SupplierAsk extends Component {
   };
 
   render() {
-    const { current, selectedRows, modalVisible, responsTable, confimSelectedRows,transferModalVisible } = this.state;
+    const {
+      current,
+      selectedRows,
+      modalVisible,
+      responsTable,
+      confimSelectedRows,
+      transferModalVisible,
+    } = this.state;
     const { location } = this.props;
     const parentMethods = {
       handleSubmit: this.submitSelect,
@@ -464,7 +470,7 @@ class SupplierAsk extends Component {
         <OrderModal data={selectedRows} {...parentMethods} modalVisible={modalVisible} />
         <FooterToolbar>{this.footerBtn()}</FooterToolbar>
         <Transfer
-          SourceEntry={selectedRows[0]?selectedRows[0].DocEntry:''}
+          SourceEntry={selectedRows[0] ? selectedRows[0].DocEntry : ''}
           SourceType="TI_Z026"
           modalVisible={transferModalVisible}
           handleModalVisible={this.handleModalVisible}

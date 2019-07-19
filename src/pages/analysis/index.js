@@ -83,6 +83,90 @@ class Analysis extends Component {
     });
   };
 
+  monthlyPayment = CalcDate => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'analysis/getmonthlyPayment',
+      payload: {
+        Content: {
+          CalcDate,
+        },
+      },
+    });
+  };
+
+  monthlySales = CalcDate => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'analysis/getmonthlySales',
+      payload: {
+        Content: {
+          CalcDate,
+        },
+      },
+    });
+  };
+
+  monthlyPurchase = CalcDate => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'analysis/getmonthlyPurchase',
+      payload: {
+        Content: {
+          CalcDate,
+        },
+      },
+    });
+  };
+
+  monthlyReceipt = CalcDate => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'analysis/getmonthlyReceipt',
+      payload: {
+        Content: {
+          CalcDate,
+        },
+      },
+    });
+  };
+
+  noDocProcess = CalcDate => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'analysis/getnoDocProcess',
+      payload: {
+        Content: {
+          CalcDate,
+        },
+      },
+    });
+  };
+
+  docProcess = CalcDate => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'analysis/getdocProcess',
+      payload: {
+        Content: {
+          CalcDate,
+        },
+      },
+    });
+  };
+
+  customerSaleList = CalcDate => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'analysis/getCustomerSaleList',
+      payload: {
+        Content: {
+          CalcDate,
+        },
+      },
+    });
+  };
+
   handleRangePickerChange = rangePickerValue => {
     const { dispatch } = this.props;
     this.setState({
@@ -160,26 +244,25 @@ class Analysis extends Component {
   render() {
     const { rangePickerValue, TopCount } = this.state;
     const { analysis, loading } = this.props;
-    const { allSaleData, allPurchaseData, customerSaleListData, docProcessData,noDocProcessData } = analysis;
-    console.log(docProcessData)
-    const menu = (
-      <Menu>
-        <Menu.Item>操作一</Menu.Item>
-        <Menu.Item>操作二</Menu.Item>
-      </Menu>
-    );
-    const dropdownGroup = (
-      <span className={styles.iconGroup}>
-        <Dropdown overlay={menu} placement="bottomRight">
-          <Icon type="ellipsis" />
-        </Dropdown>
-      </span>
-    );
+    const {
+      allSaleData,
+      allPurchaseData,
+      customerSaleListData,
+      docProcessData,
+      noDocProcessData,
+    } = analysis;
+
+    const methods = {
+      monthlyPayment: this.monthlyPayment,
+      monthlySales: this.monthlySales,
+      monthlyPurchase: this.monthlyPurchase,
+      monthlyReceipt: this.monthlyReceipt,
+    };
 
     return (
       <React.Fragment>
         <Suspense fallback={<PageLoading />}>
-          <IntroduceRow loading={loading} {...analysis} />
+          <IntroduceRow loading={loading} {...methods} {...analysis} defaultValue={moment()} />
         </Suspense>
         <Suspense fallback={null}>
           <SalesCard
@@ -201,8 +284,8 @@ class Analysis extends Component {
               <TopSearch
                 loading={loading}
                 docProcessData={docProcessData}
-                selectDate={this.selectDate}
-                dropdownGroup={dropdownGroup}
+                defaultValue={moment()}
+                selectDate={this.docProcess}
               />
             </Suspense>
           </Col>
@@ -211,8 +294,8 @@ class Analysis extends Component {
               <TopSearchNo
                 loading={loading}
                 docProcessData={noDocProcessData}
-                selectDate={this.selectDate}
-                dropdownGroup={dropdownGroup}
+                defaultValue={moment()}
+                selectDate={this.noDocProcess}
               />
             </Suspense>
           </Col>
@@ -220,11 +303,7 @@ class Analysis extends Component {
         <Row gutter={24}>
           <Col xl={24} lg={24} md={24} sm={24} xs={24}>
             <Suspense fallback={null}>
-              <ProportionSales
-                dropdownGroup={dropdownGroup}
-                loading={loading}
-                salesPieData={customerSaleListData}
-              />
+              <ProportionSales loading={loading} salesPieData={customerSaleListData} />
             </Suspense>
           </Col>
         </Row>

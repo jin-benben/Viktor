@@ -47,20 +47,11 @@ class CompanyModal extends PureComponent {
     },
   ];
 
-  // static getDerivedStateFromProps(nextProps, prevState) {
-  //   if (!prevState.companyList.length && prevState.companyList !== nextProps.global.CustomerList) {
-  //     return {
-  //       companyList: nextProps.global.CustomerList,
-  //     };
-  //   }
-  //   return null;
-  // }
-
   okHandle = () => {
     const { selectedRows } = this.state;
     const { handleSubmit } = this.props;
     if (selectedRows.length) {
-      handleSubmit(selectedRows[0]);
+      handleSubmit(selectedRows[0].Code);
     } else {
       message.warning('请先选择');
     }

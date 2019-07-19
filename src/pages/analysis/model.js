@@ -46,11 +46,11 @@ export default {
     docProcessData: {
       PDocCount: 0, // 采购单据已处理行数
       SDocCount: 0, // 销售单据已处理行数
-      SCount1:0,
-      SCount2:0,
-      SCount3:0,
-      PCount1:0,
-      PCount2:0,
+      SCount1: 0,
+      SCount2: 0,
+      SCount3: 0,
+      PCount1: 0,
+      PCount2: 0,
       PUserDocInfo: [], // 采购单据已处理行数人员明细
       SUserDocInfo: [], // 销售单据已处理行数人员明细
     },
@@ -71,74 +71,16 @@ export default {
   },
 
   effects: {
-    *getHomeData({ payload }, { put, call, all }) {
-      const [
-        monthlySalesRes,
-        monthlyPurchaseRes,
-        monthlyReceiptRes,
-        docProcessRes,
-        monthlyPaymentRes,
-        nodocProcessRes,
-      ] = yield all([
-        call(monthlySalesRule, payload),
-        call(monthlyPurchaseRule, payload),
-        call(monthlyReceiptRule, payload),
-        call(docProcessRule, payload),
-        call(monthlyPaymentRule, payload),
-        call(noDocProcessRule, payload),
-      ]);
-      if (monthlySalesRes && monthlySalesRes.Status === 200) {
-        yield put({
-          type: 'save',
-          payload: {
-            monthlySalesData: { ...monthlySalesRes.Content },
-          },
-        });
-      }
-      if (monthlyPurchaseRes && monthlyPurchaseRes.Status === 200) {
-        yield put({
-          type: 'save',
-          payload: {
-            monthlyPurchaseData: { ...monthlyPurchaseRes.Content },
-          },
-        });
-      }
-      if (monthlyReceiptRes && monthlyReceiptRes.Status === 200) {
-        yield put({
-          type: 'save',
-          payload: {
-            monthlyReceiptData: { ...monthlyReceiptRes.Content },
-          },
-        });
-      }
-      if (docProcessRes && docProcessRes.Status === 200) {
-        const { PUserDocInfo, SUserDocInfo } = docProcessRes.Content;
-        const newPUserDocInfo = PUserDocInfo.map((item, index) => {
-          return { key: index + 1, ...item, y: item.Total * 1,x:item.Name };
-        });
-        const newSUserDocInfo = SUserDocInfo.map((item, index) => {
-          return { key: index + 1, ...item, y: item.Total * 1,x:item.Name };
-        });
-
-        yield put({
-          type: 'save',
-          payload: {
-            docProcessData: {
-              ...docProcessRes.Content,
-              PUserDocInfo: newPUserDocInfo,
-              SUserDocInfo: newSUserDocInfo,
-            },
-          },
-        });
-      }
-      if (monthlyPaymentRes && monthlyPaymentRes.Status === 200) {
-        yield put({
-          type: 'save',
-          payload: {
-            monthlyPaymentRuleData: { ...monthlyPaymentRes.Content },
-          },
-        });
-      }
+    *getHomeData({ payload }, { put }) {
+      yield put({ type: 'getnoDocProcess', payload });
+      yield put({ type: 'getmonthlyPayment', payload });
+      yield put({ type: 'getdocProcess', payload });
+      yield put({ type: 'getmonthlyReceipt', payload });
+      yield put({ type: 'getmonthlyPurchase', payload });
+      yield put({ type: 'getmonthlySales', payload });
+    },
+    *getnoDocProcess({ payload }, { call, put }) {
+      const nodocProcessRes = yield call(noDocProcessRule, payload);
       if (nodocProcessRes && nodocProcessRes.Status === 200) {
         const { PUserDocInfo, SUserDocInfo, PDocCount, SDocCount } = nodocProcessRes.Content;
         const newPUserDocInfo = PUserDocInfo.map((item, index) => {
@@ -161,6 +103,73 @@ export default {
         });
       }
     },
+    *getmonthlyPayment({ payload }, { call, put }) {
+      const monthlyPaymentRes = yield call(monthlyPaymentRule, payload);
+      if (monthlyPaymentRes && monthlyPaymentRes.Status === 200) {
+        yield put({
+          type: 'save',
+          payload: {
+            monthlyPaymentRuleData: { ...monthlyPaymentRes.Content },
+          },
+        });
+      }
+    },
+    *getdocProcess({ payload }, { call, put }) {
+      const docProcessRes = call(docProcessRule, payload);
+      if (docProcessRes && docProcessRes.Status === 200) {
+        const { PUserDocInfo, SUserDocInfo } = docProcessRes.Content;
+        const newPUserDocInfo = PUserDocInfo.map((item, index) => {
+          return { key: index + 1, ...item, y: item.Total * 1, x: item.Name };
+        });
+        const newSUserDocInfo = SUserDocInfo.map((item, index) => {
+          return { key: index + 1, ...item, y: item.Total * 1, x: item.Name };
+        });
+
+        yield put({
+          type: 'save',
+          payload: {
+            docProcessData: {
+              ...docProcessRes.Content,
+              PUserDocInfo: newPUserDocInfo,
+              SUserDocInfo: newSUserDocInfo,
+            },
+          },
+        });
+      }
+    },
+    *getmonthlyReceipt({ payload }, { call, put }) {
+      const monthlyReceiptRes = yield call(monthlyReceiptRule, payload);
+      if (monthlyReceiptRes && monthlyReceiptRes.Status === 200) {
+        yield put({
+          type: 'save',
+          payload: {
+            monthlyReceiptData: { ...monthlyReceiptRes.Content },
+          },
+        });
+      }
+    },
+    *getmonthlyPurchase({ payload }, { call, put }) {
+      const monthlyPurchaseRes = yield call(monthlyPurchaseRule, payload);
+      if (monthlyPurchaseRes && monthlyPurchaseRes.Status === 200) {
+        yield put({
+          type: 'save',
+          payload: {
+            monthlyPurchaseData: { ...monthlyPurchaseRes.Content },
+          },
+        });
+      }
+    },
+    *getmonthlySales({ payload }, { call, put }) {
+      const monthlySalesRes = yield call(monthlySalesRule, payload);
+      if (monthlySalesRes && monthlySalesRes.Status === 200) {
+        yield put({
+          type: 'save',
+          payload: {
+            monthlySalesData: { ...monthlySalesRes.Content },
+          },
+        });
+      }
+    },
     *getAllSaleData({ payload }, { call, put }) {
       const response = yield call(allSaleRule, payload);
       if (response && response.Status === 200) {
@@ -169,7 +178,7 @@ export default {
           type: 'save',
           payload: {
             allSaleData: {
-              SalesPersonTotalList:SalesPersonTotalList  || [],
+              SalesPersonTotalList: SalesPersonTotalList || [],
               MonthSalesTotalList: MonthSalesTotalList || [],
             },
           },
@@ -244,11 +253,11 @@ export default {
           DayReceiptList: [], // 每天收款列表
         },
         docProcessData: {
-          SCount1:0,
-          SCount2:0,
-          SCount3:0,
-          PCount1:0,
-          PCount2:0,
+          SCount1: 0,
+          SCount2: 0,
+          SCount3: 0,
+          PCount1: 0,
+          PCount2: 0,
           PDocCount: 0, // 采购单据已处理行数
           SDocCount: 0, // 销售单据已处理行数
           PUserDocInfo: [], // 采购单据已处理行数人员明细

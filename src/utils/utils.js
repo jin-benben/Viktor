@@ -35,14 +35,14 @@ export function requestUrl(url) {
 
 export function getName(arr, code) {
   let newCode = code;
-  if (!code||!arr.length) {
+  if (!code || !arr.length) {
     return '';
   }
   if (typeof code !== 'string') {
     newCode = code.toString();
   }
-  const filter = arr.find(item=>item.Key === newCode)
-  return filter.Value;
+  const filter = arr.find(item => item.Key === newCode);
+  return filter ? filter.Value : '';
 }
 
 export function validatorPhone(rule, value, callback) {

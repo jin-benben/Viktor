@@ -204,7 +204,7 @@ class NeedTabl extends React.Component {
         return <span>{getName(TI_Z004, val)}</span>;
       },
     },
-    
+
     {
       title: '仓库',
       width: 120,

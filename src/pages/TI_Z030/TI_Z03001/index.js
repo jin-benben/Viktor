@@ -714,7 +714,6 @@ class AgreementEdit extends React.Component {
         },
         callback: response => {
           if (response && response.Status === 200) {
-            this.getCompany(response.Content.CardCode);
             const {
               Address,
               AddressID,
@@ -740,7 +739,7 @@ class AgreementEdit extends React.Component {
               TI_Z02905,
               DueDate,
             } = response.Content;
-
+            this.getCompany(CardCode);
             this.setState({
               orderDetail: {
                 ...orderDetail,
@@ -817,6 +816,45 @@ class AgreementEdit extends React.Component {
             addList: TI_Z00603List,
             linkmanList: TI_Z00602List,
           });
+        }
+      },
+    });
+  };
+
+  getCompany = companycode => {
+    const { dispatch } = this.props;
+    const { orderDetail } = this.state;
+    dispatch({
+      type: 'agreementEdit/company',
+      payload: {
+        Content: { Code: companycode },
+      },
+      callback: response => {
+        if (response && response.Status === 200) {
+          const { TI_Z00603List, TI_Z00602List, Code, Name } = response.Content;
+          this.setState(
+            {
+              addList: TI_Z00603List,
+              linkmanList: TI_Z00602List,
+              orderDetail: {
+                ...orderDetail,
+                CardCode: Code,
+                CardName: Name,
+              },
+            },
+            () => {
+              if (TI_Z00603List.length) {
+                this.handleAdreessChange(TI_Z00603List[0].AddressID);
+              } else {
+                message.warning('该客户下没有收货地址，请先维护收货地址');
+              }
+              if (TI_Z00602List.length) {
+                this.linkmanChange(TI_Z00602List[0].UserID);
+              } else {
+                message.warning('该客户下没有维护联系人，请先维护联系人');
+              }
+            }
+          );
         }
       },
     });
@@ -1104,41 +1142,13 @@ class AgreementEdit extends React.Component {
     return null;
   };
 
-  // change 客户
-  changeCompany = company => {
-    const { TI_Z00602List, TI_Z00603List } = company;
-    const { orderDetail } = this.state;
-    orderDetail.CardCode = company.Code;
-    orderDetail.CardName = company.Name;
-    this.setState({ orderDetail, linkmanList: TI_Z00602List || [], addList: TI_Z00603List }, () => {
-      if (TI_Z00603List.length) {
-        this.handleAdreessChange(TI_Z00603List[0].AddressID);
-      } else {
-        message.warning('该客户下没有收货地址，请先维护收货地址');
-      }
-      if (TI_Z00602List.length) {
-        this.linkmanChange(TI_Z00602List[0].UserID);
-      } else {
-        message.warning('该客户下没有维护联系人，请先维护联系人');
-      }
-    });
-  };
-
   // 联系人change
   linkmanChange = value => {
     const { orderDetail, linkmanList } = this.state;
     const select = linkmanList.find(item => item.UserID === value);
     const { CellphoneNO, Email, PhoneNO, UserID, Name } = select;
-    this.setState({
-      orderDetail: {
-        ...orderDetail,
-        CellphoneNO,
-        Email,
-        PhoneNO,
-        UserID,
-        Contacts: Name,
-      },
-    });
+    Object.assign(orderDetail, { CellphoneNO, Email, PhoneNO, UserID, Contacts: Name });
+    this.setState({ orderDetail });
   };
 
   // 地址改变
@@ -1146,19 +1156,17 @@ class AgreementEdit extends React.Component {
     const { addList, orderDetail } = this.state;
     const select = addList.find(item => item.AddressID === value);
     const { Province, ProvinceID, City, CityID, Area, AreaID, AddressID, Address } = select;
-    this.setState({
-      orderDetail: {
-        ...orderDetail,
-        Province,
-        ProvinceID,
-        City,
-        CityID,
-        Area,
-        AreaID,
-        AddressID,
-        Address,
-      },
+    Object.assign(orderDetail, {
+      Province,
+      ProvinceID,
+      City,
+      CityID,
+      Area,
+      AreaID,
+      AddressID,
+      Address,
     });
+    this.setState({ orderDetail });
   };
 
   // 添加行
@@ -1217,6 +1225,7 @@ class AgreementEdit extends React.Component {
         BaseLineID,
         DocEntry,
         SourceType,
+        PriceSource,
       } = item;
       orderDetail.TI_Z03002.push({
         QuotationEntry: DocEntry,
@@ -1265,6 +1274,7 @@ class AgreementEdit extends React.Component {
         CreateUser: currentUser.UserCode,
         CreateDate: orderDetail.CreateDate || new Date(),
         LineID: newLineID,
+        PriceSource,
       });
     });
     this.setState({ orderDetail, orderModalVisible: false }, () => {
@@ -1550,7 +1560,6 @@ class AgreementEdit extends React.Component {
         ProfitLineTotal: orderDetail.ProfitTotal,
       });
     }
-
     return (
       <Card bordered={false} loading={detailloading}>
         <MyPageHeader {...location} />
@@ -1567,7 +1576,7 @@ class AgreementEdit extends React.Component {
                   })(
                     <CompanySelect
                       initialValue={{ key: orderDetail.CardName, label: orderDetail.CardCode }}
-                      onChange={this.changeCompany}
+                      onChange={this.getCompany}
                       keyType="Code"
                     />
                   )
@@ -1594,7 +1603,7 @@ class AgreementEdit extends React.Component {
                   })(
                     <CompanySelect
                       initialValue={{ key: orderDetail.CardCode, label: orderDetail.CardName }}
-                      onChange={this.changeCompany}
+                      onChange={this.getCompany}
                       keyType="Name"
                     />
                   )

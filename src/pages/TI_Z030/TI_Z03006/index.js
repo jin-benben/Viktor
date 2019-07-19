@@ -173,6 +173,17 @@ class agreementOrder extends PureComponent {
         </Ellipsis>
       ),
     },
+    {
+      title: '销订单号',
+      align: 'center',
+      width: 100,
+      dataIndex: 'SoEntry',
+      render: text => (
+        <Link target="_blank" to={`/sellabout/orderdetail?DocEntry=${text}`}>
+          {text}
+        </Link>
+      ),
+    },
   ];
 
   componentDidMount() {
@@ -406,7 +417,7 @@ class agreementOrder extends PureComponent {
               data={{ list: agreementOrderList }}
               pagination={pagination}
               rowKey="DocEntry"
-              scroll={{ x: 1700 }}
+              scroll={{ x: 1800 }}
               columns={this.columns}
               onChange={this.handleStandardTableChange}
             />

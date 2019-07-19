@@ -971,20 +971,40 @@ class InquiryEdit extends React.Component {
     }
   };
 
-  getCompany = Code => {
+  getCompany = companycode => {
     const { dispatch } = this.props;
+    const { inquiryDetail } = this.state;
     dispatch({
       type: 'inquiryEdit/company',
       payload: {
-        Content: { Code },
+        Content: { Code: companycode },
       },
       callback: response => {
         if (response && response.Status === 200) {
-          const { TI_Z00603List, TI_Z00602List } = response.Content;
-          this.setState({
-            addList: TI_Z00603List,
-            linkmanList: TI_Z00602List,
-          });
+          const { TI_Z00603List, TI_Z00602List, Code, Name } = response.Content;
+          this.setState(
+            {
+              addList: TI_Z00603List,
+              linkmanList: TI_Z00602List,
+              inquiryDetail: {
+                ...inquiryDetail,
+                CardCode: Code,
+                CardName: Name,
+              },
+            },
+            () => {
+              if (TI_Z00603List.length) {
+                this.handleAdreessChange(TI_Z00603List[0].AddressID);
+              } else {
+                message.warning('该客户下没有收货地址，请先维护收货地址');
+              }
+              if (TI_Z00602List.length) {
+                this.linkmanChange(TI_Z00602List[0].UserID);
+              } else {
+                message.warning('该客户下没有维护联系人，请先维护联系人');
+              }
+            }
+          );
         }
       },
     });
@@ -1300,36 +1320,6 @@ class InquiryEdit extends React.Component {
     return null;
   };
 
-  // change 客户
-  changeCompany = company => {
-    const { TI_Z00602List, TI_Z00603List } = company;
-    const { inquiryDetail } = this.state;
-    this.setState(
-      {
-        inquiryDetail: {
-          ...inquiryDetail,
-          CardCode: company.Code,
-          CardName: company.Name,
-        },
-
-        linkmanList: TI_Z00602List,
-        addList: TI_Z00603List,
-      },
-      () => {
-        if (TI_Z00603List.length) {
-          this.handleAdreessChange(TI_Z00603List[0].AddressID);
-        } else {
-          message.warning('该客户下没有收货地址，请先维护收货地址');
-        }
-        if (TI_Z00602List.length) {
-          this.linkmanChange(TI_Z00602List[0].UserID);
-        } else {
-          message.warning('该客户下没有维护联系人，请先维护联系人');
-        }
-      }
-    );
-  };
-
   // 联系人change
   linkmanChange = value => {
     const { inquiryDetail, linkmanList } = this.state;
@@ -1369,7 +1359,7 @@ class InquiryEdit extends React.Component {
       LineID,
       SKU: '',
       SKUName: '',
-      BrandName: last?last.BrandName:'',
+      BrandName: last ? last.BrandName : '',
       ProductName: '',
       ManufactureNO: '',
       ManLocation: '',
@@ -1621,7 +1611,7 @@ class InquiryEdit extends React.Component {
                 })(
                   <CompanySelect
                     initialValue={{ key: inquiryDetail.CardName, label: inquiryDetail.CardCode }}
-                    onChange={this.changeCompany}
+                    onChange={this.getCompany}
                     keyType="Code"
                   />
                 )}
@@ -1644,7 +1634,7 @@ class InquiryEdit extends React.Component {
                 })(
                   <CompanySelect
                     initialValue={{ key: inquiryDetail.CardCode, label: inquiryDetail.CardName }}
-                    onChange={this.changeCompany}
+                    onChange={this.getCompany}
                     keyType="Name"
                   />
                 )}

@@ -1,7 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import Link from 'umi/link';
-import moment from 'moment';
 import { Row, Col, Card, Form, Input, Button, Tag, Table, Modal, Badge } from 'antd';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
@@ -38,7 +37,7 @@ class BatchUpload extends PureComponent {
     },
     {
       title: '合同号',
-      width: 100,
+      width: 80,
       dataIndex: 'ContractEntry',
       render: text => (
         <Link target="_blank" to={`/sellabout/TI_Z030/detail?DocEntry=${text}`}>
@@ -91,8 +90,8 @@ class BatchUpload extends PureComponent {
       },
     },
     {
-      title: '批次附件数',
-      width: 100,
+      title: '附件数',
+      width: 80,
       dataIndex: 'AttachmentCount',
       render: (text, record) => (
         <Badge
@@ -143,6 +142,7 @@ class BatchUpload extends PureComponent {
       payload: {
         queryData: {
           ...queryData,
+          sidx: 'ApproveDate',
         },
       },
     });
@@ -197,7 +197,7 @@ class BatchUpload extends PureComponent {
           },
           page: 1,
           rows: 30,
-          sidx: 'Code',
+          sidx: 'ApproveDate',
           sord: 'Desc',
         },
       });

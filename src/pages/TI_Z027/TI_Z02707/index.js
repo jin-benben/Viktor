@@ -343,7 +343,7 @@ class supplierQuotationSku extends PureComponent {
         return <span>{getName(TI_Z004, val)}</span>;
       },
     },
-    
+
     {
       title: '创建日期',
       width: 120,

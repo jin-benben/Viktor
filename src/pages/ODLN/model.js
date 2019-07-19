@@ -1,4 +1,4 @@
-import { queryRule, confirmRule, savePrintRule,companyRule } from './service';
+import { queryRule, confirmRule, savePrintRule, companyRule } from './service';
 
 export default {
   namespace: 'salerConfrim',
@@ -8,7 +8,7 @@ export default {
     queryData: {
       Content: {
         SearchText: '',
-        PrintStatus:"",
+        PrintStatus: '',
         DeliverSts: 'N',
         SearchKey: '',
       },

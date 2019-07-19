@@ -13,7 +13,8 @@ import {
   message,
   AutoComplete,
   Icon,
-  Divider,Modal
+  Divider,
+  Modal,
 } from 'antd';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import router from 'umi/router';
@@ -304,9 +305,17 @@ class CompanyEdit extends PureComponent {
       callback: response => {
         if (response && response.Status === 200) {
           Modal.success({
-            title: '请用微信扫描如下二维码进行关注',
-            content:<div style={{textAlign:'center',margin: 20,marginLeft:0}}><img alt="二维码" src={`http://pic.wktmro.com/qrcode.ashx?c=http://wechat.wktmro.com/bind?DocEntry=${response.Content.DocEntry}`} /></div>
-            ,
+            title: '请用微信扫描如下二维码进行关注绑定',
+            content: (
+              <div style={{ textAlign: 'center', margin: 20, marginLeft: 0 }}>
+                <img
+                  alt="二维码"
+                  src={`http://pic.wktmro.com/qrcode.ashx?c=http://wechat.wktmro.com/bind?DocEntry=${
+                    response.Content.DocEntry
+                  }`}
+                />
+              </div>
+            ),
           });
         }
       },
