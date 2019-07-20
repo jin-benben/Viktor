@@ -762,7 +762,6 @@ class TI_Z029Component extends React.Component {
               SourceType,
               TI_Z02602,
             } = response.Content;
-            this.getCompany(CardCode);
             this.setState({
               orderDetail: {
                 ...orderDetail,
@@ -793,6 +792,7 @@ class TI_Z029Component extends React.Component {
               },
             });
             this.addLineSKU(TI_Z02602, SourceType);
+            this.getCompany(CardCode);
           }
         },
       });

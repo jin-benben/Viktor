@@ -157,7 +157,7 @@ class salerConfrim extends PureComponent {
       ),
     },
     {
-      title: '报价金额',
+      title: '保价金额',
       width: 100,
       dataIndex: 'InsureTotal',
       render: (text, record, index) => (

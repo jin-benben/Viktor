@@ -739,7 +739,6 @@ class AgreementEdit extends React.Component {
               TI_Z02905,
               DueDate,
             } = response.Content;
-            this.getCompany(CardCode);
             this.setState({
               orderDetail: {
                 ...orderDetail,
@@ -771,6 +770,7 @@ class AgreementEdit extends React.Component {
               },
             });
             this.addLineSKU(response.Content.TI_Z02902);
+            this.getCompany(CardCode);
           }
         },
       });
@@ -802,24 +802,6 @@ class AgreementEdit extends React.Component {
     }
   };
 
-  getCompany = Code => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'agreementEdit/company',
-      payload: {
-        Content: { Code },
-      },
-      callback: response => {
-        if (response && response.Status === 200) {
-          const { TI_Z00603List, TI_Z00602List } = response.Content;
-          this.setState({
-            addList: TI_Z00603List,
-            linkmanList: TI_Z00602List,
-          });
-        }
-      },
-    });
-  };
 
   getCompany = companycode => {
     const { dispatch } = this.props;
@@ -1277,6 +1259,7 @@ class AgreementEdit extends React.Component {
         PriceSource,
       });
     });
+    console.log(orderDetail)
     this.setState({ orderDetail, orderModalVisible: false }, () => {
       this.getTotal();
     });
@@ -1686,7 +1669,7 @@ class AgreementEdit extends React.Component {
               <EditableFormTable
                 rowChange={this.rowChange}
                 rowKey="LineID"
-                scroll={{ x: 3700 }}
+                scroll={{ x: 3900 }}
                 columns={this.skuColumns2}
                 data={newdata}
               />

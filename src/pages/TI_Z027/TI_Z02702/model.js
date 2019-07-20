@@ -4,65 +4,16 @@ import { uploadRule } from '../../TI_Z026/service';
 export default {
   namespace: 'supplierAskDetail',
 
-  state: {
-    supplierAskDetailInfo: {
-      Comment: '',
-      SourceType: '',
-      OrderType: '',
-      DocDate: null,
-      CreateDate: null,
-      CardCode: '',
-      CardName: '',
-      UserID: '1',
-      Contacts: '',
-      CellphoneNO: '',
-      PhoneNO: '',
-      Email: '',
-      CompanyCode: '',
-      DueDate: '',
-      ToDate: null,
-      InquiryDocTotal: '',
-      DocTotal: '',
-      NumAtCard: '',
-      Owner: '',
-      IsInquiry: '',
-      TI_Z02702: [],
-      TI_Z02703: [],
-      TI_Z02603Fahter: [],
-    },
-    linkmanList: [],
-  },
+  state: {},
 
   effects: {
-    *fetch({ payload }, { call, put }) {
+    *fetch({ payload,callback }, { call }) {
       const response = yield call(querySingleRule, payload);
-      if (response && response.Status === 200) {
-        yield put({
-          type: 'supplier',
-          payload: {
-            Content: {
-              Code: response.Content.CardCode,
-            },
-          },
-        });
-        yield put({
-          type: 'save',
-          payload: {
-            supplierAskDetailInfo: response.Content,
-          },
-        });
-      }
+      if (callback) callback(response);
     },
-    *supplier({ payload }, { call, put }) {
+    *supplier({ payload,callback }, { call }) {
       const response = yield call(supplierRule, payload);
-      if (response && response.Status === 200) {
-        yield put({
-          type: 'save',
-          payload: {
-            linkmanList: response.Content.TI_Z00702List,
-          },
-        });
-      }
+      if (callback) callback(response);
     },
     *upload({ payload, callback }, { call }) {
       const response = yield call(uploadRule, payload);

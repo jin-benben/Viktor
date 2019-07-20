@@ -334,7 +334,13 @@ class InquiryEdit extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      formVals: {}, // 单据信息
+      formVals: {
+        CardCode:"",
+        CardName:"",
+        TI_Z02702: [],
+        TI_Z02703: [],
+        TI_Z02603Fahter: [],
+      }, // 单据信息
       tabIndex: '1', // tab
       uploadmodalVisible: false, // 上传Modal
       attachmentVisible: false, // 附件Modal
@@ -367,8 +373,20 @@ class InquiryEdit extends React.Component {
             DocEntry: query.DocEntry,
           },
         },
+        callback:response=>{
+          if(response&&response.Status===200){
+            this.setState({
+              formVals:{...response.Content}
+            },()=>{
+              this.getsupplier({Code:response.Content.CardCode})
+            })
+          }
+        }
       });
     }
+    dispatch({
+      type: 'global/getSupplier',
+    });
     dispatch({
       type: 'global/getMDMCommonality',
       payload: {
@@ -380,51 +398,8 @@ class InquiryEdit extends React.Component {
     });
   }
 
-  componentWillUnmount() {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'supplierAskDetail/save',
-      payload: {
-        supplierAskDetailInfo: {
-          Comment: '',
-          SourceType: '',
-          OrderType: '',
-          DocDate: null,
-          CreateDate: null,
-          CardCode: '',
-          CardName: '',
-          UserID: '1',
-          Contacts: '',
-          CellphoneNO: '',
-          PhoneNO: '',
-          Email: '',
-          CompanyCode: '',
-          ToDate: null,
-          InquiryDocTotal: '',
-          DocTotal: '',
-          NumAtCard: '',
-          Owner: '',
-          IsInquiry: '',
-          TI_Z02702: [],
-          TI_Z02703: [],
-          TI_Z02603Fahter: [],
-        },
-      },
-    });
-  }
+  
 
-  static getDerivedStateFromProps(nextProps, prevState) {
-    if (
-      nextProps.supplierAskDetail.supplierAskDetailInfo !== prevState.formVals ||
-      nextProps.supplierAskDetail.linkmanList !== prevState.linkmanList
-    ) {
-      return {
-        formVals: nextProps.supplierAskDetail.supplierAskDetailInfo,
-        linkmanList: nextProps.supplierAskDetail.linkmanList,
-      };
-    }
-    return null;
-  }
 
   //  行内容改变
   rowChange = record => {
@@ -688,12 +663,30 @@ class InquiryEdit extends React.Component {
   };
 
   // change 供应商
-  changeCompany = company => {
-    const { TI_Z00602List } = company;
-    const { formVals } = this.state;
-    formVals.CardCode = company.Code || company.key;
-    formVals.CardName = company.Name || company.label;
-    this.setState({ formVals, linkmanList: TI_Z00602List || [] });
+  getsupplier = supplier => {
+    const {dispatch}=this.props
+    const {formVals}=this.state
+    dispatch({
+       type:'supplierAskDetail/supplier',
+       payload:{
+          Content:{
+            Code:supplier.Code
+          }
+       },
+       callback:response=>{
+         if(response&&response.Status===200){
+           const {Code,Name,TI_Z00702List}=response.Content
+           this.setState({
+             linkmanList:TI_Z00702List,
+             formVals:{
+              ...formVals,
+              CardCode:Code,
+              CardName:Name
+             }
+           })
+         }
+       }
+    })
   };
 
   // 联系人change

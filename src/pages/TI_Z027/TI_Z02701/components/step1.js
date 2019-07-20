@@ -350,22 +350,12 @@ class NeedTabl extends React.Component {
   changeSupplier = (supplier, record, index) => {
     const { Code, Currency, CompanyCode } = supplier;
     const { orderLineList } = this.state;
-    if (!supplier.TI_Z00702List.length) {
-      message.warning('此供应商暂未维护联系，请先维护联系人');
-      return false;
-    }
-    const { CellphoneNO, Email, PhoneNO, Name, LineID } = supplier.TI_Z00702List[0];
     record.SupplierCode = Code;
     record.SupplierName = supplier.Name;
     Object.assign(record, {
-      CellphoneNO,
       CompanyCode,
-      Email,
-      PhoneNO,
-      ContactsID: LineID,
-      Contacts: Name,
       Currency,
-      linkmanList: [...supplier.TI_Z00702List],
+      linkmanList: [],
     });
     orderLineList[index] = record;
     this.setState({ orderLineList: [...orderLineList] });

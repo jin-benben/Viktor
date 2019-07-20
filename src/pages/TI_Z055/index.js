@@ -176,12 +176,20 @@ class PurchaserChange extends PureComponent {
     } = this.props;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
+      let DocDateFrom;
+      let DocDateTo;
+      if (fieldsValue.dateArr) {
+        DocDateFrom = moment(fieldsValue.dateArr[0]).format('YYYY-MM-DD');
+        DocDateTo = moment(fieldsValue.dateArr[1]).format('YYYY-MM-DD');
+      }
       dispatch({
         type: 'purchaserChange/fetch',
         payload: {
           Content: {
             ...queryData.Content,
             ...fieldsValue,
+            DocDateFrom,
+            DocDateTo,
           },
           page: 1,
           rows: 30,

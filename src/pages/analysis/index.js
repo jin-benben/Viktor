@@ -1,6 +1,6 @@
 import React, { Component, Suspense } from 'react';
 import { connect } from 'dva';
-import { Row, Icon, Menu, Dropdown, Col } from 'antd';
+import { Row, Col } from 'antd';
 import moment from 'moment';
 import { getTimeDistance } from './utils/utils';
 
