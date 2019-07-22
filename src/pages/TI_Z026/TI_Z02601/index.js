@@ -41,7 +41,6 @@ import CompanySelect from '@/components/Company/index';
 import HSCode from '@/components/HSCode';
 import PushLink from '@/components/PushLink';
 import Attachment from '@/components/Attachment';
-import MyTag from '@/components/Tag';
 import Comparison from '@/components/Comparison';
 import MyPageHeader from '../components/pageHeader';
 import { getName } from '@/utils/utils';
@@ -446,7 +445,12 @@ class InquiryEdit extends React.Component {
       width: 100,
       dataIndex: 'IsInquiry',
       align: 'center',
-      render: (text, record) => (record.lastIndex ? null : <MyTag type="IsInquiry" value={text} />),
+      render: (text, record) =>
+        record.lastIndex ? null : (
+          <span>
+            {text === 'Y' ? <Tag color="blue">需询价</Tag> : <Tag color="red">不询价</Tag>}
+          </span>
+        ),
     },
     {
       title: '询价价格',
@@ -667,7 +671,12 @@ class InquiryEdit extends React.Component {
       width: 80,
       dataIndex: 'PLineStatus',
       align: 'center',
-      render: (text, record) => (record.lastIndex ? null : <MyTag type="确认" value={text} />),
+      render: (text, record) =>
+        record.lastIndex ? null : (
+          <span>
+            {text === 'C' ? <Tag color="blue">已确认</Tag> : <Tag color="red">未确认</Tag>}
+          </span>
+        ),
     },
     {
       title: '处理人',

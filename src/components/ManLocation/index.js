@@ -1,8 +1,8 @@
 import React, { PureComponent } from 'react';
-import request from '@/utils/request';
 import { Select, Spin, Empty } from 'antd';
 import debounce from 'lodash/debounce';
 import { connect } from 'dva';
+import request from '@/utils/request';
 
 const { Option } = Select;
 @connect(({ global }) => ({

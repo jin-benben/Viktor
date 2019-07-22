@@ -1,7 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import { Table, Icon, Popconfirm } from 'antd';
 import { connect } from 'dva';
-import moment from 'moment';
 import { baseType } from '@/utils/publicData';
 import { getName } from '@/utils/utils';
 

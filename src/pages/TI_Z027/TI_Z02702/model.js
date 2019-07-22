@@ -7,11 +7,11 @@ export default {
   state: {},
 
   effects: {
-    *fetch({ payload,callback }, { call }) {
+    *fetch({ payload, callback }, { call }) {
       const response = yield call(querySingleRule, payload);
       if (callback) callback(response);
     },
-    *supplier({ payload,callback }, { call }) {
+    *supplier({ payload, callback }, { call }) {
       const response = yield call(supplierRule, payload);
       if (callback) callback(response);
     },

@@ -4,6 +4,7 @@ import moment from 'moment';
 import Link from 'umi/link';
 import { Row, DatePicker, Col, Card, Form, Input, Button, Tag } from 'antd';
 import StandardTable from '@/components/StandardTable';
+import Text from '@/components/Text';
 
 const { RangePicker } = DatePicker;
 const FormItem = Form.Item;
@@ -43,11 +44,13 @@ class DDMessage extends PureComponent {
       title: 'PC地址',
       width: 200,
       dataIndex: 'PCUrl',
+      render: text => <Text text={text} />,
     },
     {
       title: 'Mobile地址',
       width: 200,
       dataIndex: 'MobileUrl',
+      render: text => <Text text={text} />,
     },
     {
       title: '推送状态',
@@ -176,7 +179,7 @@ class DDMessage extends PureComponent {
       ddMessage: { ddMessageList, pagination },
       loading,
     } = this.props;
-    const tablewidth = document.body.offsetWidth < 1550 ? 1500 : 0;
+
     return (
       <Fragment>
         <Card bordered={false}>
@@ -187,7 +190,7 @@ class DDMessage extends PureComponent {
               data={{ list: ddMessageList }}
               pagination={pagination}
               rowKey="Code"
-              scroll={{ y: 600, x: tablewidth }}
+              scroll={{ x: 1500 }}
               columns={this.columns}
               onChange={this.handleStandardTableChange}
             />

@@ -335,8 +335,8 @@ class InquiryEdit extends React.Component {
     super(props);
     this.state = {
       formVals: {
-        CardCode:"",
-        CardName:"",
+        CardCode: '',
+        CardName: '',
         TI_Z02702: [],
         TI_Z02703: [],
         TI_Z02603Fahter: [],
@@ -373,15 +373,18 @@ class InquiryEdit extends React.Component {
             DocEntry: query.DocEntry,
           },
         },
-        callback:response=>{
-          if(response&&response.Status===200){
-            this.setState({
-              formVals:{...response.Content}
-            },()=>{
-              this.getsupplier({Code:response.Content.CardCode})
-            })
+        callback: response => {
+          if (response && response.Status === 200) {
+            this.setState(
+              {
+                formVals: { ...response.Content },
+              },
+              () => {
+                this.getsupplier({ Code: response.Content.CardCode });
+              }
+            );
           }
-        }
+        },
       });
     }
     dispatch({
@@ -397,9 +400,6 @@ class InquiryEdit extends React.Component {
       },
     });
   }
-
-  
-
 
   //  行内容改变
   rowChange = record => {
@@ -664,29 +664,29 @@ class InquiryEdit extends React.Component {
 
   // change 供应商
   getsupplier = supplier => {
-    const {dispatch}=this.props
-    const {formVals}=this.state
+    const { dispatch } = this.props;
+    const { formVals } = this.state;
     dispatch({
-       type:'supplierAskDetail/supplier',
-       payload:{
-          Content:{
-            Code:supplier.Code
-          }
-       },
-       callback:response=>{
-         if(response&&response.Status===200){
-           const {Code,Name,TI_Z00702List}=response.Content
-           this.setState({
-             linkmanList:TI_Z00702List,
-             formVals:{
+      type: 'supplierAskDetail/supplier',
+      payload: {
+        Content: {
+          Code: supplier.Code,
+        },
+      },
+      callback: response => {
+        if (response && response.Status === 200) {
+          const { Code, Name, TI_Z00702List } = response.Content;
+          this.setState({
+            linkmanList: TI_Z00702List,
+            formVals: {
               ...formVals,
-              CardCode:Code,
-              CardName:Name
-             }
-           })
-         }
-       }
-    })
+              CardCode: Code,
+              CardName: Name,
+            },
+          });
+        }
+      },
+    });
   };
 
   // 联系人change

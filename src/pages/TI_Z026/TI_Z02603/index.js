@@ -97,6 +97,12 @@ class InquiryEdit extends PureComponent {
       align: 'center',
     },
     {
+      title: '行总计',
+      width: 100,
+      align: 'center',
+      dataIndex: 'LineTotal',
+    },
+    {
       title: '询价价格',
       width: 120,
       dataIndex: 'InquiryPrice',
@@ -124,16 +130,13 @@ class InquiryEdit extends PureComponent {
       width: 150,
       align: 'center',
       dataIndex: 'InquiryLineTotal',
-      render: (text, record) =>
-        record.lastIndex ? (
-          ''
-        ) : (
-          <Ellipsis tooltip lines={1}>
-            {`${text || ''}${
-              record.Currency ? `(${record.Currency})` : ''
-            }-${record.InquiryLineTotalLocal || ''}`}
-          </Ellipsis>
-        ),
+      render: (text, record) => (
+        <Ellipsis tooltip lines={1}>
+          {`${text || ''}${
+            record.Currency ? `(${record.Currency})` : ''
+          }-${record.InquiryLineTotalLocal || ''}`}
+        </Ellipsis>
+      ),
     },
     {
       title: '询价备注',
@@ -645,7 +648,7 @@ class InquiryEdit extends PureComponent {
             <StandardTable
               data={{ list: newdata }}
               rowKey="LineID"
-              scroll={{ x: 3200 }}
+              scroll={{ x: 3300 }}
               columns={this.skuColumns}
             />
           </TabPane>

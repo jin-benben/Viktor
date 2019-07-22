@@ -261,16 +261,13 @@ class AgreementEdit extends React.Component {
       width: 150,
       align: 'center',
       dataIndex: 'InquiryLineTotal',
-      render: (text, record) =>
-        record.lastIndex ? (
-          ''
-        ) : (
-          <Ellipsis tooltip lines={1}>
-            {`${text || ''}${
-              record.Currency ? `(${record.Currency})` : ''
-            }-${record.InquiryLineTotalLocal || ''}`}
-          </Ellipsis>
-        ),
+      render: (text, record) => (
+        <Ellipsis tooltip lines={1}>
+          {`${text || ''}${
+            record.Currency ? `(${record.Currency})` : ''
+          }-${record.InquiryLineTotalLocal || ''}`}
+        </Ellipsis>
+      ),
     },
     {
       title: '询价备注',
@@ -802,7 +799,6 @@ class AgreementEdit extends React.Component {
     }
   };
 
-
   getCompany = companycode => {
     const { dispatch } = this.props;
     const { orderDetail } = this.state;
@@ -877,7 +873,8 @@ class AgreementEdit extends React.Component {
       record.InquiryDocTotalLocal = round(record.InquiryDocTotalLocal, 2);
       record.LineTotal = isNaN(record.Quantity * record.Price) ? 0 : record.Quantity * record.Price;
       record.LineTotal = round(record.LineTotal, 2);
-      record.ProfitLineTotal = record.LineTotal - record.InquiryLineTotalLocal - record.OtherTotal;
+      record.ProfitLineTotal =
+        record.LineTotal - record.InquiryLineTotalLocal - record.OtherTotal - record.ForeignFreight;
       record.ProfitLineTotal = round(record.ProfitLineTotal, 2);
       DocTotal += record.LineTotal;
       InquiryDocTotalLocal += record.InquiryLineTotalLocal;
@@ -1259,7 +1256,7 @@ class AgreementEdit extends React.Component {
         PriceSource,
       });
     });
-    console.log(orderDetail)
+    console.log(orderDetail);
     this.setState({ orderDetail, orderModalVisible: false }, () => {
       this.getTotal();
     });

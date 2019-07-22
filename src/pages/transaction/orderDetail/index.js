@@ -5,7 +5,6 @@ import moment from 'moment';
 import DescriptionList from 'ant-design-pro/lib/DescriptionList';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import StandardTable from '@/components/StandardTable';
-import MyTag from '@/components/Tag';
 import Attachment from '@/components/Attachment/other';
 import { getName } from '@/utils/utils';
 
@@ -300,7 +299,7 @@ class OrderDetailPage extends PureComponent {
           <Description term="客户参考号">{orderDetailInfo.NumAtCard}</Description>
           <Description term="单据状态">
             {orderDetailInfo.CANCELED === 'Y' ? (
-              <MyTag type="关闭" value="Y" />
+              <Tag color="red">已关闭</Tag>
             ) : (
               <Fragment>
                 {orderDetailInfo.DocStatus === 'O' ? (

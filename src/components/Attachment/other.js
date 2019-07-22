@@ -1,7 +1,6 @@
 import React, { PureComponent } from 'react';
 import { Table } from 'antd';
 import { connect } from 'dva';
-import moment from 'moment';
 import { baseType } from '@/utils/publicData';
 import { getName } from '@/utils/utils';
 

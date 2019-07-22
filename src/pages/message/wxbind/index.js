@@ -1,10 +1,9 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
-import { Row, DatePicker, Col, Card, Form, Input, Button, Tag } from 'antd';
+import { Row, Col, Card, Form, Input, Button, Tag } from 'antd';
 import StandardTable from '@/components/StandardTable';
 
-const { RangePicker } = DatePicker;
 const FormItem = Form.Item;
 
 @connect(({ wxbind, loading }) => ({
@@ -39,11 +38,6 @@ class WxBind extends PureComponent {
       title: '职位',
       width: 100,
       dataIndex: 'Position',
-    },
-    {
-      title: '绑定微信号',
-      width: 100,
-      dataIndex: 'OpenId',
     },
     {
       title: '状态',

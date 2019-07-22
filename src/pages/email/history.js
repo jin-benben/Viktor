@@ -2,10 +2,9 @@ import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
 import Link from 'umi/link';
-import { Row, Col, Card, Form, Input, Button, Select, DatePicker } from 'antd';
+import { Row, Col, Card, Form, Input, Button, Select, DatePicker, Tag } from 'antd';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import StandardTable from '@/components/StandardTable';
-import MyTag from '@/components/Tag';
 import { emailSendType } from '@/utils/publicData';
 import { getName } from '@/utils/utils';
 
@@ -59,7 +58,9 @@ class PrintHistory extends PureComponent {
       title: '状态',
       dataIndex: 'SendStatus',
       width: 80,
-      render: text => <MyTag type="成功" value={text} />,
+      render: text => (
+        <span>{text === 'C' ? <Tag color="blue">成功</Tag> : <Tag color="red">失败</Tag>}</span>
+      ),
     },
     {
       title: '发送人',

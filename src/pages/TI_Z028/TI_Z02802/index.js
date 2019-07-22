@@ -194,7 +194,7 @@ class TI_Z02802 extends PureComponent {
         },
       });
     }
-   
+
     dispatch({
       type: 'global/getMDMCommonality',
       payload: {

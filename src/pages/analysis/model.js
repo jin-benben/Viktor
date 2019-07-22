@@ -115,7 +115,7 @@ export default {
       }
     },
     *getdocProcess({ payload }, { call, put }) {
-      const docProcessRes =yield call(docProcessRule, payload);
+      const docProcessRes = yield call(docProcessRule, payload);
       if (docProcessRes && docProcessRes.Status === 200) {
         const { PUserDocInfo, SUserDocInfo } = docProcessRes.Content;
         const newPUserDocInfo = PUserDocInfo.map((item, index) => {

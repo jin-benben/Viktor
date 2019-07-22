@@ -254,16 +254,13 @@ class TI_Z029Component extends React.Component {
       width: 150,
       align: 'center',
       dataIndex: 'InquiryLineTotal',
-      render: (text, record) =>
-        record.lastIndex ? (
-          ''
-        ) : (
-          <Ellipsis tooltip lines={1}>
-            {`${text || ''}${
-              record.Currency ? `(${record.Currency})` : ''
-            }-${record.InquiryLineTotalLocal || ''}`}
-          </Ellipsis>
-        ),
+      render: (text, record) => (
+        <Ellipsis tooltip lines={1}>
+          {`${text || ''}${
+            record.Currency ? `(${record.Currency})` : ''
+          }-${record.InquiryLineTotalLocal || ''}`}
+        </Ellipsis>
+      ),
     },
     {
       title: '询价备注',
@@ -901,7 +898,8 @@ class TI_Z029Component extends React.Component {
       record.InquiryLineTotalLocal = round(record.InquiryLineTotalLocal, 2);
       record.LineTotal = isNaN(record.Quantity * record.Price) ? 0 : record.Quantity * record.Price;
       record.LineTotal = round(record.LineTotal, 2);
-      record.ProfitLineTotal = record.LineTotal - record.InquiryLineTotalLocal - record.OtherTotal;
+      record.ProfitLineTotal =
+        record.LineTotal - record.InquiryLineTotalLocal - record.OtherTotal - record.ForeignFreight;
       record.ProfitLineTotal = round(record.ProfitLineTotal, 2);
       DocTotal += record.LineTotal;
       InquiryDocTotalLocal += record.InquiryLineTotalLocal;

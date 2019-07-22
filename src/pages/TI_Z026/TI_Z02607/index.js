@@ -169,6 +169,18 @@ class orderLine extends PureComponent {
       render: (text, record) => <span>{`${text}(${record.Unit})`}</span>,
     },
     {
+      title: '转移备注',
+      width: 120,
+      sorter: true,
+      align: 'center',
+      dataIndex: 'TransferComment',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
+    },
+    {
       title: '价格',
       width: 80,
       dataIndex: 'Price',
@@ -393,18 +405,7 @@ class orderLine extends PureComponent {
         return <span>{getName(TI_Z004, val)}</span>;
       },
     },
-    {
-      title: '转移备注',
-      width: 120,
-      sorter: true,
-      align: 'center',
-      dataIndex: 'TransferComment',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
+
     {
       title: '转移日期',
       dataIndex: 'TransferDateTime',
