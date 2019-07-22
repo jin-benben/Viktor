@@ -101,7 +101,7 @@ class PrintDetailPage extends PureComponent {
               <Description term="主题">{sendDetail.Title}</Description>
               <Description term="发送状态">
                 <span>
-                  {sendDetail.SendStatus === 'C' ? (
+                  {sendDetail.SendStatus === 'Y' ? (
                     <Tag color="blue">成功</Tag>
                   ) : (
                     <Tag color="red">失败</Tag>

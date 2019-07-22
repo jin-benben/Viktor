@@ -59,7 +59,7 @@ class PrintHistory extends PureComponent {
       dataIndex: 'SendStatus',
       width: 80,
       render: text => (
-        <span>{text === 'C' ? <Tag color="blue">成功</Tag> : <Tag color="red">失败</Tag>}</span>
+        <span>{text === 'Y' ? <Tag color="blue">成功</Tag> : <Tag color="red">失败</Tag>}</span>
       ),
     },
     {
