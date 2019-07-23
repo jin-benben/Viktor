@@ -250,7 +250,7 @@ class inquiryListPage extends PureComponent {
       if (err) return;
       let DocDateFrom = '';
       let DocDateTo = '';
-      if (fieldsValue.dateArr) {
+      if (fieldsValue.dateArr && fieldsValue.dateArr.length) {
         DocDateFrom = moment(fieldsValue.dateArr[0]).format('YYYY-MM-DD');
         DocDateTo = moment(fieldsValue.dateArr[1]).format('YYYY-MM-DD');
       }

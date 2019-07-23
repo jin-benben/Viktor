@@ -250,13 +250,12 @@ class supplierQuotation extends PureComponent {
 
     form.validateFields((err, fieldsValue) => {
       if (err) return;
-      let DocDateFrom;
-      let DocDateTo;
-      if (fieldsValue.dateArr) {
+      let DocDateFrom = '';
+      let DocDateTo = '';
+      if (fieldsValue.dateArr && fieldsValue.dateArr.length) {
         DocDateFrom = moment(fieldsValue.dateArr[0]).format('YYYY-MM-DD');
         DocDateTo = moment(fieldsValue.dateArr[1]).format('YYYY-MM-DD');
       }
-
       delete fieldsValue.dateArr;
       const queryData = {
         ...fieldsValue,

@@ -324,16 +324,16 @@ class OINVConfrim extends PureComponent {
 
     form.validateFields((err, fieldsValue) => {
       if (err) return;
-      let DocDateFrom;
-      let DocDateTo;
-      if (fieldsValue.dateArr) {
+      let DocDateFrom = '';
+      let DocDateTo = '';
+      if (fieldsValue.dateArr && fieldsValue.dateArr.length) {
         DocDateFrom = moment(fieldsValue.dateArr[0]).format('YYYY-MM-DD');
         DocDateTo = moment(fieldsValue.dateArr[1]).format('YYYY-MM-DD');
       }
 
-      let DeliverDateFrom;
-      let DeliverDateTo;
-      if (fieldsValue.deliverArr) {
+      let DeliverDateFrom = '';
+      let DeliverDateTo = '';
+      if (fieldsValue.deliverArr && fieldsValue.deliverArr.length) {
         DeliverDateFrom = moment(fieldsValue.deliverArr[0]).format('YYYY-MM-DD');
         DeliverDateTo = moment(fieldsValue.deliverArr[1]).format('YYYY-MM-DD');
       }

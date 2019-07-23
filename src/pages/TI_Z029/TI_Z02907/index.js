@@ -537,24 +537,23 @@ class SalesQuotationSku extends PureComponent {
 
     form.validateFields((err, fieldsValue) => {
       if (err) return;
-      let DocDateFrom;
-      let DocDateTo;
-      if (fieldsValue.dateArr) {
+      let DocDateFrom = '';
+      let DocDateTo = '';
+      if (fieldsValue.dateArr && fieldsValue.dateArr.length) {
         DocDateFrom = moment(fieldsValue.dateArr[0]).format('YYYY-MM-DD');
         DocDateTo = moment(fieldsValue.dateArr[1]).format('YYYY-MM-DD');
       }
-
-      let TransferDateTimeFrom = '';
-      let TransferDateTimeTo = '';
-      if (fieldsValue.TransferDate) {
-        TransferDateTimeFrom = moment(fieldsValue.TransferDate[0]).format('YYYY-MM-DD');
-        TransferDateTimeTo = moment(fieldsValue.TransferDate[1]).format('YYYY-MM-DD');
-      }
       let InquiryCfmDateFrom = '';
       let InquiryCfmDateTo = '';
-      if (fieldsValue.InquiryCfmDate) {
+      if (fieldsValue.InquiryCfmDate && fieldsValue.InquiryCfmDate.length) {
         InquiryCfmDateFrom = moment(fieldsValue.InquiryCfmDate[0]).format('YYYY-MM-DD');
         InquiryCfmDateTo = moment(fieldsValue.InquiryCfmDate[1]).format('YYYY-MM-DD');
+      }
+      let TransferDateTimeFrom = '';
+      let TransferDateTimeTo = '';
+      if (fieldsValue.TransferDate && fieldsValue.TransferDate.length) {
+        TransferDateTimeFrom = moment(fieldsValue.TransferDate[0]).format('YYYY-MM-DD');
+        TransferDateTimeTo = moment(fieldsValue.TransferDate[1]).format('YYYY-MM-DD');
       }
 
       delete fieldsValue.dateArr;

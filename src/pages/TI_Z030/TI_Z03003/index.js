@@ -157,16 +157,13 @@ class InquiryEdit extends React.Component {
       width: 150,
       align: 'center',
       dataIndex: 'InquiryLineTotal',
-      render: (text, record) =>
-        record.lastIndex ? (
-          ''
-        ) : (
-          <Ellipsis tooltip lines={1}>
-            {`${text || ''}${
-              record.Currency ? `(${record.Currency})` : ''
-            }-${record.InquiryLineTotalLocal || ''}`}
-          </Ellipsis>
-        ),
+      render: (text, record) => (
+        <Ellipsis tooltip lines={1}>
+          {`${text || ''}${
+            record.Currency ? `(${record.Currency})` : ''
+          }-${record.InquiryLineTotalLocal || ''}`}
+        </Ellipsis>
+      ),
     },
     {
       title: '重量[运费]',

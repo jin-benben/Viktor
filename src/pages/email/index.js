@@ -127,14 +127,16 @@ class PrintPage extends PureComponent {
   };
 
   // 获取上传成功附件，插入到对应数组
-  handleSubmit = fieldsValue => {
-    const { AttachmentPath, AttachmentCode, AttachmentName, AttachmentExtension } = fieldsValue;
+  handleSubmit = fileList => {
     const { sendDetail } = this.state;
-    sendDetail.TI_Z04702.push({
-      AttachmentPath,
-      AttachmentCode,
-      AttachmentName,
-      AttachmentExtension,
+    fileList.map(file => {
+      const { AttachmentPath, AttachmentCode, AttachmentName, AttachmentExtension } = file;
+      sendDetail.TI_Z04702.push({
+        AttachmentPath,
+        AttachmentCode,
+        AttachmentName,
+        AttachmentExtension,
+      });
     });
     this.setState({
       sendDetail: { ...sendDetail },
