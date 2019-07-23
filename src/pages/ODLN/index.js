@@ -408,22 +408,19 @@ class salerConfrim extends PureComponent {
       }
 
       const { DeliverSts, Owner, PrintStatus } = fieldsValue;
-      const queryData = {
-        DocDateFrom,
-        DocDateTo,
-        DeliverDateFrom,
-        DeliverDateTo,
-        DeliverSts,
-        PrintStatus,
-        Owner,
-      };
       dispatch({
         type: 'salerConfrim/fetch',
         payload: {
           Content: {
             SearchText: '',
             SearchKey: 'Name',
-            ...queryData,
+            DocDateFrom,
+            DocDateTo,
+            DeliverDateFrom,
+            DeliverDateTo,
+            DeliverSts: DeliverSts || 'N',
+            PrintStatus: PrintStatus || 'N',
+            Owner,
           },
           page: 1,
           rows: 30,
