@@ -2,9 +2,7 @@
 /* eslint-disable no-param-reassign */
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import router from 'umi/router';
 import { Row, Col, Card, Form, Input, Button, Icon, Select, notification, List, Tag } from 'antd';
-import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import EditableFormTable from '@/components/EditableFormTable';
 import MDMCommonality from '@/components/Select';
@@ -19,7 +17,8 @@ const { Option } = Select;
 @connect(({ skuAdd, global, loading }) => ({
   skuAdd,
   global,
-  loading: loading.models.rule,
+  addloading: loading.effects['skuAdd/add'],
+  loading: loading.effects['skuAdd/fetchList']
 }))
 @Form.create()
 
@@ -301,7 +300,7 @@ class AddSKU extends PureComponent {
         SearchKey: 'Name',
       },
       page: 1,
-      rows: 30,
+      rows: 10,
       sidx: 'Code',
       sord: 'Desc',
     },
@@ -310,19 +309,12 @@ class AddSKU extends PureComponent {
   componentDidMount() {
     const {
       dispatch,global: { BrandList, CategoryTree, Purchaser, WhsCode },
-      location: { query },
+      
     } = this.props;
-    const { BrandName, Category } = query;
     const { queryData } = this.state;
-    Object.assign(queryData.Content, { BrandName: BrandName || '', Category: Category || '' });
-    this.setState({ queryData: { ...queryData } });
     dispatch({
       type: 'skuAdd/fetch',
-      payload: {
-        ...queryData,
-      },
     });
-   
     if (!Purchaser.length || WhsCode.length) {
       dispatch({
         type: 'global/getMDMCommonality',
@@ -343,25 +335,52 @@ class AddSKU extends PureComponent {
         type: 'global/getCategory',
       });
     }
+    this.fetchList(queryData)
+  }
+
+  fetchList=params=>{
+    const { dispatch } = this.props;
     dispatch({
       type: 'skuAdd/fetchList',
       payload: {
-        ...queryData,
+       ...params
       },
+      callback:response=>{
+        if (response && response.Status === 200) {
+          if (!response.Content) {
+           this.setState({
+            TI_Z00901: [],
+            pagination: {
+              total: 0,
+            },
+           })
+          } else {
+            const { rows, records, page } = response.Content;
+            this.setState({
+              TI_Z00901:rows,
+              pagination: {
+                showSizeChanger: true,
+                showTotal: total => `共 ${total} 条`,
+                pageSizeOptions: ['30', '60', '90'],
+                total: records,
+                pageSize: params.rows,
+                current: page,
+              },
+             })
+           
+          }
+        }
+      }
     });
   }
 
   handleStandardTableChange = pagination => {
-    const { dispatch } = this.props;
     const { queryData } = this.state;
-    dispatch({
-      type: 'skuAdd/fetch',
-      payload: {
-        ...queryData,
-        page: pagination.current,
-        rows: pagination.pageSize,
-      },
-    });
+    this.fetchList({
+      ...queryData,
+      page: pagination.current,
+      rows: pagination.pageSize,
+    })
   };
 
   handleSearch = e => {
@@ -372,7 +391,7 @@ class AddSKU extends PureComponent {
     form.validateFields((err, fieldsValue) => {
       if (err) return;
       dispatch({
-        type: 'skuAdd/fetch',
+        type: 'skuAdd/fetchList',
         payload: {
           Content: {
             SearchText: '',
@@ -438,12 +457,13 @@ class AddSKU extends PureComponent {
   rowChange = record => {
     const { TI_Z00901 } = this.state;
     TI_Z00901.map(item => {
-      if (item.LineID === record.LineID) {
+      if (item.Code === record.Code) {
         record.Name = `${record.BrandName}  ${record.ProductName}  ${record.ManufactureNO}`;
         return record;
       }
       return item;
     });
+    console.log(TI_Z00901)
     this.setState({ TI_Z00901 });
   };
 
@@ -538,11 +558,8 @@ class AddSKU extends PureComponent {
   }
 
   render() {
-    const {
-      skuAdd: { skuList, pagination },
-      loading,addloading
-    } = this.props;
-    console.log(skuList)
+    const {loading,addloading} = this.props;
+    const {TI_Z00901,pagination}=this.state
     return (
       <Fragment>
         <Card bordered={false}>
@@ -559,7 +576,7 @@ class AddSKU extends PureComponent {
               }}
               columns={this.columns}
               onChange={this.handleStandardTableChange}
-              data={skuList}
+              data={TI_Z00901}
               
             />
             

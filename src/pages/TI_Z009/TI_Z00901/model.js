@@ -11,7 +11,7 @@ import {
 export default {
   namespace: 'skuAdd',
   state: {
-    pagination1: {
+    queryData: {
       Content: {
         SearchText: '',
         SearchKey: 'Name',
@@ -24,23 +24,22 @@ export default {
     spuList: [],
     fhscodeList: [],
     hscodeList: [],
-    skuList:[],
     pagination: {
       showSizeChanger: true,
       showTotal: total => `共 ${total} 条`,
-      pageSizeOptions: ['30', '60', '90'],
+      pageSizeOptions: ['20', '40', '60'],
       total: 0,
-      pageSize: 30,
+      pageSize: 20,
       current: 1,
     },
   },
   effects: {
     *fetch(_, { call, put, select, all }) {
-      const pagination = yield select(state => state.skuAdd.pagination1);
+      const queryData = yield select(state => state.skuAdd.queryData);
       const [spuRes, fhsRes, hsRes] = yield all([
-        call(querySPURule, pagination),
-        call(queryFHSCodeRule, pagination),
-        call(queryHSCodeRule, pagination),
+        call(querySPURule, queryData),
+        call(queryFHSCodeRule, queryData),
+        call(queryHSCodeRule, queryData),
       ]);
       if (spuRes && spuRes.Status === 200) {
         if (!spuRes.Content) {
@@ -110,37 +109,9 @@ export default {
       const response = yield call(confrimRule, payload);
       if (callback) callback(response);
     },
-    *fetchList({ payload }, { call, put }) {
+    *fetchList({ payload,callback }, { call }) {
       const response = yield call(queryRule, payload);
-      if (response && response.Status === 200) {
-        if (!response.Content) {
-          yield put({
-            type: 'save',
-            payload: {
-              skuList: [],
-              pagination: {
-                total: 0,
-              },
-            },
-          });
-        } else {
-          const { rows, records, page } = response.Content;
-          yield put({
-            type: 'save',
-            payload: {
-              skuList: rows,
-              pagination: {
-                showSizeChanger: true,
-                showTotal: total => `共 ${total} 条`,
-                pageSizeOptions: ['30', '60', '90'],
-                total: records,
-                pageSize: payload.rows,
-                current: page,
-              },
-            },
-          });
-        }
-      }
+      if(callback) callback(response)
     },
   },
   reducers: {
