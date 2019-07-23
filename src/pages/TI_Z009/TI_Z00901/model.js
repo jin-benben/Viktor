@@ -5,12 +5,13 @@ import {
   querySPURule,
   queryFHSCodeRule,
   queryHSCodeRule,
+  queryRule
 } from '../service';
 
 export default {
   namespace: 'skuAdd',
   state: {
-    pagination: {
+    pagination1: {
       Content: {
         SearchText: '',
         SearchKey: 'Name',
@@ -23,10 +24,19 @@ export default {
     spuList: [],
     fhscodeList: [],
     hscodeList: [],
+    skuList:[],
+    pagination: {
+      showSizeChanger: true,
+      showTotal: total => `共 ${total} 条`,
+      pageSizeOptions: ['30', '60', '90'],
+      total: 0,
+      pageSize: 30,
+      current: 1,
+    },
   },
   effects: {
     *fetch(_, { call, put, select, all }) {
-      const pagination = yield select(state => state.skuAdd.pagination);
+      const pagination = yield select(state => state.skuAdd.pagination1);
       const [spuRes, fhsRes, hsRes] = yield all([
         call(querySPURule, pagination),
         call(queryFHSCodeRule, pagination),
@@ -99,6 +109,38 @@ export default {
     *confrim({ payload, callback }, { call }) {
       const response = yield call(confrimRule, payload);
       if (callback) callback(response);
+    },
+    *fetchList({ payload }, { call, put }) {
+      const response = yield call(queryRule, payload);
+      if (response && response.Status === 200) {
+        if (!response.Content) {
+          yield put({
+            type: 'save',
+            payload: {
+              skuList: [],
+              pagination: {
+                total: 0,
+              },
+            },
+          });
+        } else {
+          const { rows, records, page } = response.Content;
+          yield put({
+            type: 'save',
+            payload: {
+              skuList: rows,
+              pagination: {
+                showSizeChanger: true,
+                showTotal: total => `共 ${total} 条`,
+                pageSizeOptions: ['30', '60', '90'],
+                total: records,
+                pageSize: payload.rows,
+                current: page,
+              },
+            },
+          });
+        }
+      }
     },
   },
   reducers: {

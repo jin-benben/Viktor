@@ -19,7 +19,7 @@ export function chechEmail(email) {
 
 export function requestUrl(url) {
   if (url.indexOf('/MDM') !== -1) {
-    return url.replace(/\/MDM/i, 'http://apimdm.wktmro.com');
+    return url.replace(/\/MDM/i, 'http://47.104.65.49:8088');
   }
   if (url.indexOf('/OMS') !== -1) {
     return url.replace(/\/OMS/i, 'http://apioms.wktmro.com');
