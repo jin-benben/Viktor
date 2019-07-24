@@ -41,15 +41,15 @@ class WxBind extends PureComponent {
     },
     {
       title: '状态',
-      dataIndex: 'Status',
+      dataIndex: 'DocStatus',
       width: 80,
       render: val => (
-        <span>{val === '2' ? <Tag color="blue">成功</Tag> : <Tag color="red">失败</Tag>}</span>
+        <span>{val === 'C' ? <Tag color="blue">成功</Tag> : <Tag color="red">失败</Tag>}</span>
       ),
     },
     {
       title: '绑定时间',
-      dataIndex: 'CreateDate',
+      dataIndex: 'BindDateTime',
       width: 100,
       render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
