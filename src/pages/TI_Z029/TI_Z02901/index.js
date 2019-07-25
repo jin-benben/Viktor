@@ -865,9 +865,7 @@ class TI_Z029Component extends React.Component {
     const { orderDetail } = this.state;
     orderDetail.TI_Z02902.map(item => {
       if (item.key === record.key) {
-        record.SKUName = `${record.BrandName}  ${record.ProductName}  ${record.ManufactureNO}  ${
-          record.Parameters
-        }  ${record.Package}`;
+        record.SKUName = `${record.BrandName}  ${record.ProductName}  ${record.ManufactureNO}`;
         return record;
       }
       return item;
@@ -928,9 +926,7 @@ class TI_Z029Component extends React.Component {
   rowSelectChange = (value, record, index, key) => {
     const { orderDetail } = this.state;
     record[key] = value;
-    record.SKUName = `${record.BrandName}  ${record.ProductName}  ${record.ManufactureNO}  ${
-      record.Parameters
-    }  ${record.Package}`;
+    record.SKUName = `${record.BrandName}  ${record.ProductName}  ${record.ManufactureNO}`;
     orderDetail.TI_Z02902[index] = record;
     this.setState({ orderDetail: { ...orderDetail } });
   };

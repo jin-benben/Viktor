@@ -299,8 +299,6 @@ class SKUDetail extends Component {
                 {formVals.Name}
               </FormItem>
             </Col>
-          </Row>
-          <Row gutter={8}>
             <Col lg={12} md={12} sm={24}>
               <FormItem key="BrandName" {...this.formLayout} label="品牌">
                 {getFieldDecorator('BrandName', {
@@ -316,8 +314,6 @@ class SKUDetail extends Component {
                 })(<Input placeholder="请输入名称" />)}
               </FormItem>
             </Col>
-          </Row>
-          <Row gutter={8}>
             <Col lg={12} md={12} sm={24}>
               <FormItem key="Parameters" {...this.formLayout} label="参数">
                 {getFieldDecorator('Parameters', {
@@ -326,14 +322,20 @@ class SKUDetail extends Component {
               </FormItem>
             </Col>
             <Col lg={12} md={12} sm={24}>
+              <FormItem key="ManufactureNO" {...this.formLayout} label="型号">
+                {getFieldDecorator('ManufactureNO', {
+                  initialValue: formVals.ManufactureNO,
+                })(<Input placeholder="请输入型号" />)}
+              </FormItem>
+            </Col>
+        
+            <Col lg={12} md={12} sm={24}>
               <FormItem key="Package" {...this.formLayout} label="包装 ">
                 {getFieldDecorator('Package', {
                   initialValue: formVals.Package,
                 })(<Input placeholder="请输入包装 " />)}
               </FormItem>
             </Col>
-          </Row>
-          <Row gutter={8}>
             <Col lg={12} md={12} sm={24}>
               <FormItem key="Unit" {...this.formLayout} label="单位">
                 {getFieldDecorator('Unit', {
@@ -348,8 +350,6 @@ class SKUDetail extends Component {
                 })(<MDMCommonality data={TI_Z042} initialValue={formVals.ManLocation} />)}
               </FormItem>
             </Col>
-          </Row>
-          <Row gutter={8}>
             <Col lg={12} md={12} sm={24}>
               <FormItem key="Purchaser" {...this.formLayout} label="采购员">
                 {getFieldDecorator('Purchaser', {
@@ -368,8 +368,6 @@ class SKUDetail extends Component {
                 <span>{`${formVals.Cate1Name}/${formVals.Cate2Name}/${formVals.Cate3Name}`}</span>
               </FormItem>
             </Col>
-          </Row>
-          <Row gutter={8}>
             <Col lg={12} md={12} sm={24}>
               <FormItem key="InvoiceName" {...this.formLayout} label="开票名称">
                 {getFieldDecorator('InvoiceName', {
@@ -384,8 +382,6 @@ class SKUDetail extends Component {
                 })(<Input placeholder="请输入开票核心规格" />)}
               </FormItem>
             </Col>
-          </Row>
-          <Row gutter={8}>
             <Col lg={12} md={12} sm={24}>
               <FormItem key="InvoiceMenu" {...this.formLayout} label="开票目录分类">
                 {getFieldDecorator('InvoiceMenu', {
@@ -400,8 +396,7 @@ class SKUDetail extends Component {
                 })(<HSCode data={hscodeList} initialValue={formVals.HSCode} />)}
               </FormItem>
             </Col>
-          </Row>
-          <Row gutter={8}>
+         
             <Col lg={12} md={12} sm={24}>
               <FormItem key="FHSCode" {...this.formLayout} label="国外海关编码">
                 {getFieldDecorator('FHSCode', {
@@ -422,8 +417,7 @@ class SKUDetail extends Component {
                 )}
               </FormItem>
             </Col>
-          </Row>
-          <Row gutter={8}>
+         
             <Col lg={12} md={12} sm={24}>
               <FormItem key="Putaway" {...this.formLayout} label="上架状态">
                 {getFieldDecorator('Putaway', {
@@ -445,8 +439,6 @@ class SKUDetail extends Component {
                 })(<DatePicker style={{ width: '100%' }} />)}
               </FormItem>
             </Col>
-          </Row>
-          <Row gutter={8}>
             <Col lg={12} md={12} sm={24}>
               <FormItem key="EnglishName" {...this.formLayout} label="外文名称">
                 {getFieldDecorator('EnglishName', {

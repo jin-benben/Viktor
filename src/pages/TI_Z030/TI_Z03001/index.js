@@ -843,6 +843,7 @@ class AgreementEdit extends React.Component {
     const { orderDetail } = this.state;
     orderDetail.TI_Z03002.map(item => {
       if (item.key === record.key) {
+        record.SKUName = `${record.BrandName}  ${record.ProductName}  ${record.ManufactureNO}`;
         return record;
       }
       return item;
@@ -903,6 +904,7 @@ class AgreementEdit extends React.Component {
   rowSelectChange = (value, record, index, key) => {
     const { orderDetail } = this.state;
     record[key] = value;
+    record.SKUName = `${record.BrandName}  ${record.ProductName}  ${record.ManufactureNO}`;
     orderDetail.TI_Z03002[index] = record;
     this.setState({ orderDetail: { ...orderDetail } });
   };

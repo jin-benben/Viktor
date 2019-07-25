@@ -1,8 +1,8 @@
 /* eslint-disable array-callback-return */
 /* eslint-disable no-param-reassign */
-import React, { PureComponent, Fragment } from 'react';
+import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
-import { Row, Col, Card, Form, Input, Button, Icon, Select, notification, List, Tag } from 'antd';
+import { Row, Col, Card, Form, Input, Button, Select, message } from 'antd';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import EditableFormTable from '@/components/EditableFormTable';
 import MDMCommonality from '@/components/Select';
@@ -22,23 +22,13 @@ const { Option } = Select;
 }))
 @Form.create()
 
-class AddSKU extends PureComponent {
+class AddSKU extends Component {
   columns = [
     {
       title: '代码',
       dataIndex: 'Code',
       width: 80,
     },
-    // {
-    //   title: '描述',
-    //   width: 100,
-    //   dataIndex: 'Name',
-    //   render: text => (
-    //     <Ellipsis tooltip lines={1}>
-    //       {text}
-    //     </Ellipsis>
-    //   ),
-    // },
     {
       title: '品牌',
       width: 100,
@@ -271,22 +261,6 @@ class AddSKU extends PureComponent {
         <span>{`${record.Cate1Name}/${record.Cate2Name}/${record.Cate3Name}`}</span>
       ),
     },
-    {
-      title: '操作',
-      fixed: 'right',
-      width: 50,
-      render: (text, record, index) => (
-        <Fragment>
-          <Icon
-            title="删除行"
-            className="icons"
-            type="delete"
-            theme="twoTone"
-            onClick={() => this.deleteLine(record, index)}
-          />
-        </Fragment>
-      ),
-    },
   ];
 
   state = {
@@ -425,12 +399,6 @@ class AddSKU extends PureComponent {
     this.setState({ TI_Z00901 });
   };
 
-  deleteLine = (record, index) => {
-    const { TI_Z00901 } = this.state;
-    TI_Z00901.splice(index, 1);
-    this.setState({ TI_Z00901 });
-  };
-
   categoryChange = (category, record, index) => {
     const { TI_Z00901 } = this.state;
     TI_Z00901[index] = { ...record, ...category };
@@ -463,47 +431,52 @@ class AddSKU extends PureComponent {
       }
       return item;
     });
-    console.log(TI_Z00901)
     this.setState({ TI_Z00901 });
   };
 
-  onSelectRow=selectedRows=>{
+  onSelectRow=(selectedRowKeys,selectedRows)=>{
     this.setState({
       selectedRows:[...selectedRows]
     })
   }
 
   addskulist = async () => {
-    const { TI_Z00901 } = this.state;
+    const { selectedRows } = this.state;
     const { dispatch } = this.props;
     dispatch({
       type: 'skuAdd/add',
       payload: {
         Content: {
-          TI_Z00901,
+          TI_Z00901:selectedRows,
         },
+        Method:"U"
       },
       callback: response => {
         if (response && response.Status === 200) {
-          const dataList = response.Content.TI_Z00901;
-          notification.open({
-            message: '添加提示',
-            icon: <Icon type="smile" style={{ color: '#108ee9' }} />,
-            description: (
-              <List
-                bordered
-                dataSource={dataList}
-                renderItem={item => (
-                  <List.Item>
-                    {item.Code}
-                    {item.Name}
-                    {item.Status === 1 ? <Tag color="blue">成功</Tag> : <Tag color="red">失败</Tag>}
-                  </List.Item>
-                )}
-              />
-            ),
-          });
-          this.setState({ TI_Z00901: [] });
+          message.success('更新成功')
+          // if(response.Content){
+          //   const dataList = response.Content.TI_Z00901;
+          //   notification.open({
+          //     message: '添加提示',
+          //     icon: <Icon type="smile" style={{ color: '#108ee9' }} />,
+          //     description: (
+          //       <List
+          //         bordered
+          //         dataSource={dataList}
+          //         renderItem={item => (
+          //           <List.Item>
+          //             {item.Code}
+          //             {item.Name}
+          //             {item.Status === 1 ? <Tag color="blue">成功</Tag> : <Tag color="red">失败</Tag>}
+          //           </List.Item>
+          //         )}
+          //       />
+          //     ),
+          //   });
+          // }else{
+          
+          // }
+          
         }
       },
     });

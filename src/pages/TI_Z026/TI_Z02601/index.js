@@ -1062,9 +1062,7 @@ class InquiryEdit extends React.Component {
     const { inquiryDetail } = this.state;
     inquiryDetail.TI_Z02602.map(item => {
       if (item.LineID === record.LineID) {
-        record.SKUName = `${record.BrandName}  ${record.ProductName}  ${record.ManufactureNO}  ${
-          record.Parameters
-        }  ${record.Package}`;
+        record.SKUName = `${record.BrandName}  ${record.ProductName}  ${record.ManufactureNO}`;
         return record;
       }
       return item;
@@ -1093,9 +1091,7 @@ class InquiryEdit extends React.Component {
   rowSelectChange = (value, record, index, key) => {
     const { inquiryDetail } = this.state;
     record[key] = value;
-    record.SKUName = `${record.BrandName}  ${record.ProductName}  ${record.ManufactureNO}  ${
-      record.Parameters
-    }  ${record.Package}`;
+    record.SKUName = `${record.BrandName}  ${record.ProductName}  ${record.ManufactureNO}`;
     inquiryDetail.TI_Z02602[index] = record;
 
     this.setState({ inquiryDetail: { ...inquiryDetail } });

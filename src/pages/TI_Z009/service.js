@@ -19,7 +19,7 @@ export async function querySingleRule(params) {
 }
 
 export async function addRule(params) {
-  return request('/MDM/TI_Z009/TI_Z00901', {
+  return request('/MDM/TI_Z009/TI_Z00901AddorUpdate', {
     method: 'POST',
     data: {
       ...params,
