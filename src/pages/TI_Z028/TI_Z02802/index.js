@@ -288,7 +288,7 @@ class TI_Z02802 extends PureComponent {
       <Card bordered={false}>
         <MyPageHeader {...location} />
         <DescriptionList style={{ marginBottom: 24 }}>
-          <Description term="单号">{purchaseDetail.DocEntry}</Description>
+          <Description term="采购询价确认单号">{purchaseDetail.DocEntry}</Description>
           <Description term="单据日期">
             {moment(purchaseDetail.DocDate).format('YYYY-MM-DD')}
           </Description>

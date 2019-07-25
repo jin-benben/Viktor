@@ -585,7 +585,7 @@ class InquiryEdit extends React.Component {
       <Card bordered={false} loading={loading}>
         <MyPageHeader {...location} />
         <DescriptionList style={{ marginBottom: 24 }}>
-          <Description term="单号">{agreementDetail.DocEntry}</Description>
+          <Description term="销售合同单号">{agreementDetail.DocEntry}</Description>
           <Description term="客户">
             <Link to={`/main/TI_Z006/detail?Code=${agreementDetail.CardCode}`}>
               {`${agreementDetail.CardName}(${agreementDetail.CardCode})`}

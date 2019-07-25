@@ -583,7 +583,7 @@ class InquiryEdit extends PureComponent {
       <Card bordered={false} loading={loading}>
         <MyPageHeader {...location} />
         <DescriptionList style={{ marginBottom: 24 }}>
-          <Description term="单号">{formVals.DocEntry}</Description>
+          <Description term="客户询价单号">{formVals.DocEntry}</Description>
           <Description term="客户">
             <Link to={`/main/TI_Z006/detail?Code=${formVals.CardCode}`}>
               {`${formVals.CardName}(${formVals.CardCode})`}
