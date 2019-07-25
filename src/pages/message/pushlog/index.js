@@ -8,6 +8,17 @@ import StandardTable from '@/components/StandardTable';
 const { RangePicker } = DatePicker;
 const FormItem = Form.Item;
 
+function whichTag (status) {
+   switch (status) {
+     case '2':
+       return <Tag color="blue">成功</Tag> 
+     case '1':
+       return <Tag color="red">失败</Tag>
+     default:
+       return <Tag color="#faad14">特殊状态</Tag>
+   }
+}
+
 @connect(({ pushMessage, loading }) => ({
   pushMessage,
   loading: loading.models.rule,
@@ -44,10 +55,8 @@ class PushMessage extends PureComponent {
     {
       title: '推送状态',
       dataIndex: 'Status',
-      width: 80,
-      render: val => (
-        <span>{val === '2' ? <Tag color="blue">成功</Tag> : <Tag color="red">失败</Tag>}</span>
-      ),
+      width: 100,
+      render: val => whichTag(val)
     },
     {
       title: '创建时间',
