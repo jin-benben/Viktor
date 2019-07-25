@@ -750,12 +750,13 @@ class InquiryEdit extends React.Component {
         } = this.state;
         return record.lastIndex ? null : (
           <Fragment>
-            <Icon
-              title="预览"
-              type="eye"
-              onClick={() => this.lookLineAttachment(record, index)}
-              style={{ color: '#08c', marginRight: 5 }}
-            />
+            {record.TI_Z02604.length ? (
+              <a onClick={() => this.lookLineAttachment(record, index)}>
+                <Badge count={record.TI_Z02604.length} title="查看附件" className="attachBadge" />
+              </a>
+            ) : (
+              ''
+            )}
             {DocEntry ? (
               <Icon
                 title="上传附件"
