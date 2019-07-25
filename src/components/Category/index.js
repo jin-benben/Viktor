@@ -1,7 +1,7 @@
 import React from 'react';
-import request from '@/utils/request';
 import { Cascader } from 'antd';
 import { connect } from 'dva';
+import request from '@/utils/request';
 
 @connect(({ global }) => ({
   global,
@@ -14,7 +14,6 @@ class CategoryCascader extends React.Component {
 
   static getDerivedStateFromProps(nextProps, prevState) {
     if (!prevState.options.length && nextProps.initialValue !== prevState.value) {
-      console.log(nextProps.initialValue);
       return {
         value: nextProps.initialValue,
         options: nextProps.global.CategoryTree,
