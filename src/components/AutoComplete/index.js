@@ -1,5 +1,6 @@
 import React,{Component} from 'react'
 import { Icon, Button, Input, AutoComplete } from 'antd';
+import debounce from 'lodash/debounce';
 import request from '@/utils/request';
 
 const { Option } = AutoComplete;
@@ -7,23 +8,28 @@ const { Option } = AutoComplete;
 
 function renderOption(item) {
   return (
-    <Option key={item.Code} item={item}>
-      {`${item.SupplierName} ${item.InquiryPrice} ${item.Currency }`}
+    <Option key={item.Code} item={item} title={item.ProductName}>
+      {`${item.ProductName}`}
     </Option>
   );
 }
 
 class OrderAutoComplete extends Component {
-  state = {
-    dataSource: [
-      {
-        SupplierName:"测试数据",
-        Code:'1',
-        InquiryPrice:"66",
-        Currency:"USA"
-      }
-    ],
-  };
+  constructor(props) {
+    super(props);
+    this.handleSearch = debounce(this.handleSearch, 1000);
+    this.state = {
+      dataSource: [
+        {
+          SupplierName:"测试数据",
+          Code:'1',
+          InquiryPrice:"66",
+          Currency:"USA"
+        }
+      ],
+    };
+  }
+
 
   onSelect=(value,option)=> {
     const {item}=option.props
@@ -35,8 +41,9 @@ class OrderAutoComplete extends Component {
 
   handleSearch = async SearchText => {
     const {onChage}=this.props
+    console.log(onChage)
     if(onChage) onChage(SearchText)
-    const response = await request('/MDM/TI_Z009/TI_Z00910', {
+    const response = await request('/MDM/TI_Z009/TI_Z00902', {
       method: 'POST',
       data: {
         Content: {
@@ -66,13 +73,13 @@ class OrderAutoComplete extends Component {
 
   render() {
     const { dataSource } = this.state;
-    const {value}=this.props
+    const {defaultValue}=this.props
     return (
       <AutoComplete
         className="global-search"
         size="large"
+        defaultValue={defaultValue}
         style={{ width: '100%' }}
-        value={value}
         dataSource={dataSource.map(renderOption)}
         onSelect={this.onSelect}
         onSearch={this.handleSearch}

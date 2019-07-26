@@ -22,7 +22,7 @@ export function requestUrl(url) {
     return url.replace(/\/MDM/i, 'http://47.104.65.49:8088');
   }
   if (url.indexOf('/OMS') !== -1) {
-    return url.replace(/\/OMS/i, 'http://apioms.wktmro.com');
+    return url.replace(/\/OMS/i, 'http://47.104.65.49:8090');
   }
   if (url.indexOf('/Login') !== -1) {
     return url.replace(/\/Login/i, 'http://apilogin.wktmro.com');

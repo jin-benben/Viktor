@@ -112,11 +112,9 @@ class InquiryEdit extends React.Component {
       align: 'center',
       render:(text,record,index)=>record.lastIndex ? null :(
         <AutoComplete  
-          onChange={value => {
-            this.rowSelectChange(value, record, index, 'BrandName');
-          }}
+          onChage={value =>this.rowSelectChange(value, record, index, 'ProductName')}
           parentSelect={select=>this.rowSelect(select, record, index)}
-          value={text}
+          defaultValue={text}
         />
       )
     },
@@ -830,6 +828,7 @@ class InquiryEdit extends React.Component {
   // 品牌,仓库改变
 
   rowSelectChange = (value, record, index, key) => {
+    console.log(value)
     const { inquiryDetail } = this.state;
     record[key] = value;
     record.SKUName = `${record.BrandName}  ${record.ProductName}  ${record.ManufactureNO}`;
