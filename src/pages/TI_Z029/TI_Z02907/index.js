@@ -701,8 +701,8 @@ class SalesQuotationSku extends PureComponent {
             </FormItem>
           </Col>
           <Col md={5} sm={24}>
-            <FormItem key="DocStatus" {...formLayout} label="合同状态">
-              {getFieldDecorator('DocStatus')(
+            <FormItem key="LineStatus" {...formLayout} label="合同状态">
+              {getFieldDecorator('LineStatus')(
                 <Select placeholder="请选择">
                   <Option value="C">已合同</Option>
                   <Option value="O">未合同</Option>
