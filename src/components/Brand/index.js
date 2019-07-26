@@ -17,14 +17,14 @@ class Brands extends PureComponent {
     this.fetchUser = debounce(this.fetchUser, 1000);
     this.state = {
       data: [],
-      value: '',
+      value:"",
       fetching: false,
     };
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
     if (
-      (!prevState.value && nextProps.initialValue !== prevState.value) ||
+      (!prevState.value || nextProps.initialValue !== prevState.value) ||
       !prevState.data.length
     ) {
       return {
@@ -60,27 +60,26 @@ class Brands extends PureComponent {
     this.setState({ data: response.Content ? response.Content.rows : [], fetching: false });
   };
 
-  handleChange = value => {
+  handleChange = (value,option) => {
     this.setState({
       value,
       fetching: false,
     });
-
     const { onChange } = this.props;
     if (onChange) {
-      onChange(value);
+      const {item}=option.props
+      const {Code,Name}=item
+      onChange({BrandCode:Code,BrandName:Name});
     }
   };
 
   render() {
     const { fetching, data, value } = this.state;
     const { labelInValue, keyType } = this.props;
-    const attribute = keyType || 'Code';
     return (
       <Select
         showSearch
         showArrow={false}
-        labelInValue={labelInValue}
         value={value}
         placeholder="输入名称"
         notFoundContent={fetching ? <Spin size="small" /> : <Empty style={{ width: '100%' }} />}
@@ -90,7 +89,7 @@ class Brands extends PureComponent {
         style={{ width: '100%' }}
       >
         {data.map(option => (
-          <Option key={option.Code} value={option[attribute]}>
+          <Option key={option.Code} item={option}>
             <Ellipsis tooltip lines={1}>
               {option.Name}
             </Ellipsis>

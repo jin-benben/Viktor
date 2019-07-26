@@ -97,9 +97,8 @@ class InquiryEdit extends React.Component {
           <div style={{ width: 110 }}>
             <Brand
               initialValue={record.BrandName}
-              keyType="Name"
               onChange={value => {
-                this.rowSelectChange(value, record, index, 'BrandName');
+                this.brandChange(value, record, index);
               }}
             />
           </div>
@@ -112,6 +111,8 @@ class InquiryEdit extends React.Component {
       align: 'center',
       render:(text,record,index)=>record.lastIndex ? null :(
         <AutoComplete  
+          BrandCode={record.BrandCode}
+          Type="ProductName"
           onChage={value =>this.rowSelectChange(value, record, index, 'ProductName')}
           parentSelect={select=>this.rowSelect(select, record, index)}
           defaultValue={text}
@@ -704,12 +705,57 @@ class InquiryEdit extends React.Component {
     }
   };
 
+  // 品牌change
+  brandChange=(value, record, index)=>{
+    Object.assign(record,value)
+    const { inquiryDetail } = this.state;
+    inquiryDetail.TI_Z02602[index] = record;
+    this.setState({ inquiryDetail });
+  }
+
   // 产品名称，型号，参数，选择
   rowSelect=(select, record, index)=>{
-  
+    const {
+       BrandName
+      ,BrandCode
+      ,ProductName
+      ,ManufactureNO
+      ,Parameters
+      ,Package
+      ,Purchaser
+      ,Unit
+      ,ManLocation
+      ,HSCode
+      ,Rweight
+      ,EnglishName 
+      ,ForeignParameters
+      ,InquiryDueDate
+      ,InquiryPrice
+      ,SupplierCode
+      ,Currency
+      ,ForeignFreight
+    }=select
     const { inquiryDetail } = this.state;
     
     record.SKUName = `${record.BrandName}  ${record.ProductName}  ${record.ManufactureNO}`;
+    Object.assign(record,{ BrandName
+      ,BrandCode
+      ,ProductName
+      ,ManufactureNO
+      ,Parameters
+      ,Package
+      ,Purchaser
+      ,Unit
+      ,ManLocation
+      ,HSCode
+      ,Rweight
+      ,EnglishName 
+      ,ForeignParameters
+      ,InquiryDueDate
+      ,InquiryPrice
+      ,SupplierCode
+      ,Currency
+      ,ForeignFreight})
     inquiryDetail.TI_Z02602[index] = record;
 
     this.setState({ inquiryDetail: { ...inquiryDetail } });
@@ -1340,6 +1386,7 @@ class InquiryEdit extends React.Component {
         LineTotal: inquiryDetail.DocTotal,
       });
     }
+    console.log(newdata)
     return (
       <Card bordered={false} loading={detailLoading}>
         <MyPageHeader {...location} />
