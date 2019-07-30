@@ -52,6 +52,12 @@ class SKUModal extends PureComponent {
       title: '品牌',
       width: 100,
       dataIndex: 'BrandName',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {' '}
+          {text}
+        </Ellipsis>
+      ),
     },
 
     {
@@ -76,17 +82,7 @@ class SKUModal extends PureComponent {
         </Ellipsis>
       ),
     },
-    {
-      title: '包装',
-      dataIndex: 'package',
-      width: 100,
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {' '}
-          {text}
-        </Ellipsis>
-      ),
-    },
+   
     {
       title: '单位',
       width: 80,
@@ -205,7 +201,7 @@ class SKUModal extends PureComponent {
     const { modalVisible, handleModalVisible } = this.props;
     return (
       <Modal
-        width={1000}
+        width={1100}
         title="物料选择"
         maskClosable={false}
         visible={modalVisible}
@@ -219,7 +215,7 @@ class SKUModal extends PureComponent {
             data={{ list: skuList }}
             rowKey="Code"
             pagination={pagination}
-            scroll={{ y: 200 }}
+            scroll={{ x: 1000 }}
             columns={this.columns}
             rowSelection={{
               type: 'radio',

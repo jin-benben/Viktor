@@ -38,11 +38,12 @@ import Brand from '@/components/Brand';
 import MDMCommonality from '@/components/Select';
 import NeedAskPrice from '../components/needAskPrice';
 import CompanySelect from '@/components/Company/index';
-import HSCode from '@/components/HSCode';
+import HSCodeCom from '@/components/HSCode';
 import PushLink from '@/components/PushLink';
 import Attachment from '@/components/Attachment';
 import Comparison from '@/components/Comparison';
 import AutoComplete from '@/components/AutoComplete'
+import PriceComplete from '@/components/AutoComplete/price'
 import MyPageHeader from '../components/pageHeader';
 import { getName } from '@/utils/utils';
 import { orderSourceType, lineStatus } from '@/utils/publicData';
@@ -50,6 +51,7 @@ import { orderSourceType, lineStatus } from '@/utils/publicData';
 const { TabPane } = Tabs;
 const FormItem = Form.Item;
 const { Option } = Select;
+const { Search } = Input;
 
 @connect(({ inquiryEdit, loading, global }) => ({
   inquiryEdit,
@@ -123,9 +125,16 @@ class InquiryEdit extends React.Component {
       title: '型号',
       width: 150,
       dataIndex: 'ManufactureNO',
-      inputType: 'textArea',
-      editable: true,
       align: 'center',
+      render:(text,record,index)=>record.lastIndex ? null :(
+        <AutoComplete  
+          BrandCode={record.BrandCode}
+          Type="ManufactureNO"
+          onChage={value =>this.rowSelectChange(value, record, index, 'ManufactureNO')}
+          parentSelect={select=>this.rowSelect(select, record, index)}
+          defaultValue={text}
+        />
+      )
     },
     {
       title: '参数',
@@ -154,10 +163,16 @@ class InquiryEdit extends React.Component {
     {
       title: '价格',
       width: 80,
-      inputType: 'text',
       dataIndex: 'Price',
-      editable: true,
       align: 'center',
+      render:(text,record,index)=>record.lastIndex ? null :(
+        <Search  
+          onChange={value =>this.rowSelectChange(value, record, index, 'Price')}
+          onSearch={()=>this.priceSelect(record,index)}
+          defaultValue={text}
+        />
+      )
+      
     },
     {
       title: '行总计',
@@ -260,7 +275,7 @@ class InquiryEdit extends React.Component {
         return record.lastIndex ? (
           ''
         ) : (
-          <HSCode
+          <HSCodeCom
             initialValue={text}
             data={HSCodeList}
             onChange={select => {
@@ -736,7 +751,6 @@ class InquiryEdit extends React.Component {
       ,ForeignFreight
     }=select
     const { inquiryDetail } = this.state;
-    
     record.SKUName = `${record.BrandName}  ${record.ProductName}  ${record.ManufactureNO}`;
     Object.assign(record,{ BrandName
       ,BrandCode
@@ -757,7 +771,6 @@ class InquiryEdit extends React.Component {
       ,Currency
       ,ForeignFreight})
     inquiryDetail.TI_Z02602[index] = record;
-
     this.setState({ inquiryDetail: { ...inquiryDetail } });
     
   }
@@ -874,7 +887,6 @@ class InquiryEdit extends React.Component {
   // 品牌,仓库改变
 
   rowSelectChange = (value, record, index, key) => {
-    console.log(value)
     const { inquiryDetail } = this.state;
     record[key] = value;
     record.SKUName = `${record.BrandName}  ${record.ProductName}  ${record.ManufactureNO}`;
@@ -1065,6 +1077,7 @@ class InquiryEdit extends React.Component {
       skuModalVisible: !!flag,
       needmodalVisible: !!flag,
       pushModalVisible: !!flag,
+      priceModalVisible:!!flag,
       LineID: Number,
     });
   };
@@ -1073,6 +1086,20 @@ class InquiryEdit extends React.Component {
   tabChange = tabIndex => {
     this.setState({ tabIndex });
   };
+
+  // 价格选择修改
+  priceChange=select=>{
+    console.log(select)
+  }
+
+  // 选择价格
+  priceSelect=(record,LineID)=>{
+     this.setState({
+       thisLine:{...record},
+       LineID,
+       priceModalVisible:true
+     })
+  }
 
   rightButton = tabIndex => {
     const {
@@ -1344,6 +1371,7 @@ class InquiryEdit extends React.Component {
       needmodalVisible,
       attachmentVisible,
       pushModalVisible,
+      priceModalVisible,
       selectedRows,
     } = this.state;
     const formItemLayout = {
@@ -1367,7 +1395,10 @@ class InquiryEdit extends React.Component {
       handleSubmit: this.changeLineSKU,
       handleModalVisible: this.handleModalVisible,
     };
-
+    const priceParentMethods= {
+      handleSubmit: this.priceChange,
+      handleModalVisible: this.handleModalVisible,
+    };
     const needParentMethods = {
       handleSubmit: this.submitNeedLine,
       handleModalVisible: this.handleModalVisible,
@@ -1386,7 +1417,6 @@ class InquiryEdit extends React.Component {
         LineTotal: inquiryDetail.DocTotal,
       });
     }
-    console.log(newdata)
     return (
       <Card bordered={false} loading={detailLoading}>
         <MyPageHeader {...location} />
@@ -1652,6 +1682,7 @@ class InquiryEdit extends React.Component {
         </FooterToolbar>
         <OrderAttachUpload {...uploadmodalMethods} modalVisible={uploadmodalVisible} />
         <SKUModal {...parentMethods} modalVisible={skuModalVisible} />
+        <PriceComplete ProductName={thisLine.ProductName} {...priceParentMethods} modalVisible={priceModalVisible} />
         <Modal
           width={960}
           destroyOnClose

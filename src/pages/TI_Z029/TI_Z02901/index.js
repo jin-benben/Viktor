@@ -41,12 +41,14 @@ import MDMCommonality from '@/components/Select';
 import NeedAskPrice from '../components/needAskPrice';
 import SKUModal from '@/components/Modal/SKU';
 import CompanySelect from '@/components/Company/index';
-import HSCode from '@/components/HSCode';
+import HSCodeCom from '@/components/HSCode';
 import PushLink from '@/components/PushLink';
 import Attachment from '@/components/Attachment';
 import MyPageHeader from '../components/pageHeader';
 import OrderAttach from '@/components/Attachment/order';
 import Comparison from '@/components/Comparison';
+import AutoComplete from '@/components/AutoComplete'
+import PriceComplete from '@/components/AutoComplete/price'
 import { getName, validatorPhone, validatorEmail } from '@/utils/utils';
 import { otherCostCColumns } from '@/utils/publicData';
 
@@ -54,6 +56,7 @@ const { TextArea } = Input;
 const { TabPane } = Tabs;
 const FormItem = Form.Item;
 const { Option } = Select;
+const { Search } = Input;
 
 @connect(({ TI_Z029, loading, global }) => ({
   TI_Z029,
@@ -100,9 +103,8 @@ class TI_Z029Component extends React.Component {
           <div style={{ width: 110 }}>
             <Brand
               initialValue={record.BrandName}
-              keyType="Name"
               onChange={value => {
-                this.rowSelectChange(value, record, index, 'BrandName');
+                this.brandChange(value, record, index);
               }}
             />
           </div>
@@ -111,10 +113,17 @@ class TI_Z029Component extends React.Component {
     {
       title: '名称',
       dataIndex: 'ProductName',
-      inputType: 'textArea',
       width: 150,
-      editable: true,
       align: 'center',
+      render:(text,record,index)=>record.lastIndex ? null :(
+        <AutoComplete  
+          BrandCode={record.BrandCode}
+          Type="ProductName"
+          onChage={value =>this.rowSelectChange(value, record, index, 'ProductName')}
+          parentSelect={select=>this.rowSelect(select, record, index)}
+          defaultValue={text}
+        />
+      )
     },
     {
       title: '名称(外)',
@@ -128,9 +137,16 @@ class TI_Z029Component extends React.Component {
       title: '型号',
       width: 150,
       dataIndex: 'ManufactureNO',
-      inputType: 'textArea',
-      editable: true,
       align: 'center',
+      render:(text,record,index)=>record.lastIndex ? null :(
+        <AutoComplete  
+          BrandCode={record.BrandCode}
+          Type="ManufactureNO"
+          onChage={value =>this.rowSelectChange(value, record, index, 'ManufactureNO')}
+          parentSelect={select=>this.rowSelect(select, record, index)}
+          defaultValue={text}
+        />
+      )
     },
     {
       title: '规格(外)',
@@ -173,10 +189,15 @@ class TI_Z029Component extends React.Component {
     {
       title: '价格',
       width: 80,
-      inputType: 'text',
       dataIndex: 'Price',
-      editable: true,
       align: 'center',
+      render:(text,record,index)=>record.lastIndex ? null :(
+        <Search  
+          onChange={value =>this.rowSelectChange(value, record, index, 'Price')}
+          onSearch={()=>this.priceSelect(record,index)}
+          defaultValue={text}
+        />
+      )
     },
     {
       title: '重量',
@@ -327,7 +348,7 @@ class TI_Z029Component extends React.Component {
         return record.lastIndex ? (
           ''
         ) : (
-          <HSCode
+          <HSCodeCom
             initialValue={text}
             data={HSCodeList}
             onChange={select => {
@@ -626,6 +647,7 @@ class TI_Z029Component extends React.Component {
       pushModalVisible: false, // 其他推送人modal
       skuModalVisible: false, //
       needmodalVisible: false,
+      priceModalVisible:false,
       LineID: Number, // 当前选中行index
       linkmanList: [], // 联系人list,
       addList: [],
@@ -921,8 +943,68 @@ class TI_Z029Component extends React.Component {
     });
   };
 
-  // 品牌,仓库改变
+   // 价格选择修改
+   priceChange=select=>{
+    console.log(select)
+  }
 
+  // 选择价格
+  priceSelect=(record,LineID)=>{
+     this.setState({
+       targetLine:{...record},
+       LineID,
+       priceModalVisible:true
+     })
+  }
+
+    // 产品名称，型号，参数，选择
+    rowSelect=(select, record, index)=>{
+      const {
+         BrandName
+        ,BrandCode
+        ,ProductName
+        ,ManufactureNO
+        ,Parameters
+        ,Package
+        ,Purchaser
+        ,Unit
+        ,ManLocation
+        ,HSCode
+        ,Rweight
+        ,EnglishName 
+        ,ForeignParameters
+        ,InquiryDueDate
+        ,InquiryPrice
+        ,SupplierCode
+        ,Currency
+        ,ForeignFreight
+      }=select
+      const { orderDetail } = this.state;
+      record.SKUName = `${record.BrandName}  ${record.ProductName}  ${record.ManufactureNO}`;
+      Object.assign(record,{ BrandName
+        ,BrandCode
+        ,ProductName
+        ,ManufactureNO
+        ,Parameters
+        ,Package
+        ,Purchaser
+        ,Unit
+        ,ManLocation
+        ,HSCode
+        ,Rweight
+        ,EnglishName 
+        ,ForeignParameters
+        ,InquiryDueDate
+        ,InquiryPrice
+        ,SupplierCode
+        ,Currency
+        ,ForeignFreight})
+      orderDetail.TI_Z02602[index] = record;
+      this.setState({ orderDetail: { ...orderDetail } });
+      
+  }
+
+  // 改变
   rowSelectChange = (value, record, index, key) => {
     const { orderDetail } = this.state;
     record[key] = value;
@@ -1108,6 +1190,7 @@ class TI_Z029Component extends React.Component {
       needmodalVisible: !!flag,
       skuModalVisible: !!flag,
       pushModalVisible: !!flag,
+      priceModalVisible:!!flag,
       LineID: Number,
     });
   };
@@ -1516,6 +1599,7 @@ class TI_Z029Component extends React.Component {
       attachmentVisible,
       addList,
       pushModalVisible,
+      priceModalVisible
     } = this.state;
     const formItemLayout = {
       labelCol: {
@@ -1548,6 +1632,8 @@ class TI_Z029Component extends React.Component {
       handleSubmit: this.submitNeedLine,
       handleModalVisible: this.handleModalVisible,
     };
+
+  
 
     const pushParentMethods = {
       handleSubmit: this.submitPushLine,
@@ -1878,7 +1964,14 @@ class TI_Z029Component extends React.Component {
             </TabPane>
           </Tabs>
         </Modal>
-
+       
+        <PriceComplete 
+          ProductName={targetLine.ProductName}
+          handleModalVisible={this.handleModalVisible}
+          handleSubmit={this.priceChange}
+          modalVisible={priceModalVisible}
+        />
+        
         <NeedAskPrice
           data={orderDetail.TI_Z02902}
           {...needParentMethods}

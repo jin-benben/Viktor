@@ -38,10 +38,13 @@ import SupplierSelect from '@/components/Select/Supplier';
 import Emails from '@/components/Modal/Email';
 import MyPageHeader from '../components/pageHeader';
 import OrderAttach from '@/components/Attachment/order';
+import AutoComplete from '@/components/AutoComplete'
+import PriceComplete from '@/components/AutoComplete/price'
 
 const { TabPane } = Tabs;
 const FormItem = Form.Item;
 const { Option } = Select;
+const {Search}=Input
 
 @connect(({ supplierAskDetail, loading, global }) => ({
   supplierAskDetail,
@@ -122,10 +125,15 @@ class InquiryEdit extends React.Component {
     {
       title: '价格',
       width: 100,
-      inputType: 'text',
       dataIndex: 'Price',
-      editable: true,
       align: 'center',
+      render:(text,record,index)=>record.lastIndex ? null :(
+        <Search  
+          onChange={value =>this.rowSelectChange(value, record, index, 'Price')}
+          onSearch={()=>this.priceSelect(record,index)}
+          defaultValue={text}
+        />
+      )
     },
     {
       title: '询价交期',
@@ -221,22 +229,36 @@ class InquiryEdit extends React.Component {
     {
       title: '名称',
       dataIndex: 'ProductName',
-      inputType: 'textArea',
       width: 150,
-      editable: true,
       align: 'center',
+      render:(text,record,index)=>record.lastIndex ? null :(
+        <AutoComplete  
+          BrandCode={record.BrandCode}
+          Type="ProductName"
+          onChage={value =>this.rowSelectChange(value, record, index, 'ProductName')}
+          parentSelect={select=>this.rowSelect(select, record, index)}
+          defaultValue={text}
+        />
+      )
     },
     {
       title: '型号',
-      width: 130,
+      width: 150,
       dataIndex: 'ManufactureNO',
-      inputType: 'textArea',
-      editable: true,
       align: 'center',
+      render:(text,record,index)=>record.lastIndex ? null :(
+        <AutoComplete  
+          BrandCode={record.BrandCode}
+          Type="ManufactureNO"
+          onChage={value =>this.rowSelectChange(value, record, index, 'ManufactureNO')}
+          parentSelect={select=>this.rowSelect(select, record, index)}
+          defaultValue={text}
+        />
+      )
     },
     {
       title: '参数',
-      width: 130,
+      width: 100,
       dataIndex: 'Parameters',
       inputType: 'textArea',
       editable: true,
@@ -437,6 +459,67 @@ class InquiryEdit extends React.Component {
     this.setState({ formVals });
   };
 
+  
+   // 价格选择修改
+   priceChange=select=>{
+    console.log(select)
+  }
+
+  // 选择价格
+  priceSelect=(record,LineID)=>{
+     this.setState({
+       targetLine:{...record},
+       LineID,
+       priceModalVisible:true
+     })
+  }
+
+    // 产品名称，型号，参数，选择
+    rowSelect=(select, record, index)=>{
+      const {
+         BrandName
+        ,BrandCode
+        ,ProductName
+        ,ManufactureNO
+        ,Parameters
+        ,Package
+        ,Purchaser
+        ,Unit
+        ,ManLocation
+        ,HSCode
+        ,Rweight
+        ,EnglishName 
+        ,ForeignParameters
+        ,InquiryDueDate
+        ,InquiryPrice
+        ,SupplierCode
+        ,Currency
+        ,ForeignFreight
+      }=select
+      const { formVals} = this.state;
+      record.SKUName = `${record.BrandName}  ${record.ProductName}  ${record.ManufactureNO}`;
+      Object.assign(record,{ BrandName
+        ,BrandCode
+        ,ProductName
+        ,ManufactureNO
+        ,Parameters
+        ,Package
+        ,Purchaser
+        ,Unit
+        ,ManLocation
+        ,HSCode
+        ,Rweight
+        ,EnglishName 
+        ,ForeignParameters
+        ,InquiryDueDate
+        ,InquiryPrice
+        ,SupplierCode
+        ,Currency
+        ,ForeignFreight})
+      formVals.TI_Z02602[index] = record;
+      this.setState({ formVals: { ...formVals} });
+      
+  }
   // 品牌,仓库改变
 
   rowSelectChange = (value, record, index, key) => {
@@ -606,6 +689,7 @@ class InquiryEdit extends React.Component {
       uploadmodalVisible: !!flag,
       attachmentVisible: !!flag,
       skuModalVisible: !!flag,
+      priceModalVisible:!!flag,
       LineID: Number,
     });
   };
@@ -806,6 +890,7 @@ class InquiryEdit extends React.Component {
       uploadmodalVisible,
       skuModalVisible,
       attachmentVisible,
+      priceModalVisible
     } = this.state;
     const formItemLayout = {
       labelCol: {
@@ -1049,6 +1134,12 @@ class InquiryEdit extends React.Component {
             deleteLineFun={(record, index) => this.deleteLine(record, index, true)}
           />
         </Modal>
+        <PriceComplete 
+          ProductName={targetLine.ProductName}
+          handleModalVisible={this.handleModalVisible}
+          handleSubmit={this.priceChange}
+          modalVisible={priceModalVisible}
+        />
       </Card>
     );
   }

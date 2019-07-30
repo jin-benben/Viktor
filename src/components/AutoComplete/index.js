@@ -1,5 +1,5 @@
-import React,{PureComponent} from 'react'
-import { Icon, Button, Input, AutoComplete } from 'antd';
+import React,{Component} from 'react'
+import { Input, AutoComplete } from 'antd';
 import debounce from 'lodash/debounce';
 import request from '@/utils/request';
 
@@ -7,7 +7,7 @@ const { Option } = AutoComplete;
 const {TextArea} = Input
 
 
-class OrderAutoComplete extends PureComponent {
+class OrderAutoComplete extends Component {
   constructor(props) {
     super(props);
     this.handleSearch = debounce(this.handleSearch, 1000);
@@ -16,6 +16,24 @@ class OrderAutoComplete extends PureComponent {
       value:props.defaultValue
     };
   }
+
+  componentWillReceiveProps(nextProps){
+    const {value}=this.state
+    if(!value&&nextProps.defaultValue){
+      this.setState({
+        value:nextProps.defaultValue
+      })
+    }
+  }
+
+  shouldComponentUpdate(nextProps,nextState){
+    const {value,dataSource}=this.state
+    if(nextState.value ===value&&nextState.dataSource===dataSource){
+      return false
+    }
+    return true
+  }
+
   renderOption=(item)=> {
     const {Type}=this.props
     return (
@@ -24,7 +42,6 @@ class OrderAutoComplete extends PureComponent {
       </Option>
     );
   }
-
   
   handleChange=(value,option)=>{
     const {item}=option.props
@@ -36,10 +53,12 @@ class OrderAutoComplete extends PureComponent {
       if(item){
         parentSelect(item)
       }else{
-        onChage({[Type]:value})
+        onChage(value)
       }
     }
   }
+
+
 
   handleSearch = async SearchText => {
     const {BrandCode}=this.props
@@ -71,21 +90,22 @@ class OrderAutoComplete extends PureComponent {
     }
   }
 
+  
+
 
   render() {
     const { dataSource,value } = this.state;
-    console.log(this.props)
-    console.log(value)
+    console.log('ok',value)
     return (
       <AutoComplete
         className="global-search"
         size="large"
         style={{ width: '100%' }}
         value={value}
+        defaultActiveFirstOption={false}
         dataSource={dataSource.map(this.renderOption)}
         onSearch={this.handleSearch}
         onChange={this.handleChange}
-        optionLabelProp="text"
       >
         <TextArea style={{ width: '100%',backgroundColor:"#fff" }} />
       </AutoComplete>
