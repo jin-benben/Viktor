@@ -463,7 +463,7 @@ class InquiryEdit extends React.Component {
             {supplierAskDetail.ToDate ? moment(supplierAskDetail.ToDate).format('YYYY-MM-DD') : ''}
           </Description>
           <Description term="联系人">{supplierAskDetail.Contacts}</Description>
-          <Description term="备注">{supplierAskDetail.Comment}</Description>
+          <Description term="备注"><span className="red">{supplierAskDetail.Comment}</span></Description>
           <Description term="创建人">
             <span>{getName(TI_Z004, supplierAskDetail.CreateUser)}</span>
           </Description>

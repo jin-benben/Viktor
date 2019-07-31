@@ -589,7 +589,7 @@ class InquiryEdit extends PureComponent {
             {formVals.ToDate ? moment(formVals.ToDate).format('YYYY-MM-DD') : ''}
           </Description>
           <Description term="联系人">{formVals.Contacts}</Description>
-          <Description term="备注">{formVals.Comment}</Description>
+          <Description term="备注"><span className="red">{formVals.Comment}</span></Description>
           <Description term="创建人">
             <span>{getName(TI_Z004, formVals.CreateUser)}</span>
           </Description>
