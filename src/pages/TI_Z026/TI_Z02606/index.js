@@ -119,17 +119,6 @@ class inquiryListPage extends PureComponent {
       ),
     },
     {
-      title: '送货地址',
-      dataIndex: 'address',
-      width: 300,
-      render: (text, record) => (
-        <Ellipsis tooltip lines={1}>
-          {`${record.Province || ''}${record.City || ''}${record.Area || ''}${record.Address ||
-            ''}`}
-        </Ellipsis>
-      ),
-    },
-    {
       title: '销售员',
       width: 120,
       dataIndex: 'Owner',
@@ -185,6 +174,17 @@ class inquiryListPage extends PureComponent {
       render: val => (
         <Ellipsis tooltip lines={1}>
           {val}
+        </Ellipsis>
+      ),
+    },
+    {
+      title: '送货地址',
+      dataIndex: 'address',
+      width: 150,
+      render: (text, record) => (
+        <Ellipsis tooltip lines={1}>
+          {`${record.Province || ''}${record.City || ''}${record.Area || ''}${record.Address ||
+            ''}`}
         </Ellipsis>
       ),
     },
@@ -419,7 +419,7 @@ class inquiryListPage extends PureComponent {
               pagination={pagination}
               rowKey="DocEntry"
               columns={this.columns}
-              scroll={{ x: 1700 }}
+              scroll={{ x: 1550 }}
               onChange={this.handleStandardTableChange}
             />
           </div>

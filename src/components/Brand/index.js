@@ -1,9 +1,9 @@
 import React, { PureComponent } from 'react';
-import request from '@/utils/request';
 import { Select, Spin, Empty } from 'antd';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import { connect } from 'dva';
 import debounce from 'lodash/debounce';
+import request from '@/utils/request';
 
 const { Option } = Select;
 
@@ -24,7 +24,7 @@ class Brands extends PureComponent {
 
   static getDerivedStateFromProps(nextProps, prevState) {
     if (
-      (!prevState.value && nextProps.initialValue !== prevState.value) ||
+      (!prevState.value || nextProps.initialValue !== prevState.value) ||
       !prevState.data.length
     ) {
       return {

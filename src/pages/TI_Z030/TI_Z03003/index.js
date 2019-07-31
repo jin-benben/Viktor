@@ -219,16 +219,11 @@ class InquiryEdit extends React.Component {
       title: 'HS编码',
       width: 100,
       dataIndex: 'HSCode',
-      render: (text, record) => {
-        const {
-          global: { HS },
-        } = this.props;
-        return record.lastIndex ? null : (
-          <Ellipsis tooltip lines={1}>
-            {getName(HS, text)}
-          </Ellipsis>
-        );
-      },
+      render: text =>(
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '税率',
@@ -243,24 +238,22 @@ class InquiryEdit extends React.Component {
       dataIndex: 'LineComment',
       width: 100,
       align: 'center',
-      render: (text, record) =>
-        record.lastIndex ? null : (
-          <Ellipsis tooltip lines={1}>
-            {text} {record.ForeignParameters}
-          </Ellipsis>
-        ),
+      render: text =>(
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '包装',
       width: 100,
       dataIndex: 'Package',
       align: 'center',
-      render: (text, record) =>
-        record.lastIndex ? null : (
-          <Ellipsis tooltip lines={1}>
-            {text} {record.ForeignParameters}
-          </Ellipsis>
-        ),
+      render: text =>(
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '名称(外)',
@@ -292,12 +285,11 @@ class InquiryEdit extends React.Component {
       width: 80,
       dataIndex: 'CustomerName',
       align: 'center',
-      render: (text, record) =>
-        record.lastIndex ? null : (
-          <Ellipsis tooltip lines={1}>
-            {text} {record.ForeignParameters}
-          </Ellipsis>
-        ),
+      render: text =>(
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '报价交期',
@@ -390,7 +382,6 @@ class InquiryEdit extends React.Component {
             'Purchaser',
             'TI_Z004',
             'TI_Z042',
-            'HS',
             'Curr',
             'WhsCode',
             'Company',
