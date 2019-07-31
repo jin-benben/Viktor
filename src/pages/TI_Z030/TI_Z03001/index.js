@@ -868,10 +868,11 @@ class AgreementEdit extends React.Component {
         ? 0
         : record.Quantity * record.InquiryPrice;
       record.InquiryLineTotal = round(record.InquiryLineTotal, 2);
-      record.InquiryDocTotalLocal = isNaN(record.Quantity * record.InquiryPrice * record.DocRate)
+      record.InquiryLineTotalLocal = isNaN(record.Quantity * record.InquiryPrice * record.DocRate)
         ? 0
         : record.Quantity * record.InquiryPrice * record.DocRate;
-      record.InquiryDocTotalLocal = round(record.InquiryDocTotalLocal, 2);
+       
+      record.InquiryLineTotalLocal = round(record.InquiryLineTotalLocal, 2);
       record.LineTotal = isNaN(record.Quantity * record.Price) ? 0 : record.Quantity * record.Price;
       record.LineTotal = round(record.LineTotal, 2);
       record.ProfitLineTotal =
@@ -887,6 +888,7 @@ class AgreementEdit extends React.Component {
     InquiryDocTotal = round(InquiryDocTotal, 2);
     OtherTotal = round(OtherTotal, 2);
     ProfitTotal = round(DocTotal - InquiryDocTotalLocal - OtherTotal, 2);
+   
     this.setState({
       orderDetail: {
         ...orderDetail,
@@ -896,7 +898,7 @@ class AgreementEdit extends React.Component {
         ProfitTotal,
         OtherTotal,
       },
-    });
+    },()=>{ console.log(InquiryDocTotalLocal,this.state.orderDetail)});
   };
 
   // 品牌,仓库改变

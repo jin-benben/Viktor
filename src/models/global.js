@@ -181,7 +181,7 @@ export default {
         }
       }
     },
-    // 获取品牌下拉框初始值
+    // 获取处理人下拉框初始值
     *getProcessor({ payload }, { put, call }) {
       const response = yield call(processorRule, payload);
       if (response && response.Status === 200) {

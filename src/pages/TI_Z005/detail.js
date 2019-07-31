@@ -228,7 +228,7 @@ class BrandDetail extends PureComponent {
 
   render() {
     const {
-      global: { Purchaser },
+      global: { Purchaser },location
     } = this.props;
     const { formVals } = this.state;
     return (

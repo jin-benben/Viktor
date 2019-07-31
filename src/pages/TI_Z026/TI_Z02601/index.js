@@ -98,7 +98,8 @@ class InquiryEdit extends React.Component {
         record.lastIndex ? null : (
           <div style={{ width: 110 }}>
             <Brand
-              initialValue={record.BrandName}
+              initialValue={text}
+              keyType="Name"
               onChange={value => {
                 this.brandChange(value, record, index);
               }}

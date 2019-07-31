@@ -22,6 +22,7 @@ import Upload from '@/components/Upload';
 import MDMCommonality from '@/components/Select';
 import MyIcon from '@/components/MyIcon';
 import OrderAttachUpload from '@/components/Modal/OrderAttachUpload';
+import Text from '@/components/Text';
 import MyPageHeader from './components/pageHeader';
 import { getName } from '@/utils/utils';
 import { brandLevel, formLayout, formItemLayout } from '@/utils/publicData';
@@ -264,12 +265,12 @@ class BrandList extends PureComponent {
     {
       title: '品牌介绍',
       dataIndex: 'Content',
+      width: 300,
       render: text => (
         <Ellipsis tooltip lines={1}>
           {text}
         </Ellipsis>
       ),
-      width: 350,
     },
     {
       title: '主图',
@@ -296,13 +297,19 @@ class BrandList extends PureComponent {
     },
     {
       title: '简写',
-      width: 150,
+      width: 100,
       dataIndex: 'Abbreviate',
       render: text => (
         <Ellipsis tooltip lines={1}>
           {text}
         </Ellipsis>
       ),
+    },
+    {
+      title: '官网',
+      width: 200,
+      dataIndex: 'WebSite',
+      render:text=><Text text={text} />
     },
     {
       title: '默认供应商',

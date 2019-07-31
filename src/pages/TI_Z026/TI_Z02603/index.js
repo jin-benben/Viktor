@@ -173,24 +173,22 @@ class InquiryEdit extends PureComponent {
       width: 100,
       dataIndex: 'LineComment',
       align: 'center',
-      render: (text, record) =>
-        record.lastIndex ? null : (
-          <Ellipsis tooltip lines={1}>
-            {text}
-          </Ellipsis>
-        ),
+      render: text =>(
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '包装',
       width: 100,
       dataIndex: 'Package',
       align: 'center',
-      render: (text, record) =>
-        record.lastIndex ? null : (
-          <Ellipsis tooltip lines={1}>
-            {text}
-          </Ellipsis>
-        ),
+      render: text =>(
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '产地',
@@ -208,16 +206,11 @@ class InquiryEdit extends PureComponent {
       title: 'HS编码',
       width: 100,
       dataIndex: 'HSCode',
-      render: (text, record) => {
-        const {
-          global: { HS },
-        } = this.props;
-        return record.lastIndex ? null : (
-          <Ellipsis tooltip lines={1}>
-            {getName(HS, text)}
-          </Ellipsis>
-        );
-      },
+      render: text =>(
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '税率',
@@ -286,12 +279,11 @@ class InquiryEdit extends PureComponent {
       title: '转移备注',
       width: 150,
       dataIndex: 'TransferComment',
-      render: (text, record) =>
-        record.lastIndex ? null : (
-          <Ellipsis tooltip lines={1}>
-            {text}
-          </Ellipsis>
-        ),
+      render: text =>(
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '转移日期',
@@ -394,7 +386,6 @@ class InquiryEdit extends PureComponent {
             'Purchaser',
             'TI_Z004',
             'TI_Z042',
-            'HS',
             'Curr',
             'WhsCode',
             'Company',
