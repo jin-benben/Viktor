@@ -75,7 +75,6 @@ class Brands extends PureComponent {
 
   render() {
     const { fetching, data, value } = this.state;
-    const { labelInValue, keyType } = this.props;
     return (
       <Select
         showSearch
