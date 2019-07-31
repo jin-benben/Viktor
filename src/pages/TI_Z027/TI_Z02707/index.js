@@ -541,7 +541,7 @@ class supplierQuotationSku extends PureComponent {
     const {
       form: { getFieldDecorator },
       supplierQuotationSku: { queryData },
-      global: { OSLPList },
+      global: { ProcessorList },
     } = this.props;
     const { Closed, Owner } = queryData.Content;
     const { expandForm } = this.state;
@@ -655,7 +655,7 @@ class supplierQuotationSku extends PureComponent {
               </Col>
               <Col md={5} sm={24}>
                 <FormItem key="Processor" {...formLayout} label="处理人">
-                  {getFieldDecorator('Processor')(<ProcessorSelect data={OSLPList} type="Code" />)}
+                  {getFieldDecorator('Processor')(<ProcessorSelect data={ProcessorList} type="Code" />)}
                 </FormItem>
               </Col>
               <Col md={5} sm={24}>

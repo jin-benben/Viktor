@@ -22,6 +22,7 @@ import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import StandardTable from '@/components/StandardTable';
 import MDMCommonality from '@/components/Select';
 import Transfer from '@/components/Transfer';
+import MyPageHeader from '../components/pageHeader';
 import { getName } from '@/utils/utils';
 import { transferBaseType } from '@/utils/publicData';
 
@@ -389,7 +390,7 @@ class inquiryFetchtrackPage extends PureComponent {
   render() {
     const {
       inquiryFetchtrack: { trackList, pagination },
-      loading,
+      loading,location
     } = this.props;
 
     const transferParentMethods = {
@@ -400,6 +401,7 @@ class inquiryFetchtrackPage extends PureComponent {
     return (
       <Fragment>
         <Card bordered={false}>
+          <MyPageHeader {...location} />
           <div className="tableList">
             <div className="tableListForm">{this.renderSimpleForm()}</div>
             <StandardTable
