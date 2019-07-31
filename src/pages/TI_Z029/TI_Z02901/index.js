@@ -944,7 +944,7 @@ class TI_Z029Component extends React.Component {
   };
 
    // 价格选择修改
-   priceChange=select=>{
+  priceChange=select=>{
     console.log(select)
   }
 
@@ -999,7 +999,7 @@ class TI_Z029Component extends React.Component {
         ,SupplierCode
         ,Currency
         ,ForeignFreight})
-      orderDetail.TI_Z02602[index] = record;
+      orderDetail.TI_Z02902[index] = record;
       this.setState({ orderDetail: { ...orderDetail } });
       
   }

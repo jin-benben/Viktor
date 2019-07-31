@@ -516,7 +516,7 @@ class InquiryEdit extends React.Component {
         ,SupplierCode
         ,Currency
         ,ForeignFreight})
-      formVals.TI_Z02602[index] = record;
+      formVals.TI_Z02702[index] = record;
       this.setState({ formVals: { ...formVals} });
       
   }

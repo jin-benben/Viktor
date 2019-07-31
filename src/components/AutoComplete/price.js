@@ -63,7 +63,7 @@ class BrandModal extends PureComponent {
         },
         page: 1,
         rows: 20,
-        sidx: 'Code',
+        sidx: 'DocEntry',
         sord: 'Desc',
       },
       pagination: {
@@ -89,7 +89,7 @@ class BrandModal extends PureComponent {
         },
         page: 1,
         rows: 20,
-        sidx: 'Code',
+        sidx: 'DocEntry',
         sord: 'Desc',
       },
      })
@@ -100,7 +100,7 @@ class BrandModal extends PureComponent {
       },
       page: 1,
       rows: 20,
-      sidx: 'Code',
+      sidx: 'DocEntry',
       sord: 'Desc',
     })
    }
@@ -167,7 +167,7 @@ class BrandModal extends PureComponent {
         width={960}
         maskClosable={false}
         destroyOnClose
-        title="品牌选择"
+        title="询价记录"
         visible={modalVisible}
         onOk={this.okHandle}
         onCancel={() => handleModalVisible()}

@@ -19,7 +19,8 @@ class OrderAutoComplete extends Component {
 
   componentWillReceiveProps(nextProps){
     const {value}=this.state
-    if(!value&&nextProps.defaultValue){
+    if(!value&&nextProps.defaultValue||nextProps.defaultValue!==value){
+      
       this.setState({
         value:nextProps.defaultValue
       })
