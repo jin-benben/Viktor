@@ -24,6 +24,7 @@ class OrderAttachUpload extends PureComponent {
   uploadSuccess = fileList => {
     this.setState({
       attachmentList: fileList,
+      attachmentName:fileList[0].response.FileName
     });
   };
 
@@ -36,7 +37,7 @@ class OrderAttachUpload extends PureComponent {
       handleModalVisible,
       handleSubmit,
     } = this.props;
-    const { attachmentList } = this.state;
+    const { attachmentList,attachmentName } = this.state;
     const formItemLayout = {
       labelCol: {
         xs: { span: 24 },
@@ -54,11 +55,11 @@ class OrderAttachUpload extends PureComponent {
         if (err || !attachmentList.length) return;
         const { AttachmentName } = fieldsValue;
         const newattachmentList = attachmentList.map(file => {
-          const { FilePath, FileCode, Extension } = file.response;
+          const { FilePath, FileCode, Extension,FileName } = file.response;
           return {
             AttachmentPath: FilePath,
             AttachmentCode: FileCode,
-            AttachmentName,
+            AttachmentName:AttachmentName||FileName,
             AttachmentExtension: Extension,
           };
         });
@@ -77,7 +78,7 @@ class OrderAttachUpload extends PureComponent {
       >
         <Form {...formItemLayout}>
           <FormItem key="AttachmentName" {...this.formLayout} label="附件描述">
-            {getFieldDecorator('AttachmentName')(<TextArea placeholder="请输入附件描" />)}
+            {getFieldDecorator('AttachmentName',{initialValue:attachmentName})(<TextArea placeholder="请输入附件描" />)}
           </FormItem>
           <FormItem key="AttachmentPath" {...this.formLayout} label="上传附件">
             <Upload multiple onChange={this.uploadSuccess} Folder={Folder} />

@@ -5,7 +5,7 @@ import moment from 'moment';
 import DescriptionList from 'ant-design-pro/lib/DescriptionList';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import StandardTable from '@/components/StandardTable';
-import Attachment from '@/components/Attachment/other';
+import Attachment from '../components/attachment';
 import { getName } from '@/utils/utils';
 
 const { Description } = DescriptionList;
@@ -25,7 +25,6 @@ class OrderDetailPage extends PureComponent {
     },
     {
       title: '物料名称',
-      width: 200,
       dataIndex: 'ItemName',
       render: text => (
         <Ellipsis tooltip lines={1}>
@@ -200,7 +199,7 @@ class OrderDetailPage extends PureComponent {
       type: 'global/getMDMCommonality',
       payload: {
         Content: {
-          CodeList: ['Saler', 'Company', 'Trnsp'],
+          CodeList: ['Saler', 'Company','TI_Z004', 'Trnsp'],
         },
       },
     });
@@ -290,7 +289,7 @@ class OrderDetailPage extends PureComponent {
             {`${orderDetailInfo.ShipToCode}${orderDetailInfo.Address2}`}
           </Description>
           <Description term="客户参考号">{orderDetailInfo.NumAtCard}</Description>
-          <Description term="备注">{orderDetailInfo.Comments}</Description>
+          <Description term="备注"><span className="red">{orderDetailInfo.Comments}</span></Description>
           <Description term="单据总计">{orderDetailInfo.DocTotal}</Description>
           <Description term="合同号">{orderDetailInfo.U_ContractEntry}</Description>
           <Description term="联系人">
@@ -357,7 +356,7 @@ class OrderDetailPage extends PureComponent {
           onOk={() => this.handleModalVisible(false)}
           onCancel={() => this.handleModalVisible(false)}
         >
-          <Attachment dataSource={prviewList} iscan={false} />
+          <Attachment dataSource={prviewList} />
         </Modal>
       </Card>
     );

@@ -364,6 +364,17 @@ class agreementOrder extends PureComponent {
                   {getFieldDecorator('DeptList')(<Organization />)}
                 </FormItem>
               </Col>
+              <Col md={5} sm={24}>
+                <FormItem {...formLayout} label="订单号">
+                  <FormItem className="lineFormItem" key="SoEntryFrom">
+                    {getFieldDecorator('SoEntryFrom')(<Input placeholder="开始单号" />)}
+                  </FormItem>
+                  <span className="lineFormItemCenter">-</span>
+                  <FormItem className="lineFormItem" key="SoEntryTo">
+                    {getFieldDecorator('SoEntryTo')(<Input placeholder="结束单号" />)}
+                  </FormItem>
+                </FormItem>
+              </Col>
             </Fragment>
           ) : null}
           <Col md={4} sm={24}>
