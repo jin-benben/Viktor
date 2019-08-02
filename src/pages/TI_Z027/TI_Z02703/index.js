@@ -88,13 +88,23 @@ class InquiryEdit extends React.Component {
       title: '名称(外)',
       width: 100,
       dataIndex: 'ForeignName',
-      render: (text, record) =>
-        record.lastIndex ? null : (
-          <Ellipsis tooltip lines={1}>
-            {text}-{record.ForeignParameters}
-          </Ellipsis>
-        ),
+      render: text =>(
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
+    {
+      title: '规格(外)',
+      dataIndex: 'ForeignParameters',
+      width: 100,
+      align: 'center',
+      render: text =>(
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
+    }, 
     {
       title: '数量',
       width: 100,
@@ -519,7 +529,7 @@ class InquiryEdit extends React.Component {
             <StandardTable
               data={{ list: newdata }}
               rowKey="LineID"
-              scroll={{ x: 2000 }}
+              scroll={{ x: 2100 }}
               columns={this.skuColumns}
             />
           </TabPane>

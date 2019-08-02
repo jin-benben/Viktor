@@ -14,7 +14,6 @@ import {
   DatePicker,
   Icon,
   message,
-  Tooltip,
   Badge,
   Spin,
 } from 'antd';
@@ -317,11 +316,11 @@ class SalesQuotationSku extends PureComponent {
       dataIndex: 'LineComment',
       width: 100,
       align: 'center',
-      render: (text, record) => (
+      render:text =>(
         <Ellipsis tooltip lines={1}>
-          {text} {record.ForeignParameters}
+          {text}
         </Ellipsis>
-      ),
+        ),
     },
     {
       title: '参数',
@@ -339,23 +338,33 @@ class SalesQuotationSku extends PureComponent {
       width: 100,
       dataIndex: 'Package',
       align: 'center',
-      render: (text, record) => (
+      render:text =>(
         <Ellipsis tooltip lines={1}>
-          {text} {record.ForeignParameters}
+          {text}
+        </Ellipsis>
+        ),
+    },
+    {
+      title: '名称(外)',
+      width: 100,
+      dataIndex: 'ForeignName',
+      render: text =>(
+        <Ellipsis tooltip lines={1}>
+          {text}
         </Ellipsis>
       ),
     },
     {
-      title: '名称(外)',
-      dataIndex: 'ForeignName',
+      title: '规格(外)',
+      dataIndex: 'ForeignParameters',
       width: 100,
       align: 'center',
-      render: (text, record) => (
+      render: text =>(
         <Ellipsis tooltip lines={1}>
-          {text} {record.ForeignParameters}
+          {text}
         </Ellipsis>
       ),
-    },
+    }, 
 
     {
       title: '仓库',
@@ -376,7 +385,7 @@ class SalesQuotationSku extends PureComponent {
       align: 'center',
       render: (text, record) => (
         <Ellipsis tooltip lines={1}>
-          {text} {record.ForeignParameters}
+          {text}
         </Ellipsis>
       ),
     },
@@ -871,7 +880,7 @@ class SalesQuotationSku extends PureComponent {
               loading={loading}
               data={{ list: SalesQuotationSkuList }}
               pagination={pagination}
-              scroll={{ x: 4100 }}
+              scroll={{ x: 4200 }}
               rowKey="Key"
               columns={this.columns}
               rowSelection={{
