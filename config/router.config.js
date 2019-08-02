@@ -734,7 +734,42 @@ export default [
             component: './exception/404',
           },
         ],
-      }
+      },
+      {
+        name: '网站设置',
+        icon: 'icontoolbar-setx',
+        path: '/websiteSeting',
+        routes: [
+          {
+            name: '精选品牌',
+            path: '/websiteSeting/choicenessBrand',
+            component: './websiteSeting/choicenessBrand',
+          },
+          {
+            name: '精选商品',
+            path: '/websiteSeting/choicenessGoods',
+            component: './websiteSeting/choicenessGoods',
+          },
+          {
+            name: '首页设置',
+            path: '/websiteSeting/home',
+            component: './websiteSeting/home',
+          },
+          {
+            name: '文章分类',
+            path: '/websiteSeting/articleCate',
+            component: './websiteSeting/articleCate',
+          },
+          {
+            name: '文章管理',
+            path: '/websiteSeting/article',
+            component: './websiteSeting/article',
+          },
+          {
+            component: './exception/404',
+          },
+        ],
+      },
     ],
   },
   {

@@ -215,6 +215,25 @@ export const roleType = [
   },
 ];
 
+export const articleType= [
+  {
+    Key: '1',
+    Value: '公司新闻',
+  },
+  {
+    Key: '2',
+    Value: '工业品资讯',
+  },
+  {
+    Key: '3',
+    Value: '联系我们',
+  },
+  {
+    Key: '4',
+    Value: '企业介绍',
+  },
+];
+
 export const formItemLayout = {
   labelCol: {
     xs: { span: 24 },

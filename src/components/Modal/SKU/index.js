@@ -198,7 +198,7 @@ class SKUModal extends PureComponent {
 
   render() {
     const { loading, pagination, skuList } = this.state;
-    const { modalVisible, handleModalVisible } = this.props;
+    const { modalVisible, handleModalVisible,Type } = this.props;
     return (
       <Modal
         width={1100}
@@ -218,7 +218,7 @@ class SKUModal extends PureComponent {
             scroll={{ x: 1000 }}
             columns={this.columns}
             rowSelection={{
-              type: 'radio',
+              type: Type||'radio',
               onSelectRow: this.onSelectRow,
             }}
             onChange={this.handleStandardTableChange}
