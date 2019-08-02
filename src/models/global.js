@@ -42,6 +42,7 @@ export default {
     TI_Z050: [], // 转移类型
     ProcessorList: [], // 处理人,
     DepartmentList: [],
+    TI_Z01802:[], // 文章分类
     NoPermissionDepartmentList: [],
     OSLPList: [],
     hasLoad: false,

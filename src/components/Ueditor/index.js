@@ -95,7 +95,10 @@ class UEditor extends PureComponent {
     const { editor } = this.state;
     if (editor.destroy) editor.destroy();
     const child = document.getElementById('edui_fixedlayer');
-    child.parentNode.removeChild(child);
+    if(child){
+      child.parentNode.removeChild(child)
+    }
+   
   }
 
   render() {

@@ -761,9 +761,14 @@ export default [
             component: './websiteSeting/articleCate',
           },
           {
-            name: '文章管理',
-            path: '/websiteSeting/article',
-            component: './websiteSeting/article',
+            name: '文章查询',
+            path: '/websiteSeting/articleList',
+            component: './websiteSeting/articleList',
+          },
+          {
+            name: '文章编辑',
+            path: '/websiteSeting/articleEdit',
+            component: './websiteSeting/articleEdit',
           },
           {
             component: './exception/404',

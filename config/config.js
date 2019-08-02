@@ -32,9 +32,6 @@ export default {
   ],
   hash:true,
   targets: { ie: 11 },
-  /**
-   * 路由相关配置
-   */
   routes: pageRoutes,
   proxy: {
     "/MDM": {
