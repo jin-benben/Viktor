@@ -978,9 +978,9 @@ class InquiryEdit extends React.Component {
     }
   };
 
-  getCompany = companycode => {
+  getCompany = (companycode) => {
     const { dispatch } = this.props;
-    const { inquiryDetail } = this.state;
+    const { inquiryDetail,inquiryDetail:{UserID,AddressID} } = this.state;
     dispatch({
       type: 'inquiryEdit/company',
       payload: {
@@ -1001,12 +1001,12 @@ class InquiryEdit extends React.Component {
             },
             () => {
               if (TI_Z00603List.length) {
-                this.handleAdreessChange(TI_Z00603List[0].AddressID);
+                if(!AddressID)this.handleAdreessChange(TI_Z00603List[0].AddressID)
               } else {
                 message.warning('该客户下没有收货地址，请先维护收货地址');
               }
               if (TI_Z00602List.length) {
-                this.linkmanChange(TI_Z00602List[0].UserID);
+                if(!UserID) this.linkmanChange(TI_Z00602List[0].UserID);
               } else {
                 message.warning('该客户下没有维护联系人，请先维护联系人');
               }
