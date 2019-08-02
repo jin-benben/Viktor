@@ -32,6 +32,7 @@ import PrintHistory from '@/components/Order/PrintHistory';
 import MDMCommonality from '@/components/Select';
 import MyPageHeader from '../components/pageHeader';
 import MyIcon from '@/components/MyIcon';
+import Text from '@/components/Text'
 import { getName } from '@/utils/utils';
 
 const { TabPane } = Tabs;
@@ -53,12 +54,12 @@ class CompanyEdit extends PureComponent {
     },
     {
       title: '姓名',
-      width: 100,
+      width: 80,
       dataIndex: 'Name',
     },
     {
       title: '手机号码',
-      width: 120,
+      width: 130,
       dataIndex: 'CellphoneNO',
     },
     {
@@ -68,12 +69,13 @@ class CompanyEdit extends PureComponent {
     },
     {
       title: 'Email',
-      width: 100,
+      width: 200,
       dataIndex: 'Email',
+      render:text=><Text text={text} />
     },
     {
       title: '职位',
-      width: 100,
+      width: 80,
       dataIndex: 'Position',
     },
     {
@@ -89,13 +91,13 @@ class CompanyEdit extends PureComponent {
     },
     {
       title: '交易公司',
-      width: 200,
+      width: 150,
       dataIndex: 'CompanyCode',
       render: text => {
         const {
           global: { Company },
         } = this.props;
-        return <span>{getName(Company, text)}</span>;
+        return <Text text={getName(Company, text)} />
       },
     },
     {
