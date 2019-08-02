@@ -155,12 +155,23 @@ class orderLine extends PureComponent {
       title: '名称(外)',
       width: 100,
       dataIndex: 'ForeignName',
-      render: (text, record) => (
+      render: text =>(
         <Ellipsis tooltip lines={1}>
-          {text}-{record.ForeignParameters}
+          {text}
         </Ellipsis>
       ),
     },
+    {
+      title: '规格(外)',
+      dataIndex: 'ForeignParameters',
+      width: 100,
+      align: 'center',
+      render: text =>(
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
+    }, 
     {
       title: '数量',
       width: 100,
@@ -285,6 +296,17 @@ class orderLine extends PureComponent {
       width: 100,
       dataIndex: 'Package',
       align: 'center',
+    },
+    {
+      title: '参数',
+      dataIndex: 'Parameters',
+      width: 100,
+      align: 'center',
+      render:text =>(
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+        ),
     },
     {
       title: '产地',
@@ -851,7 +873,7 @@ class orderLine extends PureComponent {
               data={{ list: orderLineList }}
               pagination={pagination}
               rowKey="Key"
-              scroll={{ x: 4000 }}
+              scroll={{ x: 4200 }}
               columns={this.columns}
               rowSelection={{
                 onSelectRow: this.onSelectRow,

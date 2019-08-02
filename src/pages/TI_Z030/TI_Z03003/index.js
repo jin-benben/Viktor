@@ -190,6 +190,11 @@ class InquiryEdit extends React.Component {
       width: 100,
       dataIndex: 'InquiryDueDate',
       align: 'center',
+      render:text =>(
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '采购员',
@@ -245,6 +250,17 @@ class InquiryEdit extends React.Component {
       ),
     },
     {
+      title: '参数',
+      dataIndex: 'Parameters',
+      width: 100,
+      align: 'center',
+      render:text =>(
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+        ),
+    },
+    {
       title: '包装',
       width: 100,
       dataIndex: 'Package',
@@ -260,14 +276,23 @@ class InquiryEdit extends React.Component {
       dataIndex: 'ForeignName',
       width: 100,
       align: 'center',
-      render: (text, record) =>
-        record.lastIndex ? null : (
-          <Ellipsis tooltip lines={1}>
-            {text} {record.ForeignParameters}
-          </Ellipsis>
-        ),
+      render: text =>(
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
-
+    {
+      title: '规格(外)',
+      dataIndex: 'ForeignParameters',
+      width: 100,
+      align: 'center',
+      render: text =>(
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
+    },
     {
       title: '仓库',
       width: 100,
@@ -591,8 +616,8 @@ class InquiryEdit extends React.Component {
           <Description term="订单交期">
             {agreementDetail.DueDate ? moment(agreementDetail.DueDate).format('YYYY-MM-DD') : ''}
           </Description>
-          <Description term="有效日期">
-            {agreementDetail.ToDate ? moment(agreementDetail.ToDate).format('YYYY-MM-DD') : ''}
+          <Description term="审核日期">
+            {agreementDetail.ApproveDate ? moment(agreementDetail.ApproveDate).format('YYYY-MM-DD') : ''}
           </Description>
           <Description term="联系人">{agreementDetail.Contacts}</Description>
           <Description term="备注"><span className="red">{agreementDetail.Comment}</span></Description>
@@ -643,7 +668,7 @@ class InquiryEdit extends React.Component {
             <StandardTable
               data={{ list: agreementDetail.TI_Z03002 }}
               rowKey="LineID"
-              scroll={{ x: 3200 }}
+              scroll={{ x: 3400 }}
               columns={this.skuColumns}
             />
           </TabPane>

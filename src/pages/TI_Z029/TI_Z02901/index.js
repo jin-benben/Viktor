@@ -300,6 +300,11 @@ class TI_Z029Component extends React.Component {
       width: 100,
       dataIndex: 'InquiryDueDate',
       align: 'center',
+      render:text =>(
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '采购员',
@@ -845,7 +850,7 @@ class TI_Z029Component extends React.Component {
 
   getCompany = companycode => {
     const { dispatch } = this.props;
-    const { orderDetail } = this.state;
+    const { orderDetail,orderDetail:{AddressID,UserID}} = this.state;
     dispatch({
       type: 'TI_Z029/company',
       payload: {
@@ -866,12 +871,12 @@ class TI_Z029Component extends React.Component {
             },
             () => {
               if (TI_Z00603List.length) {
-                this.handleAdreessChange(TI_Z00603List[0].AddressID);
+                if(!AddressID)this.handleAdreessChange(TI_Z00603List[0].AddressID)
               } else {
                 message.warning('该客户下没有收货地址，请先维护收货地址');
               }
               if (TI_Z00602List.length) {
-                this.linkmanChange(TI_Z00602List[0].UserID);
+                if(!UserID) this.linkmanChange(TI_Z00602List[0].UserID);
               } else {
                 message.warning('该客户下没有维护联系人，请先维护联系人');
               }

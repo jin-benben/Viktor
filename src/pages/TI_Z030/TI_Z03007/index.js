@@ -223,6 +223,11 @@ class AgreementLine extends PureComponent {
       dataIndex: 'InquiryDueDate',
       sorter: true,
       align: 'center',
+      render:text =>(
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '销售员',
@@ -287,35 +292,56 @@ class AgreementLine extends PureComponent {
       dataIndex: 'LineComment',
       width: 120,
       align: 'center',
-      render: (text, record) => (
+      render:text =>(
         <Ellipsis tooltip lines={1}>
-          {text} {record.ForeignParameters}
+          {text}
         </Ellipsis>
-      ),
+        ),
+    },
+    {
+      title: '参数',
+      dataIndex: 'Parameters',
+      width: 100,
+      align: 'center',
+      render:text =>(
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+        ),
     },
     {
       title: '包装',
       width: 100,
       dataIndex: 'Package',
       align: 'center',
-      render: (text, record) => (
+      render:text =>(
         <Ellipsis tooltip lines={1}>
-          {text} {record.ForeignParameters}
+          {text}
         </Ellipsis>
-      ),
+        ),
     },
     {
       title: '名称(外)',
       dataIndex: 'ForeignName',
       width: 100,
       align: 'center',
-      render: (text, record) => (
+      render:text =>(
         <Ellipsis tooltip lines={1}>
-          {text} {record.ForeignParameters}
+          {text}
         </Ellipsis>
-      ),
+        ),
     },
-
+    {
+      title: '规格(外)',
+      dataIndex: 'ForeignParameters',
+      width: 100,
+      align: 'center',
+      render:text =>(
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+        ),
+    },
     {
       title: '仓库',
       width: 100,
@@ -333,11 +359,11 @@ class AgreementLine extends PureComponent {
       width: 80,
       dataIndex: 'CustomerName',
       align: 'center',
-      render: (text, record) => (
+      render:text =>(
         <Ellipsis tooltip lines={1}>
-          {text} {record.ForeignParameters}
+          {text}
         </Ellipsis>
-      ),
+        ),
     },
     {
       title: '创建日期',
@@ -671,7 +697,7 @@ class AgreementLine extends PureComponent {
             loading={loading}
             data={{ list: agreementLineList }}
             pagination={pagination}
-            scroll={{ x: 3700 }}
+            scroll={{ x: 3900 }}
             rowKey="Key"
             columns={this.columns}
             onChange={this.handleStandardTableChange}
