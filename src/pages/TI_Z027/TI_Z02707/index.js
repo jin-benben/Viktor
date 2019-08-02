@@ -179,6 +179,17 @@ class supplierQuotationSku extends PureComponent {
       dataIndex: 'InquiryDueDate',
     },
     {
+      title: '参数',
+      dataIndex: 'Parameters',
+      width: 100,
+      align: 'center',
+      render:text =>(
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+        ),
+    },
+    {
       title: '行备注',
       dataIndex: 'LineComment',
       width: 100,
@@ -722,7 +733,7 @@ class supplierQuotationSku extends PureComponent {
               data={{ list: supplierQuotationSkuList }}
               pagination={pagination}
               rowKey="Key"
-              scroll={{ x: 3420 }}
+              scroll={{ x: 3520 }}
               rowSelection={{
                 type: 'radio',
                 onSelectRow: this.onSelectRow,

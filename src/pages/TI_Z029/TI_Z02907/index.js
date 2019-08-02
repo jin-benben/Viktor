@@ -324,6 +324,17 @@ class SalesQuotationSku extends PureComponent {
       ),
     },
     {
+      title: '参数',
+      dataIndex: 'Parameters',
+      width: 100,
+      align: 'center',
+      render:text =>(
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+        ),
+    },
+    {
       title: '包装',
       width: 100,
       dataIndex: 'Package',
@@ -860,7 +871,7 @@ class SalesQuotationSku extends PureComponent {
               loading={loading}
               data={{ list: SalesQuotationSkuList }}
               pagination={pagination}
-              scroll={{ x: 4000 }}
+              scroll={{ x: 4100 }}
               rowKey="Key"
               columns={this.columns}
               rowSelection={{

@@ -287,6 +287,17 @@ class orderLine extends PureComponent {
       align: 'center',
     },
     {
+      title: '参数',
+      dataIndex: 'Parameters',
+      width: 100,
+      align: 'center',
+      render:text =>(
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+        ),
+    },
+    {
       title: '产地',
       width: 80,
       dataIndex: 'ManLocation',
@@ -851,7 +862,7 @@ class orderLine extends PureComponent {
               data={{ list: orderLineList }}
               pagination={pagination}
               rowKey="Key"
-              scroll={{ x: 4000 }}
+              scroll={{ x: 4100 }}
               columns={this.columns}
               rowSelection={{
                 onSelectRow: this.onSelectRow,

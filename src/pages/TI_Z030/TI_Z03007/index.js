@@ -223,6 +223,11 @@ class AgreementLine extends PureComponent {
       dataIndex: 'InquiryDueDate',
       sorter: true,
       align: 'center',
+      render:text =>(
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '销售员',
@@ -292,6 +297,17 @@ class AgreementLine extends PureComponent {
           {text} {record.ForeignParameters}
         </Ellipsis>
       ),
+    },
+    {
+      title: '参数',
+      dataIndex: 'Parameters',
+      width: 100,
+      align: 'center',
+      render:text =>(
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+        ),
     },
     {
       title: '包装',
@@ -671,7 +687,7 @@ class AgreementLine extends PureComponent {
             loading={loading}
             data={{ list: agreementLineList }}
             pagination={pagination}
-            scroll={{ x: 3700 }}
+            scroll={{ x: 3800 }}
             rowKey="Key"
             columns={this.columns}
             onChange={this.handleStandardTableChange}

@@ -133,7 +133,17 @@ class InquiryEdit extends React.Component {
         </Ellipsis>
       ),
     },
-
+    {
+      title: '参数',
+      dataIndex: 'Parameters',
+      width: 100,
+      align: 'center',
+      render:text =>(
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+        ),
+    },
     {
       title: '销行备注',
       dataIndex: 'BaseLineComment',
@@ -509,7 +519,7 @@ class InquiryEdit extends React.Component {
             <StandardTable
               data={{ list: newdata }}
               rowKey="LineID"
-              scroll={{ x: 1900 }}
+              scroll={{ x: 2000 }}
               columns={this.skuColumns}
             />
           </TabPane>

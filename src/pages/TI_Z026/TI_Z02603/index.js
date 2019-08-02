@@ -143,11 +143,10 @@ class InquiryEdit extends PureComponent {
       dataIndex: 'InquiryComment',
       width: 100,
       align: 'center',
-      render: (text, record) =>
-        record.lastIndex ? null : (
-          <Ellipsis tooltip lines={1}>
-            {text}
-          </Ellipsis>
+      render:text =>(
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
         ),
     },
     {
@@ -155,6 +154,11 @@ class InquiryEdit extends PureComponent {
       width: 100,
       dataIndex: 'InquiryDueDate',
       align: 'center',
+      render:text =>(
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '名称(外)',
@@ -189,6 +193,17 @@ class InquiryEdit extends PureComponent {
           {text}
         </Ellipsis>
       ),
+    },
+    {
+      title: '参数',
+      dataIndex: 'Parameters',
+      width: 100,
+      align: 'center',
+      render:text =>(
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+        ),
     },
     {
       title: '产地',
@@ -639,7 +654,7 @@ class InquiryEdit extends PureComponent {
             <StandardTable
               data={{ list: newdata }}
               rowKey="LineID"
-              scroll={{ x: 3300 }}
+              scroll={{ x: 3400 }}
               columns={this.skuColumns}
             />
           </TabPane>
