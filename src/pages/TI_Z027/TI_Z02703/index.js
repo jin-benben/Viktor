@@ -88,7 +88,7 @@ class InquiryEdit extends React.Component {
       title: '名称(外)',
       width: 100,
       dataIndex: 'ForeignName',
-      render: text =>(
+      render: text => (
         <Ellipsis tooltip lines={1}>
           {text}
         </Ellipsis>
@@ -99,12 +99,12 @@ class InquiryEdit extends React.Component {
       dataIndex: 'ForeignParameters',
       width: 100,
       align: 'center',
-      render: text =>(
+      render: text => (
         <Ellipsis tooltip lines={1}>
           {text}
         </Ellipsis>
       ),
-    }, 
+    },
     {
       title: '数量',
       width: 100,
@@ -148,11 +148,11 @@ class InquiryEdit extends React.Component {
       dataIndex: 'Parameters',
       width: 100,
       align: 'center',
-      render:text =>(
+      render: text => (
         <Ellipsis tooltip lines={1}>
           {text}
         </Ellipsis>
-        ),
+      ),
     },
     {
       title: '销行备注',
@@ -483,7 +483,9 @@ class InquiryEdit extends React.Component {
             {supplierAskDetail.ToDate ? moment(supplierAskDetail.ToDate).format('YYYY-MM-DD') : ''}
           </Description>
           <Description term="联系人">{supplierAskDetail.Contacts}</Description>
-          <Description term="备注"><span className="red">{supplierAskDetail.Comment}</span></Description>
+          <Description term="备注">
+            <span className="red">{supplierAskDetail.Comment}</span>
+          </Description>
           <Description term="创建人">
             <span>{getName(TI_Z004, supplierAskDetail.CreateUser)}</span>
           </Description>

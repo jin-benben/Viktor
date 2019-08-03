@@ -215,7 +215,7 @@ export const roleType = [
   },
 ];
 
-export const articleType= [
+export const articleType = [
   {
     Key: '1',
     Value: '公司新闻',

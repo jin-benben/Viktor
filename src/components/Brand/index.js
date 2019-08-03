@@ -17,16 +17,16 @@ class Brands extends PureComponent {
     this.fetchUser = debounce(this.fetchUser, 1000);
     this.state = {
       data: [],
-      value:"",
+      value: '',
       fetching: false,
     };
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    if (!prevState.value || nextProps.initialValue !== prevState.value){
+    if (!prevState.value || nextProps.initialValue !== prevState.value) {
       return {
         value: nextProps.initialValue,
-        data: prevState.data.length?prevState.data:nextProps.global.BrandList,
+        data: prevState.data.length ? prevState.data : nextProps.global.BrandList,
       };
     }
     return null;
@@ -57,16 +57,16 @@ class Brands extends PureComponent {
     this.setState({ data: response.Content ? response.Content.rows : [], fetching: false });
   };
 
-  handleChange = (value,option) => {
+  handleChange = (value, option) => {
     this.setState({
       value,
       fetching: false,
     });
     const { onChange } = this.props;
     if (onChange) {
-      const {item}=option.props
-      const {Code,Name}=item
-      onChange({BrandCode:Code,BrandName:Name});
+      const { item } = option.props;
+      const { Code, Name } = item;
+      onChange({ BrandCode: Code, BrandName: Name });
     }
   };
 

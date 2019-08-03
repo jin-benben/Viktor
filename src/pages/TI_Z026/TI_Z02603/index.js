@@ -143,18 +143,18 @@ class InquiryEdit extends PureComponent {
       dataIndex: 'InquiryComment',
       width: 100,
       align: 'center',
-      render:text =>(
+      render: text => (
         <Ellipsis tooltip lines={1}>
           {text}
         </Ellipsis>
-        ),
+      ),
     },
     {
       title: '询价交期',
       width: 100,
       dataIndex: 'InquiryDueDate',
       align: 'center',
-      render:text =>(
+      render: text => (
         <Ellipsis tooltip lines={1}>
           {text}
         </Ellipsis>
@@ -164,7 +164,7 @@ class InquiryEdit extends PureComponent {
       title: '名称(外)',
       width: 100,
       dataIndex: 'ForeignName',
-      render: text =>(
+      render: text => (
         <Ellipsis tooltip lines={1}>
           {text}
         </Ellipsis>
@@ -175,18 +175,18 @@ class InquiryEdit extends PureComponent {
       dataIndex: 'ForeignParameters',
       width: 100,
       align: 'center',
-      render: text =>(
+      render: text => (
         <Ellipsis tooltip lines={1}>
           {text}
         </Ellipsis>
       ),
-    }, 
+    },
     {
       title: '行备注',
       width: 100,
       dataIndex: 'LineComment',
       align: 'center',
-      render: text =>(
+      render: text => (
         <Ellipsis tooltip lines={1}>
           {text}
         </Ellipsis>
@@ -197,7 +197,7 @@ class InquiryEdit extends PureComponent {
       width: 100,
       dataIndex: 'Package',
       align: 'center',
-      render: text =>(
+      render: text => (
         <Ellipsis tooltip lines={1}>
           {text}
         </Ellipsis>
@@ -208,11 +208,11 @@ class InquiryEdit extends PureComponent {
       dataIndex: 'Parameters',
       width: 100,
       align: 'center',
-      render:text =>(
+      render: text => (
         <Ellipsis tooltip lines={1}>
           {text}
         </Ellipsis>
-        ),
+      ),
     },
     {
       title: '产地',
@@ -230,7 +230,7 @@ class InquiryEdit extends PureComponent {
       title: 'HS编码',
       width: 100,
       dataIndex: 'HSCode',
-      render: text =>(
+      render: text => (
         <Ellipsis tooltip lines={1}>
           {text}
         </Ellipsis>
@@ -303,7 +303,7 @@ class InquiryEdit extends PureComponent {
       title: '转移备注',
       width: 150,
       dataIndex: 'TransferComment',
-      render: text =>(
+      render: text => (
         <Ellipsis tooltip lines={1}>
           {text}
         </Ellipsis>
@@ -405,15 +405,7 @@ class InquiryEdit extends PureComponent {
       type: 'global/getMDMCommonality',
       payload: {
         Content: {
-          CodeList: [
-            'Saler',
-            'Purchaser',
-            'TI_Z004',
-            'TI_Z042',
-            'Curr',
-            'WhsCode',
-            'Company',
-          ],
+          CodeList: ['Saler', 'Purchaser', 'TI_Z004', 'TI_Z042', 'Curr', 'WhsCode', 'Company'],
         },
       },
     });
@@ -613,7 +605,9 @@ class InquiryEdit extends PureComponent {
             {formVals.ToDate ? moment(formVals.ToDate).format('YYYY-MM-DD') : ''}
           </Description>
           <Description term="联系人">{formVals.Contacts}</Description>
-          <Description term="备注"><span className="red">{formVals.Comment}</span></Description>
+          <Description term="备注">
+            <span className="red">{formVals.Comment}</span>
+          </Description>
           <Description term="创建人">
             <span>{getName(TI_Z004, formVals.CreateUser)}</span>
           </Description>

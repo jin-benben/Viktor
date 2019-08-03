@@ -2,23 +2,20 @@
 
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import {  Card, Button, message, Popconfirm, Icon } from 'antd';
+import { Card, Button, message, Popconfirm, Icon } from 'antd';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import SKUModal from '@/components/Modal/SKU';
-import DragSortingTable from '@/components/DragSortingTable'
-
-
+import DragSortingTable from '@/components/DragSortingTable';
 
 @connect(({ choicenessGoods, loading }) => ({
   choicenessGoods,
-  loading:loading.effects['choicenessGoods/fetch'],
-  addloading: loading.effects['choicenessGoods/add']
+  loading: loading.effects['choicenessGoods/fetch'],
+  addloading: loading.effects['choicenessGoods/add'],
 }))
-
 class ChoicenessGoodsSet extends PureComponent {
   state = {
     modalVisible: false,
-    choicenessGoodsList:[],
+    choicenessGoodsList: [],
     queryData: {
       Content: {
         SearchText: '',
@@ -43,32 +40,32 @@ class ChoicenessGoodsSet extends PureComponent {
     {
       title: '序号',
       width: 50,
-      align:"center",
+      align: 'center',
       dataIndex: 'OrderId',
     },
     {
       title: '物料代码',
       width: 50,
-      align:"center",
+      align: 'center',
       dataIndex: 'Code',
     },
     {
       title: '物料名称',
       width: 200,
-      align:"center",
+      align: 'center',
       dataIndex: 'Name',
     },
     {
       title: '创建时间',
       width: 100,
-      align:"center",
+      align: 'center',
       dataIndex: 'CreateDate',
     },
     {
       title: '操作',
       width: 50,
-      align:"center",
-      render: (text, record,index) => (
+      align: 'center',
+      render: (text, record, index) => (
         <Popconfirm title="确定要删除吗?" onConfirm={() => this.handleDelete(index)}>
           <a href="javascript:;">
             <Icon type="delete" theme="twoTone" />
@@ -79,10 +76,10 @@ class ChoicenessGoodsSet extends PureComponent {
   ];
 
   componentDidMount() {
-     this.getChoicenessGoods()
+    this.getChoicenessGoods();
   }
 
-  getChoicenessGoods=()=>{
+  getChoicenessGoods = () => {
     const { queryData } = this.state;
     const { dispatch } = this.props;
     dispatch({
@@ -90,75 +87,77 @@ class ChoicenessGoodsSet extends PureComponent {
       payload: {
         ...queryData,
       },
-      callback:response=>{
+      callback: response => {
         if (response && response.Status === 200) {
           if (!response.Content) {
-           this.setState({
-             choicenessGoodsList: []
-           })
+            this.setState({
+              choicenessGoodsList: [],
+            });
           } else {
             const { rows } = response.Content;
             this.setState({
-              choicenessGoodsList: rows
-            })
+              choicenessGoodsList: rows,
+            });
           }
         }
-      }
+      },
     });
-  }
+  };
 
   // 删除
   handleDelete = index => {
     const { choicenessGoodsList } = this.state;
-    choicenessGoodsList.splice(index,1)
+    choicenessGoodsList.splice(index, 1);
     this.setState({
-      choicenessGoodsList:[...choicenessGoodsList]
-    })
+      choicenessGoodsList: [...choicenessGoodsList],
+    });
   };
 
   handleStandardTableChange = paginations => {
-    const {queryData,pagination}=this.state
-    const {current,pageSize}=paginations
-    Object.assign(pagination,{current,pageSize})
-    Object.assign(queryData,{page:current,rows:pageSize})
-    this.setState({
-      queryData,pagination
-    },()=>this.getChoicenessGoods())
+    const { queryData, pagination } = this.state;
+    const { current, pageSize } = paginations;
+    Object.assign(pagination, { current, pageSize });
+    Object.assign(queryData, { page: current, rows: pageSize });
+    this.setState(
+      {
+        queryData,
+        pagination,
+      },
+      () => this.getChoicenessGoods()
+    );
   };
-
 
   selectChoicenessGoods = selectedRows => {
     // 保存品牌
     const { choicenessGoodsList } = this.state;
     const last = choicenessGoodsList[choicenessGoodsList.length - 1];
-    const newsbrandList = selectedRows.map((item,index) => {
+    const newsbrandList = selectedRows.map((item, index) => {
       const { Code, Name } = item;
       return {
         Code,
         Name,
-        OrderId: last ? last.OrderId + index : 1+index,
+        OrderId: last ? last.OrderId + index : 1 + index,
       };
     });
     this.setState({
-      choicenessGoodsList:[...choicenessGoodsList,...newsbrandList],
-      modalVisible:false
-    })
-   
+      choicenessGoodsList: [...choicenessGoodsList, ...newsbrandList],
+      modalVisible: false,
+    });
   };
 
-  addChoicenessGoods=()=>{
+  addChoicenessGoods = () => {
     const { dispatch } = this.props;
     const { choicenessGoodsList } = this.state;
-    const newList=choicenessGoodsList.map((item,index)=>{
-      const newItem=item
-      newItem.OrderId=index+1
-      return newItem
-    })
+    const newList = choicenessGoodsList.map((item, index) => {
+      const newItem = item;
+      newItem.OrderId = index + 1;
+      return newItem;
+    });
     dispatch({
       type: 'choicenessGoods/add',
       payload: {
         Content: {
-          TI_Z02001List:newList
+          TI_Z02001List: newList,
         },
       },
       callback: response => {
@@ -167,7 +166,7 @@ class ChoicenessGoodsSet extends PureComponent {
         }
       },
     });
-  }
+  };
 
   handleModalVisible = flag => {
     this.setState({
@@ -175,15 +174,15 @@ class ChoicenessGoodsSet extends PureComponent {
     });
   };
 
-  sortChange=({dataSource})=>{
+  sortChange = ({ dataSource }) => {
     this.setState({
-      choicenessGoodsList:[...dataSource]
-    })
-  }
+      choicenessGoodsList: [...dataSource],
+    });
+  };
 
   render() {
-    const {loading,addLoading} = this.props;
-    const { modalVisible,choicenessGoodsList,pagination } = this.state;
+    const { loading, addLoading } = this.props;
+    const { modalVisible, choicenessGoodsList, pagination } = this.state;
     const skuModalVisible = {
       handleSubmit: this.selectChoicenessGoods,
       handleModalVisible: this.handleModalVisible,
@@ -202,15 +201,17 @@ class ChoicenessGoodsSet extends PureComponent {
             bordered
           />
         </div>
-        
+
         <SKUModal Type="checkbox" {...skuModalVisible} modalVisible={modalVisible} />
         <FooterToolbar>
-          <Button onClick={()=>this.handleModalVisible(true)} type="primary">添加</Button>
-          <Button loading={addLoading} onClick={this.addChoicenessGoods} type="primary">保存</Button>
+          <Button onClick={() => this.handleModalVisible(true)} type="primary">
+            添加
+          </Button>
+          <Button loading={addLoading} onClick={this.addChoicenessGoods} type="primary">
+            保存
+          </Button>
         </FooterToolbar>
       </Card>
-      
-    
     );
   }
 }

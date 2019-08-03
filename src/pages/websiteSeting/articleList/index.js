@@ -1,25 +1,25 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Row, Col, Card, Form, Input, Button,Tag } from 'antd';
+import { Row, Col, Card, Form, Input, Button, Tag } from 'antd';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import StandardTable from '@/components/StandardTable';
 import MDMCommonality from '@/components/Select';
 import MyIcon from '@/components/MyIcon';
-import {  formLayout,articleType } from '@/utils/publicData';
+import { formLayout, articleType } from '@/utils/publicData';
 import { getName } from '@/utils/utils';
 
 const FormItem = Form.Item;
 
-function onFieldsChange(props, changedFields){
-  const {dispatch} = props;
-  const {Type}=changedFields
-  if(Type&&Type.name==="Type"){
+function onFieldsChange(props, changedFields) {
+  const { dispatch } = props;
+  const { Type } = changedFields;
+  if (Type && Type.name === 'Type') {
     dispatch({
       type: 'global/getMDMCommonality',
       payload: {
         Content: {
           CodeList: ['TI_Z01802'],
-          Key:Type.value
+          Key: Type.value,
         },
       },
     });
@@ -30,7 +30,7 @@ function onFieldsChange(props, changedFields){
   global,
   loading: loading.models.articleList,
 }))
-@Form.create({onFieldsChange})
+@Form.create({ onFieldsChange })
 class ArticleListPage extends PureComponent {
   columns = [
     {
@@ -75,9 +75,9 @@ class ArticleListPage extends PureComponent {
       width: 100,
       dataIndex: 'Type',
       align: 'center',
-      render: text =>  <span>{getName(articleType, text)}</span>
+      render: text => <span>{getName(articleType, text)}</span>,
     },
-   
+
     {
       title: '分类',
       width: 100,
@@ -87,7 +87,8 @@ class ArticleListPage extends PureComponent {
       title: '是否显示',
       width: 80,
       dataIndex: 'IsShow',
-      render: text =>text === 'Y' ? <Tag color="green">显示</Tag> : <Tag color="gold">不显示</Tag>
+      render: text =>
+        text === 'Y' ? <Tag color="green">显示</Tag> : <Tag color="gold">不显示</Tag>,
     },
     {
       title: '操作',
@@ -101,10 +102,11 @@ class ArticleListPage extends PureComponent {
     },
   ];
 
- 
-
   componentDidMount() {
-    const {dispatch,articleList: { queryData }} = this.props;
+    const {
+      dispatch,
+      articleList: { queryData },
+    } = this.props;
 
     dispatch({
       type: 'articleList/fetch',
@@ -116,14 +118,11 @@ class ArticleListPage extends PureComponent {
       type: 'global/getMDMCommonality',
       payload: {
         Content: {
-          CodeList: ['TI_Z004']
+          CodeList: ['TI_Z004'],
         },
       },
     });
-    
   }
-
-
 
   handleStandardTableChange = pagination => {
     const {
@@ -165,8 +164,11 @@ class ArticleListPage extends PureComponent {
   };
 
   renderSimpleForm() {
-    const {form: { getFieldDecorator },global:{TI_Z01802}} = this.props;
-   
+    const {
+      form: { getFieldDecorator },
+      global: { TI_Z01802 },
+    } = this.props;
+
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>

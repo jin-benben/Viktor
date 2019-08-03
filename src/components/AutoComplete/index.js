@@ -1,11 +1,10 @@
-import React,{Component} from 'react'
+import React, { Component } from 'react';
 import { Input, AutoComplete } from 'antd';
 import debounce from 'lodash/debounce';
 import request from '@/utils/request';
 
 const { Option } = AutoComplete;
-const {TextArea} = Input
-
+const { TextArea } = Input;
 
 class OrderAutoComplete extends Component {
   constructor(props) {
@@ -13,56 +12,53 @@ class OrderAutoComplete extends Component {
     this.handleSearch = debounce(this.handleSearch, 1000);
     this.state = {
       dataSource: [],
-      value:props.defaultValue
+      value: props.defaultValue,
     };
   }
 
-  componentWillReceiveProps(nextProps){
-    const {value}=this.state
-    if(!value&&nextProps.defaultValue||nextProps.defaultValue!==value){
-      
+  componentWillReceiveProps(nextProps) {
+    const { value } = this.state;
+    if ((!value && nextProps.defaultValue) || nextProps.defaultValue !== value) {
       this.setState({
-        value:nextProps.defaultValue
-      })
+        value: nextProps.defaultValue,
+      });
     }
   }
 
-  shouldComponentUpdate(nextProps,nextState){
-    const {value,dataSource}=this.state
-    if(nextState.value ===value&&nextState.dataSource===dataSource){
-      return false
+  shouldComponentUpdate(nextProps, nextState) {
+    const { value, dataSource } = this.state;
+    if (nextState.value === value && nextState.dataSource === dataSource) {
+      return false;
     }
-    return true
+    return true;
   }
 
-  renderOption=(item)=> {
-    const {Type}=this.props
+  renderOption = item => {
+    const { Type } = this.props;
     return (
       <Option key={item.Code} item={item} title={item[Type]}>
         {`${item[Type]}`}
       </Option>
     );
-  }
-  
-  handleChange=(value,option)=>{
-    const {item}=option.props
-    const {onChage,parentSelect,Type}=this.props
+  };
+
+  handleChange = (value, option) => {
+    const { item } = option.props;
+    const { onChage, parentSelect, Type } = this.props;
     this.setState({
-      value:item?item[Type]:value
-    })
-    if(onChage){
-      if(item){
-        parentSelect(item)
-      }else{
-        onChage(value)
+      value: item ? item[Type] : value,
+    });
+    if (onChage) {
+      if (item) {
+        parentSelect(item);
+      } else {
+        onChage(value);
       }
     }
-  }
-
-
+  };
 
   handleSearch = async SearchText => {
-    const {BrandCode}=this.props
+    const { BrandCode } = this.props;
     const response = await request('/MDM/TI_Z009/TI_Z00902', {
       method: 'POST',
       data: {
@@ -89,14 +85,11 @@ class OrderAutoComplete extends Component {
         });
       }
     }
-  }
-
-  
-
+  };
 
   render() {
-    const { dataSource,value } = this.state;
-    console.log('ok',value)
+    const { dataSource, value } = this.state;
+    console.log('ok', value);
     return (
       <AutoComplete
         className="global-search"
@@ -108,10 +101,10 @@ class OrderAutoComplete extends Component {
         onSearch={this.handleSearch}
         onChange={this.handleChange}
       >
-        <TextArea style={{ width: '100%',backgroundColor:"#fff" }} />
+        <TextArea style={{ width: '100%', backgroundColor: '#fff' }} />
       </AutoComplete>
     );
   }
 }
 
-export default OrderAutoComplete
+export default OrderAutoComplete;

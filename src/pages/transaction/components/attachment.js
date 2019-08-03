@@ -11,7 +11,7 @@ class Attachment extends PureComponent {
     {
       title: '批次号',
       align: 'center',
-      width:100,
+      width: 100,
       dataIndex: 'Code',
     },
     {

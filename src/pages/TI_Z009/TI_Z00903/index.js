@@ -328,7 +328,7 @@ class SKUDetail extends Component {
                 })(<Input placeholder="请输入型号" />)}
               </FormItem>
             </Col>
-        
+
             <Col lg={12} md={12} sm={24}>
               <FormItem key="Package" {...this.formLayout} label="包装 ">
                 {getFieldDecorator('Package', {
@@ -396,7 +396,7 @@ class SKUDetail extends Component {
                 })(<HSCode data={hscodeList} initialValue={formVals.HSCode} />)}
               </FormItem>
             </Col>
-         
+
             <Col lg={12} md={12} sm={24}>
               <FormItem key="FHSCode" {...this.formLayout} label="国外海关编码">
                 {getFieldDecorator('FHSCode', {
@@ -417,7 +417,7 @@ class SKUDetail extends Component {
                 )}
               </FormItem>
             </Col>
-         
+
             <Col lg={12} md={12} sm={24}>
               <FormItem key="Putaway" {...this.formLayout} label="上架状态">
                 {getFieldDecorator('Putaway', {

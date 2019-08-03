@@ -47,8 +47,8 @@ import Attachment from '@/components/Attachment';
 import MyPageHeader from '../components/pageHeader';
 import OrderAttach from '@/components/Attachment/order';
 import Comparison from '@/components/Comparison';
-import AutoComplete from '@/components/AutoComplete'
-import PriceComplete from '@/components/AutoComplete/price'
+import AutoComplete from '@/components/AutoComplete';
+import PriceComplete from '@/components/AutoComplete/price';
 import { getName, validatorPhone, validatorEmail } from '@/utils/utils';
 import { otherCostCColumns } from '@/utils/publicData';
 
@@ -115,15 +115,16 @@ class TI_Z029Component extends React.Component {
       dataIndex: 'ProductName',
       width: 150,
       align: 'center',
-      render:(text,record,index)=>record.lastIndex ? null :(
-        <AutoComplete  
-          BrandCode={record.BrandCode}
-          Type="ProductName"
-          onChage={value =>this.rowSelectChange(value, record, index, 'ProductName')}
-          parentSelect={select=>this.rowSelect(select, record, index)}
-          defaultValue={text}
-        />
-      )
+      render: (text, record, index) =>
+        record.lastIndex ? null : (
+          <AutoComplete
+            BrandCode={record.BrandCode}
+            Type="ProductName"
+            onChage={value => this.rowSelectChange(value, record, index, 'ProductName')}
+            parentSelect={select => this.rowSelect(select, record, index)}
+            defaultValue={text}
+          />
+        ),
     },
     {
       title: '名称(外)',
@@ -138,15 +139,16 @@ class TI_Z029Component extends React.Component {
       width: 150,
       dataIndex: 'ManufactureNO',
       align: 'center',
-      render:(text,record,index)=>record.lastIndex ? null :(
-        <AutoComplete  
-          BrandCode={record.BrandCode}
-          Type="ManufactureNO"
-          onChage={value =>this.rowSelectChange(value, record, index, 'ManufactureNO')}
-          parentSelect={select=>this.rowSelect(select, record, index)}
-          defaultValue={text}
-        />
-      )
+      render: (text, record, index) =>
+        record.lastIndex ? null : (
+          <AutoComplete
+            BrandCode={record.BrandCode}
+            Type="ManufactureNO"
+            onChage={value => this.rowSelectChange(value, record, index, 'ManufactureNO')}
+            parentSelect={select => this.rowSelect(select, record, index)}
+            defaultValue={text}
+          />
+        ),
     },
     {
       title: '规格(外)',
@@ -191,13 +193,14 @@ class TI_Z029Component extends React.Component {
       width: 80,
       dataIndex: 'Price',
       align: 'center',
-      render:(text,record,index)=>record.lastIndex ? null :(
-        <Search  
-          onChange={value =>this.rowSelectChange(value, record, index, 'Price')}
-          onSearch={()=>this.priceSelect(record,index)}
-          defaultValue={text}
-        />
-      )
+      render: (text, record, index) =>
+        record.lastIndex ? null : (
+          <Search
+            onChange={value => this.rowSelectChange(value, record, index, 'Price')}
+            onSearch={() => this.priceSelect(record, index)}
+            defaultValue={text}
+          />
+        ),
     },
     {
       title: '重量',
@@ -300,7 +303,7 @@ class TI_Z029Component extends React.Component {
       width: 100,
       dataIndex: 'InquiryDueDate',
       align: 'center',
-      render:text =>(
+      render: text => (
         <Ellipsis tooltip lines={1}>
           {text}
         </Ellipsis>
@@ -652,7 +655,7 @@ class TI_Z029Component extends React.Component {
       pushModalVisible: false, // 其他推送人modal
       skuModalVisible: false, //
       needmodalVisible: false,
-      priceModalVisible:false,
+      priceModalVisible: false,
       LineID: Number, // 当前选中行index
       linkmanList: [], // 联系人list,
       addList: [],
@@ -850,7 +853,10 @@ class TI_Z029Component extends React.Component {
 
   getCompany = companycode => {
     const { dispatch } = this.props;
-    const { orderDetail,orderDetail:{AddressID,UserID}} = this.state;
+    const {
+      orderDetail,
+      orderDetail: { AddressID, UserID },
+    } = this.state;
     dispatch({
       type: 'TI_Z029/company',
       payload: {
@@ -871,12 +877,12 @@ class TI_Z029Component extends React.Component {
             },
             () => {
               if (TI_Z00603List.length) {
-                if(!AddressID)this.handleAdreessChange(TI_Z00603List[0].AddressID)
+                if (!AddressID) this.handleAdreessChange(TI_Z00603List[0].AddressID);
               } else {
                 message.warning('该客户下没有收货地址，请先维护收货地址');
               }
               if (TI_Z00602List.length) {
-                if(!UserID) this.linkmanChange(TI_Z00602List[0].UserID);
+                if (!UserID) this.linkmanChange(TI_Z00602List[0].UserID);
               } else {
                 message.warning('该客户下没有维护联系人，请先维护联系人');
               }
@@ -948,66 +954,67 @@ class TI_Z029Component extends React.Component {
     });
   };
 
-   // 价格选择修改
-  priceChange=select=>{
-    console.log(select)
-  }
+  // 价格选择修改
+  priceChange = select => {
+    console.log(select);
+  };
 
   // 选择价格
-  priceSelect=(record,LineID)=>{
-     this.setState({
-       targetLine:{...record},
-       LineID,
-       priceModalVisible:true
-     })
-  }
+  priceSelect = (record, LineID) => {
+    this.setState({
+      targetLine: { ...record },
+      LineID,
+      priceModalVisible: true,
+    });
+  };
 
-    // 产品名称，型号，参数，选择
-    rowSelect=(select, record, index)=>{
-      const {
-         BrandName
-        ,BrandCode
-        ,ProductName
-        ,ManufactureNO
-        ,Parameters
-        ,Package
-        ,Purchaser
-        ,Unit
-        ,ManLocation
-        ,HSCode
-        ,Rweight
-        ,EnglishName 
-        ,ForeignParameters
-        ,InquiryDueDate
-        ,InquiryPrice
-        ,SupplierCode
-        ,Currency
-        ,ForeignFreight
-      }=select
-      const { orderDetail } = this.state;
-      record.SKUName = `${record.BrandName}  ${record.ProductName}  ${record.ManufactureNO}`;
-      Object.assign(record,{ BrandName
-        ,BrandCode
-        ,ProductName
-        ,ManufactureNO
-        ,Parameters
-        ,Package
-        ,Purchaser
-        ,Unit
-        ,ManLocation
-        ,HSCode
-        ,Rweight
-        ,EnglishName 
-        ,ForeignParameters
-        ,InquiryDueDate
-        ,InquiryPrice
-        ,SupplierCode
-        ,Currency
-        ,ForeignFreight})
-      orderDetail.TI_Z02902[index] = record;
-      this.setState({ orderDetail: { ...orderDetail } });
-      
-  }
+  // 产品名称，型号，参数，选择
+  rowSelect = (select, record, index) => {
+    const {
+      BrandName,
+      BrandCode,
+      ProductName,
+      ManufactureNO,
+      Parameters,
+      Package,
+      Purchaser,
+      Unit,
+      ManLocation,
+      HSCode,
+      Rweight,
+      EnglishName,
+      ForeignParameters,
+      InquiryDueDate,
+      InquiryPrice,
+      SupplierCode,
+      Currency,
+      ForeignFreight,
+    } = select;
+    const { orderDetail } = this.state;
+    record.SKUName = `${record.BrandName}  ${record.ProductName}  ${record.ManufactureNO}`;
+    Object.assign(record, {
+      BrandName,
+      BrandCode,
+      ProductName,
+      ManufactureNO,
+      Parameters,
+      Package,
+      Purchaser,
+      Unit,
+      ManLocation,
+      HSCode,
+      Rweight,
+      EnglishName,
+      ForeignParameters,
+      InquiryDueDate,
+      InquiryPrice,
+      SupplierCode,
+      Currency,
+      ForeignFreight,
+    });
+    orderDetail.TI_Z02902[index] = record;
+    this.setState({ orderDetail: { ...orderDetail } });
+  };
 
   // 改变
   rowSelectChange = (value, record, index, key) => {
@@ -1195,7 +1202,7 @@ class TI_Z029Component extends React.Component {
       needmodalVisible: !!flag,
       skuModalVisible: !!flag,
       pushModalVisible: !!flag,
-      priceModalVisible:!!flag,
+      priceModalVisible: !!flag,
       LineID: Number,
     });
   };
@@ -1604,7 +1611,7 @@ class TI_Z029Component extends React.Component {
       attachmentVisible,
       addList,
       pushModalVisible,
-      priceModalVisible
+      priceModalVisible,
     } = this.state;
     const formItemLayout = {
       labelCol: {
@@ -1637,8 +1644,6 @@ class TI_Z029Component extends React.Component {
       handleSubmit: this.submitNeedLine,
       handleModalVisible: this.handleModalVisible,
     };
-
-  
 
     const pushParentMethods = {
       handleSubmit: this.submitPushLine,
@@ -1969,14 +1974,14 @@ class TI_Z029Component extends React.Component {
             </TabPane>
           </Tabs>
         </Modal>
-       
-        <PriceComplete 
+
+        <PriceComplete
           ProductName={targetLine.ProductName}
           handleModalVisible={this.handleModalVisible}
           handleSubmit={this.priceChange}
           modalVisible={priceModalVisible}
         />
-        
+
         <NeedAskPrice
           data={orderDetail.TI_Z02902}
           {...needParentMethods}

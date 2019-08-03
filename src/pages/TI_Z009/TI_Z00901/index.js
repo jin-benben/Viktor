@@ -18,10 +18,9 @@ const { Option } = Select;
   skuAdd,
   global,
   addloading: loading.effects['skuAdd/add'],
-  loading: loading.effects['skuAdd/fetchList']
+  loading: loading.effects['skuAdd/fetchList'],
 }))
 @Form.create()
-
 class AddSKU extends Component {
   columns = [
     {
@@ -282,8 +281,8 @@ class AddSKU extends Component {
 
   componentDidMount() {
     const {
-      dispatch,global: { BrandList, CategoryTree, Purchaser, WhsCode },
-      
+      dispatch,
+      global: { BrandList, CategoryTree, Purchaser, WhsCode },
     } = this.props;
     const { queryData } = this.state;
     dispatch({
@@ -309,29 +308,29 @@ class AddSKU extends Component {
         type: 'global/getCategory',
       });
     }
-    this.fetchList(queryData)
+    this.fetchList(queryData);
   }
 
-  fetchList=params=>{
+  fetchList = params => {
     const { dispatch } = this.props;
     dispatch({
       type: 'skuAdd/fetchList',
       payload: {
-       ...params
+        ...params,
       },
-      callback:response=>{
+      callback: response => {
         if (response && response.Status === 200) {
           if (!response.Content) {
-           this.setState({
-            TI_Z00901: [],
-            pagination: {
-              total: 0,
-            },
-           })
+            this.setState({
+              TI_Z00901: [],
+              pagination: {
+                total: 0,
+              },
+            });
           } else {
             const { rows, records, page } = response.Content;
             this.setState({
-              TI_Z00901:rows,
+              TI_Z00901: rows,
               pagination: {
                 showSizeChanger: true,
                 showTotal: total => `共 ${total} 条`,
@@ -340,13 +339,12 @@ class AddSKU extends Component {
                 pageSize: params.rows,
                 current: page,
               },
-             })
-           
+            });
           }
         }
-      }
+      },
     });
-  }
+  };
 
   handleStandardTableChange = pagination => {
     const { queryData } = this.state;
@@ -354,7 +352,7 @@ class AddSKU extends Component {
       ...queryData,
       page: pagination.current,
       rows: pagination.pageSize,
-    })
+    });
   };
 
   handleSearch = e => {
@@ -380,7 +378,7 @@ class AddSKU extends Component {
         },
       });
     });
-  }; 
+  };
 
   // spu change 获取code与分类
   spuChange = (select, record, index) => {
@@ -434,11 +432,11 @@ class AddSKU extends Component {
     this.setState({ TI_Z00901 });
   };
 
-  onSelectRow=(selectedRowKeys,selectedRows)=>{
+  onSelectRow = (selectedRowKeys, selectedRows) => {
     this.setState({
-      selectedRows:[...selectedRows]
-    })
-  }
+      selectedRows: [...selectedRows],
+    });
+  };
 
   addskulist = async () => {
     const { selectedRows } = this.state;
@@ -447,13 +445,13 @@ class AddSKU extends Component {
       type: 'skuAdd/add',
       payload: {
         Content: {
-          TI_Z00901:selectedRows,
+          TI_Z00901: selectedRows,
         },
-        Method:"U"
+        Method: 'U',
       },
       callback: response => {
         if (response && response.Status === 200) {
-          message.success('更新成功')
+          message.success('更新成功');
           // if(response.Content){
           //   const dataList = response.Content.TI_Z00901;
           //   notification.open({
@@ -474,9 +472,8 @@ class AddSKU extends Component {
           //     ),
           //   });
           // }else{
-          
+
           // }
-          
         }
       },
     });
@@ -531,8 +528,8 @@ class AddSKU extends Component {
   }
 
   render() {
-    const {loading,addloading} = this.props;
-    const {TI_Z00901,pagination}=this.state
+    const { loading, addloading } = this.props;
+    const { TI_Z00901, pagination } = this.state;
     return (
       <Fragment>
         <Card bordered={false}>
@@ -550,9 +547,7 @@ class AddSKU extends Component {
               columns={this.columns}
               onChange={this.handleStandardTableChange}
               data={TI_Z00901}
-              
             />
-            
           </div>
           <FooterToolbar>
             <Button loading={addloading} onClick={this.addskulist} type="primary">
@@ -566,4 +561,3 @@ class AddSKU extends Component {
 }
 
 export default AddSKU;
-

@@ -42,8 +42,8 @@ import HSCodeCom from '@/components/HSCode';
 import PushLink from '@/components/PushLink';
 import Attachment from '@/components/Attachment';
 import Comparison from '@/components/Comparison';
-import AutoComplete from '@/components/AutoComplete'
-import PriceComplete from '@/components/AutoComplete/price'
+import AutoComplete from '@/components/AutoComplete';
+import PriceComplete from '@/components/AutoComplete/price';
 import MyPageHeader from '../components/pageHeader';
 import { getName } from '@/utils/utils';
 import { orderSourceType, lineStatus } from '@/utils/publicData';
@@ -62,7 +62,6 @@ const { Search } = Input;
 }))
 @Form.create()
 class InquiryEdit extends React.Component {
-  
   Columns = [
     {
       title: '行号',
@@ -112,30 +111,32 @@ class InquiryEdit extends React.Component {
       dataIndex: 'ProductName',
       width: 150,
       align: 'center',
-      render:(text,record,index)=>record.lastIndex ? null :(
-        <AutoComplete  
-          BrandCode={record.BrandCode}
-          Type="ProductName"
-          onChage={value =>this.rowSelectChange(value, record, index, 'ProductName')}
-          parentSelect={select=>this.rowSelect(select, record, index)}
-          defaultValue={text}
-        />
-      )
+      render: (text, record, index) =>
+        record.lastIndex ? null : (
+          <AutoComplete
+            BrandCode={record.BrandCode}
+            Type="ProductName"
+            onChage={value => this.rowSelectChange(value, record, index, 'ProductName')}
+            parentSelect={select => this.rowSelect(select, record, index)}
+            defaultValue={text}
+          />
+        ),
     },
     {
       title: '型号',
       width: 150,
       dataIndex: 'ManufactureNO',
       align: 'center',
-      render:(text,record,index)=>record.lastIndex ? null :(
-        <AutoComplete  
-          BrandCode={record.BrandCode}
-          Type="ManufactureNO"
-          onChage={value =>this.rowSelectChange(value, record, index, 'ManufactureNO')}
-          parentSelect={select=>this.rowSelect(select, record, index)}
-          defaultValue={text}
-        />
-      )
+      render: (text, record, index) =>
+        record.lastIndex ? null : (
+          <AutoComplete
+            BrandCode={record.BrandCode}
+            Type="ManufactureNO"
+            onChage={value => this.rowSelectChange(value, record, index, 'ManufactureNO')}
+            parentSelect={select => this.rowSelect(select, record, index)}
+            defaultValue={text}
+          />
+        ),
     },
     {
       title: '参数',
@@ -166,14 +167,14 @@ class InquiryEdit extends React.Component {
       width: 80,
       dataIndex: 'Price',
       align: 'center',
-      render:(text,record,index)=>record.lastIndex ? null :(
-        <Search  
-          onChange={value =>this.rowSelectChange(value, record, index, 'Price')}
-          onSearch={()=>this.priceSelect(record,index)}
-          defaultValue={text}
-        />
-      )
-      
+      render: (text, record, index) =>
+        record.lastIndex ? null : (
+          <Search
+            onChange={value => this.rowSelectChange(value, record, index, 'Price')}
+            onSearch={() => this.priceSelect(record, index)}
+            defaultValue={text}
+          />
+        ),
     },
     {
       title: '行总计',
@@ -190,7 +191,7 @@ class InquiryEdit extends React.Component {
       align: 'center',
       render: (text, record) =>
         record.lastIndex ? null : (
-          <span style={{display:text?"block":"none"}}>
+          <span style={{ display: text ? 'block' : 'none' }}>
             {text === 'Y' ? <Tag color="blue">需询价</Tag> : <Tag color="red">不询价</Tag>}
           </span>
         ),
@@ -240,7 +241,7 @@ class InquiryEdit extends React.Component {
       width: 100,
       dataIndex: 'InquiryDueDate',
       align: 'center',
-      render:text =>(
+      render: text => (
         <Ellipsis tooltip lines={1}>
           {text}
         </Ellipsis>
@@ -727,64 +728,68 @@ class InquiryEdit extends React.Component {
   };
 
   // 品牌change
-  brandChange=(value, record, index)=>{
-    Object.assign(record,value)
+  brandChange = (value, record, index) => {
+    Object.assign(record, value);
     const { inquiryDetail } = this.state;
     inquiryDetail.TI_Z02602[index] = record;
     this.setState({ inquiryDetail });
-  }
+  };
 
   // 产品名称，型号，参数，选择
-  rowSelect=(select, record, index)=>{
+  rowSelect = (select, record, index) => {
     const {
-       BrandName
-      ,BrandCode
-      ,ProductName
-      ,ManufactureNO
-      ,Parameters
-      ,Package
-      ,Purchaser
-      ,Unit
-      ,ManLocation
-      ,HSCode
-      ,Rweight
-      ,EnglishName 
-      ,ForeignParameters
-      ,InquiryDueDate
-      ,InquiryPrice
-      ,SupplierCode
-      ,Currency
-      ,ForeignFreight
-    }=select
+      BrandName,
+      BrandCode,
+      ProductName,
+      ManufactureNO,
+      Parameters,
+      Package,
+      Purchaser,
+      Unit,
+      ManLocation,
+      HSCode,
+      Rweight,
+      EnglishName,
+      ForeignParameters,
+      InquiryDueDate,
+      InquiryPrice,
+      SupplierCode,
+      Currency,
+      ForeignFreight,
+    } = select;
     const { inquiryDetail } = this.state;
     record.SKUName = `${record.BrandName}  ${record.ProductName}  ${record.ManufactureNO}`;
-    Object.assign(record,{ BrandName
-      ,BrandCode
-      ,ProductName
-      ,ManufactureNO
-      ,Parameters
-      ,Package
-      ,Purchaser
-      ,Unit
-      ,ManLocation
-      ,HSCode
-      ,Rweight
-      ,EnglishName 
-      ,ForeignParameters
-      ,InquiryDueDate
-      ,InquiryPrice
-      ,SupplierCode
-      ,Currency
-      ,ForeignFreight})
+    Object.assign(record, {
+      BrandName,
+      BrandCode,
+      ProductName,
+      ManufactureNO,
+      Parameters,
+      Package,
+      Purchaser,
+      Unit,
+      ManLocation,
+      HSCode,
+      Rweight,
+      EnglishName,
+      ForeignParameters,
+      InquiryDueDate,
+      InquiryPrice,
+      SupplierCode,
+      Currency,
+      ForeignFreight,
+    });
     inquiryDetail.TI_Z02602[index] = record;
     this.setState({ inquiryDetail: { ...inquiryDetail } });
-    
-  }
+  };
 
   // 获取客户详情
   getCompany = companycode => {
     const { dispatch } = this.props;
-    const { inquiryDetail,inquiryDetail:{UserID,AddressID} } = this.state;
+    const {
+      inquiryDetail,
+      inquiryDetail: { UserID, AddressID },
+    } = this.state;
     dispatch({
       type: 'inquiryEdit/company',
       payload: {
@@ -805,12 +810,12 @@ class InquiryEdit extends React.Component {
             },
             () => {
               if (TI_Z00603List.length) {
-                if(!AddressID)this.handleAdreessChange(TI_Z00603List[0].AddressID)
+                if (!AddressID) this.handleAdreessChange(TI_Z00603List[0].AddressID);
               } else {
                 message.warning('该客户下没有收货地址，请先维护收货地址');
               }
               if (TI_Z00602List.length) {
-                if(!UserID) this.linkmanChange(TI_Z00602List[0].UserID);
+                if (!UserID) this.linkmanChange(TI_Z00602List[0].UserID);
               } else {
                 message.warning('该客户下没有维护联系人，请先维护联系人');
               }
@@ -1083,7 +1088,7 @@ class InquiryEdit extends React.Component {
       skuModalVisible: !!flag,
       needmodalVisible: !!flag,
       pushModalVisible: !!flag,
-      priceModalVisible:!!flag,
+      priceModalVisible: !!flag,
       LineID: Number,
     });
   };
@@ -1094,18 +1099,18 @@ class InquiryEdit extends React.Component {
   };
 
   // 价格选择修改
-  priceChange=select=>{
-    console.log(select)
-  }
+  priceChange = select => {
+    console.log(select);
+  };
 
   // 选择价格
-  priceSelect=(record,LineID)=>{
-     this.setState({
-       thisLine:{...record},
-       LineID,
-       priceModalVisible:true
-     })
-  }
+  priceSelect = (record, LineID) => {
+    this.setState({
+      thisLine: { ...record },
+      LineID,
+      priceModalVisible: true,
+    });
+  };
 
   rightButton = tabIndex => {
     const {
@@ -1401,7 +1406,7 @@ class InquiryEdit extends React.Component {
       handleSubmit: this.changeLineSKU,
       handleModalVisible: this.handleModalVisible,
     };
-    const priceParentMethods= {
+    const priceParentMethods = {
       handleSubmit: this.priceChange,
       handleModalVisible: this.handleModalVisible,
     };
@@ -1688,7 +1693,11 @@ class InquiryEdit extends React.Component {
         </FooterToolbar>
         <OrderAttachUpload {...uploadmodalMethods} modalVisible={uploadmodalVisible} />
         <SKUModal {...parentMethods} modalVisible={skuModalVisible} />
-        <PriceComplete ProductName={thisLine.ProductName} {...priceParentMethods} modalVisible={priceModalVisible} />
+        <PriceComplete
+          ProductName={thisLine.ProductName}
+          {...priceParentMethods}
+          modalVisible={priceModalVisible}
+        />
         <Modal
           width={960}
           destroyOnClose

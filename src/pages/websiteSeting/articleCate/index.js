@@ -2,11 +2,23 @@
 
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Row, Col, Card, Form, Input, Modal, Button, message, Popconfirm, Icon,Divider } from 'antd';
+import {
+  Row,
+  Col,
+  Card,
+  Form,
+  Input,
+  Modal,
+  Button,
+  message,
+  Popconfirm,
+  Icon,
+  Divider,
+} from 'antd';
 import StandardTable from '@/components/StandardTable';
 import MDMCommonality from '@/components/Select';
 import MyIcon from '@/components/MyIcon';
-import { formItemLayout, formLayout,articleType } from '@/utils/publicData';
+import { formItemLayout, formLayout, articleType } from '@/utils/publicData';
 import { getName } from '@/utils/utils';
 
 const FormItem = Form.Item;
@@ -40,7 +52,7 @@ const CreateForm = Form.create()(props => {
         <Row>
           <FormItem key="Code" {...formLayout} label="分类代码">
             {getFieldDecorator('Code', {
-              rules: [{  required: true, message: '请输入分类代码！' }],
+              rules: [{ required: true, message: '请输入分类代码！' }],
               initialValue: formVals.Code,
             })(<Input placeholder="请输入分类代码" />)}
           </FormItem>
@@ -55,7 +67,9 @@ const CreateForm = Form.create()(props => {
         </Row>
         <Row>
           <FormItem key="Type" {...formLayout} label="类型">
-            {getFieldDecorator('Type',{initialValue:formVals.Type})(<MDMCommonality initialValue={formVals.Type} data={articleType} />)}
+            {getFieldDecorator('Type', { initialValue: formVals.Type })(
+              <MDMCommonality initialValue={formVals.Type} data={articleType} />
+            )}
           </FormItem>
         </Row>
       </Form>
@@ -104,7 +118,7 @@ class ArticleCates extends PureComponent {
       title: '分类类型',
       width: 100,
       dataIndex: 'Type',
-      render:text=><span>{getName(articleType, text)}</span>
+      render: text => <span>{getName(articleType, text)}</span>,
     },
     {
       title: '操作',

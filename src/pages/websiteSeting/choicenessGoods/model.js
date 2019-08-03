@@ -1,4 +1,4 @@
-import { queryRule,addRule } from './service';
+import { queryRule, addRule } from './service';
 
 export default {
   namespace: 'choicenessGoods',
@@ -6,16 +6,14 @@ export default {
   state: {},
 
   effects: {
-    *fetch({ payload,callback }, { call }) {
+    *fetch({ payload, callback }, { call }) {
       const response = yield call(queryRule, payload);
       if (callback) callback(response);
-      
     },
     *add({ payload, callback }, { call }) {
       const response = yield call(addRule, payload);
       if (callback) callback(response);
     },
- 
   },
 
   reducers: {

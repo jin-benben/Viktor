@@ -344,8 +344,8 @@ class OINVConfrim extends PureComponent {
         DocDateTo,
         DeliverDateFrom,
         DeliverDateTo,
-        DeliverSts: DeliverSts===undefined?'N':DeliverSts,
-        PrintStatus: PrintStatus===undefined?'N':PrintStatus,
+        DeliverSts: DeliverSts === undefined ? 'N' : DeliverSts,
+        PrintStatus: PrintStatus === undefined ? 'N' : PrintStatus,
         Owner,
       };
       dispatch({

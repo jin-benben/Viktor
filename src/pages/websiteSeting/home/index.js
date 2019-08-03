@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 
-class TM_FILENAME_BASE extends Component {
+class Demo extends React.Component {
+  hanldeChage = value => {
+    console.log('RcUeditor', value);
+  };
+
   render() {
-    return (
-      <div>
-        ss
-      </div>
-    );
+    return <div>s</div>;
   }
 }
 
-export default TM_FILENAME_BASE;
+export default Demo;

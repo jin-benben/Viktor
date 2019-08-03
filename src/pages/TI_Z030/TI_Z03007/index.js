@@ -223,7 +223,7 @@ class AgreementLine extends PureComponent {
       dataIndex: 'InquiryDueDate',
       sorter: true,
       align: 'center',
-      render:text =>(
+      render: text => (
         <Ellipsis tooltip lines={1}>
           {text}
         </Ellipsis>
@@ -292,55 +292,55 @@ class AgreementLine extends PureComponent {
       dataIndex: 'LineComment',
       width: 120,
       align: 'center',
-      render:text =>(
+      render: text => (
         <Ellipsis tooltip lines={1}>
           {text}
         </Ellipsis>
-        ),
+      ),
     },
     {
       title: '参数',
       dataIndex: 'Parameters',
       width: 100,
       align: 'center',
-      render:text =>(
+      render: text => (
         <Ellipsis tooltip lines={1}>
           {text}
         </Ellipsis>
-        ),
+      ),
     },
     {
       title: '包装',
       width: 100,
       dataIndex: 'Package',
       align: 'center',
-      render:text =>(
+      render: text => (
         <Ellipsis tooltip lines={1}>
           {text}
         </Ellipsis>
-        ),
+      ),
     },
     {
       title: '名称(外)',
       dataIndex: 'ForeignName',
       width: 100,
       align: 'center',
-      render:text =>(
+      render: text => (
         <Ellipsis tooltip lines={1}>
           {text}
         </Ellipsis>
-        ),
+      ),
     },
     {
       title: '规格(外)',
       dataIndex: 'ForeignParameters',
       width: 100,
       align: 'center',
-      render:text =>(
+      render: text => (
         <Ellipsis tooltip lines={1}>
           {text}
         </Ellipsis>
-        ),
+      ),
     },
     {
       title: '仓库',
@@ -359,11 +359,11 @@ class AgreementLine extends PureComponent {
       width: 80,
       dataIndex: 'CustomerName',
       align: 'center',
-      render:text =>(
+      render: text => (
         <Ellipsis tooltip lines={1}>
           {text}
         </Ellipsis>
-        ),
+      ),
     },
     {
       title: '创建日期',

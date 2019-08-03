@@ -7484,6 +7484,7 @@ var fillCharReg = new RegExp(domUtils.fillChar, "g");
     destroy: function() {
       var me = this;
       me.fireEvent("destroy");
+      console.log(me.container)
       var container = me.container.parentNode;
       var textarea = me.textarea;
       if (!textarea) {

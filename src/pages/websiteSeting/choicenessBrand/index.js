@@ -2,23 +2,20 @@
 
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import {  Card, Button, message, Popconfirm, Icon } from 'antd';
+import { Card, Button, message, Popconfirm, Icon } from 'antd';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import BrandModal from '@/components/Modal/Brand';
-import DragSortingTable from '@/components/DragSortingTable'
-
-
+import DragSortingTable from '@/components/DragSortingTable';
 
 @connect(({ choicenessBrand, loading }) => ({
   choicenessBrand,
-  loading:loading.effects['choicenessBrand/fetch'],
-  addloading: loading.effects['choicenessBrand/add']
+  loading: loading.effects['choicenessBrand/fetch'],
+  addloading: loading.effects['choicenessBrand/add'],
 }))
-
 class ChoicenessBrandSet extends PureComponent {
   state = {
     modalVisible: false,
-    choicenessBrandList:[],
+    choicenessBrandList: [],
     queryData: {
       Content: {
         SearchText: '',
@@ -43,32 +40,32 @@ class ChoicenessBrandSet extends PureComponent {
     {
       title: '序号',
       width: 50,
-      align:"center",
+      align: 'center',
       dataIndex: 'OrderId',
     },
     {
       title: '品牌代码',
       width: 100,
-      align:"center",
+      align: 'center',
       dataIndex: 'Code',
     },
     {
       title: '品牌名称',
       width: 200,
-      align:"center",
+      align: 'center',
       dataIndex: 'Name',
     },
     {
       title: '创建时间',
       width: 200,
-      align:"center",
+      align: 'center',
       dataIndex: 'CreateDate',
     },
     {
       title: '操作',
       width: 50,
-      align:"center",
-      render: (text, record,index) => (
+      align: 'center',
+      render: (text, record, index) => (
         <Popconfirm title="确定要删除吗?" onConfirm={() => this.handleDelete(index)}>
           <a href="javascript:;">
             <Icon type="delete" theme="twoTone" />
@@ -79,10 +76,10 @@ class ChoicenessBrandSet extends PureComponent {
   ];
 
   componentDidMount() {
-     this.getChoicenessBrand()
+    this.getChoicenessBrand();
   }
 
-  getChoicenessBrand=()=>{
+  getChoicenessBrand = () => {
     const { queryData } = this.state;
     const { dispatch } = this.props;
     dispatch({
@@ -90,75 +87,77 @@ class ChoicenessBrandSet extends PureComponent {
       payload: {
         ...queryData,
       },
-      callback:response=>{
+      callback: response => {
         if (response && response.Status === 200) {
           if (!response.Content) {
-           this.setState({
-             choicenessBrandList: []
-           })
+            this.setState({
+              choicenessBrandList: [],
+            });
           } else {
             const { rows } = response.Content;
             this.setState({
-              choicenessBrandList: rows
-            })
+              choicenessBrandList: rows,
+            });
           }
         }
-      }
+      },
     });
-  }
+  };
 
   // 删除
   handleDelete = index => {
     const { choicenessBrandList } = this.state;
-    choicenessBrandList.splice(index,1)
+    choicenessBrandList.splice(index, 1);
     this.setState({
-      choicenessBrandList:[...choicenessBrandList]
-    })
+      choicenessBrandList: [...choicenessBrandList],
+    });
   };
 
   handleStandardTableChange = paginations => {
-    const {queryData,pagination}=this.state
-    const {current,pageSize}=paginations
-    Object.assign(pagination,{current,pageSize})
-    Object.assign(queryData,{page:current,rows:pageSize})
-    this.setState({
-      queryData,pagination
-    },()=>this.getChoicenessBrand())
+    const { queryData, pagination } = this.state;
+    const { current, pageSize } = paginations;
+    Object.assign(pagination, { current, pageSize });
+    Object.assign(queryData, { page: current, rows: pageSize });
+    this.setState(
+      {
+        queryData,
+        pagination,
+      },
+      () => this.getChoicenessBrand()
+    );
   };
-
 
   addBrandFetch = selectedRows => {
     // 保存品牌
     const { choicenessBrandList } = this.state;
     const last = choicenessBrandList[choicenessBrandList.length - 1];
-    const newsbrandList = selectedRows.map((item,index) => {
+    const newsbrandList = selectedRows.map((item, index) => {
       const { Code, Name } = item;
       return {
         Code,
         Name,
-        OrderId: last ? last.OrderId + index : 1+index,
+        OrderId: last ? last.OrderId + index : 1 + index,
       };
     });
     this.setState({
-      choicenessBrandList:[...choicenessBrandList,...newsbrandList],
-      modalVisible:false
-    })
-   
+      choicenessBrandList: [...choicenessBrandList, ...newsbrandList],
+      modalVisible: false,
+    });
   };
 
-  addWebBrand=()=>{
+  addWebBrand = () => {
     const { dispatch } = this.props;
     const { choicenessBrandList } = this.state;
-    const newList=choicenessBrandList.map((item,index)=>{
-      const newItem=item
-      newItem.OrderId=index+1
-      return newItem
-    })
+    const newList = choicenessBrandList.map((item, index) => {
+      const newItem = item;
+      newItem.OrderId = index + 1;
+      return newItem;
+    });
     dispatch({
       type: 'choicenessBrand/add',
       payload: {
         Content: {
-          TI_Z02101List:newList
+          TI_Z02101List: newList,
         },
       },
       callback: response => {
@@ -167,7 +166,7 @@ class ChoicenessBrandSet extends PureComponent {
         }
       },
     });
-  }
+  };
 
   handleModalVisible = flag => {
     this.setState({
@@ -175,15 +174,15 @@ class ChoicenessBrandSet extends PureComponent {
     });
   };
 
-  sortChange=({dataSource})=>{
+  sortChange = ({ dataSource }) => {
     this.setState({
-      choicenessBrandList:[...dataSource]
-    })
-  }
+      choicenessBrandList: [...dataSource],
+    });
+  };
 
   render() {
-    const {loading,addLoading} = this.props;
-    const { modalVisible,choicenessBrandList,pagination } = this.state;
+    const { loading, addLoading } = this.props;
+    const { modalVisible, choicenessBrandList, pagination } = this.state;
     const brandParentMethods = {
       handleSubmit: this.addBrandFetch,
       handleModalVisible: this.handleModalVisible,
@@ -201,15 +200,17 @@ class ChoicenessBrandSet extends PureComponent {
             onChange={this.handleStandardTableChange}
           />
         </div>
-        
+
         <BrandModal {...brandParentMethods} modalVisible={modalVisible} />
         <FooterToolbar>
-          <Button onClick={()=>this.handleModalVisible(true)} type="primary">添加</Button>
-          <Button loading={addLoading} onClick={this.addWebBrand} type="primary">保存</Button>
+          <Button onClick={() => this.handleModalVisible(true)} type="primary">
+            添加
+          </Button>
+          <Button loading={addLoading} onClick={this.addWebBrand} type="primary">
+            保存
+          </Button>
         </FooterToolbar>
       </Card>
-      
-    
     );
   }
 }

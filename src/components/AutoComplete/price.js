@@ -1,9 +1,9 @@
 import React, { PureComponent } from 'react';
-import { Modal,  message, Table } from 'antd';
+import { Modal, message, Table } from 'antd';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import request from '@/utils/request';
-import {baseType} from '@/utils/publicData'
-import {getName} from '@/utils/utils'
+import { baseType } from '@/utils/publicData';
+import { getName } from '@/utils/utils';
 
 class BrandModal extends PureComponent {
   columns = [
@@ -16,28 +16,27 @@ class BrandModal extends PureComponent {
       title: '基于类型',
       width: 100,
       dataIndex: 'BaseType',
-      render: text =><span>{getName(baseType, text)}</span>
-      
+      render: text => <span>{getName(baseType, text)}</span>,
     },
     {
       title: '供应商名称',
       width: 100,
       dataIndex: 'SupplierName',
-      render:text =>(
+      render: text => (
         <Ellipsis tooltip lines={1}>
           {text}
         </Ellipsis>
-        )
+      ),
     },
     {
       title: '客户名称',
       width: 100,
       dataIndex: 'CardName',
-      render:text =>(
+      render: text => (
         <Ellipsis tooltip lines={1}>
           {text}
         </Ellipsis>
-        )
+      ),
     },
     {
       title: '询价价格',
@@ -53,12 +52,12 @@ class BrandModal extends PureComponent {
 
   constructor(props) {
     super(props);
-    this. state = {
+    this.state = {
       dataSource: [],
       selectedRows: [],
       queryData: {
         Content: {
-          SearchText:props.SearchText,
+          SearchText: props.SearchText,
           SearchKey: 'Name',
         },
         page: 1,
@@ -77,33 +76,33 @@ class BrandModal extends PureComponent {
     };
   }
 
-  componentWillReceiveProps(nextProps){
-   const {queryData}=this.state
-   const {SearchText}=queryData.Content
-   if(SearchText!==nextProps.ProductName&&nextProps.ProductName){
-     this.setState({
-      queryData: {
+  componentWillReceiveProps(nextProps) {
+    const { queryData } = this.state;
+    const { SearchText } = queryData.Content;
+    if (SearchText !== nextProps.ProductName && nextProps.ProductName) {
+      this.setState({
+        queryData: {
+          Content: {
+            SearchText: nextProps.ProductName,
+            SearchKey: 'Name',
+          },
+          page: 1,
+          rows: 20,
+          sidx: 'DocEntry',
+          sord: 'Desc',
+        },
+      });
+      this.getHistory({
         Content: {
-          SearchText:nextProps.ProductName,
+          SearchText: nextProps.ProductName,
           SearchKey: 'Name',
         },
         page: 1,
         rows: 20,
         sidx: 'DocEntry',
         sord: 'Desc',
-      },
-     })
-     this.getHistory({
-      Content: {
-        SearchText:nextProps.ProductName,
-        SearchKey: 'Name',
-      },
-      page: 1,
-      rows: 20,
-      sidx: 'DocEntry',
-      sord: 'Desc',
-    })
-   }
+      });
+    }
   }
 
   okHandle = () => {
@@ -131,7 +130,6 @@ class BrandModal extends PureComponent {
     this.getHistory(queryData);
   };
 
-
   getHistory = async params => {
     const response = await request('/MDM/TI_Z009/TI_Z00910', {
       method: 'POST',
@@ -157,7 +155,6 @@ class BrandModal extends PureComponent {
       }
     }
   };
-
 
   render() {
     const { loading, pagination, dataSource } = this.state;

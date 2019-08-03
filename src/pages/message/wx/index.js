@@ -4,18 +4,18 @@ import moment from 'moment';
 import Link from 'umi/link';
 import { Row, DatePicker, Col, Card, Form, Input, Button, Tag } from 'antd';
 import StandardTable from '@/components/StandardTable';
-import Text from '@/components/Text'
+import Text from '@/components/Text';
 
 const { RangePicker } = DatePicker;
 const FormItem = Form.Item;
-function whichTag (status) {
+function whichTag(status) {
   switch (status) {
     case '2':
-      return <Tag color="blue">成功</Tag> 
+      return <Tag color="blue">成功</Tag>;
     case '1':
-      return <Tag color="red">失败</Tag>
+      return <Tag color="red">失败</Tag>;
     default:
-      return <Tag color="#faad14">特殊状态</Tag>
+      return <Tag color="#faad14">特殊状态</Tag>;
   }
 }
 /* eslint react/no-multi-comp:0 */
@@ -54,43 +54,43 @@ class WXMessage extends PureComponent {
       title: '地址',
       width: 150,
       dataIndex: 'Url',
-      render:text=><Text text={text} />
+      render: text => <Text text={text} />,
     },
     {
       title: '消息模板',
       width: 80,
       dataIndex: 'Template_id',
-      render:text=><Text text={text} />
+      render: text => <Text text={text} />,
     },
     {
       title: '微信AppId',
       width: 100,
       dataIndex: 'WeChatAppId',
-      render:text=><Text text={text} />
+      render: text => <Text text={text} />,
     },
     {
       title: '用户ID',
       width: 80,
       dataIndex: 'UserID',
-      render:text=><Text text={text} />
+      render: text => <Text text={text} />,
     },
     {
       title: '微信OpenId',
       width: 100,
       dataIndex: 'OpenId',
-      render:text=><Text text={text} />
+      render: text => <Text text={text} />,
     },
     {
       title: '消息ID',
       width: 100,
       dataIndex: 'Msgid',
-      render:text=><Text text={text} />
+      render: text => <Text text={text} />,
     },
     {
       title: '推送状态',
       dataIndex: 'Status',
       width: 100,
-      render: val =>whichTag(val)
+      render: val => whichTag(val),
     },
     {
       title: '创建时间',
@@ -221,7 +221,7 @@ class WXMessage extends PureComponent {
               data={{ list: wxMessageList }}
               pagination={pagination}
               rowKey="Code"
-              scroll={{ x:1800 }}
+              scroll={{ x: 1800 }}
               columns={this.columns}
               onChange={this.handleStandardTableChange}
             />

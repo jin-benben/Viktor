@@ -5,7 +5,7 @@ import {
   querySPURule,
   queryFHSCodeRule,
   queryHSCodeRule,
-  queryRule
+  queryRule,
 } from '../service';
 
 export default {
@@ -109,9 +109,9 @@ export default {
       const response = yield call(confrimRule, payload);
       if (callback) callback(response);
     },
-    *fetchList({ payload,callback }, { call }) {
+    *fetchList({ payload, callback }, { call }) {
       const response = yield call(queryRule, payload);
-      if(callback) callback(response)
+      if (callback) callback(response);
     },
   },
   reducers: {
