@@ -106,7 +106,7 @@ class PrintPage extends Component {
               marginLeft: 50,
             }}
           >
-            <UEditor initialValue={printDetail.HtmlString} onChange={this.handleChange} />
+            <UEditor initialValue={printDetail.HtmlString} onBlur={this.handleChange} />
           </div>
         ) : (
           ''

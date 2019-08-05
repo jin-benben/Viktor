@@ -55,7 +55,7 @@ const configUeditor = {
 
 class UEditor extends PureComponent {
   render() {
-    const { initialValue, onChange } = this.props;
+    const { initialValue, onChange,onBlur } = this.props;
     return (
       <RcUeditor
         value={initialValue}
@@ -63,6 +63,7 @@ class UEditor extends PureComponent {
         ueditorUrl="/ueditor/ueditor.all.js"
         ueditorConfigUrl="/ueditor/ueditor.config.js"
         onChange={onChange}
+        onBlur={onBlur}
       />
     );
   }

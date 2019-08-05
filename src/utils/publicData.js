@@ -232,6 +232,10 @@ export const articleType = [
     Key: '4',
     Value: '企业介绍',
   },
+  {
+    Key: '5',
+    Value: '物料详情',
+  },
 ];
 
 export const formItemLayout = {
