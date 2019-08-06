@@ -41,6 +41,10 @@ export const printOrderType = [
 
 export const lineStatus = [
   {
+    Key: '',
+    Value: '全部',
+  },
+  {
     Key: '1',
     Value: '询价',
   },
