@@ -221,9 +221,7 @@ class SKUDetail extends Component {
     const {TI_Z00903List}=skuDetailInfo
     const newArr=TI_Z00903List.map(item=>{
       const newItem=item
-      console.log(activeKey)
       if(item.DetailCode===activeKey){
-        console.log(Detail)
         newItem.Detail=Detail
         return newItem
       }

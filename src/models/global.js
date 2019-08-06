@@ -46,6 +46,7 @@ export default {
     NoPermissionDepartmentList: [],
     OSLPList: [],
     hasLoad: false,
+    UploadUrl:"http://47.104.65.49:8088/EnclosureUpload/EnclosureUpload"
   },
 
   effects: {

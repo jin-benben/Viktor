@@ -1,21 +1,19 @@
 import React, { PureComponent } from 'react';
-import { Row, Col, Form, Input, Modal, Button, message } from 'antd';
-import Ellipsis from 'ant-design-pro/lib/Ellipsis';
+import {  Modal, message } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import request from '@/utils/request';
 
-const FormItem = Form.Item;
 
-@Form.create()
-class SKUModal extends PureComponent {
+
+
+class CateModal extends PureComponent {
   state = {
-    skuList: [],
+    cateList: [],
     selectedRows: [],
     queryData: {
       Content: {
-        Category:"",
-        SearchText: '',
-        SearchKey: 'Name',
+        PCode: "",
+        Level: "1"
       },
       page: 1,
       rows: 20,
@@ -34,89 +32,36 @@ class SKUModal extends PureComponent {
 
   columns = [
     {
-      title: '物料代码',
+      title: '代码',
       dataIndex: 'Code',
       width: 100,
     },
     {
-      title: '物料名称',
+      title: '名称',
       dataIndex: 'Name',
       width: 100,
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {' '}
-          {text}
-        </Ellipsis>
-      ),
-    },
-    {
-      title: '品牌',
-      width: 100,
-      dataIndex: 'BrandName',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {' '}
-          {text}
-        </Ellipsis>
-      ),
-    },
-
-    {
-      title: '型号',
-      width: 100,
-      dataIndex: 'ManufactureNO',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {' '}
-          {text}
-        </Ellipsis>
-      ),
-    },
-    {
-      title: '参数',
-      dataIndex: 'Parameters',
-      width: 100,
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {' '}
-          {text}
-        </Ellipsis>
-      ),
-    },
-
-    {
-      title: '单位',
-      width: 80,
-      dataIndex: 'Unit',
-    },
-    {
-      title: '分类',
-      dataIndex: 'category',
-      width: 150,
-      render: (text, record) => (
-        <Ellipsis tooltip lines={1}>
-          {' '}
-          {`${record.Cate1Name}/${record.Cate2Name}/${record.Cate3Name}`}
-        </Ellipsis>
-      ),
     },
   ];
 
+  componentDidMount(){
+    const { queryData } = this.state;
+    this.getCategory(queryData)
+  }
 
   componentWillReceiveProps(nextProps){
-    const {Category}=nextProps
+    const {PCode,Level}=nextProps
     const {queryData}=this.state
-    if(Category&&Category!==queryData.Content.Category){
+    if(PCode&&PCode!==queryData.Content.PCode||Level&&Level!==queryData.Content.Level){
       Object.assign(queryData.Content,{
-        Category: Category||""
+        PCode: PCode||"",
+        Level: Level||"1"
       })
       this.setState({
         queryData
       })
-      this.getSKU(queryData)
+      this.getCategory(queryData)
     }
   }
-
 
   okHandle = () => {
     const { selectedRows } = this.state;
@@ -132,8 +77,6 @@ class SKUModal extends PureComponent {
     this.setState({ selectedRows: [...selectedRows] });
   };
 
-  
-
   handleStandardTableChange = pagination => {
     let { queryData } = this.state;
     queryData = {
@@ -142,7 +85,7 @@ class SKUModal extends PureComponent {
       rows: pagination.pageSize,
     };
     this.setState({ queryData });
-    this.getSKU(queryData);
+    this.getCategory(queryData);
   };
 
   handleSearch = e => {
@@ -161,13 +104,13 @@ class SKUModal extends PureComponent {
         sidx: 'Code',
         sord: 'Desc',
       };
-      this.getSKU(queryData);
+      this.getCategory(queryData);
     });
   };
 
-  getSKU = async params => {
+  getCategory = async params => {
     const { pagination } = this.state;
-    const response = await request('/MDM/TI_Z009/TI_Z00902', {
+    const response = await request('/MDM/TI_Z010/TI_Z01005', {
       method: 'POST',
       data: {
         ...params,
@@ -177,13 +120,13 @@ class SKUModal extends PureComponent {
       if (response.Content) {
         const { rows, records, page } = response.Content;
         this.setState({
-          skuList: [...rows],
+          cateList: [...rows],
           queryData: { ...params },
           pagination: { ...pagination, total: records, current: page },
         });
       } else {
         this.setState({
-          skuList: [],
+          cateList: [],
           queryData: { ...params },
           pagination: { ...pagination, total: 0 },
         });
@@ -191,50 +134,26 @@ class SKUModal extends PureComponent {
     }
   };
 
-  renderSimpleForm() {
-    const {
-      form: { getFieldDecorator },
-    } = this.props;
-    return (
-      <Form onSubmit={this.handleSearch} layout="inline">
-        <Row gutter={{ md: 8 }}>
-          <Col>
-            <FormItem>
-              {getFieldDecorator('SearchText')(<Input placeholder="请输入关键字" />)}
-            </FormItem>
-          </Col>
-          <Col>
-            <FormItem>
-              <Button type="primary" htmlType="submit">
-                查询
-              </Button>
-            </FormItem>
-          </Col>
-        </Row>
-      </Form>
-    );
-  }
+
 
   render() {
-    const { loading, pagination, skuList } = this.state;
+    const { loading, pagination, cateList } = this.state;
     const { modalVisible, handleModalVisible, Type } = this.props;
     return (
       <Modal
-        width={1100}
-        title="物料选择"
+        width={960}
+        title="分类选择"
         maskClosable={false}
         visible={modalVisible}
         onOk={this.okHandle}
         onCancel={() => handleModalVisible(false)}
       >
         <div className="tableList">
-          <div className="tableListForm">{this.renderSimpleForm()}</div>
           <StandardTable
             loading={loading}
-            data={{ list: skuList }}
+            data={{ list: cateList }}
             rowKey="Code"
             pagination={pagination}
-            scroll={{ x: 1000 }}
             columns={this.columns}
             rowSelection={{
               type: Type || 'radio',
@@ -248,4 +167,4 @@ class SKUModal extends PureComponent {
   }
 }
 
-export default SKUModal;
+export default CateModal;

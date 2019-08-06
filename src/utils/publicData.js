@@ -240,6 +240,14 @@ export const articleType = [
     Key: '5',
     Value: '物料详情',
   },
+  {
+    Key: '6',
+    Value: '视频分类',
+  },
+  {
+    Key: '7',
+    Value: '下载分类',
+  },
 ];
 
 export const formItemLayout = {

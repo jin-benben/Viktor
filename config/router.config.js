@@ -756,6 +756,12 @@ export default [
             component: './websiteSeting/home',
           },
           {
+            name: '首页大类设置',
+            path: '/websiteSeting/homeSet',
+            hideInMenu:true,
+            component: './websiteSeting/home/set',
+          },
+          {
             name: '文章分类',
             path: '/websiteSeting/articleCate',
             component: './websiteSeting/articleCate',
@@ -769,6 +775,11 @@ export default [
             name: '文章编辑',
             path: '/websiteSeting/articleEdit',
             component: './websiteSeting/articleEdit',
+          },
+          {
+            name: '网站资料',
+            path: '/websiteSeting/pdf',
+            component: './websiteSeting/pdf',
           },
           {
             component: './exception/404',
