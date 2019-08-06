@@ -2,13 +2,14 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
-import { Row, Col, Card, Form, Input, Button, DatePicker, Tabs, Tag } from 'antd';
+import { Row, Col, Card, Form, Input, Button, DatePicker, Tabs, Tag,Select } from 'antd';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import StandardTable from '@/components/StandardTable';
 import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
 import { getName } from '@/utils/utils';
 
 const FormItem = Form.Item;
+const {Option}=Select
 const { TabPane } = Tabs;
 const { RangePicker } = DatePicker;
 /* eslint react/no-multi-comp:0 */
@@ -490,6 +491,14 @@ class TransactionSearch extends PureComponent {
         // eslint-disable-next-line no-param-reassign
         delete fieldsValue.dateArr;
       }
+     
+      if( ["1", "4", "6"].includes(activeKey)){
+        Object.assign(queryData.Content,{DocStatus:fieldsValue.Status})
+      }
+      if( ["2", "5", "7"].includes(activeKey)){
+        Object.assign(queryData.Content,{LineStatus:fieldsValue.Status})
+      }
+      delete fieldsValue.Status
       this.whichSerch(activeKey, {
         Content: {
           ...queryData.Content,
@@ -519,7 +528,7 @@ class TransactionSearch extends PureComponent {
     const {
       form: { getFieldDecorator },
     } = this.props;
-
+    const {activeKey}=this.state
     const formLayout = {
       labelCol: { span: 8 },
       wrapperCol: { span: 16 },
@@ -533,7 +542,7 @@ class TransactionSearch extends PureComponent {
               {getFieldDecorator('SearchText')(<Input placeholder="请输入关键字" />)}
             </FormItem>
           </Col>
-          <Col md={10} lg={6} sm={24}>
+          <Col md={8} lg={6} sm={24}>
             <FormItem label="日期" {...formLayout}>
               {getFieldDecorator('dateArr', { rules: [{ type: 'array' }] })(
                 <RangePicker style={{ width: '100%' }} />
@@ -545,6 +554,22 @@ class TransactionSearch extends PureComponent {
               {getFieldDecorator('SlpCode')(<SalerPurchaser />)}
             </FormItem>
           </Col>
+          {
+            activeKey!=="3"?(
+              <Col md={4} sm={24}>
+                <FormItem key="Status" {...formLayout} label="状态">
+                  {getFieldDecorator('Status')(
+                    <Select style={{ width: '100%' }} placeholder="请选择">
+                      <Option value="C">已清</Option>
+                      <Option value="O">未清</Option>
+                      <Option value="">全部</Option>
+                    </Select>
+                  )}
+                </FormItem>
+              </Col>
+            ):''
+          }
+         
           <Col md={5} sm={24}>
             <FormItem key="searchBtn">
               <span className="submitButtons">
