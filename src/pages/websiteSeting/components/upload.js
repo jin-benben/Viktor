@@ -24,13 +24,13 @@ class MyUpload extends React.Component {
   }
 
   handleChange = info => {
-    console.log(info)
     if (info.file.status === 'uploading') {
       return;
     }
     if (info.file.response.Status === 200) {
       message.success('上传成功');
       const { onChange } = this.props;
+      console.log(info)
       if (onChange) {
         onChange(info.fileList);
       }
@@ -41,16 +41,14 @@ class MyUpload extends React.Component {
 
   render() {
     const {
-      global: { currentUser,UploadUrl },
+      global: { currentUser },
       Folder,
     } = this.props;
 
     return (
       <Upload
-        action={UploadUrl}
+        action="http://47.104.65.49:8088/MDMEnclosure/EnclosureUpload"
         listType="picture-card"
-        showUploadList
-        multiple
         onChange={this.handleChange}
         data={{ UserCode: currentUser.UserCode, Folder, Tonken: currentUser.Token }}
       >

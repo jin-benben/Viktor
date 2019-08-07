@@ -1,9 +1,10 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Row, Col, Card, Form, Input, Button,Tag } from 'antd';
+import { Row, Col, Card, Form, Input, Button,message,Tag } from 'antd';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import StandardTable from '@/components/StandardTable';
 import MyIcon from '@/components/MyIcon';
+import DataUpload from '../components'
 import MDMCommonality from '@/components/Select';
 import Text from '@/components/Text';
 import { formLayout } from '@/utils/publicData';
@@ -12,13 +13,13 @@ import {getName} from '@/utils/utils'
 const FormItem = Form.Item;
 
 
-@connect(({ pdfData, loading, global }) => ({
-  pdfData,
+@connect(({ videoData, loading, global }) => ({
+  videoData,
   global,
-  loading: loading.models.pdfData,
+  loading: loading.models.videoData,
 }))
 @Form.create()
-class PdfDataPage extends PureComponent {
+class VideoDataPage extends PureComponent {
   columns = [
     {
       title: '附件代码',
@@ -75,17 +76,22 @@ class PdfDataPage extends PureComponent {
       width: 50,
       align: 'center',
       render: (text, record) => (
-        <a href={`/websiteSeting/pdf/detail?Code=${record.Code}`}>
+        <a onClick={()=>this.uploadDate(record)}>
           <MyIcon type="iconedit" />
         </a>
       ),
     },
   ];
 
+  state={
+    modalVisible:false,
+    dataItem:{}
+  }
+
   componentDidMount() {
-    const {dispatch,pdfData: { queryData },} = this.props;
+    const {dispatch,videoData: { queryData },} = this.props;
     dispatch({
-      type: 'pdfData/fetch',
+      type: 'videoData/fetch',
       payload: {
         ...queryData,
       },
@@ -95,21 +101,26 @@ class PdfDataPage extends PureComponent {
       payload: {
         Content: {
           CodeList: ['TI_Z01802'],
-          Key:"7",
+          Key:"6",
         },
       },
     });
   }
 
-
+  uploadDate=record=>{
+    this.setState({
+      dataItem:record,
+      modalVisible:true
+    })
+  }
 
   handleStandardTableChange = pagination => {
     const {
       dispatch,
-      pdfData: { queryData },
+      videoData: { queryData },
     } = this.props;
     dispatch({
-      type: 'pdfData/fetch',
+      type: 'videoData/fetch',
       payload: {
         ...queryData,
         page: pagination.current,
@@ -126,7 +137,7 @@ class PdfDataPage extends PureComponent {
     form.validateFields((err, fieldsValue) => {
       if (err) return;
       dispatch({
-        type: 'pdfData/fetch',
+        type: 'videoData/fetch',
         payload: {
           Content: {
             SearchText: '',
@@ -141,6 +152,38 @@ class PdfDataPage extends PureComponent {
       });
     });
   };
+
+  handleModalVisible=flag=>{
+    this.setState({
+      modalVisible:!!flag,
+      dataItem:{},
+    })
+  }
+
+  handleSubmit=fieldsValue=>{
+    const {dispatch, videoData: { queryData },}=this.props
+    dispatch({
+      type:"videoData/add",
+      payload:{
+        Content:{
+          ...fieldsValue
+        }
+      },
+      callback:response=>{
+        if(response&&response.Status===200){
+          message.success('添加成功')
+          this.handleModalVisible(false)
+          dispatch({
+            type: 'videoData/fetch',
+            payload: {
+              ...queryData,
+            },
+          });
+        }
+      }
+    })
+    
+  }
 
   renderSimpleForm() {
     const {form: { getFieldDecorator }, global: { TI_Z01802 },} = this.props;
@@ -176,9 +219,10 @@ class PdfDataPage extends PureComponent {
 
   render() {
     const {
-      pdfData: { pdfDataList, pagination },
+      videoData: { videoDataList, pagination },
       loading,
     } = this.props;
+    const {modalVisible,dataItem}=this.state
     return (
       <Fragment>
         <Card bordered={false}>
@@ -186,7 +230,7 @@ class PdfDataPage extends PureComponent {
             <div className="tableListForm">{this.renderSimpleForm()}</div>
             <StandardTable
               loading={loading}
-              data={{ list: pdfDataList }}
+              data={{ list: videoDataList }}
               pagination={pagination}
               rowKey="Code"
               scroll={{ x: 1000 }}
@@ -195,6 +239,7 @@ class PdfDataPage extends PureComponent {
               onChange={this.handleStandardTableChange}
             />
           </div>
+          <DataUpload dataItem={dataItem} Folder="TI_Z056" handleSubmit={this.handleSubmit} modalVisible={modalVisible} handleModalVisible={this.handleModalVisible} />
         </Card>
        
       </Fragment>
@@ -202,4 +247,4 @@ class PdfDataPage extends PureComponent {
   }
 }
 
-export default PdfDataPage;
+export default VideoDataPage;

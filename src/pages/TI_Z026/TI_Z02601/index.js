@@ -47,6 +47,7 @@ import PriceComplete from '@/components/AutoComplete/price';
 import MyPageHeader from '../components/pageHeader';
 import { getName } from '@/utils/utils';
 import { orderSourceType, lineStatus } from '@/utils/publicData';
+import { O_NONBLOCK } from 'constants';
 
 const { TabPane } = Tabs;
 const FormItem = Form.Item;
@@ -1100,7 +1101,25 @@ class InquiryEdit extends React.Component {
 
   // 价格选择修改
   priceChange = select => {
-    console.log(select);
+    const {
+      SupplierCode,
+      SupplierName,
+      Currency,
+      InquiryPrice,
+      ForeignFreight,
+      InquiryDueDate
+    }=select[0]
+    const {thisLine,LineID,inquiryDetail}=this.state
+    Object.assign(thisLine,{ SupplierCode,
+      SupplierName,
+      Currency,
+      InquiryPrice,
+      ForeignFreight,
+      InquiryDueDate})
+    inquiryDetail.TI_Z02602[LineID]=thisLine  
+    this.setState({
+      inquiryDetail
+    })  
   };
 
   // 选择价格

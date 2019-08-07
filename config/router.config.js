@@ -777,9 +777,19 @@ export default [
             component: './websiteSeting/articleEdit',
           },
           {
-            name: '网站资料',
+            name: '网站资料查询',
             path: '/websiteSeting/pdf',
             component: './websiteSeting/pdf',
+          },
+          {
+            name: '网站资料上传',
+            path: '/websiteSeting/pdf/detail',
+            component: './websiteSeting/pdf/detail',
+          },
+          {
+            name: '网站视频',
+            path: '/websiteSeting/video',
+            component: './websiteSeting/video',
           },
           {
             component: './exception/404',

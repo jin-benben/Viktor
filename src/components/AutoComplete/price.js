@@ -62,7 +62,7 @@ class BrandModal extends PureComponent {
         },
         page: 1,
         rows: 20,
-        sidx: 'DocEntry',
+        sidx: 'Code',
         sord: 'Desc',
       },
       pagination: {
@@ -88,7 +88,7 @@ class BrandModal extends PureComponent {
           },
           page: 1,
           rows: 20,
-          sidx: 'DocEntry',
+          sidx: 'Code',
           sord: 'Desc',
         },
       });
@@ -99,7 +99,7 @@ class BrandModal extends PureComponent {
         },
         page: 1,
         rows: 20,
-        sidx: 'DocEntry',
+        sidx: 'Code',
         sord: 'Desc',
       });
     }
@@ -178,6 +178,7 @@ class BrandModal extends PureComponent {
             pagination={pagination}
             columns={this.columns}
             rowSelection={{
+              type:'radio',
               onChange: this.onSelectRow,
             }}
             onChange={this.handleStandardTableChange}

@@ -383,7 +383,7 @@ class SalesQuotationSku extends PureComponent {
       width: 80,
       dataIndex: 'CustomerName',
       align: 'center',
-      render: (text, record) => (
+      render: text => (
         <Ellipsis tooltip lines={1}>
           {text}
         </Ellipsis>

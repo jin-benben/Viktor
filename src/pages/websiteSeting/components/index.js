@@ -1,6 +1,6 @@
 // 单据附件上传
 
-import React, { PureComponent } from 'react';
+import React, {Component } from 'react';
 import { Form, Input, Modal,Switch } from 'antd';
 import {connect} from 'dva'
 import MDMCommonality from '@/components/Select';
@@ -13,15 +13,15 @@ const FormItem = Form.Item;
   global
 }))
 @Form.create()
-class OrderAttachUpload extends PureComponent {
+class OrderAttachUpload extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      attachmentList: [],
       dataItem:{
         Type: "",
         IsShow: "",
         Code: "",
+        CoverPicture:"",
         AttachmentName: "",
         AttachmentPath: "",
         AttachmentExtension: ""
@@ -34,11 +34,11 @@ class OrderAttachUpload extends PureComponent {
   }
 
   componentWillReceiveProps(nextProps){
-     const {dataItem}=this.state
+     const {dataItem}=this.props
      if(nextProps.dataItem!==dataItem){
        this.setState({
          dataItem:{
-           ...dataItem
+           ...nextProps.dataItem
          }
        })
      }
@@ -47,11 +47,31 @@ class OrderAttachUpload extends PureComponent {
   // 文件上传成功后回调
   uploadSuccess = fileList => {
     const {dataItem}=this.state
-    Object.assign(dataItem,{AttachmentName: fileList[0].response.FileName})
-    this.setState({
-      attachmentList: fileList,dataItem
-    });
+    if(fileList.length){
+      const { FilePath, FileCode, Extension, FileName } = fileList[0].response;
+      Object.assign(dataItem,{
+        AttachmentPath: FilePath,
+        Code: FileCode,
+        AttachmentName: FileName,
+        AttachmentExtension: Extension,
+      })
+      this.setState({dataItem});
+    }
   };
+
+  coverPictureUpload = fileList => {
+    const {dataItem}=this.state
+    if(fileList.length){
+      const { FilePath } = fileList[0].response;
+      Object.assign(dataItem,{
+        CoverPicture: FilePath,
+      })
+      this.setState({dataItem});
+    }
+   
+  };
+
+  
 
   render() {
     const {
@@ -62,7 +82,7 @@ class OrderAttachUpload extends PureComponent {
       handleModalVisible,
       handleSubmit, global: { TI_Z01802 }
     } = this.props;
-    const { attachmentList, dataItem } = this.state;
+    const { dataItem } = this.state;
     const formItemLayout = {
       labelCol: {
         xs: { span: 24 },
@@ -74,21 +94,10 @@ class OrderAttachUpload extends PureComponent {
         md: { span: 10 },
       },
     };
-
     const okHandle = () => {
       form.validateFields((err, fieldsValue) => {
-        if (err || !attachmentList.length) return;
-        const { AttachmentName } = fieldsValue;
-        const newattachmentList = attachmentList.map(file => {
-          const { FilePath, FileCode, Extension, FileName } = file.response;
-          return {
-            AttachmentPath: FilePath,
-            AttachmentCode: FileCode,
-            AttachmentName: AttachmentName || FileName,
-            AttachmentExtension: Extension,
-          };
-        });
-        handleSubmit(newattachmentList);
+        if (err) return;
+        handleSubmit({...dataItem,...fieldsValue,IsShow:fieldsValue.IsShow?"Y":"N"});
       });
     };
     return (
@@ -112,13 +121,20 @@ class OrderAttachUpload extends PureComponent {
             {getFieldDecorator('Type',{initialValue:dataItem.Type})(<MDMCommonality initialValue={dataItem.Type} data={TI_Z01802} />)}
           </FormItem>
           <FormItem key="AttachmentName" {...this.formLayout} label="附件描述">
-            {getFieldDecorator('AttachmentName', { initialValue: dataItem.attachmentName })(
+            {getFieldDecorator('AttachmentName', { initialValue: dataItem.AttachmentName })(
               <TextArea placeholder="请输入附件描" />
             )}
           </FormItem>
           <FormItem key="AttachmentPath" {...this.formLayout} label="上传附件">
-            <Upload multiple onChange={this.uploadSuccess} Folder={Folder} />
+            <Upload onChange={this.uploadSuccess} Folder={Folder} />
           </FormItem>
+          {
+             Folder==="TI_Z056"?(
+              <FormItem key="CoverPicture" {...this.formLayout} label="图片">
+                <Upload onChange={this.coverPictureUpload} Folder={Folder} />
+              </FormItem>
+             ):""
+          }
         </Form>
       </Modal>
     );
