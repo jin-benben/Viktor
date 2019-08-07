@@ -27,13 +27,13 @@ export default {
       },
       page: 1,
       rows: 20,
-      sidx: 'Code',
+      sidx: 'DocEntry',
       sord: 'Desc',
     },
     pagination: {
       showSizeChanger: true,
       showTotal: total => `共 ${total} 条`,
-      pageSizeOptions: ['20', '40', '40'],
+      pageSizeOptions: ['20', '40', '60'],
       total: 0,
       pageSize: 20,
       current: 1,
@@ -111,7 +111,7 @@ export default {
               pagination1: {
                 showSizeChanger: true,
                 showTotal: total => `共 ${total} 条`,
-                pageSizeOptions: ['30', '60', '90'],
+                pageSizeOptions: ['20', '40', '60'],
                 total: records,
                 pageSize: payload.rows,
                 current: page,
@@ -143,7 +143,7 @@ export default {
               pagination5: {
                 showSizeChanger: true,
                 showTotal: total => `共 ${total} 条`,
-                pageSizeOptions: ['30', '60', '90'],
+                pageSizeOptions: ['20', '40', '60'],
                 total: records,
                 pageSize: payload.rows,
                 current: page,
@@ -175,7 +175,7 @@ export default {
               pagination2: {
                 showSizeChanger: true,
                 showTotal: total => `共 ${total} 条`,
-                pageSizeOptions: ['30', '60', '90'],
+                pageSizeOptions: ['20', '40', '60'],
                 total: records,
                 pageSize: payload.rows,
                 current: page,
@@ -207,7 +207,7 @@ export default {
               pagination3: {
                 showSizeChanger: true,
                 showTotal: total => `共 ${total} 条`,
-                pageSizeOptions: ['30', '60', '90'],
+                pageSizeOptions: ['20', '40', '60'],
                 total: records,
                 pageSize: payload.rows,
                 current: page,
@@ -239,7 +239,7 @@ export default {
               pagination6: {
                 showSizeChanger: true,
                 showTotal: total => `共 ${total} 条`,
-                pageSizeOptions: ['30', '60', '90'],
+                pageSizeOptions: ['20', '40', '60'],
                 total: records,
                 pageSize: payload.rows,
                 current: page,
@@ -272,7 +272,7 @@ export default {
               pagination4: {
                 showSizeChanger: true,
                 showTotal: total => `共 ${total} 条`,
-                pageSizeOptions: ['30', '60', '90'],
+                pageSizeOptions: ['20', '40', '60'],
                 total: records,
                 pageSize: payload.rows,
                 current: page,
@@ -304,7 +304,7 @@ export default {
               pagination7: {
                 showSizeChanger: true,
                 showTotal: total => `共 ${total} 条`,
-                pageSizeOptions: ['30', '60', '90'],
+                pageSizeOptions: ['20', '40', '60'],
                 total: records,
                 pageSize: payload.rows,
                 current: page,

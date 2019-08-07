@@ -1,4 +1,4 @@
-import { queryRule, confirmRule, savePrintRule } from './service';
+import { queryRule, confirmRule, savePrintRule,companyRule } from './service';
 
 export default {
   namespace: 'OINVConfrim',
@@ -71,6 +71,10 @@ export default {
     },
     *print({ payload, callback }, { call }) {
       const response = yield call(savePrintRule, payload);
+      if (callback) callback(response);
+    },
+    *company({ payload, callback }, { call }) {
+      const response = yield call(companyRule, payload);
       if (callback) callback(response);
     },
   },

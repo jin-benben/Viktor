@@ -26,3 +26,12 @@ export async function savePrintRule(params) {
     },
   });
 }
+
+export async function companyRule(params) {
+  return request('/MDM/TI_Z006/TI_Z00603', {
+    method: 'POST',
+    data: {
+      ...params,
+    },
+  });
+}
