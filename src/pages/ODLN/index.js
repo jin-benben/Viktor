@@ -407,12 +407,11 @@ class salerConfrim extends PureComponent {
         DeliverDateTo = moment(fieldsValue.deliverArr[1]).format('YYYY-MM-DD');
       }
 
-      const { DeliverSts, Owner, PrintStatus } = fieldsValue;
+      const { DeliverSts, Owner, PrintStatus,SearchText } = fieldsValue;
       dispatch({
         type: 'salerConfrim/fetch',
         payload: {
           Content: {
-            SearchText: '',
             SearchKey: 'Name',
             DocDateFrom,
             DocDateTo,
@@ -420,7 +419,7 @@ class salerConfrim extends PureComponent {
             DeliverDateTo,
             DeliverSts: DeliverSts===undefined?'N':DeliverSts,
             PrintStatus: PrintStatus===undefined?'N':PrintStatus,
-            Owner,
+            Owner,SearchText
           },
           page: 1,
           rows: 30,

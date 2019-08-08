@@ -355,7 +355,7 @@ class OINVConfrim extends PureComponent {
         DeliverDateTo = moment(fieldsValue.deliverArr[1]).format('YYYY-MM-DD');
       }
 
-      const { DeliverSts, Owner, PrintStatus } = fieldsValue;
+      const { DeliverSts, Owner, PrintStatus,SearchText } = fieldsValue;
       const queryData = {
         DocDateFrom,
         DocDateTo,
@@ -363,14 +363,13 @@ class OINVConfrim extends PureComponent {
         DeliverDateTo,
         DeliverSts: DeliverSts===undefined?'N':DeliverSts,
         PrintStatus: PrintStatus===undefined?'N':PrintStatus,
-        Owner,
+        Owner,SearchText
       };
       dispatch({
         type: 'OINVConfrim/fetch',
         payload: {
           Content: {
             DeliverSts: 'N',
-            SearchText: '',
             SearchKey: 'Name',
             ...queryData,
           },
