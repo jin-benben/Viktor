@@ -98,17 +98,6 @@ class TransactionSearch extends PureComponent {
       dataIndex: 'DocTotal',
       width: 100,
     },
-    // {
-    //   title: '交易公司',
-    //   dataIndex: 'U_CompanyCode',
-    //   width: 100,
-    //   render: text => {
-    //     const {
-    //       global: { Company },
-    //     } = this.props;
-    //     return <span>{getName(Company, text)}</span>;
-    //   },
-    // },
     {
       title: '销售员',
       dataIndex: 'SlpCode',
@@ -187,7 +176,11 @@ class TransactionSearch extends PureComponent {
       dataIndex: 'Quantity',
       width: 80,
     },
-
+    {
+      title: '未清数量',
+      dataIndex: 'OpenQty',
+      width: 80,
+    },
     {
       title: '含税价格',
       dataIndex: 'PriceAfVAT',
@@ -609,7 +602,7 @@ class TransactionSearch extends PureComponent {
                   data={{ list: ordrList }}
                   pagination={pagination}
                   rowKey="key"
-                  scroll={{ x: 1500, y: 600 }}
+                  scroll={{ x: 1500}}
                   columns={this.columns}
                   onChange={this.handleStandardTableChange}
                 />
@@ -620,7 +613,7 @@ class TransactionSearch extends PureComponent {
                   data={{ list: ordrLineList }}
                   pagination={pagination}
                   rowKey="key"
-                  scroll={{ x: 1500, y: 600 }}
+                  scroll={{ x: 1700}}
                   columns={this.columns1}
                   onChange={this.handleStandardTableChange}
                 />
@@ -631,7 +624,7 @@ class TransactionSearch extends PureComponent {
                   data={{ list: orctovpmList }}
                   pagination={pagination}
                   rowKey="key"
-                  scroll={{ x: 1200, y: 600 }}
+                  scroll={{ x: 1200}}
                   columns={this.columns2}
                   onChange={this.handleStandardTableChange}
                 />
@@ -642,7 +635,7 @@ class TransactionSearch extends PureComponent {
                   data={{ list: odlnordnList }}
                   pagination={pagination}
                   rowKey="key"
-                  scroll={{ x: 2200, y: 600 }}
+                  scroll={{ x: 2200}}
                   columns={this.columns3}
                   onChange={this.handleStandardTableChange}
                 />
@@ -653,7 +646,7 @@ class TransactionSearch extends PureComponent {
                   data={{ list: odlnordnLineList }}
                   pagination={pagination}
                   rowKey="key"
-                  scroll={{ x: 2100, y: 600 }}
+                  scroll={{ x: 2100}}
                   columns={this.columns4}
                   onChange={this.handleStandardTableChange}
                 />
@@ -664,7 +657,7 @@ class TransactionSearch extends PureComponent {
                   data={{ list: oinvorinList }}
                   pagination={pagination}
                   rowKey="key"
-                  scroll={{ x: 2100, y: 600 }}
+                  scroll={{ x: 2100}}
                   columns={this.columns5}
                   onChange={this.handleStandardTableChange}
                 />
@@ -675,7 +668,7 @@ class TransactionSearch extends PureComponent {
                   data={{ list: oinvorinLineList }}
                   pagination={pagination}
                   rowKey="key"
-                  scroll={{ x: 2100, y: 600 }}
+                  scroll={{ x: 2200}}
                   columns={this.columns6}
                   onChange={this.handleStandardTableChange}
                 />

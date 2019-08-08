@@ -1,7 +1,7 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import Link from 'umi/link';
-import { Row, Col, Card, Form, Input, Button, Tag, Table, Modal, Badge } from 'antd';
+import { Row, Col, Card, Form, Input, Button, Tag, Table, Modal, Badge,Checkbox } from 'antd';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
@@ -102,6 +102,11 @@ class BatchUpload extends PureComponent {
       ),
     },
     {
+      title: '库存',
+      width: 50,
+      dataIndex: 'OnHand',
+    },
+    {
       title: '创建日期',
       dataIndex: 'CreateDate',
       width: 100,
@@ -194,6 +199,7 @@ class BatchUpload extends PureComponent {
           Content: {
             SearchText: '',
             ...fieldsValue,
+            IsOnHand:fieldsValue.IsOnHand?"Y":""
           },
           page: 1,
           rows: 30,
@@ -278,12 +284,18 @@ class BatchUpload extends PureComponent {
               {getFieldDecorator('ItemCode')(<Input placeholder="请输入物料代码" />)}
             </FormItem>
           </Col>
-
           <Col md={6} sm={24}>
             <FormItem key="ApproveBy" {...formLayout} label="审核人">
               {getFieldDecorator('ApproveBy', { initialValue: ApproveBy })(
                 <SalerPurchaser initialValue={ApproveBy} type="Code" />
               )}
+            </FormItem>
+          </Col>
+          <Col md={3} sm={24}>
+            <FormItem key="IsOnHand" {...formLayout}>
+              {getFieldDecorator('IsOnHand',{
+                valuePropName: 'checked',
+              })(<Checkbox>有库存</Checkbox>)}
             </FormItem>
           </Col>
           <Col md={3} sm={24}>
@@ -317,7 +329,7 @@ class BatchUpload extends PureComponent {
               dataSource={batchUploadList}
               pagination={pagination}
               rowKey="key"
-              scroll={{ x: 1000, y: 600 }}
+              scroll={{ x: 1500, y: 600 }}
               rowSelection={{
                 selectedRowKeys,
                 onChange: this.onSelectRow,

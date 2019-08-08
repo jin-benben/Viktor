@@ -42,7 +42,11 @@ class OrderDetailPage extends PureComponent {
       width: 80,
       dataIndex: 'Quantity',
     },
-
+    {
+      title: '未清数量',
+      dataIndex: 'OpenQty',
+      width: 80,
+    },
     {
       title: '含税价格',
       width: 100,
