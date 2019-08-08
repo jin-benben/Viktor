@@ -574,6 +574,11 @@ class OINVConfrim extends PureComponent {
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={5} sm={24}>
+            <FormItem>
+              {getFieldDecorator('SearchText')(<Input placeholder="请输入关键字" />)}
+            </FormItem>
+          </Col>
+          <Col md={5} sm={24}>
             <FormItem {...formLayout} label="单号">
               <FormItem className="lineFormItem" key="DocEntryFrom">
                 {getFieldDecorator('DocEntryFrom')(<Input placeholder="开始单号" />)}
@@ -596,13 +601,7 @@ class OINVConfrim extends PureComponent {
               {getFieldDecorator('Owner')(<MDMCommonality data={Saler} />)}
             </FormItem>
           </Col>
-          <Col md={5} sm={24}>
-            <FormItem label="发货日期" {...formLayout}>
-              {getFieldDecorator('deliverArr', { rules: [{ type: 'array' }] })(
-                <RangePicker style={{ width: '100%' }} />
-              )}
-            </FormItem>
-          </Col>
+        
 
           {expandForm ? (
             <Fragment>
@@ -614,6 +613,13 @@ class OINVConfrim extends PureComponent {
                       <Option value="N">未发货</Option>
                       <Option value="">全部</Option>
                     </Select>
+                  )}
+                </FormItem>
+              </Col>
+              <Col md={5} sm={24}>
+                <FormItem label="发货日期" {...formLayout}>
+                  {getFieldDecorator('deliverArr', { rules: [{ type: 'array' }] })(
+                    <RangePicker style={{ width: '100%' }} />
                   )}
                 </FormItem>
               </Col>

@@ -131,7 +131,7 @@ class TransactionSearch extends PureComponent {
     },
     {
       title: '单据状态',
-      dataIndex: 'DocStatus',
+      dataIndex: 'LineStatus',
       width: 80,
       render: text => (text === 'O' ? <Tag color="gold">未清</Tag> : <Tag color="green">已清</Tag>),
     },
