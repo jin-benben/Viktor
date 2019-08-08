@@ -37,7 +37,7 @@ import SKUModal from '@/components/Modal/SKU';
 import Brand from '@/components/Brand';
 import MDMCommonality from '@/components/Select';
 import NeedAskPrice from '../components/needAskPrice';
-import CompanySelect from '@/components/Company/index';
+import CompanySelect from '@/components/Company';
 import HSCode from '@/components/HSCode';
 import PushLink from '@/components/PushLink';
 import Attachment from '@/components/Attachment';

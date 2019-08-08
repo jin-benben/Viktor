@@ -47,7 +47,7 @@ class BatchUpload extends PureComponent {
     },
     {
       title: '物料描述',
-      width: 100,
+      width: 150,
       dataIndex: 'ItemName',
       render: (text, record) => (
         <Link target="_blank" to={`/main/product/TI_Z009/TI_Z00903?Code=${record.ItemCode}`}>
@@ -69,24 +69,13 @@ class BatchUpload extends PureComponent {
     },
     {
       title: '审核人',
-      width: 100,
+      width: 80,
       dataIndex: 'ApproveBy',
       render: text => {
         const {
           global: { TI_Z004 },
         } = this.props;
         return <span>{getName(TI_Z004, text)}</span>;
-      },
-    },
-    {
-      title: '审核状态',
-      width: 100,
-      dataIndex: 'ApproveSts',
-      align: 'center',
-      render: text => {
-        if (!text) return '';
-        if (text === 'Y') return <Tag color="green">已通过</Tag>;
-        return <Tag color="gold">未通过</Tag>;
       },
     },
     {
@@ -167,6 +156,9 @@ class BatchUpload extends PureComponent {
     });
     dispatch({
       type: 'global/getAuthority',
+    });
+    this.setState({
+      height: document.body.offsetHeight - 56 - 64 - 56 - 24 - 32 - 30,
     });
   }
 
@@ -291,6 +283,12 @@ class BatchUpload extends PureComponent {
               )}
             </FormItem>
           </Col>
+          <Col md={4} sm={24}>
+            <FormItem key="Card" {...formLayout}>
+              {getFieldDecorator('Card')(<Input placeholder="请输入客户名称" />)}
+            </FormItem>
+          </Col>
+        
           <Col md={3} sm={24}>
             <FormItem key="IsOnHand" {...formLayout}>
               {getFieldDecorator('IsOnHand',{
@@ -318,7 +316,7 @@ class BatchUpload extends PureComponent {
       searchLoading,
       uploadLoading,
     } = this.props;
-    const { selectedRowKeys, modalVisible, attchList } = this.state;
+    const { selectedRowKeys, modalVisible, attchList,height } = this.state;
     return (
       <Fragment>
         <Card bordered={false}>
@@ -329,7 +327,7 @@ class BatchUpload extends PureComponent {
               dataSource={batchUploadList}
               pagination={pagination}
               rowKey="key"
-              scroll={{ x: 1500, y: 600 }}
+              scroll={{ x: 1500, y: height }}
               rowSelection={{
                 selectedRowKeys,
                 onChange: this.onSelectRow,
