@@ -902,7 +902,7 @@ class AgreementEdit extends React.Component {
         ProfitTotal,
         OtherTotal,
       },
-    },()=>{ console.log(InquiryDocTotalLocal,this.state.orderDetail)});
+    });
   };
 
   // 品牌,仓库改变
@@ -1734,7 +1734,7 @@ class AgreementEdit extends React.Component {
                     >
                       {addList.map(option => (
                         <Option key={option.AddressID} value={option.AddressID}>
-                          {`${option.Province}/${option.City}/${option.Area}`}
+                          {`${option.AddressName}/${option.Province}/${option.City}/${option.Area}`}
                         </Option>
                       ))}
                     </Select>

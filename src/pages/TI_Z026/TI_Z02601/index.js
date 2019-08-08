@@ -1788,7 +1788,7 @@ class InquiryEdit extends React.Component {
                     >
                       {addList.map(option => (
                         <Option key={option.AddressID} value={option.AddressID}>
-                          {`${option.Province}/${option.City}/${option.Area}`}
+                          {`${option.AddressName}/${option.Province}/${option.City}/${option.Area}`}
                         </Option>
                       ))}
                     </Select>
