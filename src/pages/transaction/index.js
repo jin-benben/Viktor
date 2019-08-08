@@ -98,17 +98,6 @@ class TransactionSearch extends PureComponent {
       dataIndex: 'DocTotal',
       width: 100,
     },
-    // {
-    //   title: '交易公司',
-    //   dataIndex: 'U_CompanyCode',
-    //   width: 100,
-    //   render: text => {
-    //     const {
-    //       global: { Company },
-    //     } = this.props;
-    //     return <span>{getName(Company, text)}</span>;
-    //   },
-    // },
     {
       title: '销售员',
       dataIndex: 'SlpCode',
@@ -187,7 +176,11 @@ class TransactionSearch extends PureComponent {
       dataIndex: 'Quantity',
       width: 80,
     },
-
+    {
+      title: '未清数量',
+      dataIndex: 'OpenQty',
+      width: 80,
+    },
     {
       title: '含税价格',
       dataIndex: 'PriceAfVAT',
@@ -478,7 +471,7 @@ class TransactionSearch extends PureComponent {
     e.preventDefault();
     const {
       transaction: { queryData },
-      form,
+      form,dispatch
     } = this.props;
     const { activeKey } = this.state;
     form.validateFields((err, fieldsValue) => {
@@ -499,20 +492,18 @@ class TransactionSearch extends PureComponent {
         Object.assign(queryData.Content,{LineStatus:fieldsValue.Status})
       }
       delete fieldsValue.Status
-      this.whichSerch(activeKey, {
-        Content: {
-          ...queryData.Content,
-          SearchText: '',
-          SearchKey: 'Name',
-          ...fieldsValue,
-          DocDateFrom,
-          DocDateTo,
-        },
-        page: 1,
-        rows: 20,
-        sidx: 'Code',
-        sord: 'Desc',
-      });
+      Object.assign(queryData.Content,{ ...fieldsValue,
+        DocDateFrom,
+        DocDateTo,})
+      Object.assign(queryData,{   page: 1,
+        rows: 20,})  
+      dispatch({
+        type:"transaction/save",
+        payload:{
+          queryData
+        }
+      })  
+      this.whichSerch(activeKey,queryData);
     });
   };
 
@@ -594,18 +585,11 @@ class TransactionSearch extends PureComponent {
         ordrLineList,
         odlnordnLineList,
         oinvorinLineList,
-        pagination7,
-        pagination6,
-        pagination5,
-        pagination1,
-        pagination2,
-        pagination3,
-        pagination4,
+        pagination,
       },
       loading,
     } = this.props;
     const { activeKey } = this.state;
-
     return (
       <Fragment>
         <Card bordered={false}>
@@ -616,9 +600,9 @@ class TransactionSearch extends PureComponent {
                 <StandardTable
                   loading={loading}
                   data={{ list: ordrList }}
-                  pagination={pagination1}
+                  pagination={pagination}
                   rowKey="key"
-                  scroll={{ x: 1500, y: 600 }}
+                  scroll={{ x: 1500}}
                   columns={this.columns}
                   onChange={this.handleStandardTableChange}
                 />
@@ -627,9 +611,9 @@ class TransactionSearch extends PureComponent {
                 <StandardTable
                   loading={loading}
                   data={{ list: ordrLineList }}
-                  pagination={pagination5}
+                  pagination={pagination}
                   rowKey="key"
-                  scroll={{ x: 1500, y: 600 }}
+                  scroll={{ x: 1700}}
                   columns={this.columns1}
                   onChange={this.handleStandardTableChange}
                 />
@@ -638,9 +622,9 @@ class TransactionSearch extends PureComponent {
                 <StandardTable
                   loading={loading}
                   data={{ list: orctovpmList }}
-                  pagination={pagination2}
+                  pagination={pagination}
                   rowKey="key"
-                  scroll={{ x: 1200, y: 600 }}
+                  scroll={{ x: 1200}}
                   columns={this.columns2}
                   onChange={this.handleStandardTableChange}
                 />
@@ -649,9 +633,9 @@ class TransactionSearch extends PureComponent {
                 <StandardTable
                   loading={loading}
                   data={{ list: odlnordnList }}
-                  pagination={pagination3}
+                  pagination={pagination}
                   rowKey="key"
-                  scroll={{ x: 2200, y: 600 }}
+                  scroll={{ x: 2200}}
                   columns={this.columns3}
                   onChange={this.handleStandardTableChange}
                 />
@@ -660,9 +644,9 @@ class TransactionSearch extends PureComponent {
                 <StandardTable
                   loading={loading}
                   data={{ list: odlnordnLineList }}
-                  pagination={pagination6}
+                  pagination={pagination}
                   rowKey="key"
-                  scroll={{ x: 2100, y: 600 }}
+                  scroll={{ x: 2100}}
                   columns={this.columns4}
                   onChange={this.handleStandardTableChange}
                 />
@@ -671,9 +655,9 @@ class TransactionSearch extends PureComponent {
                 <StandardTable
                   loading={loading}
                   data={{ list: oinvorinList }}
-                  pagination={pagination4}
+                  pagination={pagination}
                   rowKey="key"
-                  scroll={{ x: 2100, y: 600 }}
+                  scroll={{ x: 2100}}
                   columns={this.columns5}
                   onChange={this.handleStandardTableChange}
                 />
@@ -682,9 +666,9 @@ class TransactionSearch extends PureComponent {
                 <StandardTable
                   loading={loading}
                   data={{ list: oinvorinLineList }}
-                  pagination={pagination7}
+                  pagination={pagination}
                   rowKey="key"
-                  scroll={{ x: 2100, y: 600 }}
+                  scroll={{ x: 2200}}
                   columns={this.columns6}
                   onChange={this.handleStandardTableChange}
                 />

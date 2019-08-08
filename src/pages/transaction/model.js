@@ -21,64 +21,17 @@ export default {
     oinvorinLineList: [],
     queryData: {
       Content: {
+        SlpCode:"",
         QueryType: '1',
         SearchText: '',
         SearchKey: '',
       },
       page: 1,
       rows: 20,
-      sidx: 'Code',
+      sidx: 'DocEntry',
       sord: 'Desc',
     },
     pagination: {
-      showSizeChanger: true,
-      showTotal: total => `共 ${total} 条`,
-      pageSizeOptions: ['20', '40', '40'],
-      total: 0,
-      pageSize: 20,
-      current: 1,
-    },
-    pagination2: {
-      showSizeChanger: true,
-      showTotal: total => `共 ${total} 条`,
-      pageSizeOptions: ['20', '40', '60'],
-      total: 0,
-      pageSize: 20,
-      current: 1,
-    },
-    pagination3: {
-      showSizeChanger: true,
-      showTotal: total => `共 ${total} 条`,
-      pageSizeOptions: ['20', '40', '60'],
-      total: 0,
-      pageSize: 20,
-      current: 1,
-    },
-    pagination4: {
-      showSizeChanger: true,
-      showTotal: total => `共 ${total} 条`,
-      pageSizeOptions: ['20', '40', '60'],
-      total: 0,
-      pageSize: 20,
-      current: 1,
-    },
-    pagination5: {
-      showSizeChanger: true,
-      showTotal: total => `共 ${total} 条`,
-      pageSizeOptions: ['20', '40', '60'],
-      total: 0,
-      pageSize: 20,
-      current: 1,
-    },
-    pagination6: {
-      showSizeChanger: true,
-      showTotal: total => `共 ${total} 条`,
-      pageSizeOptions: ['20', '40', '60'],
-      total: 0,
-      pageSize: 20,
-      current: 1,
-    },
-    pagination7: {
       showSizeChanger: true,
       showTotal: total => `共 ${total} 条`,
       pageSizeOptions: ['20', '40', '60'],
@@ -89,7 +42,8 @@ export default {
   },
 
   effects: {
-    *getOrdr({ payload }, { call, put }) {
+    *getOrdr({ payload }, { call, put,select }) {
+      const pagination = yield select(state => state.pagination) 
       const response = yield call(ordrRule, payload);
       if (response && response.Status === 200) {
         if (!response.Content) {
@@ -97,7 +51,7 @@ export default {
             type: 'save',
             payload: {
               ordrList: [],
-              pagination1: {
+              pagination: {
                 total: 0,
               },
             },
@@ -108,10 +62,8 @@ export default {
             type: 'save',
             payload: {
               ordrList: rows,
-              pagination1: {
-                showSizeChanger: true,
-                showTotal: total => `共 ${total} 条`,
-                pageSizeOptions: ['30', '60', '90'],
+              pagination: {
+                ...pagination,
                 total: records,
                 pageSize: payload.rows,
                 current: page,
@@ -121,7 +73,8 @@ export default {
         }
       }
     },
-    *getOrdrLine({ payload }, { call, put }) {
+    *getOrdrLine({ payload }, { call, put,select }) {
+      const pagination = yield select(state => state.pagination) 
       const response = yield call(ordrLineRule, payload);
       if (response && response.Status === 200) {
         if (!response.Content) {
@@ -129,7 +82,7 @@ export default {
             type: 'save',
             payload: {
               ordrLineList: [],
-              pagination5: {
+              pagination: {
                 total: 0,
               },
             },
@@ -140,10 +93,8 @@ export default {
             type: 'save',
             payload: {
               ordrLineList: rows,
-              pagination5: {
-                showSizeChanger: true,
-                showTotal: total => `共 ${total} 条`,
-                pageSizeOptions: ['30', '60', '90'],
+              pagination: {
+                ...pagination,
                 total: records,
                 pageSize: payload.rows,
                 current: page,
@@ -153,7 +104,8 @@ export default {
         }
       }
     },
-    *getOrctovpm({ payload }, { call, put }) {
+    *getOrctovpm({ payload }, { call, put,select }) {
+      const pagination = yield select(state => state.pagination) 
       const response = yield call(orctovpmRule, payload);
       if (response && response.Status === 200) {
         if (!response.Content) {
@@ -161,7 +113,7 @@ export default {
             type: 'save',
             payload: {
               orctovpmList: [],
-              pagination2: {
+              pagination: {
                 total: 0,
               },
             },
@@ -172,10 +124,8 @@ export default {
             type: 'save',
             payload: {
               orctovpmList: rows,
-              pagination2: {
-                showSizeChanger: true,
-                showTotal: total => `共 ${total} 条`,
-                pageSizeOptions: ['30', '60', '90'],
+              pagination: {
+                ...pagination,
                 total: records,
                 pageSize: payload.rows,
                 current: page,
@@ -185,7 +135,8 @@ export default {
         }
       }
     },
-    *getOdlnordn({ payload }, { call, put }) {
+    *getOdlnordn({ payload }, { call, put,select }) {
+      const pagination = yield select(state => state.pagination) 
       const response = yield call(odlnordnRule, payload);
       if (response && response.Status === 200) {
         if (!response.Content) {
@@ -193,7 +144,7 @@ export default {
             type: 'save',
             payload: {
               odlnordnList: [],
-              pagination3: {
+              pagination: {
                 total: 0,
               },
             },
@@ -204,10 +155,8 @@ export default {
             type: 'save',
             payload: {
               odlnordnList: rows,
-              pagination3: {
-                showSizeChanger: true,
-                showTotal: total => `共 ${total} 条`,
-                pageSizeOptions: ['30', '60', '90'],
+              pagination: {
+                ...pagination,
                 total: records,
                 pageSize: payload.rows,
                 current: page,
@@ -217,7 +166,8 @@ export default {
         }
       }
     },
-    *getOdlnordnLine({ payload }, { call, put }) {
+    *getOdlnordnLine({ payload }, { call, put,select }) {
+      const pagination = yield select(state => state.pagination) 
       const response = yield call(odlnordnLineRule, payload);
       if (response && response.Status === 200) {
         if (!response.Content) {
@@ -225,7 +175,7 @@ export default {
             type: 'save',
             payload: {
               odlnordnLineList: [],
-              pagination6: {
+              pagination: {
                 total: 0,
               },
             },
@@ -236,10 +186,8 @@ export default {
             type: 'save',
             payload: {
               odlnordnLineList: rows,
-              pagination6: {
-                showSizeChanger: true,
-                showTotal: total => `共 ${total} 条`,
-                pageSizeOptions: ['30', '60', '90'],
+              pagination: {
+                ...pagination,
                 total: records,
                 pageSize: payload.rows,
                 current: page,
@@ -250,7 +198,8 @@ export default {
       }
     },
 
-    *getOinvorin({ payload }, { call, put }) {
+    *getOinvorin({ payload }, { call, put,select }) {
+      const pagination = yield select(state => state.pagination) 
       const response = yield call(oinvorinRule, payload);
       if (response && response.Status === 200) {
         if (!response.Content) {
@@ -258,7 +207,7 @@ export default {
             type: 'save',
             payload: {
               oinvorinList: [],
-              pagination4: {
+              pagination: {
                 total: 0,
               },
             },
@@ -269,10 +218,8 @@ export default {
             type: 'save',
             payload: {
               oinvorinList: rows,
-              pagination4: {
-                showSizeChanger: true,
-                showTotal: total => `共 ${total} 条`,
-                pageSizeOptions: ['30', '60', '90'],
+              pagination: {
+                ...pagination,
                 total: records,
                 pageSize: payload.rows,
                 current: page,
@@ -282,7 +229,8 @@ export default {
         }
       }
     },
-    *getOinvorinLine({ payload }, { call, put }) {
+    *getOinvorinLine({ payload }, { call, put,select }) {
+      const pagination = yield select(state => state.pagination) 
       const response = yield call(oinvorinLineRule, payload);
       if (response && response.Status === 200) {
         if (!response.Content) {
@@ -290,7 +238,7 @@ export default {
             type: 'save',
             payload: {
               oinvorinLineList: [],
-              pagination7: {
+              pagination: {
                 total: 0,
               },
             },
@@ -301,10 +249,8 @@ export default {
             type: 'save',
             payload: {
               oinvorinLineList: rows,
-              pagination7: {
-                showSizeChanger: true,
-                showTotal: total => `共 ${total} 条`,
-                pageSizeOptions: ['30', '60', '90'],
+              pagination: {
+                ...pagination,
                 total: records,
                 pageSize: payload.rows,
                 current: page,

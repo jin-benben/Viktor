@@ -1,7 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import Link from 'umi/link';
-import moment from 'moment';
 import { Row, Col, Card, Form, Button, message, Table } from 'antd';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
@@ -99,6 +98,7 @@ class BatchUpload extends PureComponent {
   state = {
     selectedRows: [],
     selectedRowKeys: [],
+    height:0,
   };
 
   componentDidMount() {
@@ -124,6 +124,9 @@ class BatchUpload extends PureComponent {
     });
     dispatch({
       type: 'global/getAuthority',
+    });
+    this.setState({
+      height: document.body.offsetHeight - 56 - 64 - 56 - 24 - 32 - 30,
     });
   }
 
@@ -249,7 +252,7 @@ class BatchUpload extends PureComponent {
       batchManage: { batchApproveList, pagination },
       searchLoading,
     } = this.props;
-    const { selectedRowKeys } = this.state;
+    const { selectedRowKeys,height } = this.state;
     return (
       <Fragment>
         <Card bordered={false}>
@@ -260,7 +263,7 @@ class BatchUpload extends PureComponent {
               dataSource={batchApproveList}
               pagination={pagination}
               rowKey="Code"
-              scroll={{ x: 1200, y: 600 }}
+              scroll={{ x: 1200, y: height }}
               rowSelection={{
                 selectedRowKeys,
                 onChange: this.onSelectRow,

@@ -1,7 +1,7 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import Link from 'umi/link';
-import { Row, Col, Card, Form, Input, Button, Tag, Table, Modal, Badge } from 'antd';
+import { Row, Col, Card, Form, Input, Button, Tag, Table, Modal, Badge,Checkbox } from 'antd';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
@@ -47,7 +47,7 @@ class BatchUpload extends PureComponent {
     },
     {
       title: '物料描述',
-      width: 100,
+      width: 150,
       dataIndex: 'ItemName',
       render: (text, record) => (
         <Link target="_blank" to={`/main/product/TI_Z009/TI_Z00903?Code=${record.ItemCode}`}>
@@ -69,24 +69,13 @@ class BatchUpload extends PureComponent {
     },
     {
       title: '审核人',
-      width: 100,
+      width: 80,
       dataIndex: 'ApproveBy',
       render: text => {
         const {
           global: { TI_Z004 },
         } = this.props;
         return <span>{getName(TI_Z004, text)}</span>;
-      },
-    },
-    {
-      title: '审核状态',
-      width: 100,
-      dataIndex: 'ApproveSts',
-      align: 'center',
-      render: text => {
-        if (!text) return '';
-        if (text === 'Y') return <Tag color="green">已通过</Tag>;
-        return <Tag color="gold">未通过</Tag>;
       },
     },
     {
@@ -100,6 +89,11 @@ class BatchUpload extends PureComponent {
           style={{ backgroundColor: '#52c41a', cursor: 'pointer' }}
         />
       ),
+    },
+    {
+      title: '库存',
+      width: 50,
+      dataIndex: 'OnHand',
     },
     {
       title: '创建日期',
@@ -163,6 +157,9 @@ class BatchUpload extends PureComponent {
     dispatch({
       type: 'global/getAuthority',
     });
+    this.setState({
+      height: document.body.offsetHeight - 56 - 64 - 56 - 24 - 32 - 30,
+    });
   }
 
   handleStandardTableChange = pagination => {
@@ -194,6 +191,7 @@ class BatchUpload extends PureComponent {
           Content: {
             SearchText: '',
             ...fieldsValue,
+            IsOnHand:fieldsValue.IsOnHand?"Y":""
           },
           page: 1,
           rows: 30,
@@ -278,12 +276,24 @@ class BatchUpload extends PureComponent {
               {getFieldDecorator('ItemCode')(<Input placeholder="请输入物料代码" />)}
             </FormItem>
           </Col>
-
           <Col md={6} sm={24}>
             <FormItem key="ApproveBy" {...formLayout} label="审核人">
               {getFieldDecorator('ApproveBy', { initialValue: ApproveBy })(
                 <SalerPurchaser initialValue={ApproveBy} type="Code" />
               )}
+            </FormItem>
+          </Col>
+          <Col md={4} sm={24}>
+            <FormItem key="Card" {...formLayout}>
+              {getFieldDecorator('Card')(<Input placeholder="请输入客户名称" />)}
+            </FormItem>
+          </Col>
+        
+          <Col md={3} sm={24}>
+            <FormItem key="IsOnHand" {...formLayout}>
+              {getFieldDecorator('IsOnHand',{
+                valuePropName: 'checked',
+              })(<Checkbox>有库存</Checkbox>)}
             </FormItem>
           </Col>
           <Col md={3} sm={24}>
@@ -306,7 +316,7 @@ class BatchUpload extends PureComponent {
       searchLoading,
       uploadLoading,
     } = this.props;
-    const { selectedRowKeys, modalVisible, attchList } = this.state;
+    const { selectedRowKeys, modalVisible, attchList,height } = this.state;
     return (
       <Fragment>
         <Card bordered={false}>
@@ -317,7 +327,7 @@ class BatchUpload extends PureComponent {
               dataSource={batchUploadList}
               pagination={pagination}
               rowKey="key"
-              scroll={{ x: 1000, y: 600 }}
+              scroll={{ x: 1500, y: height }}
               rowSelection={{
                 selectedRowKeys,
                 onChange: this.onSelectRow,

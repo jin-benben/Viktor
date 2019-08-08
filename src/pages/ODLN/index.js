@@ -86,7 +86,7 @@ class salerConfrim extends PureComponent {
     },
     {
       title: '联系人',
-      width: 100,
+      width: 80,
       dataIndex: 'Contacts',
       render: (text, record) => (
         <Tooltip
@@ -111,7 +111,7 @@ class salerConfrim extends PureComponent {
     },
     {
       title: '交易公司',
-      width: 150,
+      width: 220,
       dataIndex: 'CompanyCode',
       render: val => {
         const {

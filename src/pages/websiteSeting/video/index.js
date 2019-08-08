@@ -55,6 +55,12 @@ class VideoDataPage extends PureComponent {
       width:80,
     },
     {
+      title: '图片',
+      dataIndex: 'CoverPicture',
+      width:100,
+      render: text => <img style={{width:80}} src={text} alt="图片" />
+    },
+    {
       title: '是否显示',
       width: 80,
       dataIndex: 'IsShow',

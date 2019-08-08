@@ -37,7 +37,7 @@ import SKUModal from '@/components/Modal/SKU';
 import Brand from '@/components/Brand';
 import MDMCommonality from '@/components/Select';
 import NeedAskPrice from '../components/needAskPrice';
-import CompanySelect from '@/components/Company/index';
+import CompanySelect from '@/components/Company';
 import HSCodeCom from '@/components/HSCode';
 import PushLink from '@/components/PushLink';
 import Attachment from '@/components/Attachment';
@@ -47,7 +47,6 @@ import PriceComplete from '@/components/AutoComplete/price';
 import MyPageHeader from '../components/pageHeader';
 import { getName } from '@/utils/utils';
 import { orderSourceType, lineStatus } from '@/utils/publicData';
-import { O_NONBLOCK } from 'constants';
 
 const { TabPane } = Tabs;
 const FormItem = Form.Item;

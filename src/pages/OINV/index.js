@@ -16,7 +16,7 @@ import {
   Tag,
   Input,
   Modal,
-  Table,
+  Table,Radio
 } from 'antd';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
@@ -24,6 +24,7 @@ import StandardTable from '@/components/StandardTable';
 import NeedAskPrice from './components';
 import OrderPrint from '@/components/Modal/OrderPrint/other';
 import MDMCommonality from '@/components/Select';
+import MyIcon from '@/components/MyIcon';
 import { getName } from '@/utils/utils';
 
 const { RangePicker } = DatePicker;
@@ -44,11 +45,14 @@ class OINVConfrim extends PureComponent {
     modalVisible: false,
     modalVisible1: false,
     modalVisible2: false,
+    addressmodalVisible:false,
     ParameterJson: '',
     selectedRows: [],
     responseData: [],
     selectPrint: [],
     selectedRowKeys: [],
+    linkmanList:[],
+    currentLine:{}
   };
 
   columns = [
@@ -81,7 +85,7 @@ class OINVConfrim extends PureComponent {
     },
     {
       title: '联系人',
-      width: 100,
+      width: 80,
       dataIndex: 'Contacts',
       render: (text, record) => (
         <Tooltip
@@ -101,12 +105,12 @@ class OINVConfrim extends PureComponent {
     },
     {
       title: '发票号',
-      width: 200,
+      width: 100,
       dataIndex: 'NumAtCard',
     },
     {
       title: '交易公司',
-      width: 150,
+      width: 220,
       dataIndex: 'CompanyCode',
       render: val => {
         const {
@@ -210,6 +214,19 @@ class OINVConfrim extends PureComponent {
         <Ellipsis tooltip lines={1}>
           {text}
         </Ellipsis>
+      ),
+    },
+    {
+      title: '操作',
+      width: 50,
+      fixed: 'right',
+      align: 'center',
+      render: (text, record, index) => (
+        <Fragment>
+          <a onClick={() => this.changeAddress(record, index)} title="修改地址">
+            <MyIcon type="iconedit" />
+          </a>
+        </Fragment>
       ),
     },
   ];
@@ -427,9 +444,58 @@ class OINVConfrim extends PureComponent {
     }
   };
 
+  changeAddress = (record, index) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'OINVConfrim/company',
+      payload: {
+        Content: {
+          Code: record.CardCode,
+        },
+      },
+      callback: response => {
+        if (response && response.Status === 200) {
+          this.setState({
+            addressmodalVisible: true,
+            currentLine: index,
+            linkmanList: response.Content.TI_Z00603List,
+          });
+        }
+      },
+    });
+  };
+
+  addressChange = e => {
+    const { value } = e.target;
+    const { currentLine } = this.state;
+    const {
+      OINVConfrim: { orderLineList },
+      dispatch,
+    } = this.props;
+    Object.assign(orderLineList[currentLine], {
+      ShipToCode: `${value.AddressName}_${value.AddressID}`,
+      Address: value.Address,
+      UserID: value.UserID,
+    });
+    dispatch({
+      type: 'OINVConfrim/save',
+      payload: {
+        orderLineList: [...orderLineList],
+      },
+    });
+    this.setState({
+      addressmodalVisible: false,
+    });
+  };
+
   // 需询价弹窗
   handleModalVisible = flag => {
-    this.setState({ modalVisible: !!flag, modalVisible1: !!flag, modalVisible2: !!flag });
+    this.setState({ 
+      modalVisible: !!flag, 
+      modalVisible1: !!flag, 
+      modalVisible2: !!flag,
+      addressmodalVisible:!!flag 
+    });
   };
 
   printHandle = () => {
@@ -600,8 +666,9 @@ class OINVConfrim extends PureComponent {
       responseData,
       modalVisible1,
       modalVisible2,
+      addressmodalVisible,
       selectedRowKeys,
-      ParameterJson,
+      ParameterJson,linkmanList
     } = this.state;
 
     const columns = this.columns.map(item => {
@@ -677,6 +744,25 @@ class OINVConfrim extends PureComponent {
               </Button>
             </div>
           </div>
+        </Modal>
+        <Modal
+          width={960}
+          destroyOnClose
+          maskClosable={false}
+          title="选择地址"
+          onCancel={() => this.handleModalVisible(false)}
+          footer={null}
+          visible={addressmodalVisible}
+        >
+          <Radio.Group onChange={this.addressChange}>
+            {linkmanList.map(item => (
+              <Row key={item.AddressID} gutter={8}>
+                <Radio value={item}>{`${item.Province}${item.City}${item.Area}${item.Address} --  ${
+                  item.UserName
+                }${item.ReceiverPhone}`}</Radio>
+              </Row>
+            ))}
+          </Radio.Group>
         </Modal>
         <OrderPrint
           ParameterJson={ParameterJson}
