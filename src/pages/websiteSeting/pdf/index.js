@@ -46,7 +46,8 @@ class PdfDataPage extends PureComponent {
     {
       title: '附件路径',
       dataIndex: 'AttachmentPath',
-      render: text => <Text text={text} />,
+      width:100,
+      render: text => <a href={text} target="_blank" rel="noopener noreferrer">文件地址</a>,
     },
     {
       title: '扩展名',

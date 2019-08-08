@@ -24,7 +24,7 @@ class VideoDataPage extends PureComponent {
     {
       title: '附件代码',
       dataIndex: 'Code',
-      width: 100,
+      width: 200,
       render: text => <Text text={text} />,
     },
     {
@@ -47,7 +47,8 @@ class VideoDataPage extends PureComponent {
     {
       title: '附件路径',
       dataIndex: 'AttachmentPath',
-      render: text => <Text text={text} />,
+      width:100,
+      render: text => <a href={text} target="_blank" rel="noopener noreferrer">视频地址</a>,
     },
     {
       title: '扩展名',

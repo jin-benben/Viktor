@@ -355,22 +355,21 @@ class OINVConfrim extends PureComponent {
         DeliverDateTo = moment(fieldsValue.deliverArr[1]).format('YYYY-MM-DD');
       }
 
-      const { DeliverSts, Owner, PrintStatus } = fieldsValue;
+      const { DeliverSts, Owner, PrintStatus,SearchText } = fieldsValue;
       const queryData = {
         DocDateFrom,
         DocDateTo,
         DeliverDateFrom,
         DeliverDateTo,
-        DeliverSts: DeliverSts === undefined ? 'N' : DeliverSts,
-        PrintStatus: PrintStatus === undefined ? 'N' : PrintStatus,
-        Owner,
+        DeliverSts: DeliverSts===undefined?'N':DeliverSts,
+        PrintStatus: PrintStatus===undefined?'N':PrintStatus,
+        Owner,SearchText
       };
       dispatch({
         type: 'OINVConfrim/fetch',
         payload: {
           Content: {
             DeliverSts: 'N',
-            SearchText: '',
             SearchKey: 'Name',
             ...queryData,
           },
@@ -574,6 +573,11 @@ class OINVConfrim extends PureComponent {
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={5} sm={24}>
+            <FormItem>
+              {getFieldDecorator('SearchText')(<Input placeholder="请输入关键字" />)}
+            </FormItem>
+          </Col>
+          <Col md={5} sm={24}>
             <FormItem {...formLayout} label="单号">
               <FormItem className="lineFormItem" key="DocEntryFrom">
                 {getFieldDecorator('DocEntryFrom')(<Input placeholder="开始单号" />)}
@@ -596,13 +600,7 @@ class OINVConfrim extends PureComponent {
               {getFieldDecorator('Owner')(<MDMCommonality data={Saler} />)}
             </FormItem>
           </Col>
-          <Col md={5} sm={24}>
-            <FormItem label="发货日期" {...formLayout}>
-              {getFieldDecorator('deliverArr', { rules: [{ type: 'array' }] })(
-                <RangePicker style={{ width: '100%' }} />
-              )}
-            </FormItem>
-          </Col>
+        
 
           {expandForm ? (
             <Fragment>
@@ -614,6 +612,13 @@ class OINVConfrim extends PureComponent {
                       <Option value="N">未发货</Option>
                       <Option value="">全部</Option>
                     </Select>
+                  )}
+                </FormItem>
+              </Col>
+              <Col md={5} sm={24}>
+                <FormItem label="发货日期" {...formLayout}>
+                  {getFieldDecorator('deliverArr', { rules: [{ type: 'array' }] })(
+                    <RangePicker style={{ width: '100%' }} />
                   )}
                 </FormItem>
               </Col>
