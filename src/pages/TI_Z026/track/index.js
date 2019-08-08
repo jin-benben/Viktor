@@ -390,7 +390,8 @@ class inquiryFetchtrackPage extends PureComponent {
   render() {
     const {
       inquiryFetchtrack: { trackList, pagination },
-      loading,location
+      loading,
+      location,
     } = this.props;
 
     const transferParentMethods = {

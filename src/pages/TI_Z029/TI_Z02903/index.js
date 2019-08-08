@@ -195,7 +195,7 @@ class InquiryEdit extends Component {
       width: 100,
       dataIndex: 'InquiryDueDate',
       align: 'center',
-      render:text =>(
+      render: text => (
         <Ellipsis tooltip lines={1}>
           {text}
         </Ellipsis>
@@ -229,7 +229,7 @@ class InquiryEdit extends Component {
       title: 'HS编码',
       width: 100,
       dataIndex: 'HSCode',
-      render: text =>(
+      render: text => (
         <Ellipsis tooltip lines={1}>
           {text}
         </Ellipsis>
@@ -248,7 +248,7 @@ class InquiryEdit extends Component {
       dataIndex: 'LineComment',
       width: 100,
       align: 'center',
-      render: text =>(
+      render: text => (
         <Ellipsis tooltip lines={1}>
           {text}
         </Ellipsis>
@@ -259,7 +259,7 @@ class InquiryEdit extends Component {
       width: 100,
       dataIndex: 'Package',
       align: 'center',
-      render: text =>(
+      render: text => (
         <Ellipsis tooltip lines={1}>
           {text}
         </Ellipsis>
@@ -270,18 +270,18 @@ class InquiryEdit extends Component {
       dataIndex: 'Parameters',
       width: 100,
       align: 'center',
-      render:text =>(
+      render: text => (
         <Ellipsis tooltip lines={1}>
           {text}
         </Ellipsis>
-        ),
+      ),
     },
     {
       title: '名称(外)',
       dataIndex: 'ForeignName',
       width: 100,
       align: 'center',
-      render: text =>(
+      render: text => (
         <Ellipsis tooltip lines={1}>
           {text}
         </Ellipsis>
@@ -292,12 +292,12 @@ class InquiryEdit extends Component {
       dataIndex: 'ForeignParameters',
       width: 100,
       align: 'center',
-      render: text =>(
+      render: text => (
         <Ellipsis tooltip lines={1}>
           {text}
         </Ellipsis>
       ),
-    }, 
+    },
     {
       title: '仓库',
       width: 100,
@@ -315,7 +315,7 @@ class InquiryEdit extends Component {
       width: 80,
       dataIndex: 'CustomerName',
       align: 'center',
-      render: text =>(
+      render: text => (
         <Ellipsis tooltip lines={1}>
           {text}
         </Ellipsis>
@@ -332,7 +332,7 @@ class InquiryEdit extends Component {
         </Ellipsis>
       ),
     },
-    
+
     {
       title: '客询价单',
       width: 80,
@@ -414,15 +414,7 @@ class InquiryEdit extends Component {
       type: 'global/getMDMCommonality',
       payload: {
         Content: {
-          CodeList: [
-            'Saler',
-            'Purchaser',
-            'TI_Z004',
-            'TI_Z042',
-            'Curr',
-            'WhsCode',
-            'Company',
-          ],
+          CodeList: ['Saler', 'Purchaser', 'TI_Z004', 'TI_Z042', 'Curr', 'WhsCode', 'Company'],
         },
       },
     });
@@ -658,7 +650,9 @@ class InquiryEdit extends Component {
             {formVals.ToDate ? moment(formVals.ToDate).format('YYYY-MM-DD') : ''}
           </Description>
           <Description term="联系人">{formVals.Contacts}</Description>
-          <Description term="备注"><span className="red">{formVals.Comment}</span></Description>
+          <Description term="备注">
+            <span className="red">{formVals.Comment}</span>
+          </Description>
           <Description term="创建人">
             <span>{getName(TI_Z004, formVals.CreateUser)}</span>
           </Description>

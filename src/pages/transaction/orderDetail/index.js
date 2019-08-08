@@ -203,7 +203,7 @@ class OrderDetailPage extends PureComponent {
       type: 'global/getMDMCommonality',
       payload: {
         Content: {
-          CodeList: ['Saler', 'Company','TI_Z004', 'Trnsp'],
+          CodeList: ['Saler', 'Company', 'TI_Z004', 'Trnsp'],
         },
       },
     });
@@ -293,7 +293,9 @@ class OrderDetailPage extends PureComponent {
             {`${orderDetailInfo.ShipToCode}${orderDetailInfo.Address2}`}
           </Description>
           <Description term="客户参考号">{orderDetailInfo.NumAtCard}</Description>
-          <Description term="备注"><span className="red">{orderDetailInfo.Comments}</span></Description>
+          <Description term="备注">
+            <span className="red">{orderDetailInfo.Comments}</span>
+          </Description>
           <Description term="单据总计">{orderDetailInfo.DocTotal}</Description>
           <Description term="合同号">{orderDetailInfo.U_ContractEntry}</Description>
           <Description term="联系人">

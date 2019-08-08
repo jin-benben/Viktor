@@ -21,7 +21,7 @@ export default {
     oinvorinLineList: [],
     queryData: {
       Content: {
-        SlpCode:"",
+        SlpCode: '',
         QueryType: '1',
         SearchText: '',
         SearchKey: '',
@@ -42,8 +42,8 @@ export default {
   },
 
   effects: {
-    *getOrdr({ payload }, { call, put,select }) {
-      const pagination = yield select(state => state.pagination) 
+    *getOrdr({ payload }, { call, put, select }) {
+      const pagination = yield select(state => state.pagination);
       const response = yield call(ordrRule, payload);
       if (response && response.Status === 200) {
         if (!response.Content) {
@@ -73,8 +73,8 @@ export default {
         }
       }
     },
-    *getOrdrLine({ payload }, { call, put,select }) {
-      const pagination = yield select(state => state.pagination) 
+    *getOrdrLine({ payload }, { call, put, select }) {
+      const pagination = yield select(state => state.pagination);
       const response = yield call(ordrLineRule, payload);
       if (response && response.Status === 200) {
         if (!response.Content) {
@@ -104,8 +104,8 @@ export default {
         }
       }
     },
-    *getOrctovpm({ payload }, { call, put,select }) {
-      const pagination = yield select(state => state.pagination) 
+    *getOrctovpm({ payload }, { call, put, select }) {
+      const pagination = yield select(state => state.pagination);
       const response = yield call(orctovpmRule, payload);
       if (response && response.Status === 200) {
         if (!response.Content) {
@@ -135,8 +135,8 @@ export default {
         }
       }
     },
-    *getOdlnordn({ payload }, { call, put,select }) {
-      const pagination = yield select(state => state.pagination) 
+    *getOdlnordn({ payload }, { call, put, select }) {
+      const pagination = yield select(state => state.pagination);
       const response = yield call(odlnordnRule, payload);
       if (response && response.Status === 200) {
         if (!response.Content) {
@@ -166,8 +166,8 @@ export default {
         }
       }
     },
-    *getOdlnordnLine({ payload }, { call, put,select }) {
-      const pagination = yield select(state => state.pagination) 
+    *getOdlnordnLine({ payload }, { call, put, select }) {
+      const pagination = yield select(state => state.pagination);
       const response = yield call(odlnordnLineRule, payload);
       if (response && response.Status === 200) {
         if (!response.Content) {
@@ -198,8 +198,8 @@ export default {
       }
     },
 
-    *getOinvorin({ payload }, { call, put,select }) {
-      const pagination = yield select(state => state.pagination) 
+    *getOinvorin({ payload }, { call, put, select }) {
+      const pagination = yield select(state => state.pagination);
       const response = yield call(oinvorinRule, payload);
       if (response && response.Status === 200) {
         if (!response.Content) {
@@ -229,8 +229,8 @@ export default {
         }
       }
     },
-    *getOinvorinLine({ payload }, { call, put,select }) {
-      const pagination = yield select(state => state.pagination) 
+    *getOinvorinLine({ payload }, { call, put, select }) {
+      const pagination = yield select(state => state.pagination);
       const response = yield call(oinvorinLineRule, payload);
       if (response && response.Status === 200) {
         if (!response.Content) {

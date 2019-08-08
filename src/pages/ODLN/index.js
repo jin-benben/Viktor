@@ -407,7 +407,7 @@ class salerConfrim extends PureComponent {
         DeliverDateTo = moment(fieldsValue.deliverArr[1]).format('YYYY-MM-DD');
       }
 
-      const { DeliverSts, Owner, PrintStatus,SearchText } = fieldsValue;
+      const { DeliverSts, Owner, PrintStatus, SearchText } = fieldsValue;
       dispatch({
         type: 'salerConfrim/fetch',
         payload: {
@@ -417,9 +417,10 @@ class salerConfrim extends PureComponent {
             DocDateTo,
             DeliverDateFrom,
             DeliverDateTo,
-            DeliverSts: DeliverSts===undefined?'N':DeliverSts,
-            PrintStatus: PrintStatus===undefined?'N':PrintStatus,
-            Owner,SearchText
+            DeliverSts: DeliverSts === undefined ? 'N' : DeliverSts,
+            PrintStatus: PrintStatus === undefined ? 'N' : PrintStatus,
+            Owner,
+            SearchText,
           },
           page: 1,
           rows: 30,
@@ -622,7 +623,6 @@ class salerConfrim extends PureComponent {
               {getFieldDecorator('Owner')(<MDMCommonality data={Saler} />)}
             </FormItem>
           </Col>
-          
 
           {expandForm ? (
             <Fragment>

@@ -1,4 +1,4 @@
-import { queryRule, confirmRule, savePrintRule,companyRule } from './service';
+import { queryRule, confirmRule, savePrintRule, companyRule } from './service';
 
 export default {
   namespace: 'OINVConfrim',

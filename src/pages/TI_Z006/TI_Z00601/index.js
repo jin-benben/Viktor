@@ -32,7 +32,7 @@ import PrintHistory from '@/components/Order/PrintHistory';
 import MDMCommonality from '@/components/Select';
 import MyPageHeader from '../components/pageHeader';
 import MyIcon from '@/components/MyIcon';
-import Text from '@/components/Text'
+import Text from '@/components/Text';
 import { getName } from '@/utils/utils';
 
 const { TabPane } = Tabs;
@@ -71,7 +71,7 @@ class CompanyEdit extends PureComponent {
       title: 'Email',
       width: 200,
       dataIndex: 'Email',
-      render:text=><Text text={text} />
+      render: text => <Text text={text} />,
     },
     {
       title: '职位',
@@ -97,7 +97,7 @@ class CompanyEdit extends PureComponent {
         const {
           global: { Company },
         } = this.props;
-        return <Text text={getName(Company, text)} />
+        return <Text text={getName(Company, text)} />;
       },
     },
     {

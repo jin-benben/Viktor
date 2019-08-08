@@ -90,7 +90,7 @@ class orderLine extends PureComponent {
       title: '名称(外)',
       width: 100,
       dataIndex: 'ForeignName',
-      render: text =>(
+      render: text => (
         <Ellipsis tooltip lines={1}>
           {text}
         </Ellipsis>
@@ -101,12 +101,12 @@ class orderLine extends PureComponent {
       dataIndex: 'ForeignParameters',
       width: 100,
       align: 'center',
-      render: text =>(
+      render: text => (
         <Ellipsis tooltip lines={1}>
           {text}
         </Ellipsis>
       ),
-    }, 
+    },
     {
       title: '包装',
       width: 100,

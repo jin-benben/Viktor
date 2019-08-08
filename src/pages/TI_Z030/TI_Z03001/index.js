@@ -286,7 +286,7 @@ class AgreementEdit extends React.Component {
       width: 100,
       dataIndex: 'InquiryDueDate',
       align: 'center',
-      render:text =>(
+      render: text => (
         <Ellipsis tooltip lines={1}>
           {text}
         </Ellipsis>
@@ -806,7 +806,10 @@ class AgreementEdit extends React.Component {
 
   getCompany = companycode => {
     const { dispatch } = this.props;
-    const { orderDetail,orderDetail:{AddressID,UserID}} = this.state;
+    const {
+      orderDetail,
+      orderDetail: { AddressID, UserID },
+    } = this.state;
     dispatch({
       type: 'agreementEdit/company',
       payload: {
@@ -827,12 +830,12 @@ class AgreementEdit extends React.Component {
             },
             () => {
               if (TI_Z00603List.length) {
-                if(!AddressID)this.handleAdreessChange(TI_Z00603List[0].AddressID)
+                if (!AddressID) this.handleAdreessChange(TI_Z00603List[0].AddressID);
               } else {
                 message.warning('该客户下没有收货地址，请先维护收货地址');
               }
               if (TI_Z00602List.length) {
-                if(!UserID) this.linkmanChange(TI_Z00602List[0].UserID);
+                if (!UserID) this.linkmanChange(TI_Z00602List[0].UserID);
               } else {
                 message.warning('该客户下没有维护联系人，请先维护联系人');
               }
@@ -875,7 +878,7 @@ class AgreementEdit extends React.Component {
       record.InquiryLineTotalLocal = isNaN(record.Quantity * record.InquiryPrice * record.DocRate)
         ? 0
         : record.Quantity * record.InquiryPrice * record.DocRate;
-       
+
       record.InquiryLineTotalLocal = round(record.InquiryLineTotalLocal, 2);
       record.LineTotal = isNaN(record.Quantity * record.Price) ? 0 : record.Quantity * record.Price;
       record.LineTotal = round(record.LineTotal, 2);
@@ -892,7 +895,7 @@ class AgreementEdit extends React.Component {
     InquiryDocTotal = round(InquiryDocTotal, 2);
     OtherTotal = round(OtherTotal, 2);
     ProfitTotal = round(DocTotal - InquiryDocTotalLocal - OtherTotal, 2);
-   
+
     this.setState({
       orderDetail: {
         ...orderDetail,

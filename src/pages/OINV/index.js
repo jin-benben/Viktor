@@ -16,7 +16,8 @@ import {
   Tag,
   Input,
   Modal,
-  Table,Radio
+  Table,
+  Radio,
 } from 'antd';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
@@ -45,14 +46,14 @@ class OINVConfrim extends PureComponent {
     modalVisible: false,
     modalVisible1: false,
     modalVisible2: false,
-    addressmodalVisible:false,
+    addressmodalVisible: false,
     ParameterJson: '',
     selectedRows: [],
     responseData: [],
     selectPrint: [],
     selectedRowKeys: [],
-    linkmanList:[],
-    currentLine:{}
+    linkmanList: [],
+    currentLine: {},
   };
 
   columns = [
@@ -355,15 +356,16 @@ class OINVConfrim extends PureComponent {
         DeliverDateTo = moment(fieldsValue.deliverArr[1]).format('YYYY-MM-DD');
       }
 
-      const { DeliverSts, Owner, PrintStatus,SearchText } = fieldsValue;
+      const { DeliverSts, Owner, PrintStatus, SearchText } = fieldsValue;
       const queryData = {
         DocDateFrom,
         DocDateTo,
         DeliverDateFrom,
         DeliverDateTo,
-        DeliverSts: DeliverSts===undefined?'N':DeliverSts,
-        PrintStatus: PrintStatus===undefined?'N':PrintStatus,
-        Owner,SearchText
+        DeliverSts: DeliverSts === undefined ? 'N' : DeliverSts,
+        PrintStatus: PrintStatus === undefined ? 'N' : PrintStatus,
+        Owner,
+        SearchText,
       };
       dispatch({
         type: 'OINVConfrim/fetch',
@@ -489,11 +491,11 @@ class OINVConfrim extends PureComponent {
 
   // 需询价弹窗
   handleModalVisible = flag => {
-    this.setState({ 
-      modalVisible: !!flag, 
-      modalVisible1: !!flag, 
+    this.setState({
+      modalVisible: !!flag,
+      modalVisible1: !!flag,
       modalVisible2: !!flag,
-      addressmodalVisible:!!flag 
+      addressmodalVisible: !!flag,
     });
   };
 
@@ -600,7 +602,6 @@ class OINVConfrim extends PureComponent {
               {getFieldDecorator('Owner')(<MDMCommonality data={Saler} />)}
             </FormItem>
           </Col>
-        
 
           {expandForm ? (
             <Fragment>
@@ -673,7 +674,8 @@ class OINVConfrim extends PureComponent {
       modalVisible2,
       addressmodalVisible,
       selectedRowKeys,
-      ParameterJson,linkmanList
+      ParameterJson,
+      linkmanList,
     } = this.state;
 
     const columns = this.columns.map(item => {

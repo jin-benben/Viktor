@@ -309,7 +309,7 @@ class BrandList extends PureComponent {
       title: '官网',
       width: 200,
       dataIndex: 'WebSite',
-      render:text=><Text text={text} />
+      render: text => <Text text={text} />,
     },
     {
       title: '默认供应商',

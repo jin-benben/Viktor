@@ -98,7 +98,7 @@ class BatchUpload extends PureComponent {
   state = {
     selectedRows: [],
     selectedRowKeys: [],
-    height:0,
+    height: 0,
   };
 
   componentDidMount() {
@@ -252,7 +252,7 @@ class BatchUpload extends PureComponent {
       batchManage: { batchApproveList, pagination },
       searchLoading,
     } = this.props;
-    const { selectedRowKeys,height } = this.state;
+    const { selectedRowKeys, height } = this.state;
     return (
       <Fragment>
         <Card bordered={false}>

@@ -316,39 +316,39 @@ class SalesQuotationSku extends PureComponent {
       dataIndex: 'LineComment',
       width: 100,
       align: 'center',
-      render:text =>(
+      render: text => (
         <Ellipsis tooltip lines={1}>
           {text}
         </Ellipsis>
-        ),
+      ),
     },
     {
       title: '参数',
       dataIndex: 'Parameters',
       width: 100,
       align: 'center',
-      render:text =>(
+      render: text => (
         <Ellipsis tooltip lines={1}>
           {text}
         </Ellipsis>
-        ),
+      ),
     },
     {
       title: '包装',
       width: 100,
       dataIndex: 'Package',
       align: 'center',
-      render:text =>(
+      render: text => (
         <Ellipsis tooltip lines={1}>
           {text}
         </Ellipsis>
-        ),
+      ),
     },
     {
       title: '名称(外)',
       width: 100,
       dataIndex: 'ForeignName',
-      render: text =>(
+      render: text => (
         <Ellipsis tooltip lines={1}>
           {text}
         </Ellipsis>
@@ -359,12 +359,12 @@ class SalesQuotationSku extends PureComponent {
       dataIndex: 'ForeignParameters',
       width: 100,
       align: 'center',
-      render: text =>(
+      render: text => (
         <Ellipsis tooltip lines={1}>
           {text}
         </Ellipsis>
       ),
-    }, 
+    },
 
     {
       title: '仓库',
@@ -800,7 +800,9 @@ class SalesQuotationSku extends PureComponent {
               </Col>
               <Col md={5} sm={24}>
                 <FormItem key="Processor" {...formLayout} label="处理人">
-                  {getFieldDecorator('Processor')(<ProcessorSelect data={ProcessorList} type="Code" />)}
+                  {getFieldDecorator('Processor')(
+                    <ProcessorSelect data={ProcessorList} type="Code" />
+                  )}
                 </FormItem>
               </Col>
               <Col md={5} sm={24}>

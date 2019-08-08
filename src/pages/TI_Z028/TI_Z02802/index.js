@@ -300,7 +300,9 @@ class TI_Z02802 extends PureComponent {
           </Description>
           <Description term="询价总计">{purchaseDetail.InquiryDocTotal}</Description>
           <Description term="询价总计(本币)">{purchaseDetail.InquiryDocTotalLocal}</Description>
-          <Description term="备注"><span className="red">{purchaseDetail.Comment}</span></Description>
+          <Description term="备注">
+            <span className="red">{purchaseDetail.Comment}</span>
+          </Description>
           <Description term="创建人">
             <span>{getName(TI_Z004, purchaseDetail.CreateUser)}</span>
           </Description>

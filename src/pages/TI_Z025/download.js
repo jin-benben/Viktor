@@ -1,7 +1,7 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import Link from 'umi/link';
-import { Row, Col, Card, Form, Input, Button, Tag, Table, Modal, Badge,Checkbox } from 'antd';
+import { Row, Col, Card, Form, Input, Button, Tag, Table, Modal, Badge, Checkbox } from 'antd';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
@@ -191,7 +191,7 @@ class BatchUpload extends PureComponent {
           Content: {
             SearchText: '',
             ...fieldsValue,
-            IsOnHand:fieldsValue.IsOnHand?"Y":""
+            IsOnHand: fieldsValue.IsOnHand ? 'Y' : '',
           },
           page: 1,
           rows: 30,
@@ -288,10 +288,10 @@ class BatchUpload extends PureComponent {
               {getFieldDecorator('Card')(<Input placeholder="请输入客户名称" />)}
             </FormItem>
           </Col>
-        
+
           <Col md={3} sm={24}>
             <FormItem key="IsOnHand" {...formLayout}>
-              {getFieldDecorator('IsOnHand',{
+              {getFieldDecorator('IsOnHand', {
                 valuePropName: 'checked',
               })(<Checkbox>有库存</Checkbox>)}
             </FormItem>
@@ -316,7 +316,7 @@ class BatchUpload extends PureComponent {
       searchLoading,
       uploadLoading,
     } = this.props;
-    const { selectedRowKeys, modalVisible, attchList,height } = this.state;
+    const { selectedRowKeys, modalVisible, attchList, height } = this.state;
     return (
       <Fragment>
         <Card bordered={false}>

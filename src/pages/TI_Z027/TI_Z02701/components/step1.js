@@ -2,19 +2,7 @@
 /* eslint-disable no-param-reassign */
 import React, { Fragment } from 'react';
 import moment from 'moment';
-import {
-  Row,
-  Col,
-  Form,
-  Input,
-  Table,
-  Button,
-  DatePicker,
-  Icon,
-  Tag,
-  Select,
-  Badge,
-} from 'antd';
+import { Row, Col, Form, Input, Table, Button, DatePicker, Icon, Tag, Select, Badge } from 'antd';
 import { connect } from 'dva';
 import Link from 'umi/link';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
