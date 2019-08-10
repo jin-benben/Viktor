@@ -20,6 +20,7 @@ import {
 import Link from 'umi/link';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
+import NumberInfo from 'ant-design-pro/lib/NumberInfo';
 import StandardTable from '@/components/StandardTable';
 import NeedAskPrice from '../components/needAskPrice';
 import Transfer from '@/components/Transfer';
@@ -129,6 +130,17 @@ class SalesQuotationSku extends PureComponent {
           ) : (
             ''
           )}
+          {text}
+        </Ellipsis>
+      ),
+    },
+    {
+      title: '参数',
+      dataIndex: 'Parameters',
+      width: 100,
+      align: 'center',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
           {text}
         </Ellipsis>
       ),
@@ -322,17 +334,7 @@ class SalesQuotationSku extends PureComponent {
         </Ellipsis>
       ),
     },
-    {
-      title: '参数',
-      dataIndex: 'Parameters',
-      width: 100,
-      align: 'center',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
+   
     {
       title: '包装',
       width: 100,
@@ -688,6 +690,17 @@ class SalesQuotationSku extends PureComponent {
     });
   };
 
+  returnTotal=()=>{
+    const { SalesQuotationSku:{InquiryDocTotalLocal,ProfitTotal,DocTotal}}=this.props
+    return (
+      <Row gutter={8}>
+        <Col span={4}>总计：{DocTotal}</Col>
+        <Col span={4}>询本总计：{InquiryDocTotalLocal}</Col>
+        <Col span={4}>利润总计：{ProfitTotal}</Col>
+      </Row>
+    )
+  }
+
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
@@ -851,6 +864,8 @@ class SalesQuotationSku extends PureComponent {
     );
   }
 
+ 
+
   render() {
     const {
       SalesQuotationSku: { SalesQuotationSkuList, pagination },
@@ -890,6 +905,7 @@ class SalesQuotationSku extends PureComponent {
               }}
               selectedRows={selectedRows}
               onChange={this.handleStandardTableChange}
+              footer={this.returnTotal}
             />
           </div>
         </Card>

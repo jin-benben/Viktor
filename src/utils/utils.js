@@ -1,7 +1,9 @@
 /* eslint-disable consistent-return */
 /* eslint no-useless-escape:0 import/prefer-default-export:0 */
+import round from 'lodash/round';
+
 const reg = /(((^https?:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+(?::\d+)?|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)$/;
-const emailReg = /^[a-zA-Z0-9_.-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.[a-zA-Z0-9]{2,7}$/;
+const emailReg = /^[a-zA-Z0-9_.-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.[a-zA-Z0-9]{2,20}$/;
 export function isUrl(path) {
   return reg.test(path);
 }
@@ -59,4 +61,22 @@ export function validatorEmail(rule, value, callback) {
   } else {
     callback();
   }
+}
+
+export function getTotal(orderList) {
+  let ProfitTotal=0;
+  let DocTotal=0;
+  let InquiryDocTotalLocal=0; 
+  if (orderList.length) {
+    orderList.forEach(order => {
+      DocTotal += order.LineTotal;
+      InquiryDocTotalLocal += order.InquiryLineTotalLocal;
+      ProfitTotal += order.ProfitLineTotal
+    });
+    DocTotal = round(DocTotal, 2);
+    InquiryDocTotalLocal = round(InquiryDocTotalLocal, 2);
+   
+    ProfitTotal = round(ProfitTotal, 2);
+  } 
+  return {InquiryDocTotalLocal,ProfitTotal,DocTotal} 
 }

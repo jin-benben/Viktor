@@ -152,6 +152,17 @@ class orderLine extends PureComponent {
       ),
     },
     {
+      title: '参数',
+      dataIndex: 'Parameters',
+      width: 100,
+      align: 'center',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
+    },
+    {
       title: '名称(外)',
       width: 100,
       dataIndex: 'ForeignName',
@@ -296,17 +307,6 @@ class orderLine extends PureComponent {
       width: 100,
       dataIndex: 'Package',
       align: 'center',
-    },
-    {
-      title: '参数',
-      dataIndex: 'Parameters',
-      width: 100,
-      align: 'center',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
     },
     {
       title: '产地',

@@ -106,6 +106,17 @@ class AgreementLine extends PureComponent {
       ),
     },
     {
+      title: '参数',
+      dataIndex: 'Parameters',
+      width: 100,
+      align: 'center',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
+    },
+    {
       title: '数量',
       width: 100,
       dataIndex: 'Quantity',
@@ -298,17 +309,7 @@ class AgreementLine extends PureComponent {
         </Ellipsis>
       ),
     },
-    {
-      title: '参数',
-      dataIndex: 'Parameters',
-      width: 100,
-      align: 'center',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
+   
     {
       title: '包装',
       width: 100,
@@ -491,7 +492,7 @@ class AgreementLine extends PureComponent {
   handleSearch = e => {
     // 搜索
     e.preventDefault();
-    const { dispatch, form } = this.props;
+    const { dispatch, form,agreementLine:{queryData} } = this.props;
 
     form.validateFields((err, fieldsValue) => {
       if (err) return;
@@ -501,21 +502,15 @@ class AgreementLine extends PureComponent {
         DocDateFrom = moment(fieldsValue.dateArr[0]).format('YYYY-MM-DD');
         DocDateTo = moment(fieldsValue.dateArr[1]).format('YYYY-MM-DD');
       }
-
       delete fieldsValue.dateArr;
-
-      const queryData = {
-        ...fieldsValue,
-        DocDateFrom,
-        DocDateTo,
-      };
       dispatch({
         type: 'agreementLine/fetch',
         payload: {
           Content: {
-            SearchText: '',
-            SearchKey: 'Name',
-            ...queryData,
+            ...queryData.Content,
+            ...fieldsValue,
+            DocDateFrom,
+            DocDateTo,
           },
           page: 1,
           rows: 30,
@@ -539,6 +534,17 @@ class AgreementLine extends PureComponent {
       attachmentVisible: !!flag,
     });
   };
+
+  returnTotal=()=>{
+    const { agreementLine:{InquiryDocTotalLocal,ProfitTotal,DocTotal}}=this.props
+    return (
+      <Row gutter={8}>
+        <Col span={4}>总计：{DocTotal}</Col>
+        <Col span={4}>询本总计：{InquiryDocTotalLocal}</Col>
+        <Col span={4}>利润总计：{ProfitTotal}</Col>
+      </Row>
+    )
+  }
 
   renderSimpleForm() {
     const {
@@ -701,6 +707,7 @@ class AgreementLine extends PureComponent {
             rowKey="Key"
             columns={this.columns}
             onChange={this.handleStandardTableChange}
+            footer={this.returnTotal}
           />
         </div>
         <AttachmentModal

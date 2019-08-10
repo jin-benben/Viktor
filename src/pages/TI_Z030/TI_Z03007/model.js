@@ -1,9 +1,13 @@
 import { TI_Z03007 } from '../service';
+import {getTotal} from '@/utils/utils'
 
 export default {
   namespace: 'agreementLine',
 
   state: {
+    ProfitTotal:0, // 利润合计
+    DocTotal:0, // 总计
+    InquiryDocTotalLocal:0, // 询价本总计
     agreementLineList: [],
     queryData: {
       Content: {
@@ -31,9 +35,11 @@ export default {
       const response = yield call(TI_Z03007, payload);
       if (response && response.Status === 200) {
         if (!response.Content) {
+          const {InquiryDocTotalLocal,ProfitTotal,DocTotal} = getTotal([]);
           yield put({
             type: 'save',
             payload: {
+              InquiryDocTotalLocal,ProfitTotal,DocTotal,
               agreementLineList: [],
               pagination: {
                 total: 0,
@@ -45,9 +51,11 @@ export default {
           });
         } else {
           const { rows, records, page } = response.Content;
+          const {InquiryDocTotalLocal,ProfitTotal,DocTotal} = getTotal(rows);
           yield put({
             type: 'save',
             payload: {
+              InquiryDocTotalLocal,ProfitTotal,DocTotal,
               agreementLineList: rows,
               queryData: {
                 ...payload,

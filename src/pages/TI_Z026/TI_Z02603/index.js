@@ -84,6 +84,17 @@ class InquiryEdit extends PureComponent {
         ),
     },
     {
+      title: '参数',
+      dataIndex: 'Parameters',
+      width: 100,
+      align: 'center',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
+    },
+    {
       title: '数量',
       width: 100,
       dataIndex: 'Quantity',
@@ -196,17 +207,6 @@ class InquiryEdit extends PureComponent {
       title: '包装',
       width: 100,
       dataIndex: 'Package',
-      align: 'center',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
-    {
-      title: '参数',
-      dataIndex: 'Parameters',
-      width: 100,
       align: 'center',
       render: text => (
         <Ellipsis tooltip lines={1}>

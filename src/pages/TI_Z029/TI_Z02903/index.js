@@ -86,6 +86,17 @@ class InquiryEdit extends Component {
         ),
     },
     {
+      title: '参数',
+      dataIndex: 'Parameters',
+      width: 100,
+      align: 'center',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
+    },
+    {
       title: '数量',
       width: 100,
       dataIndex: 'Quantity',
@@ -265,17 +276,7 @@ class InquiryEdit extends Component {
         </Ellipsis>
       ),
     },
-    {
-      title: '参数',
-      dataIndex: 'Parameters',
-      width: 100,
-      align: 'center',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
+   
     {
       title: '名称(外)',
       dataIndex: 'ForeignName',
