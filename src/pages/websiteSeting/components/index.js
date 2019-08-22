@@ -1,31 +1,31 @@
 // 单据附件上传
 
-import React, {Component } from 'react';
-import { Form, Input, Modal,Switch } from 'antd';
-import {connect} from 'dva'
+import React, { Component } from 'react';
+import { Form, Input, Modal, Switch } from 'antd';
+import { connect } from 'dva';
 import MDMCommonality from '@/components/Select';
 import Upload from './upload';
 
 const { TextArea } = Input;
 const FormItem = Form.Item;
 
-@connect(({  global }) => ({
-  global
+@connect(({ global }) => ({
+  global,
 }))
 @Form.create()
 class OrderAttachUpload extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      dataItem:{
-        Type: "",
-        IsShow: "",
-        Code: "",
-        CoverPicture:"",
-        AttachmentName: "",
-        AttachmentPath: "",
-        AttachmentExtension: ""
-      }
+      dataItem: {
+        Type: '',
+        IsShow: '',
+        Code: '',
+        CoverPicture: '',
+        AttachmentName: '',
+        AttachmentPath: '',
+        AttachmentExtension: '',
+      },
     };
     this.formLayout = {
       labelCol: { span: 7 },
@@ -33,45 +33,42 @@ class OrderAttachUpload extends Component {
     };
   }
 
-  componentWillReceiveProps(nextProps){
-     const {dataItem}=this.props
-     if(nextProps.dataItem!==dataItem){
-       this.setState({
-         dataItem:{
-           ...nextProps.dataItem
-         }
-       })
-     }
+  componentWillReceiveProps(nextProps) {
+    const { dataItem } = this.props;
+    if (nextProps.dataItem !== dataItem) {
+      this.setState({
+        dataItem: {
+          ...nextProps.dataItem,
+        },
+      });
+    }
   }
 
   // 文件上传成功后回调
   uploadSuccess = fileList => {
-    const {dataItem}=this.state
-    if(fileList.length){
+    const { dataItem } = this.state;
+    if (fileList.length) {
       const { FilePath, FileCode, Extension, FileName } = fileList[0].response;
-      Object.assign(dataItem,{
+      Object.assign(dataItem, {
         AttachmentPath: FilePath,
         Code: FileCode,
         AttachmentName: FileName,
         AttachmentExtension: Extension,
-      })
-      this.setState({dataItem});
+      });
+      this.setState({ dataItem });
     }
   };
 
   coverPictureUpload = fileList => {
-    const {dataItem}=this.state
-    if(fileList.length){
+    const { dataItem } = this.state;
+    if (fileList.length) {
       const { FilePath } = fileList[0].response;
-      Object.assign(dataItem,{
+      Object.assign(dataItem, {
         CoverPicture: FilePath,
-      })
-      this.setState({dataItem});
+      });
+      this.setState({ dataItem });
     }
-   
   };
-
-  
 
   render() {
     const {
@@ -80,7 +77,8 @@ class OrderAttachUpload extends Component {
       Folder,
       modalVisible,
       handleModalVisible,
-      handleSubmit, global: { TI_Z01802 }
+      handleSubmit,
+      global: { TI_Z01802 },
     } = this.props;
     const { dataItem } = this.state;
     const formItemLayout = {
@@ -97,7 +95,7 @@ class OrderAttachUpload extends Component {
     const okHandle = () => {
       form.validateFields((err, fieldsValue) => {
         if (err) return;
-        handleSubmit({...dataItem,...fieldsValue,IsShow:fieldsValue.IsShow?"Y":"N"});
+        handleSubmit({ ...dataItem, ...fieldsValue, IsShow: fieldsValue.IsShow ? 'Y' : 'N' });
       });
     };
     return (
@@ -118,7 +116,9 @@ class OrderAttachUpload extends Component {
             })(<Switch />)}
           </FormItem>
           <FormItem key="Type" {...this.formLayout} label="分类">
-            {getFieldDecorator('Type',{initialValue:dataItem.Type})(<MDMCommonality initialValue={dataItem.Type} data={TI_Z01802} />)}
+            {getFieldDecorator('Type', { initialValue: dataItem.Type })(
+              <MDMCommonality initialValue={dataItem.Type} data={TI_Z01802} />
+            )}
           </FormItem>
           <FormItem key="AttachmentName" {...this.formLayout} label="附件描述">
             {getFieldDecorator('AttachmentName', { initialValue: dataItem.AttachmentName })(
@@ -128,13 +128,13 @@ class OrderAttachUpload extends Component {
           <FormItem key="AttachmentPath" {...this.formLayout} label="上传附件">
             <Upload onChange={this.uploadSuccess} Folder={Folder} />
           </FormItem>
-          {
-             Folder==="TI_Z056"?(
-              <FormItem key="CoverPicture" {...this.formLayout} label="图片">
-                <Upload onChange={this.coverPictureUpload} Folder={Folder} />
-              </FormItem>
-             ):""
-          }
+          {Folder === 'TI_Z056' ? (
+            <FormItem key="CoverPicture" {...this.formLayout} label="图片">
+              <Upload onChange={this.coverPictureUpload} Folder={Folder} />
+            </FormItem>
+          ) : (
+            ''
+          )}
         </Form>
       </Modal>
     );

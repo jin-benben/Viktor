@@ -19,7 +19,7 @@ const FormItem = Form.Item;
 class PrintPage extends PureComponent {
   state = {
     sendDetail: {
-      HtmlString:"",
+      HtmlString: '',
       TI_Z04702: [],
     }, // 发送内容
     isEdit: false, // 是否可编辑

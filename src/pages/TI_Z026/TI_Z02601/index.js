@@ -1106,19 +1106,21 @@ class InquiryEdit extends React.Component {
       Currency,
       InquiryPrice,
       ForeignFreight,
-      InquiryDueDate
-    }=select[0]
-    const {thisLine,LineID,inquiryDetail}=this.state
-    Object.assign(thisLine,{ SupplierCode,
+      InquiryDueDate,
+    } = select[0];
+    const { thisLine, LineID, inquiryDetail } = this.state;
+    Object.assign(thisLine, {
+      SupplierCode,
       SupplierName,
       Currency,
       InquiryPrice,
       ForeignFreight,
-      InquiryDueDate})
-    inquiryDetail.TI_Z02602[LineID]=thisLine  
+      InquiryDueDate,
+    });
+    inquiryDetail.TI_Z02602[LineID] = thisLine;
     this.setState({
-      inquiryDetail
-    })  
+      inquiryDetail,
+    });
   };
 
   // 选择价格

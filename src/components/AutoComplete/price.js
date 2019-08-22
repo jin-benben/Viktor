@@ -178,7 +178,7 @@ class BrandModal extends PureComponent {
             pagination={pagination}
             columns={this.columns}
             rowSelection={{
-              type:'radio',
+              type: 'radio',
               onChange: this.onSelectRow,
             }}
             onChange={this.handleStandardTableChange}

@@ -2,14 +2,14 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
-import { Row, Col, Card, Form, Input, Button, DatePicker, Tabs, Tag,Select } from 'antd';
+import { Row, Col, Card, Form, Input, Button, DatePicker, Tabs, Tag, Select } from 'antd';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import StandardTable from '@/components/StandardTable';
 import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
 import { getName } from '@/utils/utils';
 
 const FormItem = Form.Item;
-const {Option}=Select
+const { Option } = Select;
 const { TabPane } = Tabs;
 const { RangePicker } = DatePicker;
 /* eslint react/no-multi-comp:0 */
@@ -471,7 +471,8 @@ class TransactionSearch extends PureComponent {
     e.preventDefault();
     const {
       transaction: { queryData },
-      form,dispatch
+      form,
+      dispatch,
     } = this.props;
     const { activeKey } = this.state;
     form.validateFields((err, fieldsValue) => {
@@ -484,26 +485,23 @@ class TransactionSearch extends PureComponent {
         // eslint-disable-next-line no-param-reassign
         delete fieldsValue.dateArr;
       }
-     
-      if( ["1", "4", "6"].includes(activeKey)){
-        Object.assign(queryData.Content,{DocStatus:fieldsValue.Status})
+
+      if (['1', '4', '6'].includes(activeKey)) {
+        Object.assign(queryData.Content, { DocStatus: fieldsValue.Status });
       }
-      if( ["2", "5", "7"].includes(activeKey)){
-        Object.assign(queryData.Content,{LineStatus:fieldsValue.Status})
+      if (['2', '5', '7'].includes(activeKey)) {
+        Object.assign(queryData.Content, { LineStatus: fieldsValue.Status });
       }
-      delete fieldsValue.Status
-      Object.assign(queryData.Content,{ ...fieldsValue,
-        DocDateFrom,
-        DocDateTo,})
-      Object.assign(queryData,{   page: 1,
-        rows: 20,})  
+      delete fieldsValue.Status;
+      Object.assign(queryData.Content, { ...fieldsValue, DocDateFrom, DocDateTo });
+      Object.assign(queryData, { page: 1, rows: 20 });
       dispatch({
-        type:"transaction/save",
-        payload:{
-          queryData
-        }
-      })  
-      this.whichSerch(activeKey,queryData);
+        type: 'transaction/save',
+        payload: {
+          queryData,
+        },
+      });
+      this.whichSerch(activeKey, queryData);
     });
   };
 
@@ -519,7 +517,7 @@ class TransactionSearch extends PureComponent {
     const {
       form: { getFieldDecorator },
     } = this.props;
-    const {activeKey}=this.state
+    const { activeKey } = this.state;
     const formLayout = {
       labelCol: { span: 8 },
       wrapperCol: { span: 16 },
@@ -545,22 +543,22 @@ class TransactionSearch extends PureComponent {
               {getFieldDecorator('SlpCode')(<SalerPurchaser />)}
             </FormItem>
           </Col>
-          {
-            activeKey!=="3"?(
-              <Col md={4} sm={24}>
-                <FormItem key="Status" {...formLayout} label="状态">
-                  {getFieldDecorator('Status')(
-                    <Select style={{ width: '100%' }} placeholder="请选择">
-                      <Option value="C">已清</Option>
-                      <Option value="O">未清</Option>
-                      <Option value="">全部</Option>
-                    </Select>
-                  )}
-                </FormItem>
-              </Col>
-            ):''
-          }
-         
+          {activeKey !== '3' ? (
+            <Col md={4} sm={24}>
+              <FormItem key="Status" {...formLayout} label="状态">
+                {getFieldDecorator('Status')(
+                  <Select style={{ width: '100%' }} placeholder="请选择">
+                    <Option value="C">已清</Option>
+                    <Option value="O">未清</Option>
+                    <Option value="">全部</Option>
+                  </Select>
+                )}
+              </FormItem>
+            </Col>
+          ) : (
+            ''
+          )}
+
           <Col md={5} sm={24}>
             <FormItem key="searchBtn">
               <span className="submitButtons">
@@ -602,7 +600,7 @@ class TransactionSearch extends PureComponent {
                   data={{ list: ordrList }}
                   pagination={pagination}
                   rowKey="key"
-                  scroll={{ x: 1500}}
+                  scroll={{ x: 1500 }}
                   columns={this.columns}
                   onChange={this.handleStandardTableChange}
                 />
@@ -613,7 +611,7 @@ class TransactionSearch extends PureComponent {
                   data={{ list: ordrLineList }}
                   pagination={pagination}
                   rowKey="key"
-                  scroll={{ x: 1700}}
+                  scroll={{ x: 1700 }}
                   columns={this.columns1}
                   onChange={this.handleStandardTableChange}
                 />
@@ -624,7 +622,7 @@ class TransactionSearch extends PureComponent {
                   data={{ list: orctovpmList }}
                   pagination={pagination}
                   rowKey="key"
-                  scroll={{ x: 1200}}
+                  scroll={{ x: 1200 }}
                   columns={this.columns2}
                   onChange={this.handleStandardTableChange}
                 />
@@ -635,7 +633,7 @@ class TransactionSearch extends PureComponent {
                   data={{ list: odlnordnList }}
                   pagination={pagination}
                   rowKey="key"
-                  scroll={{ x: 2200}}
+                  scroll={{ x: 2200 }}
                   columns={this.columns3}
                   onChange={this.handleStandardTableChange}
                 />
@@ -646,7 +644,7 @@ class TransactionSearch extends PureComponent {
                   data={{ list: odlnordnLineList }}
                   pagination={pagination}
                   rowKey="key"
-                  scroll={{ x: 2100}}
+                  scroll={{ x: 2100 }}
                   columns={this.columns4}
                   onChange={this.handleStandardTableChange}
                 />
@@ -657,7 +655,7 @@ class TransactionSearch extends PureComponent {
                   data={{ list: oinvorinList }}
                   pagination={pagination}
                   rowKey="key"
-                  scroll={{ x: 2100}}
+                  scroll={{ x: 2100 }}
                   columns={this.columns5}
                   onChange={this.handleStandardTableChange}
                 />
@@ -668,7 +666,7 @@ class TransactionSearch extends PureComponent {
                   data={{ list: oinvorinLineList }}
                   pagination={pagination}
                   rowKey="key"
-                  scroll={{ x: 2200}}
+                  scroll={{ x: 2200 }}
                   columns={this.columns6}
                   onChange={this.handleStandardTableChange}
                 />

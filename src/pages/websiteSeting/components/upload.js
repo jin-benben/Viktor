@@ -30,7 +30,7 @@ class MyUpload extends React.Component {
     if (info.file.response.Status === 200) {
       message.success('上传成功');
       const { onChange } = this.props;
-      console.log(info)
+      console.log(info);
       if (onChange) {
         onChange(info.fileList);
       }

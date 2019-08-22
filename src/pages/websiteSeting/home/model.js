@@ -1,4 +1,4 @@
-import { queryRule,addRule,querySingleRule,updateRule } from './service';
+import { queryRule, addRule, querySingleRule, updateRule } from './service';
 
 export default {
   namespace: 'homeSet',
@@ -64,17 +64,17 @@ export default {
         }
       }
     },
-    *add({ payload,callback }, { call }){
+    *add({ payload, callback }, { call }) {
       const response = yield call(addRule, payload);
-      if(callback) callback(response)
+      if (callback) callback(response);
     },
-    *singleFetchs({ payload,callback }, { call }){
+    *singleFetchs({ payload, callback }, { call }) {
       const response = yield call(querySingleRule, payload);
-      if(callback) callback(response)
+      if (callback) callback(response);
     },
-    *update({ payload,callback }, { call }){
+    *update({ payload, callback }, { call }) {
       const response = yield call(updateRule, payload);
-      if(callback) callback(response)
+      if (callback) callback(response);
     },
   },
 

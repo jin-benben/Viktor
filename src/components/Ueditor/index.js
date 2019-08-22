@@ -55,7 +55,7 @@ const configUeditor = {
 
 class UEditor extends PureComponent {
   render() {
-    const { initialValue, onChange,onBlur } = this.props;
+    const { initialValue, onChange, onBlur } = this.props;
     return (
       <RcUeditor
         value={initialValue}

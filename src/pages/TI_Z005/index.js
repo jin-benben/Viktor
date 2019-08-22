@@ -314,6 +314,7 @@ class BrandList extends PureComponent {
     {
       title: '默认供应商',
       dataIndex: 'CardName',
+      render: text => <Text text={text} />,
     },
     {
       title: '操作',

@@ -9,7 +9,7 @@ import Upload from '@/components/Upload';
 import { articleType } from '@/utils/publicData';
 
 const FormItem = Form.Item;
-const {TextArea} = Input
+const { TextArea } = Input;
 function getCategory(dispatch, Key) {
   dispatch({
     type: 'global/getMDMCommonality',
@@ -46,7 +46,7 @@ class ArticleEditPage extends PureComponent {
       DocEntry: '',
       Content: '',
       IsShow: 'Y',
-      Presentation:""
+      Presentation: '',
     },
     isEdit: true, // 是否可编辑
   };
@@ -252,7 +252,7 @@ class ArticleEditPage extends PureComponent {
               </FormItem>
             </Col>
           </Row>
-          
+
           <Row>
             <div style={{ display: isEdit ? 'block' : 'none' }}>
               <FormItem key="Content" {...formContentLayout} label="内容">

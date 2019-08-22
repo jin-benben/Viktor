@@ -13,7 +13,7 @@ class SKUModal extends PureComponent {
     selectedRows: [],
     queryData: {
       Content: {
-        Category:"",
+        Category: '',
         SearchText: '',
         SearchKey: 'Name',
       },
@@ -102,21 +102,19 @@ class SKUModal extends PureComponent {
     },
   ];
 
-
-  componentWillReceiveProps(nextProps){
-    const {Category}=nextProps
-    const {queryData}=this.state
-    if(Category&&Category!==queryData.Content.Category){
-      Object.assign(queryData.Content,{
-        Category: Category||""
-      })
+  componentWillReceiveProps(nextProps) {
+    const { Category } = nextProps;
+    const { queryData } = this.state;
+    if (Category && Category !== queryData.Content.Category) {
+      Object.assign(queryData.Content, {
+        Category: Category || '',
+      });
       this.setState({
-        queryData
-      })
-      this.getSKU(queryData)
+        queryData,
+      });
+      this.getSKU(queryData);
     }
   }
-
 
   okHandle = () => {
     const { selectedRows } = this.state;
@@ -131,8 +129,6 @@ class SKUModal extends PureComponent {
   onSelectRow = selectedRows => {
     this.setState({ selectedRows: [...selectedRows] });
   };
-
-  
 
   handleStandardTableChange = pagination => {
     let { queryData } = this.state;

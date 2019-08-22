@@ -1,16 +1,15 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Row, Col, Card, Form, Input, Button,Tag } from 'antd';
+import { Row, Col, Card, Form, Input, Button, Tag } from 'antd';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import StandardTable from '@/components/StandardTable';
 import MyIcon from '@/components/MyIcon';
 import MDMCommonality from '@/components/Select';
 import Text from '@/components/Text';
 import { formLayout } from '@/utils/publicData';
-import {getName} from '@/utils/utils'
+import { getName } from '@/utils/utils';
 
 const FormItem = Form.Item;
-
 
 @connect(({ pdfData, loading, global }) => ({
   pdfData,
@@ -46,13 +45,17 @@ class PdfDataPage extends PureComponent {
     {
       title: '附件路径',
       dataIndex: 'AttachmentPath',
-      width:100,
-      render: text => <a href={text} target="_blank" rel="noopener noreferrer">文件地址</a>,
+      width: 100,
+      render: text => (
+        <a href={text} target="_blank" rel="noopener noreferrer">
+          文件地址
+        </a>
+      ),
     },
     {
       title: '扩展名',
       dataIndex: 'AttachmentExtension',
-      width:80,
+      width: 80,
     },
     {
       title: '是否显示',
@@ -84,7 +87,10 @@ class PdfDataPage extends PureComponent {
   ];
 
   componentDidMount() {
-    const {dispatch,pdfData: { queryData },} = this.props;
+    const {
+      dispatch,
+      pdfData: { queryData },
+    } = this.props;
     dispatch({
       type: 'pdfData/fetch',
       payload: {
@@ -96,13 +102,11 @@ class PdfDataPage extends PureComponent {
       payload: {
         Content: {
           CodeList: ['TI_Z01802'],
-          Key:"7",
+          Key: '7',
         },
       },
     });
   }
-
-
 
   handleStandardTableChange = pagination => {
     const {
@@ -144,7 +148,10 @@ class PdfDataPage extends PureComponent {
   };
 
   renderSimpleForm() {
-    const {form: { getFieldDecorator }, global: { TI_Z01802 },} = this.props;
+    const {
+      form: { getFieldDecorator },
+      global: { TI_Z01802 },
+    } = this.props;
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
@@ -164,7 +171,11 @@ class PdfDataPage extends PureComponent {
                 <Button type="primary" htmlType="submit">
                   查询
                 </Button>
-                <Button style={{marginLeft:8}} type="primary" onClick={()=>this.handleModalVisible(true)}>
+                <Button
+                  style={{ marginLeft: 8 }}
+                  type="primary"
+                  href="/websiteSeting/pdf/detail"
+                >
                   新建
                 </Button>
               </span>
@@ -197,7 +208,6 @@ class PdfDataPage extends PureComponent {
             />
           </div>
         </Card>
-       
       </Fragment>
     );
   }

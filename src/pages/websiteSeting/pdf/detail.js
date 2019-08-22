@@ -1,15 +1,13 @@
 import React, { PureComponent, Fragment } from 'react';
-import { Card, Button, Form, Row,Col, Input, message, Switch } from 'antd';
+import { Card, Button, Form, Row, Col, Input, message, Switch } from 'antd';
 import { connect } from 'dva';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import UEditor from '@/components/Ueditor';
 import MDMCommonality from '@/components/Select';
 import Upload from '../components/upload';
 
-
 const FormItem = Form.Item;
-const {TextArea} = Input
-
+const { TextArea } = Input;
 
 @connect(({ pdfData, loading, global }) => ({
   pdfData,
@@ -27,20 +25,20 @@ class PafEditPage extends PureComponent {
       DocEntry: '',
       Content: '',
       IsShow: 'Y',
-      Presentation:""
+      Presentation: '',
     },
     isEdit: true, // 是否可编辑
   };
 
   componentDidMount() {
-    const {dispatch} = this.props;
+    const { dispatch } = this.props;
     this.getDetail();
     dispatch({
       type: 'global/getMDMCommonality',
       payload: {
         Content: {
           CodeList: ['TI_Z01802'],
-          Key:"7",
+          Key: '7',
         },
       },
     });
@@ -80,39 +78,38 @@ class PafEditPage extends PureComponent {
     const { pdfDetail } = this.state;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
-      Object.assign(pdfDetail,{
+      Object.assign(pdfDetail, {
         ...fieldsValue,
         IsShow: fieldsValue.IsShow ? 'Y' : 'N',
-      })
+      });
       dispatch({
-        type:"pdfData/add",
-        payload:{
-          Content:{
-            ...pdfDetail
+        type: 'pdfData/add',
+        payload: {
+          Content: {
+            ...pdfDetail,
+          },
+        },
+        callback: response => {
+          if (response && response.Status === 200) {
+            message.success('保存成功');
           }
         },
-        callback:response=>{
-          if(response&&response.Status===200){
-            message.success('保存成功')
-           
-          }
-        }
-      })
+      });
     });
   };
 
-   // 文件上传成功后回调
-   uploadSuccess = fileList => {
-    const {pdfDetail}=this.state
-    if(fileList.length){
+  // 文件上传成功后回调
+  uploadSuccess = fileList => {
+    const { pdfDetail } = this.state;
+    if (fileList.length) {
       const { FilePath, FileCode, Extension, FileName } = fileList[0].response;
-      Object.assign(pdfDetail,{
+      Object.assign(pdfDetail, {
         AttachmentPath: FilePath,
         Code: FileCode,
         AttachmentName: FileName,
         AttachmentExtension: Extension,
-      })
-      this.setState({pdfDetail});
+      });
+      this.setState({ pdfDetail });
     }
   };
 
@@ -159,8 +156,8 @@ class PafEditPage extends PureComponent {
           <Row gutter={8}>
             <Col md={12}>
               <FormItem key="Type" {...formLayout} label="分类">
-                {getFieldDecorator('Type',{
-                  initialValue:pdfDetail.Type,
+                {getFieldDecorator('Type', {
+                  initialValue: pdfDetail.Type,
                   rules: [{ required: true, message: '请选择分类' }],
                 })(<MDMCommonality initialValue={pdfDetail.Type} data={TI_Z01802} />)}
               </FormItem>
@@ -175,16 +172,14 @@ class PafEditPage extends PureComponent {
               </FormItem>
             </Col>
           </Row>
-        
+
           <Row gutter={8}>
             <Col md={12}>
               <FormItem key="AttachmentName" {...formLayout} label="附件描述">
                 {getFieldDecorator('AttachmentName', {
-                   initialValue: pdfDetail.AttachmentName,
-                   rules: [{ required: true, message: '请输入附件描述！' }],
-                })(
-                  <TextArea placeholder="请输入附件描" />
-                )}
+                  initialValue: pdfDetail.AttachmentName,
+                  rules: [{ required: true, message: '请输入附件描述！' }],
+                })(<TextArea placeholder="请输入附件描" />)}
               </FormItem>
             </Col>
           </Row>

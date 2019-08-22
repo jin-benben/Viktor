@@ -1,17 +1,16 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Row, Col, Card, Form, Input, Button,message,Tag } from 'antd';
+import { Row, Col, Card, Form, Input, Button, message, Tag } from 'antd';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import StandardTable from '@/components/StandardTable';
 import MyIcon from '@/components/MyIcon';
-import DataUpload from '../components'
+import DataUpload from '../components';
 import MDMCommonality from '@/components/Select';
 import Text from '@/components/Text';
 import { formLayout } from '@/utils/publicData';
-import {getName} from '@/utils/utils'
+import { getName } from '@/utils/utils';
 
 const FormItem = Form.Item;
-
 
 @connect(({ videoData, loading, global }) => ({
   videoData,
@@ -47,19 +46,23 @@ class VideoDataPage extends PureComponent {
     {
       title: '附件路径',
       dataIndex: 'AttachmentPath',
-      width:100,
-      render: text => <a href={text} target="_blank" rel="noopener noreferrer">视频地址</a>,
+      width: 100,
+      render: text => (
+        <a href={text} target="_blank" rel="noopener noreferrer">
+          视频地址
+        </a>
+      ),
     },
     {
       title: '扩展名',
       dataIndex: 'AttachmentExtension',
-      width:80,
+      width: 80,
     },
     {
       title: '图片',
       dataIndex: 'CoverPicture',
-      width:100,
-      render: text => <img style={{width:80}} src={text} alt="图片" />
+      width: 100,
+      render: text => <img style={{ width: 80 }} src={text} alt="图片" />,
     },
     {
       title: '是否显示',
@@ -83,20 +86,23 @@ class VideoDataPage extends PureComponent {
       width: 50,
       align: 'center',
       render: (text, record) => (
-        <a onClick={()=>this.uploadDate(record)}>
+        <a onClick={() => this.uploadDate(record)}>
           <MyIcon type="iconedit" />
         </a>
       ),
     },
   ];
 
-  state={
-    modalVisible:false,
-    dataItem:{}
-  }
+  state = {
+    modalVisible: false,
+    dataItem: {},
+  };
 
   componentDidMount() {
-    const {dispatch,videoData: { queryData },} = this.props;
+    const {
+      dispatch,
+      videoData: { queryData },
+    } = this.props;
     dispatch({
       type: 'videoData/fetch',
       payload: {
@@ -108,18 +114,18 @@ class VideoDataPage extends PureComponent {
       payload: {
         Content: {
           CodeList: ['TI_Z01802'],
-          Key:"6",
+          Key: '6',
         },
       },
     });
   }
 
-  uploadDate=record=>{
+  uploadDate = record => {
     this.setState({
-      dataItem:record,
-      modalVisible:true
-    })
-  }
+      dataItem: record,
+      modalVisible: true,
+    });
+  };
 
   handleStandardTableChange = pagination => {
     const {
@@ -160,26 +166,29 @@ class VideoDataPage extends PureComponent {
     });
   };
 
-  handleModalVisible=flag=>{
+  handleModalVisible = flag => {
     this.setState({
-      modalVisible:!!flag,
-      dataItem:{},
-    })
-  }
+      modalVisible: !!flag,
+      dataItem: {},
+    });
+  };
 
-  handleSubmit=fieldsValue=>{
-    const {dispatch, videoData: { queryData },}=this.props
+  handleSubmit = fieldsValue => {
+    const {
+      dispatch,
+      videoData: { queryData },
+    } = this.props;
     dispatch({
-      type:"videoData/add",
-      payload:{
-        Content:{
-          ...fieldsValue
-        }
+      type: 'videoData/add',
+      payload: {
+        Content: {
+          ...fieldsValue,
+        },
       },
-      callback:response=>{
-        if(response&&response.Status===200){
-          message.success('添加成功')
-          this.handleModalVisible(false)
+      callback: response => {
+        if (response && response.Status === 200) {
+          message.success('添加成功');
+          this.handleModalVisible(false);
           dispatch({
             type: 'videoData/fetch',
             payload: {
@@ -187,13 +196,15 @@ class VideoDataPage extends PureComponent {
             },
           });
         }
-      }
-    })
-    
-  }
+      },
+    });
+  };
 
   renderSimpleForm() {
-    const {form: { getFieldDecorator }, global: { TI_Z01802 },} = this.props;
+    const {
+      form: { getFieldDecorator },
+      global: { TI_Z01802 },
+    } = this.props;
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
@@ -213,7 +224,11 @@ class VideoDataPage extends PureComponent {
                 <Button type="primary" htmlType="submit">
                   查询
                 </Button>
-                <Button style={{marginLeft:8}} type="primary" onClick={()=>this.handleModalVisible(true)}>
+                <Button
+                  style={{ marginLeft: 8 }}
+                  type="primary"
+                  onClick={() => this.handleModalVisible(true)}
+                >
                   新建
                 </Button>
               </span>
@@ -229,7 +244,7 @@ class VideoDataPage extends PureComponent {
       videoData: { videoDataList, pagination },
       loading,
     } = this.props;
-    const {modalVisible,dataItem}=this.state
+    const { modalVisible, dataItem } = this.state;
     return (
       <Fragment>
         <Card bordered={false}>
@@ -246,9 +261,14 @@ class VideoDataPage extends PureComponent {
               onChange={this.handleStandardTableChange}
             />
           </div>
-          <DataUpload dataItem={dataItem} Folder="TI_Z056" handleSubmit={this.handleSubmit} modalVisible={modalVisible} handleModalVisible={this.handleModalVisible} />
+          <DataUpload
+            dataItem={dataItem}
+            Folder="TI_Z056"
+            handleSubmit={this.handleSubmit}
+            modalVisible={modalVisible}
+            handleModalVisible={this.handleModalVisible}
+          />
         </Card>
-       
       </Fragment>
     );
   }

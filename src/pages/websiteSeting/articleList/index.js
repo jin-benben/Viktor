@@ -193,11 +193,7 @@ class ArticleListPage extends PureComponent {
                 <Button type="primary" htmlType="submit">
                   查询
                 </Button>
-                <Button
-                  style={{ marginLeft: 8 }}
-                  type="primary"
-                  href="/websiteSeting/articleEdit"
-                >
+                <Button style={{ marginLeft: 8 }} type="primary" href="/websiteSeting/articleEdit">
                   新建
                 </Button>
               </span>

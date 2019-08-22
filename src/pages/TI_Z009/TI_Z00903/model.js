@@ -4,14 +4,13 @@ import {
   queryFHSCodeRule,
   queryHSCodeRule,
   updateRule,
-  updateDetailRule
+  updateDetailRule,
 } from '../service';
 
 export default {
   namespace: 'skuDetail',
 
   state: {
-   
     spuList: [],
     fhscodeList: [],
     hscodeList: [],
@@ -28,9 +27,9 @@ export default {
   },
 
   effects: {
-    *fetch({ payload,callback }, { call }) {
+    *fetch({ payload, callback }, { call }) {
       const response = yield call(querySingleRule, payload);
-      if(callback) callback(response)
+      if (callback) callback(response);
     },
     *fetchcode(_, { call, put, select, all }) {
       const pagination = yield select(state => state.skuDetail.pagination);
@@ -103,7 +102,6 @@ export default {
       const response = yield call(updateDetailRule, payload);
       if (callback) callback(response);
     },
-    
   },
   reducers: {
     save(state, action) {

@@ -774,15 +774,17 @@ export default [
           {
             name: '文章编辑',
             path: '/websiteSeting/articleEdit',
+            hideInMenu:true,
             component: './websiteSeting/articleEdit',
           },
           {
-            name: '网站资料查询',
+            name: '网站资料',
             path: '/websiteSeting/pdf',
             component: './websiteSeting/pdf',
           },
           {
             name: '网站资料上传',
+            hideInMenu:true,
             path: '/websiteSeting/pdf/detail',
             component: './websiteSeting/pdf/detail',
           },

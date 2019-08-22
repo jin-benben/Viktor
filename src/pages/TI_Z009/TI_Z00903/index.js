@@ -1,7 +1,20 @@
 import React, { Component } from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
-import { Row, Col, Form, Input, Card, Tabs, Button, message, DatePicker, Select,Modal,Radio } from 'antd';
+import {
+  Row,
+  Col,
+  Form,
+  Input,
+  Card,
+  Tabs,
+  Button,
+  message,
+  DatePicker,
+  Select,
+  Modal,
+  Radio,
+} from 'antd';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import ClientAsk from '@/components/Order/TI_Z026';
 import SupplierAsk from '@/components/Order/TI_Z027';
@@ -15,7 +28,7 @@ import FHSCode from '@/components/FHSCode';
 import SPUCode from '@/components/SPUCode';
 import Upload from '@/components/Upload';
 import UEditor from '@/components/Ueditor';
-import {getName} from '@/utils/utils'
+import { getName } from '@/utils/utils';
 
 const FormItem = Form.Item;
 const { TabPane } = Tabs;
@@ -83,9 +96,9 @@ class SKUDetail extends Component {
         TI_Z00902List: [],
         TI_Z00903List: [],
       },
-      activeKey:"",
-      DetailCode:"", 
-      modalVisible:false
+      activeKey: '',
+      DetailCode: '',
+      modalVisible: false,
     };
     this.formLayout = {
       labelCol: { span: 8 },
@@ -113,8 +126,8 @@ class SKUDetail extends Component {
       type: 'global/getMDMCommonality',
       payload: {
         Content: {
-          CodeList: ['Purchaser', 'TI_Z042','TI_Z01802'],
-          Key:"5"
+          CodeList: ['Purchaser', 'TI_Z042', 'TI_Z01802'],
+          Key: '5',
         },
       },
     });
@@ -123,8 +136,6 @@ class SKUDetail extends Component {
     });
     this.getDetail();
   }
-
-
 
   changePicture = ({ FilePath, FileCode, FilePathX }) => {
     const { skuDetailInfo } = this.state;
@@ -148,26 +159,25 @@ class SKUDetail extends Component {
             Code: query.Code,
           },
         },
-        callback:response=>{
+        callback: response => {
           if (response && response.Status === 200) {
             this.setState({
               skuDetailInfo: response.Content,
-              activeKey:response.Content.TI_Z00903List.length?response.Content.TI_Z00903List[0].DetailCode:""
-            })
+              activeKey: response.Content.TI_Z00903List.length
+                ? response.Content.TI_Z00903List[0].DetailCode
+                : '',
+            });
           }
-        }
+        },
       });
     }
   };
 
-
-
-  detailOnChange=activeKey=>{
+  detailOnChange = activeKey => {
     this.setState({
-      activeKey
-    })
-  }
-
+      activeKey,
+    });
+  };
 
   detailOnEdit = (targetKey, action) => {
     this[action](targetKey);
@@ -175,75 +185,82 @@ class SKUDetail extends Component {
 
   add = () => {
     this.setState({
-      modalVisible:true
-    })
+      modalVisible: true,
+    });
   };
 
-  addTabne=()=>{
-     const {DetailCode,skuDetailInfo}=this.state
-     const {Code,TI_Z00903List}=skuDetailInfo
-     const OrderById =TI_Z00903List.length?TI_Z00903List[TI_Z00903List.length-1].OrderById+1:1
-     this.setState({
-      modalVisible:false,
-      activeKey:DetailCode,
-      skuDetailInfo:{
+  addTabne = () => {
+    const { DetailCode, skuDetailInfo } = this.state;
+    const { Code, TI_Z00903List } = skuDetailInfo;
+    const OrderById = TI_Z00903List.length
+      ? TI_Z00903List[TI_Z00903List.length - 1].OrderById + 1
+      : 1;
+    this.setState({
+      modalVisible: false,
+      activeKey: DetailCode,
+      skuDetailInfo: {
         ...skuDetailInfo,
-        TI_Z00903List:[...TI_Z00903List,{
-          Code,
-          OrderById,
-          DetailCode,
-          Detail: ""
-        }]
-      }
-     })
-  }
+        TI_Z00903List: [
+          ...TI_Z00903List,
+          {
+            Code,
+            OrderById,
+            DetailCode,
+            Detail: '',
+          },
+        ],
+      },
+    });
+  };
 
-  radioOnChange=e=>{
+  radioOnChange = e => {
     this.setState({
       DetailCode: e.target.value,
     });
-  }
-
-  remove = targetKey => {
-    const {skuDetailInfo}=this.state
-    const {TI_Z00903List}=skuDetailInfo
-    const newArr=TI_Z00903List.filter(item=>item.DetailCode!==targetKey)
-    this.setState({
-      skuDetailInfo:{
-        ...skuDetailInfo,
-        TI_Z00903List:newArr
-      }
-    })
   };
 
-  detailChange=Detail=>{
-    const {activeKey,skuDetailInfo}=this.state
-    const {TI_Z00903List}=skuDetailInfo
-    const newArr=TI_Z00903List.map(item=>{
-      const newItem=item
-      if(item.DetailCode===activeKey){
-        newItem.Detail=Detail
-        return newItem
-      }
-      return item
-    })
+  remove = targetKey => {
+    const { skuDetailInfo } = this.state;
+    const { TI_Z00903List } = skuDetailInfo;
+    const newArr = TI_Z00903List.filter(item => item.DetailCode !== targetKey);
     this.setState({
-      skuDetailInfo:{
+      skuDetailInfo: {
         ...skuDetailInfo,
-        TI_Z00903List:newArr
-      }
-    })
-  }
+        TI_Z00903List: newArr,
+      },
+    });
+  };
 
-  updateDetailHandle=()=>{
+  detailChange = Detail => {
+    const { activeKey, skuDetailInfo } = this.state;
+    const { TI_Z00903List } = skuDetailInfo;
+    const newArr = TI_Z00903List.map(item => {
+      const newItem = item;
+      if (item.DetailCode === activeKey) {
+        newItem.Detail = Detail;
+        return newItem;
+      }
+      return item;
+    });
+    this.setState({
+      skuDetailInfo: {
+        ...skuDetailInfo,
+        TI_Z00903List: newArr,
+      },
+    });
+  };
+
+  updateDetailHandle = () => {
     const { dispatch } = this.props;
-    const {skuDetailInfo:{Code,TI_Z00903List}}=this.state
+    const {
+      skuDetailInfo: { Code, TI_Z00903List },
+    } = this.state;
     dispatch({
       type: 'skuDetail/updateDetail',
       payload: {
         Content: {
           Code,
-          TI_Z00903:[...TI_Z00903List]
+          TI_Z00903: [...TI_Z00903List],
         },
       },
       callback: response => {
@@ -253,7 +270,7 @@ class SKUDetail extends Component {
         }
       },
     });
-  }
+  };
 
   // 更新主数据
   updateHandle = () => {
@@ -337,16 +354,16 @@ class SKUDetail extends Component {
     }
   };
 
-  colseModal=()=>{
+  colseModal = () => {
     this.setState({
-      modalVisible:false
-    })
-  }
+      modalVisible: false,
+    });
+  };
 
   render() {
     const {
       form: { getFieldDecorator },
-      global: { Purchaser, TI_Z042,TI_Z01802 },
+      global: { Purchaser, TI_Z042, TI_Z01802 },
       skuDetail: { spuList, fhscodeList, hscodeList },
     } = this.props;
 
@@ -363,8 +380,8 @@ class SKUDetail extends Component {
       },
     };
 
-    const { skuDetailInfo,activeKey,modalVisible,DetailCode  } = this.state;
-   
+    const { skuDetailInfo, activeKey, modalVisible, DetailCode } = this.state;
+
     return (
       <Card bordered={false}>
         <Form {...formItemLayout} onSubmit={this.handleSubmit}>
@@ -445,7 +462,9 @@ class SKUDetail extends Component {
             </Col>
             <Col lg={12} md={12} sm={24}>
               <FormItem key="category" {...this.formLayout} label="分类">
-                <span>{`${skuDetailInfo.Cate1Name}/${skuDetailInfo.Cate2Name}/${skuDetailInfo.Cate3Name}`}</span>
+                <span>{`${skuDetailInfo.Cate1Name}/${skuDetailInfo.Cate2Name}/${
+                  skuDetailInfo.Cate3Name
+                }`}</span>
               </FormItem>
             </Col>
             <Col lg={12} md={12} sm={24}>
@@ -535,9 +554,7 @@ class SKUDetail extends Component {
             </Col>
           </Row>
         </Form>
-        <Tabs
-          animated={false}
-        >
+        <Tabs animated={false}>
           <TabPane tab="图片管理" key="1">
             <Row>
               <Col lg={4}>
@@ -559,7 +576,7 @@ class SKUDetail extends Component {
               onEdit={this.detailOnEdit}
             >
               {skuDetailInfo.TI_Z00903List.map(pane => (
-                <TabPane tab={getName(TI_Z01802,pane.DetailCode)} key={pane.DetailCode}>
+                <TabPane tab={getName(TI_Z01802, pane.DetailCode)} key={pane.DetailCode}>
                   <UEditor onBlur={this.detailChange} initialValue={pane.Detail} />
                 </TabPane>
               ))}
@@ -582,16 +599,24 @@ class SKUDetail extends Component {
             {skuDetailInfo.Name ? <OrderFetch QueryType="3" QueryKey={skuDetailInfo.Code} /> : ''}
           </TabPane>
           <TabPane tab="交货退货物料查询" key="7">
-            {skuDetailInfo.Name ? <OdlnordnFetch QueryType="3" QueryKey={skuDetailInfo.Code} /> : ''}
+            {skuDetailInfo.Name ? (
+              <OdlnordnFetch QueryType="3" QueryKey={skuDetailInfo.Code} />
+            ) : (
+              ''
+            )}
           </TabPane>
           <TabPane tab="发票贷项物料查询" key="8">
-            {skuDetailInfo.Name ? <OinvorinFetch QueryType="3" QueryKey={skuDetailInfo.Code} /> : ''}
+            {skuDetailInfo.Name ? (
+              <OinvorinFetch QueryType="3" QueryKey={skuDetailInfo.Code} />
+            ) : (
+              ''
+            )}
           </TabPane>
         </Tabs>
 
         <FooterToolbar>
           <Button type="primary" onClick={this.updateHandle}>
-           更新主数据
+            更新主数据
           </Button>
           <Button type="primary" onClick={this.updateDetailHandle}>
             更新详情
@@ -607,9 +632,11 @@ class SKUDetail extends Component {
           visible={modalVisible}
         >
           <Radio.Group onChange={this.radioOnChange} value={DetailCode}>
-            {
-              TI_Z01802.map(item=><Radio key={item.Key} value={item.Key}>{item.Value}</Radio>)
-            }
+            {TI_Z01802.map(item => (
+              <Radio key={item.Key} value={item.Key}>
+                {item.Value}
+              </Radio>
+            ))}
           </Radio.Group>
         </Modal>
       </Card>

@@ -1,10 +1,7 @@
 import React, { PureComponent } from 'react';
-import {  Modal, message } from 'antd';
+import { Modal, message } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import request from '@/utils/request';
-
-
-
 
 class CateModal extends PureComponent {
   state = {
@@ -12,8 +9,8 @@ class CateModal extends PureComponent {
     selectedRows: [],
     queryData: {
       Content: {
-        PCode: "",
-        Level: "1"
+        PCode: '',
+        Level: '1',
       },
       page: 1,
       rows: 20,
@@ -43,23 +40,26 @@ class CateModal extends PureComponent {
     },
   ];
 
-  componentDidMount(){
+  componentDidMount() {
     const { queryData } = this.state;
-    this.getCategory(queryData)
+    this.getCategory(queryData);
   }
 
-  componentWillReceiveProps(nextProps){
-    const {PCode,Level}=nextProps
-    const {queryData}=this.state
-    if(PCode&&PCode!==queryData.Content.PCode||Level&&Level!==queryData.Content.Level){
-      Object.assign(queryData.Content,{
-        PCode: PCode||"",
-        Level: Level||"1"
-      })
+  componentWillReceiveProps(nextProps) {
+    const { PCode, Level } = nextProps;
+    const { queryData } = this.state;
+    if (
+      (PCode && PCode !== queryData.Content.PCode) ||
+      (Level && Level !== queryData.Content.Level)
+    ) {
+      Object.assign(queryData.Content, {
+        PCode: PCode || '',
+        Level: Level || '1',
+      });
       this.setState({
-        queryData
-      })
-      this.getCategory(queryData)
+        queryData,
+      });
+      this.getCategory(queryData);
     }
   }
 
@@ -133,8 +133,6 @@ class CateModal extends PureComponent {
       }
     }
   };
-
-
 
   render() {
     const { loading, pagination, cateList } = this.state;
