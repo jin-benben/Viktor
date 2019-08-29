@@ -276,7 +276,7 @@ class InquiryEdit extends Component {
         </Ellipsis>
       ),
     },
-   
+
     {
       title: '名称(外)',
       dataIndex: 'ForeignName',

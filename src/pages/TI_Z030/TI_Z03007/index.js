@@ -309,7 +309,7 @@ class AgreementLine extends PureComponent {
         </Ellipsis>
       ),
     },
-   
+
     {
       title: '包装',
       width: 100,
@@ -492,7 +492,11 @@ class AgreementLine extends PureComponent {
   handleSearch = e => {
     // 搜索
     e.preventDefault();
-    const { dispatch, form,agreementLine:{queryData} } = this.props;
+    const {
+      dispatch,
+      form,
+      agreementLine: { queryData },
+    } = this.props;
 
     form.validateFields((err, fieldsValue) => {
       if (err) return;
@@ -535,16 +539,18 @@ class AgreementLine extends PureComponent {
     });
   };
 
-  returnTotal=()=>{
-    const { agreementLine:{InquiryDocTotalLocal,ProfitTotal,DocTotal}}=this.props
+  returnTotal = () => {
+    const {
+      agreementLine: { InquiryDocTotalLocal, ProfitTotal, DocTotal },
+    } = this.props;
     return (
       <Row gutter={8}>
         <Col span={4}>总计：{DocTotal}</Col>
         <Col span={4}>询本总计：{InquiryDocTotalLocal}</Col>
         <Col span={4}>利润总计：{ProfitTotal}</Col>
       </Row>
-    )
-  }
+    );
+  };
 
   renderSimpleForm() {
     const {

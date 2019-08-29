@@ -100,7 +100,7 @@ class comparison extends PureComponent {
             pagination={false}
             rowKey={rowkey || 'Key'}
             bordered
-            scroll={{x:1200, y: 400 }}
+            scroll={{ x: 1200, y: 400 }}
             dataSource={dataSource}
             columns={this.columns}
           />

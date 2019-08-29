@@ -260,7 +260,7 @@ class InquiryEdit extends React.Component {
         </Ellipsis>
       ),
     },
-   
+
     {
       title: '包装',
       width: 100,

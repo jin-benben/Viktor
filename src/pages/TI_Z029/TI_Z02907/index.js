@@ -334,7 +334,7 @@ class SalesQuotationSku extends PureComponent {
         </Ellipsis>
       ),
     },
-   
+
     {
       title: '包装',
       width: 100,
@@ -690,16 +690,18 @@ class SalesQuotationSku extends PureComponent {
     });
   };
 
-  returnTotal=()=>{
-    const { SalesQuotationSku:{InquiryDocTotalLocal,ProfitTotal,DocTotal}}=this.props
+  returnTotal = () => {
+    const {
+      SalesQuotationSku: { InquiryDocTotalLocal, ProfitTotal, DocTotal },
+    } = this.props;
     return (
       <Row gutter={8}>
         <Col span={4}>总计：{DocTotal}</Col>
         <Col span={4}>询本总计：{InquiryDocTotalLocal}</Col>
         <Col span={4}>利润总计：{ProfitTotal}</Col>
       </Row>
-    )
-  }
+    );
+  };
 
   renderSimpleForm() {
     const {
@@ -863,8 +865,6 @@ class SalesQuotationSku extends PureComponent {
       </Form>
     );
   }
-
- 
 
   render() {
     const {

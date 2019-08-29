@@ -64,19 +64,19 @@ export function validatorEmail(rule, value, callback) {
 }
 
 export function getTotal(orderList) {
-  let ProfitTotal=0;
-  let DocTotal=0;
-  let InquiryDocTotalLocal=0; 
+  let ProfitTotal = 0;
+  let DocTotal = 0;
+  let InquiryDocTotalLocal = 0;
   if (orderList.length) {
     orderList.forEach(order => {
       DocTotal += order.LineTotal;
       InquiryDocTotalLocal += order.InquiryLineTotalLocal;
-      ProfitTotal += order.ProfitLineTotal
+      ProfitTotal += order.ProfitLineTotal;
     });
     DocTotal = round(DocTotal, 2);
     InquiryDocTotalLocal = round(InquiryDocTotalLocal, 2);
-   
+
     ProfitTotal = round(ProfitTotal, 2);
-  } 
-  return {InquiryDocTotalLocal,ProfitTotal,DocTotal} 
+  }
+  return { InquiryDocTotalLocal, ProfitTotal, DocTotal };
 }

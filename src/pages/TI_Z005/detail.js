@@ -228,7 +228,7 @@ class BrandDetail extends PureComponent {
 
   render() {
     const {
-      global: { Purchaser },
+      global: { Purchaser, currentUser },
       location,
     } = this.props;
     const { formVals } = this.state;
@@ -258,11 +258,14 @@ class BrandDetail extends PureComponent {
           <TabPane tab="附件" key="9">
             {formVals.Name ? <Attach dataSource={formVals.AttachmentList} /> : ''}
           </TabPane>
-          <TabPane tab="品牌供应商" key="2">
-            {formVals.Name ? <BrandSupplier BrandName={formVals.Name} /> : ''}
-          </TabPane>
+          {currentUser.Role && currentUser.Role !== 'S' && (
+            <TabPane tab="品牌供应商" key="2">
+              {formVals.Name ? <BrandSupplier BrandName={formVals.Name} /> : ''}
+            </TabPane>
+          )}
+
           <TabPane tab="品牌物料" key="3">
-            {formVals.Name ? <BrandSku BrandName={formVals.Name} /> : ''}
+            {formVals.Name ? <BrandSku BrandCode={formVals.Code} /> : ''}
           </TabPane>
           <TabPane tab="客户询价单" key="4">
             {formVals.Name ? <ClientAsk QueryType="1" QueryKey={formVals.Code} /> : ''}

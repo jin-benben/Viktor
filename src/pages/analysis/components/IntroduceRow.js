@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, Fragment } from 'react';
 import { Row, Col, DatePicker } from 'antd';
 import { Charts, Trend } from 'ant-design-pro';
 import numeral from 'numeral';
@@ -28,29 +28,75 @@ const IntroduceRow = memo(
     monthlyPurchase,
     monthlyReceipt,
   }) => (
-    <Row gutter={24} className={styles.homeCard}>
+    <Row gutter={12} className={styles.homeCard}>
       <Col className={styles.colParent} {...topColResponsiveProps}>
         <ChartCard
           bordered={false}
-          title="月销售总计"
+          style={{ width: '100%' }}
+          title="月销总计"
           loading={loading}
-          total={() => <Yuan>{monthlySalesData.DocTotal}</Yuan>}
+          total={() => (
+            <Row>
+              <Col span={12}>
+                <Yuan style={{ fontSize: '20px' }}>{monthlySalesData.DocTotal}</Yuan>
+              </Col>
+              <Col span={12}>
+                <Yuan style={{ fontSize: '20px' }}>{monthlySalesData.QuoteDocTotal}</Yuan>
+              </Col>
+            </Row>
+          )}
           footer={
-            <Field
-              label="日销售额"
-              value={`￥${numeral(monthlySalesData.DayDocTotal).format('0,0')}`}
-            />
+            <Row>
+              <Col span={12}>
+                <Field
+                  label="日销售"
+                  value={`￥${numeral(monthlySalesData.DayDocTotal).format('0,0')}`}
+                />
+              </Col>
+              <Col span={12}>
+                <Field
+                  label="日合同"
+                  value={`￥${numeral(monthlySalesData.QuoteDayDocTotal).format('0,0')}`}
+                />
+              </Col>
+            </Row>
           }
           contentHeight={46}
         >
-          <Trend flag={monthlySalesData.DayRate > 0 ? 'up' : 'down'} style={{ marginRight: 16 }}>
-            销售天同比
-            <span className={styles.trendText}>{monthlySalesData.DayRate}</span>
-          </Trend>
-          <Trend flag={monthlySalesData.MonthRate > 0 ? 'up' : 'down'}>
-            销售月同比
-            <span className={styles.trendText}>{monthlySalesData.MonthRate}</span>
-          </Trend>
+          <Row>
+            <Col span={12}>
+              <Trend
+                flag={monthlySalesData.DayRate > 0 ? 'up' : 'down'}
+                style={{ marginRight: 16 }}
+              >
+                销日同比
+                <span className={styles.trendText}>{monthlySalesData.DayRate}</span>
+              </Trend>
+            </Col>
+            <Col span={12}>
+              <Trend flag={monthlySalesData.MonthRate > 0 ? 'up' : 'down'}>
+                销月同比
+                <span className={styles.trendText}>{monthlySalesData.MonthRate}</span>
+              </Trend>
+            </Col>
+          </Row>
+          <Row>
+            <Col span={12}>
+              <Trend
+                flag={monthlySalesData.QuoteDayRate > 0 ? 'up' : 'down'}
+                style={{ marginRight: 16 }}
+              >
+                合日同比
+                <span className={styles.trendText}>{monthlySalesData.QuoteDayRate}</span>
+              </Trend>
+            </Col>
+            <Col span={12}>
+              <Trend flag={monthlySalesData.QuoteMonthRate > 0 ? 'up' : 'down'}>
+                合月同比
+                <span className={styles.trendText}>{monthlySalesData.QuoteMonthRate}</span>
+              </Trend>
+            </Col>
+          </Row>
         </ChartCard>
         <DatePicker
           defaultValue={defaultValue}
@@ -73,11 +119,11 @@ const IntroduceRow = memo(
           contentHeight={46}
         >
           <Trend flag={monthlyPurchaseData.DayRate > 0 ? 'up' : 'down'} style={{ marginRight: 16 }}>
-            采购日同比
+            日同比
             <span className={styles.trendText}>{monthlyPurchaseData.DayRate}</span>
           </Trend>
           <Trend flag={monthlyPurchaseData.MonthRate > 0 ? 'up' : 'down'}>
-            采购月同比
+            月同比
             <span className={styles.trendText}>{monthlyPurchaseData.MonthRate}</span>
           </Trend>
         </ChartCard>

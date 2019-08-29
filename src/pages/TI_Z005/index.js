@@ -109,7 +109,7 @@ class CreateForm extends PureComponent {
   render() {
     const {
       form: { getFieldDecorator },
-      global: { Purchaser },
+      global: { Purchaser, currentUser },
       form,
       modalVisible,
       handleModalVisible,
@@ -163,22 +163,23 @@ class CreateForm extends PureComponent {
               initialValue: formVals.Purchaser,
             })(<MDMCommonality initialValue={formVals.Purchaser} data={Purchaser} />)}
           </FormItem>
-          <FormItem
-            key="supplier"
-            {...formLayout}
-            label="默认供应商"
-            style={{ position: 'relative' }}
-          >
-            {getFieldDecorator('supplier', {
-              initialValue: { key: formVals.CardCode, label: formVals.CardName },
-            })(
-              <Supplier
-                initialValue={{ key: formVals.CardCode, label: formVals.CardName }}
-                labelInValue
-              />
-            )}
-          </FormItem>
-
+          {currentUser.Role && currentUser.Role !== 'S' && (
+            <FormItem
+              key="supplier"
+              {...formLayout}
+              label="默认供应商"
+              style={{ position: 'relative' }}
+            >
+              {getFieldDecorator('supplier', {
+                initialValue: { key: formVals.CardCode, label: formVals.CardName },
+              })(
+                <Supplier
+                  initialValue={{ key: formVals.CardCode, label: formVals.CardName }}
+                  labelInValue
+                />
+              )}
+            </FormItem>
+          )}
           <FormItem key="WebSite" {...formLayout} label="官网">
             {getFieldDecorator('WebSite', {
               initialValue: formVals.WebSite,
@@ -314,6 +315,10 @@ class BrandList extends PureComponent {
     {
       title: '默认供应商',
       dataIndex: 'CardName',
+      render: text => {
+        const { global } = this.props;
+        return global.currentUser.Role && global.currentUser.Role !== 'S' && <Text text={text} />;
+      },
     },
     {
       title: '操作',

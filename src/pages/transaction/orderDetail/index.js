@@ -276,7 +276,7 @@ class OrderDetailPage extends PureComponent {
     return (
       <Card bordered={false} loading={loading}>
         <DescriptionList style={{ marginBottom: 24 }}>
-          <Description term="单号">{orderDetailInfo.DocEntry}</Description>
+          <Description term="销售订单号">{orderDetailInfo.DocEntry}</Description>
           <Description term="客户">
             {`${orderDetailInfo.CardName}(${orderDetailInfo.CardCode})`}
           </Description>
