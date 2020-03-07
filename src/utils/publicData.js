@@ -230,7 +230,7 @@ export const articleType = [
   },
   {
     Key: '3',
-    Value: '联系我们',
+    Value: '产品百科',
   },
   {
     Key: '4',

@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { Table } from 'antd';
 import { Resizable } from 'react-resizable';
-
+import {setTableHeight} from '@/utils/utils'
 import styles from './index.less';
 
 // 要想列可以拖拽，列必须制定宽度
@@ -40,7 +40,7 @@ class StandardTable extends PureComponent {
 
   componentDidMount() {
     this.setState({
-      height: document.body.offsetHeight - 56 - 64 - 56 - 24 - 32 - 30,
+      height: setTableHeight(),
     });
   }
 
@@ -158,6 +158,7 @@ class StandardTable extends PureComponent {
           rowSelection={rowSelection}
           onRow={this.onClickRow}
           rowClassName={this.setRowClassName}
+          className="myTable"
           columns={columns} //  columns={columns} 需放到  {...rest} 后，防止 columns 被覆盖
         />
       </div>

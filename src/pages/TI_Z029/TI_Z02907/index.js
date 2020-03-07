@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
@@ -27,6 +28,7 @@ import Organization from '@/components/Organization/multiple';
 import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
 import ProcessorSelect from '@/components/Select/SalerPurchaser';
 import Comparison from '@/components/Comparison';
+import MDMCommonality from '@/components/Select';
 import MyPageHeader from '../components/pageHeader';
 // import AttachmentModal from '@/components/Attachment/modal';
 import TransferHistory from '@/components/TransferHistory';
@@ -108,9 +110,9 @@ class SalesQuotationSku extends PureComponent {
       dataIndex: 'CardName',
       sorter: true,
       align: 'center',
-      render: text => (
+      render: (text,record) => (
         <Ellipsis tooltip lines={1}>
-          {text}
+          <Link target="_blank" to={`/main/TI_Z006/detail?Code=${record.CardCode}`}>{text}</Link>
         </Ellipsis>
       ),
     },
@@ -122,13 +124,21 @@ class SalesQuotationSku extends PureComponent {
       width: 300,
       render: (text, record) => (
         <Ellipsis tooltip lines={1}>
-          {text ? (
-            <Link target="_blank" to={`/main/product/TI_Z009/TI_Z00903?Code${record.SKU}`}>
+          {text&&(
+            <Link target="_blank" to={`/main/product/TI_Z009/TI_Z00903?Code=${record.SKU}`}>
               {record.SKU}-
             </Link>
-          ) : (
-            ''
           )}
+          <Link target="_blank" to={`/main/product/TI_Z005/detail?Code=${record.BrandCode}`}>{text}</Link>
+        </Ellipsis>)
+    },
+    {
+      title: '参数',
+      dataIndex: 'Parameters',
+      width: 100,
+      align: 'center',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
           {text}
         </Ellipsis>
       ),
@@ -322,17 +332,7 @@ class SalesQuotationSku extends PureComponent {
         </Ellipsis>
       ),
     },
-    {
-      title: '参数',
-      dataIndex: 'Parameters',
-      width: 100,
-      align: 'center',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
+
     {
       title: '包装',
       width: 100,
@@ -512,7 +512,7 @@ class SalesQuotationSku extends PureComponent {
       type: 'global/getMDMCommonality',
       payload: {
         Content: {
-          CodeList: ['Saler', 'Purchaser', 'WhsCode', 'TI_Z042', 'TI_Z004'],
+          CodeList: ['Saler', 'Purchaser', 'WhsCode', 'TI_Z042', 'TI_Z004','Company'],
         },
       },
     });
@@ -688,11 +688,24 @@ class SalesQuotationSku extends PureComponent {
     });
   };
 
+  returnTotal = () => {
+    const {
+      SalesQuotationSku: { InquiryDocTotalLocal, ProfitTotal, DocTotal },
+    } = this.props;
+    return (
+      <Row gutter={8}>
+        <Col span={4}>总计：{DocTotal}</Col>
+        <Col span={4}>询本总计：{InquiryDocTotalLocal}</Col>
+        <Col span={4}>利润总计：{ProfitTotal}</Col>
+      </Row>
+    );
+  };
+
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
       SalesQuotationSku: { queryData },
-      global: { ProcessorList },
+      global: { ProcessorList,Company },
     } = this.props;
     const { Owner } = queryData.Content;
     const { expandForm } = this.state;
@@ -816,6 +829,13 @@ class SalesQuotationSku extends PureComponent {
                   )}
                 </FormItem>
               </Col>
+              <Col md={5} sm={24}>
+                <FormItem key="CompanyCode" {...formLayout} label="交易公司">
+                  {getFieldDecorator('CompanyCode')(
+                    <MDMCommonality style={{ width: '100%' }} data={Company} />
+                  )}
+                </FormItem>
+              </Col>
             </Fragment>
           ) : null}
           <Col md={4} sm={24}>
@@ -890,6 +910,7 @@ class SalesQuotationSku extends PureComponent {
               }}
               selectedRows={selectedRows}
               onChange={this.handleStandardTableChange}
+              footer={this.returnTotal}
             />
           </div>
         </Card>

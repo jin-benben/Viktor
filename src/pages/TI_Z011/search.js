@@ -64,6 +64,11 @@ class CreateForm extends PureComponent {
       });
     };
 
+    const brandChange = (value) => {
+     Object.assign(formVals, value);
+     this.setState({ ...formVals });
+   };
+
     return (
       <Modal
         width={640}
@@ -104,9 +109,7 @@ class CreateForm extends PureComponent {
             )}
           </FormItem>
           <FormItem key="BrandName" {...this.formLayout} label="品牌">
-            {getFieldDecorator('BrandName', {
-              initialValue: formVals.BrandName,
-            })(<Brand initialValue={formVals.BrandName} keyType="Name" />)}
+            <Brand onChange={brandChange} initialValue={formVals.BrandName} keyType="Name" />
           </FormItem>
         </Form>
       </Modal>

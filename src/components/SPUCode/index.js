@@ -5,7 +5,7 @@ import debounce from 'lodash/debounce';
 
 const { Option } = Select;
 
-class Brand extends PureComponent {
+class SPUComponent extends PureComponent {
   constructor(props) {
     super(props);
     this.lastFetchId = 0;
@@ -70,6 +70,8 @@ class Brand extends PureComponent {
     }
   };
 
+
+
   render() {
     const { fetching, data, value } = this.state;
     return (
@@ -82,6 +84,7 @@ class Brand extends PureComponent {
         filterOption={false}
         onSearch={this.fetchUser}
         onChange={this.handleChange}
+        onSelect={this.handleChange}
         style={{ width: '100%' }}
       >
         {data.map(option => (
@@ -94,4 +97,4 @@ class Brand extends PureComponent {
   }
 }
 
-export default Brand;
+export default SPUComponent;

@@ -11,6 +11,7 @@ import StandardTable from '@/components/StandardTable';
 import Organization from '@/components/Organization/multiple';
 import MyPageHeader from '../components/pageHeader';
 import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
+import MDMCommonality from '@/components/Select';
 import { getName } from '@/utils/utils';
 
 const { RangePicker } = DatePicker;
@@ -91,9 +92,9 @@ class SalesQuotation extends PureComponent {
       sorter: true,
       align: 'center',
       width: 200,
-      render: text => (
+      render: (text,record) => (
         <Ellipsis tooltip lines={1}>
-          {text}
+          <Link target="_blank" to={`/main/TI_Z006/detail?Code=${record.CardCode}`}>{text}</Link>
         </Ellipsis>
       ),
     },
@@ -191,7 +192,7 @@ class SalesQuotation extends PureComponent {
       type: 'global/getMDMCommonality',
       payload: {
         Content: {
-          CodeList: ['Saler', 'Purchaser'],
+          CodeList: ['Saler', 'Purchaser','Company'],
         },
       },
     });
@@ -268,6 +269,7 @@ class SalesQuotation extends PureComponent {
     const {
       form: { getFieldDecorator },
       SalesQuotation: { queryData },
+      global:{Company}
     } = this.props;
     const { expandForm } = this.state;
     const { Owner } = queryData.Content;
@@ -356,6 +358,13 @@ class SalesQuotation extends PureComponent {
                   <FormItem className="lineFormItem" key="BaseEntryTo">
                     {getFieldDecorator('BaseEntryTo')(<Input placeholder="结束单号" />)}
                   </FormItem>
+                </FormItem>
+              </Col>
+              <Col md={5} sm={24}>
+                <FormItem key="CompanyCode" {...formLayout} label="交易公司">
+                  {getFieldDecorator('CompanyCode')(
+                    <MDMCommonality style={{ width: '100%' }} data={Company} />
+                  )}
                 </FormItem>
               </Col>
             </Fragment>

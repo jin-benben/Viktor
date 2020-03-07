@@ -2,7 +2,7 @@
 /* eslint-disable no-param-reassign */
 import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
-import { Row, Col, Card, Form, Input, Button, Select, message } from 'antd';
+import { Row, Col, Card, Form, Input, Button, Select, message,Icon } from 'antd';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import EditableFormTable from '@/components/EditableFormTable';
 import MDMCommonality from '@/components/Select';
@@ -10,6 +10,7 @@ import Brand from '@/components/Brand';
 import HSCode from '@/components/HSCode';
 import FHSCode from '@/components/FHSCode';
 import SPUCode from '@/components/SPUCode';
+import AskPriceFetch from '@/pages/TI_Z030/components/askPriceFetch';
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -37,7 +38,7 @@ class AddSKU extends Component {
           keyType="Name"
           initialValue={text}
           onChange={value => {
-            this.codeChange(value, record, index, 'BrandName');
+            this.brandChange(value, record, index);
           }}
         />
       ),
@@ -253,11 +254,38 @@ class AddSKU extends Component {
       editable: true,
     },
     {
+      title: 'Seo关键字',
+      width: 80,
+      dataIndex: 'SeoKey',
+      editable: true,
+    },
+    {
+      title: 'Seo描述',
+      width: 80,
+      dataIndex: 'SeoDescription',
+      editable: true,
+    },
+    {
       title: '分类',
       width: 200,
       dataIndex: 'category',
       render: (text, record) => (
         <span>{`${record.Cate1Name}/${record.Cate2Name}/${record.Cate3Name}`}</span>
+      ),
+    },
+    {
+      title: '操作',
+      fixed: 'right',
+      width: 50,
+      align:"center",
+      render: (text, record, index) => (
+        <Icon
+          title="删除行"
+          className="icons"
+          type="delete"
+          theme="twoTone"
+          onClick={() => this.deleteLine(record, index)}
+        />
       ),
     },
   ];
@@ -277,14 +305,21 @@ class AddSKU extends Component {
       sidx: 'Code',
       sord: 'Desc',
     },
+    method:"A",
+    orderModalVisible:false
   };
 
   componentDidMount() {
     const {
       dispatch,
       global: { BrandList, CategoryTree, Purchaser, WhsCode },
+      location:{query}
     } = this.props;
-    const { queryData } = this.state;
+    if(query.method&&query.method==="U"){
+      this.setState({
+        method:query.method
+      })
+    }
     dispatch({
       type: 'skuAdd/fetch',
     });
@@ -308,8 +343,22 @@ class AddSKU extends Component {
         type: 'global/getCategory',
       });
     }
-    this.fetchList(queryData);
   }
+
+   // 品牌change
+   brandChange = (value, record, index) => {
+    Object.assign(record, value);
+    const { TI_Z00901 } = this.state;
+    TI_Z00901[index] = record;
+    this.setState({ TI_Z00901 });
+  };
+
+  deleteLine = (record, index) => {
+    const { TI_Z00901 } = this.state;
+    TI_Z00901.splice(index, 1);
+    this.setState({ TI_Z00901 });
+  };
+
 
   fetchList = params => {
     const { dispatch } = this.props;
@@ -358,24 +407,21 @@ class AddSKU extends Component {
   handleSearch = e => {
     // 搜索
     e.preventDefault();
-    const { dispatch, form } = this.props;
+    const { form } = this.props;
     const { queryData } = this.state;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
-      dispatch({
-        type: 'skuAdd/fetchList',
-        payload: {
-          Content: {
-            SearchText: '',
-            SearchKey: 'Name',
-            ...queryData.Content,
-            ...fieldsValue,
-          },
-          page: 1,
-          rows: 30,
-          sidx: 'Code',
-          sord: 'Desc',
+      this.fetchList({
+        Content: {
+          SearchText: '',
+          SearchKey: 'Name',
+          ...queryData.Content,
+          ...fieldsValue,
         },
+        page: 1,
+        rows: 30,
+        sidx: 'Code',
+        sord: 'Desc',
       });
     });
   };
@@ -438,16 +484,62 @@ class AddSKU extends Component {
     });
   };
 
+  addLine = () => {
+    const { TI_Z00901 } = this.state;
+    const lastLine = TI_Z00901[TI_Z00901.length - 1]
+      ? TI_Z00901[TI_Z00901.length - 1].LineID + 1
+      : 1;
+    const {
+      global: { currentUser },
+    } = this.props;
+    const line = {
+      LineID: lastLine,
+      Name: '',
+      BrandName: '',
+      ProductName: '',
+      ManufactureNO: '',
+      Parameters: '',
+      PurchaserName: '',
+      ForeignParameters: '',
+      Rweight: '',
+      Package: '',
+      Purchaser: currentUser.Owner,
+      Unit: '',
+      ManLocation: '',
+      Category1: '',
+      Category2: '',
+      Category3: '',
+      Cate1Name: '',
+      Cate2Name: '',
+      Cate3Name: '',
+      Putaway: '1',
+      PutawayDateTime: new Date(),
+      InvoiceName: '',
+      InvoicePro: '',
+      InvoiceMenu: '',
+      HSCode: '',
+      FHSCode: '',
+      SPUCode: '',
+      SPrice: 0,
+      PPrice: 0,
+      SeoDescription: '',
+      SeoKey: ''
+    };
+
+    TI_Z00901.push(line);
+    this.setState({ TI_Z00901 });
+  };
+
   addskulist = async () => {
-    const { selectedRows } = this.state;
-    const { dispatch } = this.props;
+    const { selectedRows,TI_Z00901,method } = this.state;
+    const { dispatch, } = this.props;
     dispatch({
       type: 'skuAdd/add',
       payload: {
         Content: {
-          TI_Z00901: selectedRows,
+          TI_Z00901:method==="A"?TI_Z00901:selectedRows,
         },
-        Method: 'U',
+        Method: method,
       },
       callback: response => {
         if (response && response.Status === 200) {
@@ -477,6 +569,69 @@ class AddSKU extends Component {
         }
       },
     });
+  };
+
+  handleModalVisible = flag => {
+    this.setState({ orderModalVisible: !!flag });
+  };
+
+  // 添加行
+  addLineSKU = selectedRows => {
+    const { TI_Z00901 } = this.state;
+    const lastLine = TI_Z00901[TI_Z00901.length - 1]
+      ? TI_Z00901[TI_Z00901.length - 1].LineID + 1
+      : 1;
+    const {
+      global: { currentUser },
+    } = this.props;
+    selectedRows.map((item, index) => {
+      const {
+        BrandName,
+        SKUName,
+        ProductName,
+        ManufactureNO,
+        Purchaser,
+        Parameters,
+        Package,
+        Unit,
+        DocEntry,
+        LineID,
+        ManLocation,
+        ForeignParameters,
+      } = item;
+      TI_Z00901.push({
+        LineID: lastLine + index,
+        BrandName,
+        ProductName,
+        ManufactureNO,
+        Parameters,
+        Package,
+        Unit,
+        ForeignParameters,
+        Name: SKUName,
+        HSCode: item.HSCode || '',
+        Purchaser: Purchaser || currentUser.Owner,
+        ManLocation,
+        Rweight: '',
+        Category1: '',
+        Category2: '',
+        Category3: '',
+        Cate1Name: '',
+        Cate2Name: '',
+        Cate3Name: '',
+        Putaway: '1',
+        EnglishName: '',
+        PutawayDateTime: new Date(),
+        InvoiceName: '',
+        InvoicePro: '',
+        InvoiceMenu: '',
+        FHSCode: '',
+        SPUCode: '',
+        QutoNo: DocEntry,
+        QutoLine: LineID,
+      });
+    });
+    this.setState({ TI_Z00901: [...TI_Z00901], orderModalVisible: false });
   };
 
   renderSimpleForm() {
@@ -529,15 +684,23 @@ class AddSKU extends Component {
 
   render() {
     const { loading, addloading } = this.props;
-    const { TI_Z00901, pagination } = this.state;
+    const { TI_Z00901, pagination,orderModalVisible,method } = this.state;
+   
+    
+  
+    const orderParentMethods = {
+      handleSubmit: this.addLineSKU,
+      handleModalVisible: this.handleModalVisible,
+    };
+
     return (
       <Fragment>
         <Card bordered={false}>
           <div className="tableList">
-            <div className="tableListForm">{this.renderSimpleForm()}</div>
+            <div className="tableListForm">{method!=="A"&&this.renderSimpleForm()}</div>
             <EditableFormTable
               rowChange={this.rowChange}
-              rowKey="Code"
+              rowKey={method&&method==="U"?"Code":"LineID"}
               loading={loading}
               pagination={pagination}
               scroll={{ x: 3500 }}
@@ -549,9 +712,28 @@ class AddSKU extends Component {
               data={TI_Z00901}
             />
           </div>
+          <AskPriceFetch {...orderParentMethods} QueryType="3" modalVisible={orderModalVisible} />
           <FooterToolbar>
+            {
+              method==="A"&&(
+                <Fragment>
+                  <Button icon="plus" onClick={this.addLine} type="primary">
+                    添加行
+                  </Button>
+                  <Button
+                    icon="plus"
+                    style={{ marginLeft: 8 }}
+                    type="primary"
+                    onClick={() => this.handleModalVisible(true)}
+                  >
+                    复制从销售报价单
+                  </Button>
+                </Fragment>
+              )
+            }
+           
             <Button loading={addloading} onClick={this.addskulist} type="primary">
-              更新
+              保存更新
             </Button>
           </FooterToolbar>
         </Card>

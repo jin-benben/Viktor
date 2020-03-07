@@ -78,9 +78,9 @@ class supplierQuotation extends PureComponent {
       dataIndex: 'CardName',
       sorter: true,
       align: 'center',
-      render: text => (
+      render: (text,record) => (
         <Ellipsis tooltip lines={1}>
-          {text}
+          <Link target="_blank" to={`/main/TI_Z007/detail?Code=${record.CardCode}`}>{text}</Link> 
         </Ellipsis>
       ),
     },
@@ -256,6 +256,7 @@ class supplierQuotation extends PureComponent {
         DocDateFrom = moment(fieldsValue.dateArr[0]).format('YYYY-MM-DD');
         DocDateTo = moment(fieldsValue.dateArr[1]).format('YYYY-MM-DD');
       }
+      // eslint-disable-next-line no-param-reassign
       delete fieldsValue.dateArr;
       const queryData = {
         ...fieldsValue,

@@ -22,6 +22,7 @@ import Upload from '@/components/Upload';
 const FormItem = Form.Item;
 const { TreeNode } = Tree;
 const { Option } = Select;
+const { TextArea } = Input;
 @Form.create()
 class CreateForm extends React.Component {
   constructor(props) {
@@ -73,7 +74,6 @@ class CreateForm extends React.Component {
     const okHandle = () => {
       form.validateFields((err, fieldsValue) => {
         if (err) return;
-        form.resetFields();
         handleSubmit({ ...formVals, ...fieldsValue });
       });
     };
@@ -122,6 +122,26 @@ class CreateForm extends React.Component {
               valuePropName: 'checked',
               initialValue: formVals.Status === '1',
             })(<Switch checkedChildren="启用" unCheckedChildren="禁用" />)}
+          </FormItem>
+        
+          <FormItem key="Title" {...formLayout} label="网站Title">
+            {getFieldDecorator('Title', {
+              initialValue: formVals.Title,
+            })(<TextArea placeholder="请输入Title" />)}
+          </FormItem>
+         
+         
+          <FormItem key="SeoDescription" {...formLayout} label="Seo描述">
+            {getFieldDecorator('SeoDescription', {
+              initialValue: formVals.SeoDescription,
+            })(<TextArea placeholder="请输入SeoDescription" />)}
+          </FormItem>
+         
+           
+          <FormItem key="SeoKey" {...formLayout} label="Seo关键字">
+            {getFieldDecorator('SeoKey', {
+              initialValue: formVals.SeoKey,
+            })(<TextArea placeholder="请输入SeoKey" />)}
           </FormItem>
           <FormItem key="PicturePath" {...formLayout} label="分类图片">
             <Upload

@@ -30,10 +30,10 @@ class AddSKU extends React.Component {
       dataIndex: 'BrandName',
       render: (text, record, index) => (
         <Brand
-          initialValue={record.BrandName}
           keyType="Name"
+          initialValue={text}
           onChange={value => {
-            this.codeChange(value, record, index, 'BrandName');
+            this.brandChange(value, record, index);
           }}
         />
       ),
@@ -132,6 +132,14 @@ class AddSKU extends React.Component {
   deleteLine = (record, index) => {
     const { TI_Z01101 } = this.state;
     TI_Z01101.splice(index, 1);
+    this.setState({ TI_Z01101 });
+  };
+
+   // 品牌change
+   brandChange = (value, record, index) => {
+    Object.assign(record, value);
+    const { TI_Z01101 } = this.state;
+    TI_Z01101[index] = record;
     this.setState({ TI_Z01101 });
   };
 

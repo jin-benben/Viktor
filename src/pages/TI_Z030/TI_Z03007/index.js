@@ -10,6 +10,7 @@ import MyPageHeader from '../components/pageHeader';
 import Organization from '@/components/Organization/multiple';
 import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
 import AttachmentModal from '@/components/Attachment/modal';
+import MDMCommonality from '@/components/Select';
 import { getName } from '@/utils/utils';
 
 const { RangePicker } = DatePicker;
@@ -80,9 +81,9 @@ class AgreementLine extends PureComponent {
       sorter: true,
       align: 'center',
       dataIndex: 'CardName',
-      render: text => (
+      render: (text,record) => (
         <Ellipsis tooltip lines={1}>
-          {text}
+          <Link target="_blank" to={`/main/TI_Z006/detail?Code=${record.CardCode}`}>{text}</Link>
         </Ellipsis>
       ),
     },
@@ -94,13 +95,21 @@ class AgreementLine extends PureComponent {
       width: 300,
       render: (text, record) => (
         <Ellipsis tooltip lines={1}>
-          {text ? (
-            <Link target="_blank" to={`/main/product/TI_Z009/TI_Z00903?Code${record.SKU}`}>
+          {text&&(
+            <Link target="_blank" to={`/main/product/TI_Z009/TI_Z00903?Code=${record.SKU}`}>
               {record.SKU}-
             </Link>
-          ) : (
-            ''
           )}
+          <Link target="_blank" to={`/main/product/TI_Z005/detail?Code=${record.BrandCode}`}>{text}</Link>
+        </Ellipsis>)
+    },
+    {
+      title: '参数',
+      dataIndex: 'Parameters',
+      width: 100,
+      align: 'center',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
           {text}
         </Ellipsis>
       ),
@@ -298,17 +307,7 @@ class AgreementLine extends PureComponent {
         </Ellipsis>
       ),
     },
-    {
-      title: '参数',
-      dataIndex: 'Parameters',
-      width: 100,
-      align: 'center',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
+
     {
       title: '包装',
       width: 100,
@@ -453,7 +452,7 @@ class AgreementLine extends PureComponent {
       type: 'global/getMDMCommonality',
       payload: {
         Content: {
-          CodeList: ['Saler', 'Purchaser', 'WhsCode', 'TI_Z042'],
+          CodeList: ['Saler', 'Purchaser', 'WhsCode', 'TI_Z042','Company'],
         },
       },
     });
@@ -491,7 +490,11 @@ class AgreementLine extends PureComponent {
   handleSearch = e => {
     // 搜索
     e.preventDefault();
-    const { dispatch, form } = this.props;
+    const {
+      dispatch,
+      form,
+      agreementLine: { queryData },
+    } = this.props;
 
     form.validateFields((err, fieldsValue) => {
       if (err) return;
@@ -501,21 +504,16 @@ class AgreementLine extends PureComponent {
         DocDateFrom = moment(fieldsValue.dateArr[0]).format('YYYY-MM-DD');
         DocDateTo = moment(fieldsValue.dateArr[1]).format('YYYY-MM-DD');
       }
-
+      // eslint-disable-next-line no-param-reassign
       delete fieldsValue.dateArr;
-
-      const queryData = {
-        ...fieldsValue,
-        DocDateFrom,
-        DocDateTo,
-      };
       dispatch({
         type: 'agreementLine/fetch',
         payload: {
           Content: {
-            SearchText: '',
-            SearchKey: 'Name',
-            ...queryData,
+            ...queryData.Content,
+            ...fieldsValue,
+            DocDateFrom,
+            DocDateTo,
           },
           page: 1,
           rows: 30,
@@ -540,10 +538,24 @@ class AgreementLine extends PureComponent {
     });
   };
 
+  returnTotal = () => {
+    const {
+      agreementLine: { InquiryDocTotalLocal, ProfitTotal, DocTotal },
+    } = this.props;
+    return (
+      <Row gutter={8}>
+        <Col span={4}>总计：{DocTotal}</Col>
+        <Col span={4}>询本总计：{InquiryDocTotalLocal}</Col>
+        <Col span={4}>利润总计：{ProfitTotal}</Col>
+      </Row>
+    );
+  };
+
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
       agreementLine: { queryData },
+      global:{Company}
     } = this.props;
     const { Owner } = queryData.Content;
     const { expandForm } = this.state;
@@ -646,6 +658,13 @@ class AgreementLine extends PureComponent {
                   </FormItem>
                 </FormItem>
               </Col>
+              <Col md={5} sm={24}>
+                <FormItem key="CompanyCode" {...formLayout} label="交易公司">
+                  {getFieldDecorator('CompanyCode')(
+                    <MDMCommonality style={{ width: '100%' }} data={Company} />
+                  )}
+                </FormItem>
+              </Col>
             </Fragment>
           ) : null}
           <Col md={4} sm={24}>
@@ -701,6 +720,7 @@ class AgreementLine extends PureComponent {
             rowKey="Key"
             columns={this.columns}
             onChange={this.handleStandardTableChange}
+            footer={this.returnTotal}
           />
         </div>
         <AttachmentModal

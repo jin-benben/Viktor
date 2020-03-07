@@ -897,21 +897,16 @@ class AgreementEdit extends React.Component {
     OtherTotal = round(OtherTotal, 2);
     ProfitTotal = round(DocTotal - InquiryDocTotalLocal - OtherTotal, 2);
 
-    this.setState(
-      {
-        orderDetail: {
-          ...orderDetail,
-          DocTotal,
-          InquiryDocTotalLocal,
-          InquiryDocTotal,
-          ProfitTotal,
-          OtherTotal,
-        },
+    this.setState({
+      orderDetail: {
+        ...orderDetail,
+        DocTotal,
+        InquiryDocTotalLocal,
+        InquiryDocTotal,
+        ProfitTotal,
+        OtherTotal,
       },
-      () => {
-        console.log(InquiryDocTotalLocal, this.state.orderDetail);
-      }
-    );
+    });
   };
 
   // 品牌,仓库改变
@@ -1183,6 +1178,7 @@ class AgreementEdit extends React.Component {
         SKU,
         SKUName,
         BrandName,
+        BrandCode,
         ProductName,
         ManufactureNO,
         ManLocation,
@@ -1233,6 +1229,7 @@ class AgreementEdit extends React.Component {
         SKU,
         SKUName,
         BrandName,
+        BrandCode,
         ProductName,
         ManufactureNO,
         ManLocation,
@@ -1743,7 +1740,7 @@ class AgreementEdit extends React.Component {
                     >
                       {addList.map(option => (
                         <Option key={option.AddressID} value={option.AddressID}>
-                          {`${option.Province}/${option.City}/${option.Area}`}
+                          {`${option.AddressName}/${option.Province}/${option.City}/${option.Area}`}
                         </Option>
                       ))}
                     </Select>

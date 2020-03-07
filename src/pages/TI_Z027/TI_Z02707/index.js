@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
@@ -112,9 +113,9 @@ class supplierQuotationSku extends PureComponent {
       sorter: true,
       align: 'center',
       dataIndex: 'CardName',
-      render: text => (
+      render: (text,record) => (
         <Ellipsis tooltip lines={1}>
-          {text}
+          <Link target="_blank" to={`/main/TI_Z007/detail?Code=${record.CardCode}`}>{text}</Link> 
         </Ellipsis>
       ),
     },
@@ -127,16 +128,13 @@ class supplierQuotationSku extends PureComponent {
       width: 300,
       render: (text, record) => (
         <Ellipsis tooltip lines={1}>
-          {text ? (
-            <Link target="_blank" to={`/main/product/TI_Z009/TI_Z00903?Code${record.SKU}`}>
+          {text&&(
+            <Link target="_blank" to={`/main/product/TI_Z009/TI_Z00903?Code=${record.SKU}`}>
               {record.SKU}-
             </Link>
-          ) : (
-            ''
           )}
-          {text}
-        </Ellipsis>
-      ),
+          <Link target="_blank" to={`/main/product/TI_Z005/detail?Code=${record.BrandCode}`}>{text}</Link>
+        </Ellipsis>)
     },
     {
       title: '名称(外)',

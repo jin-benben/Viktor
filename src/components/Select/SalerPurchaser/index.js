@@ -82,7 +82,9 @@ class SalerPurchaser extends PureComponent {
         value={value}
         placeholder="输入名称"
         notFoundContent={fetching ? <Spin size="small" /> : <Empty />}
-        filterOption={false}
+        filterOption={(input, option) =>
+          option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+        }
         onSearch={this.fetchUser}
         onChange={this.handleChange}
         style={{ width: '100%' }}

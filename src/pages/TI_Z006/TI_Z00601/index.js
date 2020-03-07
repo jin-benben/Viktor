@@ -79,6 +79,11 @@ class CompanyEdit extends PureComponent {
       dataIndex: 'Position',
     },
     {
+      title: '备注',
+      width: 100,
+      dataIndex: 'Comment',
+    },
+    {
       title: '销售',
       width: 100,
       dataIndex: 'Saler',
@@ -674,6 +679,13 @@ class CompanyEdit extends PureComponent {
                   rules: [{ required: true, message: '请输入默认物流公司！' }],
                   initialValue: formVals.LogisticsCompany,
                 })(<MDMCommonality initialValue={formVals.LogisticsCompany} data={Trnsp} />)}
+              </FormItem>
+            </Col>
+            <Col lg={8} md={12} sm={24}>
+              <FormItem key="Comment" {...this.formLayout} label="备注">
+                {getFieldDecorator('Comment', {
+                  initialValue: formVals.Comment,
+                })(<Input placeholder="请输入备注" />)}
               </FormItem>
             </Col>
             <Col lg={8} md={12} sm={24}>

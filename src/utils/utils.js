@@ -1,7 +1,9 @@
 /* eslint-disable consistent-return */
 /* eslint no-useless-escape:0 import/prefer-default-export:0 */
+import round from 'lodash/round';
+
 const reg = /(((^https?:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+(?::\d+)?|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)$/;
-const emailReg = /^[a-zA-Z0-9_.-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.[a-zA-Z0-9]{2,7}$/;
+const emailReg = /^[a-zA-Z0-9_.-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.[a-zA-Z0-9]{2,20}$/;
 export function isUrl(path) {
   return reg.test(path);
 }
@@ -19,10 +21,10 @@ export function chechEmail(email) {
 
 export function requestUrl(url) {
   if (url.indexOf('/MDM') !== -1) {
-    return url.replace(/\/MDM/i, 'http://47.104.65.49:8088');
+    return url.replace(/\/MDM/i, 'http://apimdm.wktmro.com');
   }
   if (url.indexOf('/OMS') !== -1) {
-    return url.replace(/\/OMS/i, 'http://47.104.65.49:8090');
+    return url.replace(/\/OMS/i, 'http://apioms.wktmro.com');
   }
   if (url.indexOf('/Login') !== -1) {
     return url.replace(/\/Login/i, 'http://apilogin.wktmro.com');
@@ -60,3 +62,37 @@ export function validatorEmail(rule, value, callback) {
     callback();
   }
 }
+
+export function getTotal(orderList) {
+  let ProfitTotal = 0;
+  let DocTotal = 0;
+  let InquiryDocTotalLocal = 0;
+  if (orderList.length) {
+    orderList.forEach(order => {
+      DocTotal += order.LineTotal;
+      InquiryDocTotalLocal += order.InquiryLineTotalLocal;
+      ProfitTotal += order.ProfitLineTotal;
+    });
+    DocTotal = round(DocTotal, 2);
+    InquiryDocTotalLocal = round(InquiryDocTotalLocal, 2);
+
+    ProfitTotal = round(ProfitTotal, 2);
+  }
+  return { InquiryDocTotalLocal, ProfitTotal, DocTotal };
+}
+function getElementTop(element) {
+  let actualTop = element.offsetTop;
+  let current = element.offsetParent;
+  while (current !== null) {
+    actualTop += current.offsetTop;
+    current = current.offsetParent;
+  }
+  return document.body.clientHeight - actualTop-80;
+}
+export const setTableHeight = () => {
+  if (document.getElementsByClassName('myTable').length) {
+    return getElementTop(document.getElementsByClassName('myTable')[0]);
+  }
+  return 0;
+};
+

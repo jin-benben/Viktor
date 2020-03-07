@@ -1,36 +1,27 @@
 import React, { PureComponent } from 'react';
-import { Modal, message, Table } from 'antd';
+import { Modal, message, Table, DatePicker } from 'antd';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import request from '@/utils/request';
-import { baseType } from '@/utils/publicData';
-import { getName } from '@/utils/utils';
+import Link from 'umi/link';
 
+const { RangePicker } = DatePicker;
 class BrandModal extends PureComponent {
   columns = [
     {
-      title: '基于单号',
-      dataIndex: 'BaseEntry',
+      title: '询价日期',
+      dataIndex: 'CreateDate',
+      width: 150,
+    },
+   
+    {
+      title: '报价单号',
       width: 100,
+      dataIndex: 'QuoteEntry',
+      render:(text)=><Link to={`/sellabout/TI_Z029/detail?DocEntry=${text}`}>{text}</Link>
     },
     {
-      title: '基于类型',
-      width: 100,
-      dataIndex: 'BaseType',
-      render: text => <span>{getName(baseType, text)}</span>,
-    },
-    {
-      title: '供应商名称',
-      width: 100,
-      dataIndex: 'SupplierName',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
-    {
-      title: '客户名称',
-      width: 100,
+      title: '报价客户',
+      width: 200,
       dataIndex: 'CardName',
       render: text => (
         <Ellipsis tooltip lines={1}>
@@ -42,6 +33,12 @@ class BrandModal extends PureComponent {
       title: '询价价格',
       width: 100,
       dataIndex: 'InquiryPrice',
+    },
+    {
+      title: '询价币种',
+      width: 100,
+      dataIndex: 'Currency',
+     
     },
     {
       title: '询价运费',
@@ -57,7 +54,7 @@ class BrandModal extends PureComponent {
       selectedRows: [],
       queryData: {
         Content: {
-          SearchText: props.SearchText,
+          Code: props.Code,
           SearchKey: 'Name',
         },
         page: 1,
@@ -79,11 +76,11 @@ class BrandModal extends PureComponent {
   componentWillReceiveProps(nextProps) {
     const { queryData } = this.state;
     const { SearchText } = queryData.Content;
-    if (SearchText !== nextProps.ProductName && nextProps.ProductName) {
+    if (SearchText !== nextProps.Code && nextProps.Code) {
       this.setState({
         queryData: {
           Content: {
-            SearchText: nextProps.ProductName,
+            Code: nextProps.Code,
             SearchKey: 'Name',
           },
           page: 1,
@@ -94,7 +91,7 @@ class BrandModal extends PureComponent {
       });
       this.getHistory({
         Content: {
-          SearchText: nextProps.ProductName,
+          Code: nextProps.Code,
           SearchKey: 'Name',
         },
         page: 1,
@@ -156,6 +153,36 @@ class BrandModal extends PureComponent {
     }
   };
 
+  onChange=(date,dateString)=>{
+    const {queryData:{Content}}=this.state
+    this.setState({
+      queryData:{
+        Content:{
+          ...Content,
+          DateForm:dateString[0],
+          ToForm:dateString[1],
+        },
+        page: 1,
+        rows: 20,
+        sidx: 'Code',
+        sord: 'Desc',
+      }
+     
+    },()=>{
+      this.getHistory({
+        Content:{
+          ...Content,
+          DateForm:dateString[0],
+          ToForm:dateString[1],
+        },
+        page: 1,
+        rows: 20,
+        sidx: 'Code',
+        sord: 'Desc',
+      })
+    })
+  }
+
   render() {
     const { loading, pagination, dataSource } = this.state;
     const { modalVisible, handleModalVisible } = this.props;
@@ -170,10 +197,11 @@ class BrandModal extends PureComponent {
         onCancel={() => handleModalVisible()}
       >
         <div className="tableList">
+          <RangePicker onChange={this.onChange} />
           <Table
             loading={loading}
             dataSource={dataSource}
-            rowKey="Code"
+            rowKey="LineID"
             scroll={{ y: 400 }}
             pagination={pagination}
             columns={this.columns}

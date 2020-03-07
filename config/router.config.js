@@ -212,7 +212,6 @@ export default [
             routes: [
               {
                 name: '品牌管理',
-                icon: 'iconpinpai',
                 path: '/main/product/TI_Z005',
                 component: './TI_Z005',
               },
@@ -224,87 +223,56 @@ export default [
               },
               {
                 name: '产品分类',
-                icon: 'iconwsdzb_zbgzt_xxzx_newpxb_type',
                 path: '/main/product/TI_Z010',
                 component: './TI_Z010',
               },
               {
                 name: '产地',
-                icon: 'iconwsdzb_zbgzt_xxzx_newpxb_type',
                 path: '/main/product/TI_Z042',
                 component: './TI_Z042',
               },
               {
-                name: '物料管理',
-                icon: 'iconSKU',
-                path: '/main/product/TI_Z009',
-                routes: [
-                  {
-                    name: '物料添加',
-                    path: '/main/product/TI_Z009/TI_Z00901',
-                    component: './TI_Z009/TI_Z00901',
-                  },
-                  {
-                    name: '物料查询',
-                    path: '/main/product/TI_Z009/TI_Z00902',
-                    component: './TI_Z009/TI_Z00902',
-                  },
-                  {
-                    name: '物料详情',
-                    hideInMenu: true,
-                    path: '/main/product/TI_Z009/TI_Z00903',
-                    component: './TI_Z009/TI_Z00903',
-                  },
-                  {
-                    component: './exception/404',
-                  },
-                ],
+                name: '物料添加',
+                path: '/main/product/TI_Z009/TI_Z00901',
+                component: './TI_Z009/TI_Z00901',
               },
               {
-                name: 'SPU管理',
-                icon: 'iconSPUguanli',
-                path: '/main/product/TI_Z011',
-                routes: [
-                  {
-                    name: 'SPU添加',
-                    path: '/main/product/TI_Z011/TI_Z01101',
-                    component: './TI_Z011/add.js',
-                  },
-                  {
-                    name: 'SPU查询',
-                    path: '/main/product/TI_Z011/TI_Z01102',
-                    component: './TI_Z011/search.js',
-                  },
-                  {
-                    component: './exception/404',
-                  },
-                ],
+                name: '物料查询',
+                path: '/main/product/TI_Z009/TI_Z00902',
+                component: './TI_Z009/TI_Z00902',
               },
               {
-                name: '编码管理',
-                icon: 'iconcodec',
-                path: '/main/product/code',
-                routes: [
-                  {
-                    name: '国内海关编码',
-                    path: '/main/product/code/hscode',
-                    component: './code/hscode',
-                  },
-                  {
-                    name: '国内海关编码详情',
-                    hideInMenu: true,
-                    path: '/main/product/code/hscode/detail',
-                    component: './code/hscode/detail',
-                  },
-                  {
-                    name: '国外海关编码',
-                    path: '/main/product/code/fhscode',
-                    component: './code/fhscode',
-                  },
-                  {
-                    component: './exception/404',
-                  },
-                ],
+                name: '物料详情',
+                hideInMenu: true,
+                path: '/main/product/TI_Z009/TI_Z00903',
+                component: './TI_Z009/TI_Z00903',
+              },
+              {
+                name: 'SPU添加',
+                path: '/main/product/TI_Z011/TI_Z01101',
+                component: './TI_Z011/add.js',
+              },
+              {
+                name: 'SPU查询',
+                path: '/main/product/TI_Z011/TI_Z01102',
+                component: './TI_Z011/search.js',
+              },
+             
+              {
+                name: '国内海关编码',
+                path: '/main/product/code/hscode',
+                component: './code/hscode',
+              },
+              {
+                name: '国内海关编码详情',
+                hideInMenu: true,
+                path: '/main/product/code/hscode/detail',
+                component: './code/hscode/detail',
+              },
+              {
+                name: '国外海关编码',
+                path: '/main/product/code/fhscode',
+                component: './code/fhscode',
               },
               {
                 component: './exception/404',

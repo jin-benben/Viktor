@@ -8,6 +8,7 @@ import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import StandardTable from '@/components/StandardTable';
 import Organization from '@/components/Organization/multiple';
 import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
+import MDMCommonality from '@/components/Select';
 import MyPageHeader from '../components/pageHeader';
 import { getName } from '@/utils/utils';
 
@@ -91,9 +92,9 @@ class agreementOrder extends PureComponent {
       dataIndex: 'CardName',
       sorter: true,
       align: 'center',
-      render: text => (
+      render: (text,record) => (
         <Ellipsis tooltip lines={1}>
-          {text}
+          <Link target="_blank" to={`/main/TI_Z006/detail?Code=${record.CardCode}`}>{text}</Link>
         </Ellipsis>
       ),
     },
@@ -203,7 +204,7 @@ class agreementOrder extends PureComponent {
       type: 'global/getMDMCommonality',
       payload: {
         Content: {
-          CodeList: ['Saler', 'Purchaser'],
+          CodeList: ['Saler', 'Purchaser','Company'],
         },
       },
     });
@@ -248,6 +249,7 @@ class agreementOrder extends PureComponent {
         DocDateTo = moment(fieldsValue.dateArr[1]).format('YYYY-MM-DD');
       }
 
+      // eslint-disable-next-line no-param-reassign
       delete fieldsValue.dateArr;
       const queryData = {
         ...fieldsValue,
@@ -283,6 +285,7 @@ class agreementOrder extends PureComponent {
     const {
       form: { getFieldDecorator },
       agreementOrder: { queryData },
+      global:{Company}
     } = this.props;
     const { Owner } = queryData.Content;
     const { expandForm } = this.state;
@@ -373,6 +376,13 @@ class agreementOrder extends PureComponent {
                   <FormItem className="lineFormItem" key="SoEntryTo">
                     {getFieldDecorator('SoEntryTo')(<Input placeholder="结束单号" />)}
                   </FormItem>
+                </FormItem>
+              </Col>
+              <Col md={5} sm={24}>
+                <FormItem key="CompanyCode" {...formLayout} label="交易公司">
+                  {getFieldDecorator('CompanyCode')(
+                    <MDMCommonality style={{ width: '100%' }} data={Company} />
+                  )}
                 </FormItem>
               </Col>
             </Fragment>

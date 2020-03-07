@@ -47,7 +47,7 @@ class MyUpload extends React.Component {
 
     return (
       <Upload
-        action="http://47.104.65.49:8088/MDMEnclosure/EnclosureUpload"
+        action="http://47.104.65.49:8002/MDMEnclosure/EnclosureUpload"
         listType="picture-card"
         onChange={this.handleChange}
         data={{ UserCode: currentUser.UserCode, Folder, Tonken: currentUser.Token }}

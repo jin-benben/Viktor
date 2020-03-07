@@ -186,6 +186,7 @@ class TI_Z02803 extends PureComponent {
         DocDateTo = moment(fieldsValue.dateArr[1]).format('YYYY-MM-DD');
       }
 
+      // eslint-disable-next-line no-param-reassign
       delete fieldsValue.dateArr;
       const queryData = {
         ...fieldsValue,

@@ -20,8 +20,10 @@ export default class Yuan extends React.PureComponent {
   };
 
   render() {
+    const { style } = this.props;
     return (
       <span
+        style={style}
         ref={ref => {
           this.main = ref;
         }}

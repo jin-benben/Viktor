@@ -30,11 +30,14 @@ class MyUpload extends React.Component {
     if (info.file.response.Status === 200) {
       message.success('上传成功');
       const { FilePath, FileCode, FilePathX, Extension, FileName } = info.file.response;
-      const { onChange } = this.props;
+      const { onChange,showImg } = this.props;
       if (onChange) {
         onChange({ FilePath, FileCode, FilePathX, Extension, FileName });
       }
-      this.setState({ FilePath });
+      if(!showImg){
+        this.setState({ FilePath });
+      }
+      
     } else {
       message.warning(info.file.response.Message);
     }

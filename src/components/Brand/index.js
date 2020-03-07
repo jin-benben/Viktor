@@ -64,6 +64,10 @@ class Brands extends PureComponent {
     });
     const { onChange } = this.props;
     if (onChange) {
+      if(!value){
+        onChange({ BrandCode: '', BrandName: '' });
+        return
+      }
       const { item } = option.props;
       const { Code, Name } = item;
       onChange({ BrandCode: Code, BrandName: Name });
@@ -76,6 +80,7 @@ class Brands extends PureComponent {
       <Select
         showSearch
         showArrow={false}
+        allowClear
         value={value}
         placeholder="输入名称"
         notFoundContent={fetching ? <Spin size="small" /> : <Empty style={{ width: '100%' }} />}

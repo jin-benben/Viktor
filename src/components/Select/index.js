@@ -28,7 +28,7 @@ class MDMCommonality extends PureComponent {
     }
   };
 
-  filterOption = (inputValue, option) => option.props.children.indexOf(inputValue) !== -1;
+ 
 
   render() {
     const { value, data } = this.state;
@@ -38,7 +38,9 @@ class MDMCommonality extends PureComponent {
         value={value}
         showSearch
         placeholder={`请选择${placeholder}`}
-        filterOption={this.filterOption}
+        filterOption={(input, option) =>
+          option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+        }
         onChange={this.handleChange}
         style={{ width: '100%' }}
       >

@@ -125,13 +125,12 @@ class orderLine extends PureComponent {
       sorter: true,
       align: 'center',
       dataIndex: 'CardName',
-      render: text => (
+      render: (text,record) => (
         <Ellipsis tooltip lines={1}>
-          {text}
+          <Link to={`/main/TI_Z006/detail?Code=${record.CardCode}`}>{text}</Link>
         </Ellipsis>
       ),
     },
-
     {
       title: '物料',
       dataIndex: 'SKUName',
@@ -140,13 +139,22 @@ class orderLine extends PureComponent {
       width: 300,
       render: (text, record) => (
         <Ellipsis tooltip lines={1}>
-          {text ? (
-            <Link target="_blank" to={`/main/product/TI_Z009/TI_Z00903?Code${record.SKU}`}>
+          {text&&(
+            <Link target="_blank" to={`/main/product/TI_Z009/TI_Z00903?Code=${record.SKU}`}>
               {record.SKU}-
             </Link>
-          ) : (
-            ''
           )}
+          <Link to={`/main/product/TI_Z005/detail?Code=${record.BrandCode}`}>{text}</Link>
+        </Ellipsis>
+      ),
+    },
+    {
+      title: '参数',
+      dataIndex: 'Parameters',
+      width: 100,
+      align: 'center',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
           {text}
         </Ellipsis>
       ),
@@ -296,17 +304,6 @@ class orderLine extends PureComponent {
       width: 100,
       dataIndex: 'Package',
       align: 'center',
-    },
-    {
-      title: '参数',
-      dataIndex: 'Parameters',
-      width: 100,
-      align: 'center',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
     },
     {
       title: '产地',
@@ -531,7 +528,7 @@ class orderLine extends PureComponent {
       type: 'global/getMDMCommonality',
       payload: {
         Content: {
-          CodeList: ['Saler', 'Purchaser', 'TI_Z042', 'TI_Z004', 'HS', 'WhsCode'],
+          CodeList: ['Saler', 'Purchaser', 'TI_Z042', 'TI_Z004', 'HS', 'WhsCode','Company'],
         },
       },
     });
@@ -685,7 +682,7 @@ class orderLine extends PureComponent {
     const {
       form: { getFieldDecorator },
       orderLine: { queryData },
-      global: { ProcessorList },
+      global: { ProcessorList,Company },
     } = this.props;
     const { expandForm } = this.state;
     const formLayout = {
@@ -800,6 +797,13 @@ class orderLine extends PureComponent {
                 <FormItem key="Processor" {...formLayout} label="处理人">
                   {getFieldDecorator('Processor')(
                     <ProcessorSelect data={ProcessorList} type="Code" />
+                  )}
+                </FormItem>
+              </Col>
+              <Col md={5} sm={24}>
+                <FormItem key="CompanyCode" {...formLayout} label="交易公司">
+                  {getFieldDecorator('CompanyCode')(
+                    <MDMCommonality style={{ width: '100%' }} data={Company} />
                   )}
                 </FormItem>
               </Col>

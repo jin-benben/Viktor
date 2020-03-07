@@ -58,7 +58,7 @@ class CompanyEdit extends React.Component {
     },
     {
       title: '电话号码',
-      width: 150,
+      width: 250,
       dataIndex: 'PhoneNO',
     },
     {
@@ -69,6 +69,11 @@ class CompanyEdit extends React.Component {
       title: '职位',
       width: 100,
       dataIndex: 'Position',
+    },
+    {
+      title: '备注',
+      width: 200,
+      dataIndex: 'Comment',
     },
     {
       title: '操作',
@@ -410,6 +415,7 @@ class CompanyEdit extends React.Component {
   handleSubmitAttach = fileList => {
     const { dispatch } = this.props;
     const { formVals } = this.state;
+    // eslint-disable-next-line array-callback-return
     fileList.map(file => {
       const { AttachmentPath, AttachmentCode, AttachmentName, AttachmentExtension } = file;
       dispatch({

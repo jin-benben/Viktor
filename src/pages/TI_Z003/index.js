@@ -40,7 +40,7 @@ class Organization extends PureComponent {
         );
       }
       return <TreeNode title={popover} key={item.Code} dataRef={item} />;
-    });
+  });
 
   handleSubmit = fieldsValue => {
     const { dispatch } = this.props;

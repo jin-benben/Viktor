@@ -128,7 +128,7 @@ class OINVConfrim extends PureComponent {
       render: text =>
         text ? (
           <span>
-            {text === 'Y' ? <Tag color="green">已发货</Tag> : <Tag color="blue">未发货</Tag>}
+            {text === 'Y' ? <Tag color="green">已寄票</Tag> : <Tag color="blue">未寄票</Tag>}
           </span>
         ) : (
           ''
@@ -502,6 +502,7 @@ class OINVConfrim extends PureComponent {
   printHandle = () => {
     const { dispatch } = this.props;
     const { selectedRows } = this.state;
+    console.log(selectedRows)
     if (!selectedRows.length) {
       message.warning('请先选择要打印的单据');
       return;
@@ -608,9 +609,9 @@ class OINVConfrim extends PureComponent {
               <Col md={4} sm={24}>
                 <FormItem key="DeliverSts" {...formLayout}>
                   {getFieldDecorator('DeliverSts', { initialValue: 'N' })(
-                    <Select placeholder="请选择发货状态">
-                      <Option value="Y">已发货</Option>
-                      <Option value="N">未发货</Option>
+                    <Select placeholder="请选择状态">
+                      <Option value="Y">已寄票</Option>
+                      <Option value="N">未寄票</Option>
                       <Option value="">全部</Option>
                     </Select>
                   )}

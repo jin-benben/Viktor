@@ -113,7 +113,7 @@ class NeedTabl extends React.Component {
         ) : (
           <Ellipsis tooltip lines={1}>
             {text ? (
-              <Link target="_blank" to={`/main/product/TI_Z009/TI_Z00903?Code${record.SKU}`}>
+              <Link target="_blank" to={`/main/product/TI_Z009/TI_Z00903?Code=${record.SKU}`}>
                 {record.SKU}-
               </Link>
             ) : (

@@ -149,7 +149,7 @@ class companySearch extends PureComponent {
           },
           page: 1,
           rows: 30,
-          sidx: 'Code',
+          sidx: 'CreateDate',
           sord: 'Desc',
         },
       });

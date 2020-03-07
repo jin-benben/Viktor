@@ -2,6 +2,7 @@ import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import { Card, Tabs, Modal, Icon, Tag } from 'antd';
 import moment from 'moment';
+import Link from 'umi/link'
 import DescriptionList from 'ant-design-pro/lib/DescriptionList';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import StandardTable from '@/components/StandardTable';
@@ -22,6 +23,10 @@ class InquiryEdit extends PureComponent {
       title: '物料代码',
       width: 80,
       dataIndex: 'ItemCode',
+      render: (text) => (
+        <Link target="_blank" to={`/main/product/TI_Z009/TI_Z00903?Code=${text}`}>
+          {text}
+        </Link>)
     },
     {
       title: '物料名称',
@@ -30,6 +35,7 @@ class InquiryEdit extends PureComponent {
       render: text => (
         <Ellipsis tooltip lines={1}>
           {text}
+          {/* <Link target="_blank" to={`/main/product/TI_Z005/detail?Code=${record.BrandCode}`}>{text}</Link> */}
         </Ellipsis>
       ),
     },

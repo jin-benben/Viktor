@@ -32,12 +32,6 @@ class SKUModal extends PureComponent {
       ),
     },
     {
-      title: '品牌',
-      width: 100,
-      dataIndex: 'BrandName',
-    },
-
-    {
       title: '型号',
       width: 100,
       dataIndex: 'ManufactureNO',
@@ -96,7 +90,7 @@ class SKUModal extends PureComponent {
         Content: {
           SearchText: '',
           SearchKey: 'Name',
-          BrandName: props.BrandName,
+          BrandCode: props.BrandCode,
         },
         page: 1,
         rows: 30,
@@ -132,12 +126,12 @@ class SKUModal extends PureComponent {
 
   handleSearch = e => {
     e.preventDefault();
-    const { form, BrandName } = this.props;
+    const { form, BrandCode } = this.props;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
       const queryData = {
         Content: {
-          BrandName,
+          BranCode,
           SearchText: '',
           SearchKey: 'Name',
           ...fieldsValue,

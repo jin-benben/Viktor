@@ -49,7 +49,7 @@ export default class RichText extends React.Component {
         } else if (status !== 1) {
           this.loadUEditorScript();
         }
-      }, 0);
+      }, 100);
     }
   }
 
@@ -86,7 +86,7 @@ export default class RichText extends React.Component {
 
     const { value, editorConfig } = this.props;
     const conf = { ...initConfig, ...editorConfig };
-    console.log(UE, UE.ui);
+   
     const editor = new UE.ui.Editor(conf);
     this.editor = editor;
 

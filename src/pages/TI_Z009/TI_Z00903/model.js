@@ -3,7 +3,7 @@ import {
   querySPURule,
   queryFHSCodeRule,
   queryHSCodeRule,
-  updateRule,
+  addRule,
   updateDetailRule,
 } from '../service';
 
@@ -95,7 +95,7 @@ export default {
     },
 
     *update({ payload, callback }, { call }) {
-      const response = yield call(updateRule, payload);
+      const response = yield call(addRule, payload);
       if (callback) callback(response);
     },
     *updateDetail({ payload, callback }, { call }) {

@@ -2,6 +2,7 @@ import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import { Card, Tabs, Modal, Icon, Tag } from 'antd';
 import moment from 'moment';
+import Link from 'umi/link';
 import DescriptionList from 'ant-design-pro/lib/DescriptionList';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import StandardTable from '@/components/StandardTable';
@@ -22,6 +23,10 @@ class OrderDetailPage extends PureComponent {
       title: '物料代码',
       width: 80,
       dataIndex: 'ItemCode',
+      render: (text) => (
+        <Link target="_blank" to={`/main/product/TI_Z009/TI_Z00903?Code=${text}`}>
+          {text}
+        </Link>)
     },
     {
       title: '物料名称',
@@ -276,7 +281,7 @@ class OrderDetailPage extends PureComponent {
     return (
       <Card bordered={false} loading={loading}>
         <DescriptionList style={{ marginBottom: 24 }}>
-          <Description term="单号">{orderDetailInfo.DocEntry}</Description>
+          <Description term="销售订单号">{orderDetailInfo.DocEntry}</Description>
           <Description term="客户">
             {`${orderDetailInfo.CardName}(${orderDetailInfo.CardCode})`}
           </Description>

@@ -67,16 +67,25 @@ class InquiryEdit extends React.Component {
           ''
         ) : (
           <Ellipsis tooltip lines={1}>
-            {text ? (
-              <Link target="_blank" to={`/main/product/TI_Z009/TI_Z00903?Code${text}`}>
+            {text&&(
+              <Link target="_blank" to={`/main/product/TI_Z009/TI_Z00903?Code=${text}`}>
                 {text}-
               </Link>
-            ) : (
-              ''
             )}
-            {record.SKUName}
+            <Link target="_blank" to={`/main/product/TI_Z005/detail?Code=${record.BrandCode}`}> {record.SKUName}</Link>
           </Ellipsis>
         ),
+    },
+    {
+      title: '参数',
+      dataIndex: 'Parameters',
+      width: 100,
+      align: 'center',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '数量',
@@ -241,17 +250,6 @@ class InquiryEdit extends React.Component {
     {
       title: '备注',
       dataIndex: 'LineComment',
-      width: 100,
-      align: 'center',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
-    {
-      title: '参数',
-      dataIndex: 'Parameters',
       width: 100,
       align: 'center',
       render: text => (

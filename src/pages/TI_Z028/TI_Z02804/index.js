@@ -61,21 +61,15 @@ class TI_Z02804 extends PureComponent {
       dataIndex: 'SKU',
       align: 'center',
       width: 300,
-      render: (text, record) =>
-        record.lastIndex ? (
-          ''
-        ) : (
-          <Ellipsis tooltip lines={1}>
-            {text ? (
-              <Link target="_blank" to={`/main/product/TI_Z009/TI_Z00903?Code${text}`}>
-                {text}-
-              </Link>
-            ) : (
-              ''
-            )}
-            {record.SKUName}
-          </Ellipsis>
-        ),
+      render: (text, record) => (
+        <Ellipsis tooltip lines={1}>
+          {text&&(
+            <Link target="_blank" to={`/main/product/TI_Z009/TI_Z00903?Code=${record.SKU}`}>
+              {record.SKU}-
+            </Link>
+          )}
+          <Link target="_blank" to={`/main/product/TI_Z005/detail?Code=${record.BrandCode}`}>{record.SKUName}</Link>
+        </Ellipsis>)
     },
     {
       title: '名称(外)',
@@ -138,9 +132,9 @@ class TI_Z02804 extends PureComponent {
     {
       title: '供应商',
       dataIndex: 'CardName',
-      render: text => (
+      render: (text,record) => (
         <Ellipsis tooltip lines={1}>
-          {text}
+          <Link target="_blank" to={`/main/TI_Z007/detail?Code=${record.CardCode}`}>{text}</Link> 
         </Ellipsis>
       ),
     },
@@ -298,6 +292,7 @@ class TI_Z02804 extends PureComponent {
         DocDateTo = moment(fieldsValue.dateArr[1]).format('YYYY-MM-DD');
       }
 
+      // eslint-disable-next-line no-param-reassign
       delete fieldsValue.dateArr;
       const queryData = {
         ...fieldsValue,

@@ -197,7 +197,7 @@ class SupplierSearch extends PureComponent {
         Content: {
           ...queryData.Content,
           ...fieldsValue,
-          IsCheck: fieldsValue.BrandName ? 'Y' : 'N',
+          
         },
         page: 1,
         rows: 30,
@@ -222,13 +222,22 @@ class SupplierSearch extends PureComponent {
     });
   };
 
+  brandChange=(value)=>{
+    const {BrandName}=value
+    const { queryData } = this.state;
+    Object.assign(queryData.Content,{BrandName,IsCheck: BrandName?'Y':'N'})
+    this.setState({
+      queryData:{...queryData}
+    })
+  }
+
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
     } = this.props;
     const {
       queryData: {
-        Content: { BrandName },
+        Content: { BrandName, },
       },
     } = this.state;
     return (
@@ -241,9 +250,7 @@ class SupplierSearch extends PureComponent {
           </Col>
           <Col md={5} sm={24}>
             <FormItem key="BrandName" label="品牌">
-              {getFieldDecorator('BrandName', { initialValue: BrandName })(
-                <Brand initialValue={BrandName} keyType="Name" placeholder="请输入品牌名称" />
-              )}
+              <Brand initialValue={BrandName} onChange={this.brandChange} keyType="Name" placeholder="请输入品牌名称" />
             </FormItem>
           </Col>
           <Col md={8} sm={24}>

@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import { Table, Input, Select, DatePicker, Form } from 'antd';
 import moment from 'moment';
+import styles from './index.less'
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -94,7 +95,7 @@ class EditableTable extends React.Component {
         cell: EditableCell,
       },
     };
-    const { data, rowChange, rowKey, ...rest } = this.props;
+    const { data, rowChange, rowKey,pagination, ...rest } = this.props;
 
     let { columns } = this.props;
     columns = columns.map(col => {
@@ -119,8 +120,9 @@ class EditableTable extends React.Component {
     return (
       <Table
         components={components}
-        pagination={false}
+        className={styles.editableFormTable}
         rowKey={rowKey || 'key'}
+        pagination={false}
         bordered
         size="middle"
         dataSource={data}

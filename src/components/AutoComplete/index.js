@@ -37,7 +37,7 @@ class OrderAutoComplete extends Component {
     const { Type } = this.props;
     return (
       <Option key={item.Code} item={item} title={item[Type]}>
-        {`${item[Type]}`}
+        <p style={{with:500}} > {item[Type]}</p>
       </Option>
     );
   };
@@ -89,7 +89,6 @@ class OrderAutoComplete extends Component {
 
   render() {
     const { dataSource, value } = this.state;
-    console.log('ok', value);
     return (
       <AutoComplete
         className="global-search"

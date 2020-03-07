@@ -130,7 +130,7 @@ class InquiryEdit extends React.Component {
       render: (text, record, index) =>
         record.lastIndex ? null : (
           <Search
-            onChange={value => this.rowSelectChange(value, record, index, 'Price')}
+            onChange={event => this.rowSelectChange(event.target.value, record, index, 'Price')}
             onSearch={() => this.priceSelect(record, index)}
             defaultValue={text}
           />
@@ -464,11 +464,22 @@ class InquiryEdit extends React.Component {
 
   // 价格选择修改
   priceChange = select => {
-    console.log(select);
+    const {Currency,InquiryPrice,ForeignFreight,SupplierCode,CreateDate,SupplierName}=select[0]
+    const {targetLine,LineID,formVals}=this.state
+    Object.assign(targetLine,{Currency,InquiryPrice,ForeignFreight,SupplierCode,SupplierName,InquiryDueDate:CreateDate})
+    formVals.TI_Z02702[LineID]=targetLine
+    this.setState({
+      formVals:{...formVals},
+      priceModalVisible:false
+    })
   };
 
   // 选择价格
   priceSelect = (record, LineID) => {
+    if(!record.SKU){
+      message.warning('该行没有SKU')
+      return
+    }
     this.setState({
       targetLine: { ...record },
       LineID,
@@ -496,7 +507,7 @@ class InquiryEdit extends React.Component {
       InquiryPrice,
       SupplierCode,
       Currency,
-      ForeignFreight,
+      ForeignFreight,Code
     } = select;
     const { formVals } = this.state;
     record.SKUName = `${record.BrandName}  ${record.ProductName}  ${record.ManufactureNO}`;
@@ -518,7 +529,7 @@ class InquiryEdit extends React.Component {
       InquiryPrice,
       SupplierCode,
       Currency,
-      ForeignFreight,
+      ForeignFreight,SKU:Code
     });
     formVals.TI_Z02702[index] = record;
     this.setState({ formVals: { ...formVals } });
@@ -529,7 +540,11 @@ class InquiryEdit extends React.Component {
     const { formVals } = this.state;
     record[key] = value;
     formVals.TI_Z02702[index] = record;
-    this.setState({ formVals: { ...formVals } });
+    this.setState({ formVals }, () => {
+      if(key==="Price"){
+        this.getTotal()
+      }
+    });
   };
 
   // sku输入框获取焦点
@@ -1138,7 +1153,7 @@ class InquiryEdit extends React.Component {
           />
         </Modal>
         <PriceComplete
-          ProductName={targetLine.ProductName}
+          Code={targetLine.SKU}
           handleModalVisible={this.handleModalVisible}
           handleSubmit={this.priceChange}
           modalVisible={priceModalVisible}

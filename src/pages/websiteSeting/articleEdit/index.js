@@ -47,6 +47,8 @@ class ArticleEditPage extends PureComponent {
       Content: '',
       IsShow: 'Y',
       Presentation: '',
+      SeoDescription: '',
+      SeoKey: ''
     },
     isEdit: true, // 是否可编辑
   };
@@ -239,6 +241,22 @@ class ArticleEditPage extends PureComponent {
                   initialValue: articleDetail.IsShow === 'Y',
                   valuePropName: 'checked',
                 })(<Switch />)}
+              </FormItem>
+            </Col>
+          </Row>
+          <Row>
+            <Col lg={12} md={12} sm={24}>
+              <FormItem key="SeoDescription" {...formLayout} label="Seo描述">
+                {getFieldDecorator('SeoDescription', {
+                  initialValue: articleDetail.SeoDescription,
+                })(<TextArea placeholder="请输入SeoDescription" />)}
+              </FormItem>
+            </Col>
+            <Col lg={12} md={12} sm={24}>
+              <FormItem key="SeoKey" {...formLayout} label="Seo关键字">
+                {getFieldDecorator('SeoKey', {
+                  initialValue: articleDetail.SeoKey,
+                })(<TextArea placeholder="请输入SeoKey" />)}
               </FormItem>
             </Col>
           </Row>

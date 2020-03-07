@@ -67,7 +67,7 @@ class TI_Z02802 extends PureComponent {
         ) : (
           <Ellipsis tooltip lines={1}>
             {text ? (
-              <Link target="_blank" to={`/main/product/TI_Z009/TI_Z00903?Code${text}`}>
+              <Link target="_blank" to={`/main/product/TI_Z009/TI_Z00903?Code=${text}`}>
                 {text}-
               </Link>
             ) : (
@@ -144,10 +144,9 @@ class TI_Z02802 extends PureComponent {
       title: '供应商',
       width: 150,
       dataIndex: 'CardName',
-      render: text => (
+      render: (text,record) => (
         <Ellipsis tooltip lines={1}>
-          {' '}
-          {text}{' '}
+          <Link target="_blank" to={`/main/TI_Z007/detail?Code=${record.CardCode}`}>{text}</Link> 
         </Ellipsis>
       ),
     },

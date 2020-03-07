@@ -11,6 +11,7 @@ import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import StandardTable from '@/components/StandardTable';
 import Organization from '@/components/Organization/multiple';
 import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
+import MDMCommonality from '@/components/Select';
 import MyPageHeader from '../components/pageHeader';
 import { getName } from '@/utils/utils';
 
@@ -58,7 +59,7 @@ class inquiryListPage extends PureComponent {
     },
     {
       title: '单据状态',
-      width: 220,
+      width: 230,
       dataIndex: 'Status',
       align: 'center',
       render: (text, record) => (
@@ -92,9 +93,9 @@ class inquiryListPage extends PureComponent {
       dataIndex: 'CardName',
       sorter: true,
       align: 'center',
-      render: text => (
+      render: (text,record) => (
         <Ellipsis tooltip lines={1}>
-          {text}
+          <Link to={`/main/TI_Z006/detail?Code=${record.CardCode}`}>{text}</Link>
         </Ellipsis>
       ),
     },
@@ -282,6 +283,7 @@ class inquiryListPage extends PureComponent {
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
+      global:{Company},
       inquiryFetch: { queryData },
     } = this.props;
     const { expandForm } = this.state;
@@ -371,6 +373,13 @@ class inquiryListPage extends PureComponent {
               <Col md={5} sm={24}>
                 <FormItem key="DeptList" {...this.formLayout} label="部门">
                   {getFieldDecorator('DeptList')(<Organization />)}
+                </FormItem>
+              </Col>
+              <Col md={5} sm={24}>
+                <FormItem key="CompanyCode" {...formLayout} label="交易公司">
+                  {getFieldDecorator('CompanyCode')(
+                    <MDMCommonality style={{ width: '100%' }} data={Company} />
+                  )}
                 </FormItem>
               </Col>
             </Fragment>

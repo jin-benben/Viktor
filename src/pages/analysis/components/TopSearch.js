@@ -76,7 +76,8 @@ const TopSearch = memo(({ loading, docProcessData, defaultValue, selectDate }) =
           subTotal={
             <span>{`询:${docProcessData.SCount1} 报:${docProcessData.SCount2} 合:${
               docProcessData.SCount3
-            }`}</span>
+            }`}
+            </span>
           }
         />
         <MiniBar data={docProcessData.SUserDocInfo} />

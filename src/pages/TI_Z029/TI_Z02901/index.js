@@ -119,7 +119,7 @@ class TI_Z029Component extends React.Component {
         record.lastIndex ? null : (
           <AutoComplete
             BrandCode={record.BrandCode}
-            Type="ProductName"
+            Type="Name"
             onChage={value => this.rowSelectChange(value, record, index, 'ProductName')}
             parentSelect={select => this.rowSelect(select, record, index)}
             defaultValue={text}
@@ -143,7 +143,7 @@ class TI_Z029Component extends React.Component {
         record.lastIndex ? null : (
           <AutoComplete
             BrandCode={record.BrandCode}
-            Type="ManufactureNO"
+            Type="Name"
             onChage={value => this.rowSelectChange(value, record, index, 'ManufactureNO')}
             parentSelect={select => this.rowSelect(select, record, index)}
             defaultValue={text}
@@ -190,13 +190,13 @@ class TI_Z029Component extends React.Component {
     },
     {
       title: '价格',
-      width: 80,
+      width: 100,
       dataIndex: 'Price',
       align: 'center',
       render: (text, record, index) =>
         record.lastIndex ? null : (
           <Search
-            onChange={value => this.rowSelectChange(value, record, index, 'Price')}
+            onChange={event => this.rowSelectChange(event.target.value, record, index, 'Price')}
             onSearch={() => this.priceSelect(record, index)}
             defaultValue={text}
           />
@@ -956,11 +956,22 @@ class TI_Z029Component extends React.Component {
 
   // 价格选择修改
   priceChange = select => {
-    console.log(select);
+    const {Currency,InquiryPrice,ForeignFreight,SupplierCode,CreateDate,SupplierName}=select[0]
+    const {targetLine,LineID,orderDetail}=this.state
+    Object.assign(targetLine,{Currency,InquiryPrice,ForeignFreight,SupplierCode,SupplierName,InquiryDueDate:CreateDate})
+    orderDetail.TI_Z02902[LineID]=targetLine
+    this.setState({
+      orderDetail:{...orderDetail},
+      priceModalVisible:false
+    })
   };
 
   // 选择价格
   priceSelect = (record, LineID) => {
+    if(!record.SKU){
+      message.warning('该行没有SKU')
+      return
+    }
     this.setState({
       targetLine: { ...record },
       LineID,
@@ -988,7 +999,7 @@ class TI_Z029Component extends React.Component {
       InquiryPrice,
       SupplierCode,
       Currency,
-      ForeignFreight,
+      ForeignFreight,Code
     } = select;
     const { orderDetail } = this.state;
     record.SKUName = `${record.BrandName}  ${record.ProductName}  ${record.ManufactureNO}`;
@@ -1010,7 +1021,7 @@ class TI_Z029Component extends React.Component {
       InquiryPrice,
       SupplierCode,
       Currency,
-      ForeignFreight,
+      ForeignFreight,SKU:Code
     });
     orderDetail.TI_Z02902[index] = record;
     this.setState({ orderDetail: { ...orderDetail } });
@@ -1022,7 +1033,11 @@ class TI_Z029Component extends React.Component {
     record[key] = value;
     record.SKUName = `${record.BrandName}  ${record.ProductName}  ${record.ManufactureNO}`;
     orderDetail.TI_Z02902[index] = record;
-    this.setState({ orderDetail: { ...orderDetail } });
+    this.setState({ orderDetail }, () => {
+      if(key==="Price"){
+        this.getTotal()
+      }
+    });
   };
 
   // sku输入框获取焦点
@@ -1288,6 +1303,7 @@ class TI_Z029Component extends React.Component {
         SKU,
         SKUName,
         BrandName,
+        BrandCode,
         ProductName,
         ManufactureNO,
         ForeignParameters,
@@ -1332,7 +1348,7 @@ class TI_Z029Component extends React.Component {
         SourceType: item.SourceType || SourceType,
         SKU,
         SKUName,
-        BrandName,
+        BrandName,BrandCode,
         ProductName,
         ManufactureNO,
         ManLocation,
@@ -1841,7 +1857,7 @@ class TI_Z029Component extends React.Component {
                     >
                       {addList.map(option => (
                         <Option key={option.AddressID} value={option.AddressID}>
-                          {`${option.Province}/${option.City}/${option.Area}`}
+                          {`${option.AddressName}/${option.Province}/${option.City}/${option.Area}`}
                         </Option>
                       ))}
                     </Select>
@@ -1976,7 +1992,7 @@ class TI_Z029Component extends React.Component {
         </Modal>
 
         <PriceComplete
-          ProductName={targetLine.ProductName}
+          Code={targetLine.SKU}
           handleModalVisible={this.handleModalVisible}
           handleSubmit={this.priceChange}
           modalVisible={priceModalVisible}

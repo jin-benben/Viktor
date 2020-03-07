@@ -12,10 +12,10 @@ import {
   message,
   DatePicker,
   Select,
-  Modal,
-  Radio,
+  Icon,
 } from 'antd';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
+import TextArea from 'antd/lib/input/TextArea';
 import ClientAsk from '@/components/Order/TI_Z026';
 import SupplierAsk from '@/components/Order/TI_Z027';
 import OdlnordnFetch from '@/components/Order/OdlnordnFetch';
@@ -28,11 +28,14 @@ import FHSCode from '@/components/FHSCode';
 import SPUCode from '@/components/SPUCode';
 import Upload from '@/components/Upload';
 import UEditor from '@/components/Ueditor';
-import { getName } from '@/utils/utils';
+import styles from './index.less'
+
 
 const FormItem = Form.Item;
 const { TabPane } = Tabs;
 const { Option } = Select;
+
+
 
 /* eslint react/no-multi-comp:0 */
 @connect(({ skuDetail, loading, global }) => ({
@@ -95,10 +98,8 @@ class SKUDetail extends Component {
         SPUCode: '',
         TI_Z00902List: [],
         TI_Z00903List: [],
+        TI_Z00904List: [],
       },
-      activeKey: '',
-      DetailCode: '',
-      modalVisible: false,
     };
     this.formLayout = {
       labelCol: { span: 8 },
@@ -139,11 +140,23 @@ class SKUDetail extends Component {
 
   changePicture = ({ FilePath, FileCode, FilePathX }) => {
     const { skuDetailInfo } = this.state;
-    Object.assign(skuDetailInfo, {
+    Object.assign(skuDetailInfo,{
       PicturePath: FilePath,
       PicCode: FileCode,
       ListPiclocation: FilePathX,
-    });
+    })
+    this.setState({skuDetailInfo})
+  };
+
+  changeMainPicture = ({ FilePath, FileCode, FilePathX }) => {
+    const { skuDetailInfo } = this.state;
+    skuDetailInfo.TI_Z00904List.push({
+      Code:skuDetailInfo.Code,
+      PicturePath: FilePath,
+      PicCode: FileCode,
+      ListPiclocation: FilePathX,
+    })
+    this.setState({skuDetailInfo:{...skuDetailInfo}})
   };
 
   getDetail = () => {
@@ -151,6 +164,7 @@ class SKUDetail extends Component {
       dispatch,
       location: { query },
     } = this.props;
+    const { skuDetailInfo }=this.state
     if (query.Code) {
       dispatch({
         type: 'skuDetail/fetch',
@@ -161,11 +175,45 @@ class SKUDetail extends Component {
         },
         callback: response => {
           if (response && response.Status === 200) {
+            let TI_Z00903List=[]
+            const description = response.Content.TI_Z00903List.find(item=>item.DetailCode==="Description")
+            const selectFile = response.Content.TI_Z00903List.find(item=>item.DetailCode==="SelectFile")
+            const productImg = response.Content.TI_Z00903List.find(item=>item.DetailCode==="ProductImg")      
+            if(!description){
+              TI_Z00903List[0]={
+                Code:query.Code,
+                OrderById:0,
+                DetailCode:"Description",
+                Detail: '',
+              }
+            }else{
+              TI_Z00903List[0]=description
+            }
+            
+            if(!selectFile){
+              TI_Z00903List[1]={
+                  Code:query.Code,
+                  OrderById:1,
+                  DetailCode:"SelectFile",
+                  Detail: '',
+              }
+            }else{
+              TI_Z00903List[1]=selectFile
+            }
+            
+            if(!productImg){
+              TI_Z00903List[2]={
+                  Code:query.Code,
+                  OrderById:2,
+                  DetailCode:"ProductImg",
+                  Detail: '',
+              }
+            }else{
+              TI_Z00903List[2]=productImg
+            }
             this.setState({
-              skuDetailInfo: response.Content,
-              activeKey: response.Content.TI_Z00903List.length
-                ? response.Content.TI_Z00903List[0].DetailCode
-                : '',
+              skuDetailInfo:{...skuDetailInfo,...response.Content,TI_Z00903List},
+             
             });
           }
         },
@@ -173,66 +221,11 @@ class SKUDetail extends Component {
     }
   };
 
-  detailOnChange = activeKey => {
-    this.setState({
-      activeKey,
-    });
-  };
 
-  detailOnEdit = (targetKey, action) => {
-    this[action](targetKey);
-  };
+ 
 
-  add = () => {
-    this.setState({
-      modalVisible: true,
-    });
-  };
-
-  addTabne = () => {
-    const { DetailCode, skuDetailInfo } = this.state;
-    const { Code, TI_Z00903List } = skuDetailInfo;
-    const OrderById = TI_Z00903List.length
-      ? TI_Z00903List[TI_Z00903List.length - 1].OrderById + 1
-      : 1;
-    this.setState({
-      modalVisible: false,
-      activeKey: DetailCode,
-      skuDetailInfo: {
-        ...skuDetailInfo,
-        TI_Z00903List: [
-          ...TI_Z00903List,
-          {
-            Code,
-            OrderById,
-            DetailCode,
-            Detail: '',
-          },
-        ],
-      },
-    });
-  };
-
-  radioOnChange = e => {
-    this.setState({
-      DetailCode: e.target.value,
-    });
-  };
-
-  remove = targetKey => {
-    const { skuDetailInfo } = this.state;
-    const { TI_Z00903List } = skuDetailInfo;
-    const newArr = TI_Z00903List.filter(item => item.DetailCode !== targetKey);
-    this.setState({
-      skuDetailInfo: {
-        ...skuDetailInfo,
-        TI_Z00903List: newArr,
-      },
-    });
-  };
-
-  detailChange = Detail => {
-    const { activeKey, skuDetailInfo } = this.state;
+  detailChange = (Detail,activeKey) => {
+    const {  skuDetailInfo } = this.state;
     const { TI_Z00903List } = skuDetailInfo;
     const newArr = TI_Z00903List.map(item => {
       const newItem = item;
@@ -260,7 +253,7 @@ class SKUDetail extends Component {
       payload: {
         Content: {
           Code,
-          TI_Z00903: [...TI_Z00903List],
+          TI_Z00903:[...TI_Z00903List],
         },
       },
       callback: response => {
@@ -281,6 +274,7 @@ class SKUDetail extends Component {
       const sHSCode = fieldsValue.HSCode.Code || skuDetailInfo.HSCode;
       // eslint-disable-next-line no-param-reassign
       delete fieldsValue.HSCode;
+     
       dispatch({
         type: 'skuDetail/update',
         payload: {
@@ -296,6 +290,7 @@ class SKUDetail extends Component {
               },
             ],
           },
+          Method:"U"
         },
         callback: response => {
           if (response && response.Status === 200) {
@@ -339,6 +334,13 @@ class SKUDetail extends Component {
     this.setState({ skuDetailInfo: { ...skuDetailInfo } });
   };
 
+  deleteImg=(PicCode)=>{
+    const {skuDetailInfo}=this.state
+    const TI_Z00904List= skuDetailInfo.TI_Z00904List.filter(item=>item.PicCode!==PicCode)
+    Object.assign(skuDetailInfo,{TI_Z00904List})
+    this.setState({skuDetailInfo})
+  }
+
   handleListChange = info => {
     if (info.file.status === 'uploading') {
       return;
@@ -354,16 +356,18 @@ class SKUDetail extends Component {
     }
   };
 
-  colseModal = () => {
-    this.setState({
-      modalVisible: false,
-    });
-  };
+
+
+  brandChange=value=>{
+    const { skuDetailInfo } = this.state;
+    Object.assign(skuDetailInfo,value)
+    this.setState({skuDetailInfo})
+  }
 
   render() {
     const {
       form: { getFieldDecorator },
-      global: { Purchaser, TI_Z042, TI_Z01802 },
+      global: { Purchaser, TI_Z042 },
       skuDetail: { spuList, fhscodeList, hscodeList },
     } = this.props;
 
@@ -380,8 +384,7 @@ class SKUDetail extends Component {
       },
     };
 
-    const { skuDetailInfo, activeKey, modalVisible, DetailCode } = this.state;
-
+    const { skuDetailInfo} = this.state;
     return (
       <Card bordered={false}>
         <Form {...formItemLayout} onSubmit={this.handleSubmit}>
@@ -398,10 +401,7 @@ class SKUDetail extends Component {
             </Col>
             <Col lg={12} md={12} sm={24}>
               <FormItem key="BrandName" {...this.formLayout} label="品牌">
-                {getFieldDecorator('BrandName', {
-                  rules: [{ required: true, message: '请输入品牌名称！' }],
-                  initialValue: skuDetailInfo.BrandName,
-                })(<Brand keyType="Name" initialValue={skuDetailInfo.BrandName} />)}
+                <Brand keyType="Name" onChange={this.brandChange} initialValue={skuDetailInfo.BrandName} />
               </FormItem>
             </Col>
             <Col lg={12} md={12} sm={24}>
@@ -464,7 +464,8 @@ class SKUDetail extends Component {
               <FormItem key="category" {...this.formLayout} label="分类">
                 <span>{`${skuDetailInfo.Cate1Name}/${skuDetailInfo.Cate2Name}/${
                   skuDetailInfo.Cate3Name
-                }`}</span>
+                }`}
+                </span>
               </FormItem>
             </Col>
             <Col lg={12} md={12} sm={24}>
@@ -505,15 +506,11 @@ class SKUDetail extends Component {
             </Col>
             <Col lg={12} md={12} sm={24}>
               <FormItem key="SPUCode" {...this.formLayout} label="SPU代码">
-                {getFieldDecorator('SPUCode', {
-                  initialValue: skuDetailInfo.SPUCode,
-                })(
-                  <SPUCode
-                    onChange={this.SPUCodeChange}
-                    data={spuList}
-                    initialValue={skuDetailInfo.SPUCode}
-                  />
-                )}
+                <SPUCode
+                  onChange={this.SPUCodeChange}
+                  data={spuList}
+                  initialValue={skuDetailInfo.SPUCode}
+                />
               </FormItem>
             </Col>
 
@@ -552,10 +549,25 @@ class SKUDetail extends Component {
                 })(<Input placeholder="请输入规格(外)" />)}
               </FormItem>
             </Col>
+            <Col lg={12} md={12} sm={24}>
+              <FormItem key="SeoDescription" {...this.formLayout} label="Seo描述">
+                {getFieldDecorator('SeoDescription', {
+                  initialValue: skuDetailInfo.SeoDescription,
+                })(<TextArea placeholder="请输入SeoDescription" />)}
+              </FormItem>
+            </Col>
+            <Col lg={12} md={12} sm={24}>
+              <FormItem key="SeoKey" {...this.formLayout} label="Seo关键字">
+                {getFieldDecorator('SeoKey', {
+                  initialValue: skuDetailInfo.SeoKey,
+                })(<TextArea placeholder="请输入SeoKey" />)}
+              </FormItem>
+            </Col>
           </Row>
         </Form>
         <Tabs animated={false}>
           <TabPane tab="图片管理" key="1">
+            主图：
             <Row>
               <Col lg={4}>
                 <Upload
@@ -567,28 +579,49 @@ class SKUDetail extends Component {
                 />
               </Col>
             </Row>
+            子图：
+            <Row>
+              <div className={styles.childImg}>
+                {
+                  skuDetailInfo.TI_Z00904List.map(item=>(
+                    <div key={item.PicCode}>
+                      <img src={item.PicturePath} alt="" />
+                      <Icon onClick={()=>this.deleteImg(item.PicCode)} type="close" />
+                    </div>
+                  ))
+                }
+              </div>
+              <div style={{display:"inline-block"}}>
+                <Upload
+                  onChange={this.changeMainPicture}
+                  type="MDM"
+                  Folder="TI_Z009"
+                  title="子图"
+                  showImg
+                  initialValue=""
+                />
+              </div>
+            </Row>
           </TabPane>
+         
           <TabPane tab="详情页" key="2">
-            <Tabs
-              onChange={this.detailOnChange}
-              activeKey={activeKey}
-              type="editable-card"
-              onEdit={this.detailOnEdit}
-            >
-              {skuDetailInfo.TI_Z00903List.map(pane => (
-                <TabPane tab={getName(TI_Z01802, pane.DetailCode)} key={pane.DetailCode}>
-                  <UEditor onBlur={this.detailChange} initialValue={pane.Detail} />
-                </TabPane>
-              ))}
-            </Tabs>
+            {
+              skuDetailInfo.TI_Z00903List.length?(
+                <Tabs type="editable-card">
+                  <TabPane tab="产品描述" key="Description">
+                    <UEditor onBlur={(value)=>this.detailChange(value,'Description')} initialValue={skuDetailInfo.TI_Z00903List[0].Detail} />
+                  </TabPane>
+                  <TabPane tab="产品实物图" key="ProductImg">
+                    <UEditor onBlur={(value)=>this.detailChange(value,'ProductImg')} initialValue={skuDetailInfo.TI_Z00903List[2].Detail} />
+                  </TabPane>
+                  <TabPane tab="选项材料" key="SelectFile">
+                    <UEditor onBlur={(value)=>this.detailChange(value,'SelectFile')} initialValue={skuDetailInfo.TI_Z00903List[1].Detail} />
+                  </TabPane>
+                </Tabs>
+              ):''
+            }
+           
           </TabPane>
-          {/* <TabPane tab="客户物料代码" key="3">
-            <StandardTable
-              data={{ list: skuDetailInfo.TI_Z00903List }}
-              rowKey="AttachmentCode"
-              columns={this.Columns}
-            />
-          </TabPane> */}
           <TabPane tab="客户询价单" key="4">
             {skuDetailInfo.Name ? <ClientAsk QueryType="2" QueryKey={skuDetailInfo.Code} /> : ''}
           </TabPane>
@@ -622,23 +655,7 @@ class SKUDetail extends Component {
             更新详情
           </Button>
         </FooterToolbar>
-        <Modal
-          width={960}
-          destroyOnClose
-          maskClosable={false}
-          title="选择类型"
-          onCancel={this.colseModal}
-          onOk={this.addTabne}
-          visible={modalVisible}
-        >
-          <Radio.Group onChange={this.radioOnChange} value={DetailCode}>
-            {TI_Z01802.map(item => (
-              <Radio key={item.Key} value={item.Key}>
-                {item.Value}
-              </Radio>
-            ))}
-          </Radio.Group>
-        </Modal>
+       
       </Card>
     );
   }

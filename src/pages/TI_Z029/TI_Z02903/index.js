@@ -75,7 +75,7 @@ class InquiryEdit extends Component {
         ) : (
           <Ellipsis tooltip lines={1}>
             {text ? (
-              <Link target="_blank" to={`/main/product/TI_Z009/TI_Z00903?Code${text}`}>
+              <Link target="_blank" to={`/main/product/TI_Z009/TI_Z00903?Code=${text}`}>
                 {text}-
               </Link>
             ) : (
@@ -84,6 +84,17 @@ class InquiryEdit extends Component {
             {record.SKUName}
           </Ellipsis>
         ),
+    },
+    {
+      title: '参数',
+      dataIndex: 'Parameters',
+      width: 100,
+      align: 'center',
+      render: text => (
+        <Ellipsis tooltip lines={1}>
+          {text}
+        </Ellipsis>
+      ),
     },
     {
       title: '数量',
@@ -258,17 +269,6 @@ class InquiryEdit extends Component {
       title: '包装',
       width: 100,
       dataIndex: 'Package',
-      align: 'center',
-      render: text => (
-        <Ellipsis tooltip lines={1}>
-          {text}
-        </Ellipsis>
-      ),
-    },
-    {
-      title: '参数',
-      dataIndex: 'Parameters',
-      width: 100,
       align: 'center',
       render: text => (
         <Ellipsis tooltip lines={1}>

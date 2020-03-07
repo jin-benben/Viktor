@@ -61,6 +61,13 @@ class HomePageSet extends Component {
 
   skuColumns = [
     {
+      title: '序号',
+      dataIndex: 'index',
+      width: 80,
+      render:(text,record,index)=><span>{index}</span>
+    },
+    
+    {
       title: '物料代码',
       dataIndex: 'SKU',
       width: 80,
@@ -91,6 +98,12 @@ class HomePageSet extends Component {
 
   thirdSkuColumns = [
     {
+      title: '序号',
+      dataIndex: 'index',
+      width: 80,
+      render:(text,record,index)=><span>{index}</span>
+    },
+    {
       title: '物料代码',
       dataIndex: 'SKU',
       width: 80,
@@ -103,8 +116,8 @@ class HomePageSet extends Component {
     {
       title: '操作',
       width: 50,
-      render: (text, record, index) => (
-        <Popconfirm title="确定要删除吗?" onConfirm={() => this.handleDelete('TI_Z01903', index)}>
+      render: (text, record) => (
+        <Popconfirm title="确定要删除吗?" onConfirm={() => this.handleDelete('TI_Z01904', record.SKU)}>
           <a>
             <MyIcon type="iconshanchu" />
           </a>
@@ -145,7 +158,7 @@ class HomePageSet extends Component {
       width: 50,
       render: (text, record, index) => (
         <Fragment>
-          <Popconfirm title="确定要删除吗?" onConfirm={() => this.handleDelete('TI_Z01902', index)}>
+          <Popconfirm title="确定要删除吗?" onConfirm={() => this.handleDelete('TI_Z01902', record.CategoryCode)}>
             <a>
               <MyIcon type="iconshanchu" />
             </a>
@@ -181,8 +194,8 @@ class HomePageSet extends Component {
     {
       title: '操作',
       width: 50,
-      render: (text, record, index) => (
-        <Popconfirm title="确定要删除吗?" onConfirm={() => this.handleDelete('TI_Z01903', index)}>
+      render: (text, record) => (
+        <Popconfirm title="确定要删除吗?" onConfirm={() => this.handleDelete('TI_Z01903', record.CategoryCode)}>
           <a>
             <MyIcon type="iconshanchu" />
           </a>
@@ -292,10 +305,27 @@ class HomePageSet extends Component {
   // 删除品牌
   handleDelete = (key, index) => {
     const { categorydteail } = this.state;
-    categorydteail[key].splice(index, 1);
+    if(key==="TI_Z01904"){
+     const TI_Z01904 = categorydteail.TI_Z01904.filter(item=>item.SKU!==index)
+     Object.assign(categorydteail,{TI_Z01904})
+    }
+    if(key==="TI_Z01903"){
+      const TI_Z01903 = categorydteail.TI_Z01903.filter(item=>item.CategoryCode!==index)
+      Object.assign(categorydteail,{TI_Z01903})
+    }
+    if(key==="TI_Z01906"||key==="TI_Z01905"){
+      categorydteail[key].splice(index, 1);
+      Object.assign(categorydteail,{[key]:[...categorydteail[key]]})
+    }
+    if(key==="TI_Z01902"){
+      const TI_Z01904 = categorydteail.TI_Z01904.filter(item=>item.SKU!==index)
+      const TI_Z01903 = categorydteail.TI_Z01903.filter(item=>item.Father!==index)
+      const TI_Z01902 = categorydteail.TI_Z01902.filter(item=>item.CategoryCode!==index)
+      Object.assign(categorydteail,{TI_Z01903,TI_Z01902,TI_Z01904})
+    }
     this.setState({
       categorydteail,
-    });
+    },()=> this.getSome());
     message.success('删除成功，更新后有效');
   };
 
@@ -347,6 +377,8 @@ class HomePageSet extends Component {
     this.setState({
       categorydteail,
       catemodalVisible: false,
+    },()=>{
+      if(Level === '3')this.getSome()
     });
     message.success('添加成功，更新后有效');
   };
@@ -374,12 +406,17 @@ class HomePageSet extends Component {
     }
     if (Level === '3') {
       const length = categorydteail.TI_Z01904.length;
+      
       const OrderId = length ? categorydteail.TI_Z01904[length - 1].OrderId : 1;
       let newArr = [];
       selectedRows.map((skuItem, index) => {
         const { Code, Name } = skuItem;
-        const targetIndex = categorydteail.TI_Z01904.findIndex(item => item.SKU === Code);
+        const targetIndex = categorydteail.TI_Z01904.findIndex(item => item.SKU === Code&&item.Father===PCode);
         if (targetIndex === -1) {
+          if(newArr.length>6){
+            message.warning('不能超过6个')
+            return
+          }
           newArr.push({
             Code: categorydteail.Code,
             Father: PCode,
@@ -397,6 +434,8 @@ class HomePageSet extends Component {
     this.setState({
       categorydteail,
       skuModalVisible: false,
+    },()=>{
+      if(Level === '3')this.getSome()
     });
     message.success('添加成功，更新后有效');
   };
@@ -471,6 +510,7 @@ class HomePageSet extends Component {
 
   onExpand = (expanded, record) => {
     const { categorydteail } = this.state;
+
     if (expanded) {
       const secondProductList = categorydteail.TI_Z01904.filter(
         item => item.Father === record.CategoryCode
@@ -483,8 +523,26 @@ class HomePageSet extends Component {
         thirdCategoryList,
         expandedRowKeys: [record.CategoryCode],
       });
+    }else{
+      this.setState({
+        expandedRowKeys: [],
+      });
     }
   };
+
+  getSome=()=>{
+    const { categorydteail,expandedRowKeys:[CategoryCode] } = this.state;
+    const secondProductList = categorydteail.TI_Z01904.filter(
+      item => item.Father === CategoryCode
+    );
+    const thirdCategoryList = categorydteail.TI_Z01903.filter(
+      item => item.Father === CategoryCode
+    );
+    this.setState({
+      secondProductList,
+      thirdCategoryList,
+    });
+  }
 
   expandedRowRender = record => {
     const { thirdCategoryList, secondProductList } = this.state;
@@ -497,9 +555,11 @@ class HomePageSet extends Component {
             columns={this.thirdCategoryColumns}
             pagination={false}
             footer={() => (
-              <Button type="primary" onClick={() => this.addThirdCate(record.CategoryCode)}>
-                添加三级分类
-              </Button>
+              <Fragment>
+                <Button type="primary" onClick={() => this.addThirdCate(record.CategoryCode)}>
+                  添加三级分类
+                </Button>(最多添加4个)
+              </Fragment>
             )}
           />
         </TabPane>
@@ -510,9 +570,12 @@ class HomePageSet extends Component {
             columns={this.thirdSkuColumns}
             pagination={false}
             footer={() => (
-              <Button type="primary" onClick={() => this.addThirdProduct(record.CategoryCode)}>
-                添加产品
-              </Button>
+              <Fragment>
+                <Button type="primary" onClick={() => this.addThirdProduct(record.CategoryCode)}>
+                 添加产品
+                </Button>(最多添加6个)
+              </Fragment>
+             
             )}
           />
         </TabPane>
@@ -561,9 +624,11 @@ class HomePageSet extends Component {
               expandedRowRender={this.expandedRowRender}
               pagination={false}
               footer={() => (
-                <Button type="primary" onClick={() => this.setState({ catemodalVisible: true })}>
-                  添加二级分类
-                </Button>
+                <Fragment>
+                  <Button type="primary" onClick={() => this.setState({ catemodalVisible: true })}>
+                    添加二级分类
+                  </Button>(最多添加4个)
+                </Fragment>
               )}
             />
           </TabPane>

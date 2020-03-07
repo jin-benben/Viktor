@@ -1,6 +1,7 @@
 import React, { memo } from 'react';
 import { Row, Col, Card, Tabs, DatePicker, Radio } from 'antd';
 import numeral from 'numeral';
+import Link from 'umi/link';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { Charts } from 'ant-design-pro';
 import styles from '../style.less';
@@ -119,7 +120,7 @@ const SalesCard = memo(
                             {i + 1}
                           </span>
                           <span className={styles.rankingItemTitle} title={item.x}>
-                            {item.x}
+                            <Link target="_blank" to={`/main/TI_Z007/detail?Code=${item.code}`}> {item.x}</Link>
                           </span>
                           <span>{numeral(item.y).format('0,0')}</span>
                         </li>

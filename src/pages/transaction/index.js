@@ -2,6 +2,7 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
+import Link from 'umi/link';
 import { Row, Col, Card, Form, Input, Button, DatePicker, Tabs, Tag, Select } from 'antd';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import StandardTable from '@/components/StandardTable';
@@ -48,9 +49,9 @@ class TransactionSearch extends PureComponent {
       title: '客户',
       dataIndex: 'CardName',
       width: 200,
-      render: text => (
+      render: (text,record) => (
         <Ellipsis tooltip lines={1}>
-          {text}
+          <Link target="_blank" to={`/main/TI_Z006/detail?Code=${record.CardCode}`}>{text}</Link>
         </Ellipsis>
       ),
     },
@@ -139,9 +140,9 @@ class TransactionSearch extends PureComponent {
       title: '客户',
       dataIndex: 'CardName',
       width: 150,
-      render: text => (
+      render: (text,record) => (
         <Ellipsis tooltip lines={1}>
-          {text}
+          <Link target="_blank" to={`/main/TI_Z006/detail?Code=${record.CardCode}`}>{text}</Link>
         </Ellipsis>
       ),
     },
@@ -154,6 +155,10 @@ class TransactionSearch extends PureComponent {
       title: '物料代码',
       dataIndex: 'ItemCode',
       width: 80,
+      render: (text) => (
+        <Link target="_blank" to={`/main/product/TI_Z009/TI_Z00903?Code=${text}`}>
+          {text}
+        </Link>)
     },
 
     {
@@ -242,6 +247,11 @@ class TransactionSearch extends PureComponent {
       title: '客户',
       width: 200,
       dataIndex: 'CardName',
+      render: (text,record) => (
+        <Ellipsis tooltip lines={1}>
+          <Link target="_blank" to={`/main/TI_Z006/detail?Code=${record.CardCode}`}>{text}</Link>
+        </Ellipsis>
+      ),
     },
     {
       title: '转帐金额',
@@ -492,6 +502,7 @@ class TransactionSearch extends PureComponent {
       if (['2', '5', '7'].includes(activeKey)) {
         Object.assign(queryData.Content, { LineStatus: fieldsValue.Status });
       }
+      // eslint-disable-next-line no-param-reassign
       delete fieldsValue.Status;
       Object.assign(queryData.Content, { ...fieldsValue, DocDateFrom, DocDateTo });
       Object.assign(queryData, { page: 1, rows: 20 });

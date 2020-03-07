@@ -212,21 +212,16 @@ class SkuFetchComponent extends PureComponent {
     const { queryData } = this.state;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
-      dispatch({
-        type: 'skuFetch/fetch',
-        payload: {
-          Content: {
-            SearchText: '',
-            SearchKey: 'Name',
-            ...queryData.Content,
-            ...fieldsValue,
-          },
-          page: 1,
-          rows: 30,
-          sidx: 'Code',
-          sord: 'Desc',
-        },
-      });
+      Object.assign(queryData.Content,{...fieldsValue})
+      Object.assign(queryData,{ page: 1,
+        rows: 30,})
+      this.setState({},()=>{
+        dispatch({
+          type: 'skuFetch/fetch',
+          payload:queryData,
+        });
+      })
+     
     });
   };
 
@@ -265,6 +260,14 @@ class SkuFetchComponent extends PureComponent {
             <span className="submitButtons">
               <Button type="primary" htmlType="submit">
                 查询
+              </Button>
+              <Button
+                icon="plus"
+                style={{ marginLeft: 8 }}
+                type="primary"
+                onClick={() => router.push('/main/product/TI_Z009/TI_Z00901?method=U')}
+              >
+                批量更新
               </Button>
               <Button
                 icon="plus"

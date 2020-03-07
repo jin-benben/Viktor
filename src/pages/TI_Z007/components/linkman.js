@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
 import { Row, Col, Form, Input, Modal, Checkbox } from 'antd';
+import TextArea from 'antd/lib/input/TextArea';
 import { chechEmail } from '@/utils/utils';
 
 const FormItem = Form.Item;
@@ -122,6 +123,13 @@ class LinkManFrom extends PureComponent {
             </Col>
           </Row>
           <Row>
+            <Col span={12}>
+              <FormItem key="Comment" {...this.formLayout} label="备注">
+                {getFieldDecorator('Comment', {
+                  initialValue: formVals.Comment,
+                })(<TextArea placeholder="请输入备注"  />)}
+              </FormItem>
+            </Col>
             <Col span={12}>
               <FormItem key="DefaultContacts" {...this.formLayout} label="默认联系人">
                 {getFieldDecorator('DefaultContacts', {

@@ -76,7 +76,7 @@ class orderLine extends PureComponent {
         ) : (
           <Ellipsis tooltip lines={1}>
             {text ? (
-              <Link target="_blank" to={`/main/product/TI_Z009/TI_Z00903?Code${text}`}>
+              <Link target="_blank" to={`/main/product/TI_Z009/TI_Z00903?Code=${text}`}>
                 {text}-
               </Link>
             ) : (

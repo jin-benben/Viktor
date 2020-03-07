@@ -44,7 +44,7 @@ class comparison extends PureComponent {
     },
     {
       title: '名称(外)',
-      width: 250,
+      width: 200,
       dataIndex: 'ForeignName',
       render: text => <Text text={text} />,
     },
@@ -58,6 +58,12 @@ class comparison extends PureComponent {
       title: '规格(外)',
       width: 250,
       dataIndex: 'ForeignParameters',
+      render: text => <Text text={text} />,
+    },
+    {
+      title: '参数',
+      width: 200,
+      dataIndex: 'Parameters',
       render: text => <Text text={text} />,
     },
     {
@@ -94,7 +100,7 @@ class comparison extends PureComponent {
             pagination={false}
             rowKey={rowkey || 'Key'}
             bordered
-            scroll={{ y: 400 }}
+            scroll={{ x: 1200, y: 400 }}
             dataSource={dataSource}
             columns={this.columns}
           />

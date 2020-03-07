@@ -1,3 +1,4 @@
+/* eslint-disable array-callback-return */
 /* eslint-disable no-restricted-globals */
 /* eslint-disable camelcase */
 /* eslint-disable no-param-reassign */
@@ -115,7 +116,7 @@ class InquiryEdit extends React.Component {
         record.lastIndex ? null : (
           <AutoComplete
             BrandCode={record.BrandCode}
-            Type="ProductName"
+            Type="Name"
             onChage={value => this.rowSelectChange(value, record, index, 'ProductName')}
             parentSelect={select => this.rowSelect(select, record, index)}
             defaultValue={text}
@@ -131,7 +132,7 @@ class InquiryEdit extends React.Component {
         record.lastIndex ? null : (
           <AutoComplete
             BrandCode={record.BrandCode}
-            Type="ManufactureNO"
+            Type="Name"
             onChage={value => this.rowSelectChange(value, record, index, 'ManufactureNO')}
             parentSelect={select => this.rowSelect(select, record, index)}
             defaultValue={text}
@@ -164,13 +165,13 @@ class InquiryEdit extends React.Component {
     },
     {
       title: '价格',
-      width: 80,
+      width: 100,
       dataIndex: 'Price',
       align: 'center',
       render: (text, record, index) =>
         record.lastIndex ? null : (
           <Search
-            onChange={value => this.rowSelectChange(value, record, index, 'Price')}
+            onChange={event => this.rowSelectChange(event.target.value, record, index, 'Price')}
             onSearch={() => this.priceSelect(record, index)}
             defaultValue={text}
           />
@@ -756,6 +757,7 @@ class InquiryEdit extends React.Component {
       SupplierCode,
       Currency,
       ForeignFreight,
+      Code
     } = select;
     const { inquiryDetail } = this.state;
     record.SKUName = `${record.BrandName}  ${record.ProductName}  ${record.ManufactureNO}`;
@@ -777,7 +779,7 @@ class InquiryEdit extends React.Component {
       InquiryPrice,
       SupplierCode,
       Currency,
-      ForeignFreight,
+      ForeignFreight,SKU:Code
     });
     inquiryDetail.TI_Z02602[index] = record;
     this.setState({ inquiryDetail: { ...inquiryDetail } });
@@ -902,8 +904,11 @@ class InquiryEdit extends React.Component {
     record[key] = value;
     record.SKUName = `${record.BrandName}  ${record.ProductName}  ${record.ManufactureNO}`;
     inquiryDetail.TI_Z02602[index] = record;
-
-    this.setState({ inquiryDetail: { ...inquiryDetail } });
+    this.setState({ inquiryDetail }, () => {
+      if(key==="Price"){
+        this.getTotal()
+      }
+    });
   };
 
   // sku输入框获取焦点
@@ -1106,7 +1111,7 @@ class InquiryEdit extends React.Component {
       Currency,
       InquiryPrice,
       ForeignFreight,
-      InquiryDueDate,
+      CreateDate,
     } = select[0];
     const { thisLine, LineID, inquiryDetail } = this.state;
     Object.assign(thisLine, {
@@ -1115,7 +1120,7 @@ class InquiryEdit extends React.Component {
       Currency,
       InquiryPrice,
       ForeignFreight,
-      InquiryDueDate,
+      InquiryDueDate:CreateDate,
     });
     inquiryDetail.TI_Z02602[LineID] = thisLine;
     this.setState({
@@ -1125,6 +1130,10 @@ class InquiryEdit extends React.Component {
 
   // 选择价格
   priceSelect = (record, LineID) => {
+    if(!record.SKU){
+      message.warning('该行没有SKU')
+      return
+    }
     this.setState({
       thisLine: { ...record },
       LineID,
@@ -1207,6 +1216,7 @@ class InquiryEdit extends React.Component {
       SKU: '',
       SKUName: '',
       BrandName: last ? last.BrandName : '',
+      BrandCode: last ? last.BrandCode : '',
       ProductName: '',
       ManufactureNO: '',
       ManLocation: '',
@@ -1616,7 +1626,7 @@ class InquiryEdit extends React.Component {
                     >
                       {addList.map(option => (
                         <Option key={option.AddressID} value={option.AddressID}>
-                          {`${option.Province}/${option.City}/${option.Area}`}
+                          {`${option.AddressName}/${option.Province}/${option.City}/${option.Area}`}
                         </Option>
                       ))}
                     </Select>
@@ -1714,7 +1724,7 @@ class InquiryEdit extends React.Component {
         <OrderAttachUpload {...uploadmodalMethods} modalVisible={uploadmodalVisible} />
         <SKUModal {...parentMethods} modalVisible={skuModalVisible} />
         <PriceComplete
-          ProductName={thisLine.ProductName}
+          Code={thisLine.SKU}
           {...priceParentMethods}
           modalVisible={priceModalVisible}
         />

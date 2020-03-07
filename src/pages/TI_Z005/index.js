@@ -13,9 +13,10 @@ import {
   Divider,
   Select,
   Icon,
-  AutoComplete,
+  AutoComplete,Popover
 } from 'antd';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
+import Link from 'umi/link';
 import StandardTable from '@/components/StandardTable';
 import Supplier from '@/components/Supplier';
 import Upload from '@/components/Upload';
@@ -26,6 +27,7 @@ import Text from '@/components/Text';
 import MyPageHeader from './components/pageHeader';
 import { getName } from '@/utils/utils';
 import { brandLevel, formLayout, formItemLayout } from '@/utils/publicData';
+
 
 const { TextArea } = Input;
 const FormItem = Form.Item;
@@ -109,7 +111,7 @@ class CreateForm extends PureComponent {
   render() {
     const {
       form: { getFieldDecorator },
-      global: { Purchaser },
+      global: { Purchaser, currentUser },
       form,
       modalVisible,
       handleModalVisible,
@@ -129,7 +131,7 @@ class CreateForm extends PureComponent {
 
     return (
       <Modal
-        width={640}
+        width={960}
         confirmLoading={addloading || updateloading}
         destroyOnClose
         title="品牌编辑"
@@ -139,58 +141,71 @@ class CreateForm extends PureComponent {
         onCancel={() => handleModalVisible()}
       >
         <Form {...formItemLayout}>
-          <FormItem key="Name" {...formLayout} label="名称">
-            {getFieldDecorator('Name', {
-              rules: [{ required: true, message: '请输入名称！' }],
-              initialValue: formVals.Name,
-            })(
-              <AutoComplete
-                style={{ width: '100%' }}
-                onSearch={this.checkExist}
-                placeholder="请输入名称！"
+          <Row>
+            <Col span={12}>
+              <FormItem key="Name" {...formLayout} label="名称">
+                {getFieldDecorator('Name', {
+                  rules: [{ required: true, message: '请输入名称！' }],
+                  initialValue: formVals.Name,
+                })(
+                  <AutoComplete
+                    style={{ width: '100%' }}
+                    onSearch={this.checkExist}
+                    placeholder="请输入名称！"
+                  >
+                    {dataSource.map(item => (
+                      <AutoComplete.Option value={item.Name} key={item.Code}>
+                        {item.Name}
+                      </AutoComplete.Option>
+                    ))}
+                  </AutoComplete>
+                )}
+              </FormItem>
+            </Col>
+            <Col span={12}>
+              <FormItem key="Purchaser" {...formLayout} label="采购员">
+                {getFieldDecorator('Purchaser', {
+                  rules: [{ required: true, message: '请选择采购员！' }],
+                  initialValue: formVals.Purchaser,
+                })(<MDMCommonality initialValue={formVals.Purchaser} data={Purchaser} />)}
+              </FormItem>
+            </Col>
+            <Col span={12}>
+              {currentUser.Role && currentUser.Role !== 'S' && (
+              <FormItem
+                key="supplier"
+                {...formLayout}
+                label="默认供应商"
+                style={{ position: 'relative' }}
               >
-                {dataSource.map(item => (
-                  <AutoComplete.Option value={item.Name} key={item.Code}>
-                    {item.Name}
-                  </AutoComplete.Option>
-                ))}
-              </AutoComplete>
+                {getFieldDecorator('supplier', {
+                  initialValue: { key: formVals.CardCode, label: formVals.CardName },
+                })(
+                  <Supplier
+                    initialValue={{ key: formVals.CardCode, label: formVals.CardName }}
+                    labelInValue
+                  />
+                )}
+              </FormItem>
             )}
-          </FormItem>
-          <FormItem key="Purchaser" {...formLayout} label="采购员">
-            {getFieldDecorator('Purchaser', {
-              rules: [{ required: true, message: '请选择采购员！' }],
-              initialValue: formVals.Purchaser,
-            })(<MDMCommonality initialValue={formVals.Purchaser} data={Purchaser} />)}
-          </FormItem>
-          <FormItem
-            key="supplier"
-            {...formLayout}
-            label="默认供应商"
-            style={{ position: 'relative' }}
-          >
-            {getFieldDecorator('supplier', {
-              initialValue: { key: formVals.CardCode, label: formVals.CardName },
-            })(
-              <Supplier
-                initialValue={{ key: formVals.CardCode, label: formVals.CardName }}
-                labelInValue
-              />
-            )}
-          </FormItem>
-
-          <FormItem key="WebSite" {...formLayout} label="官网">
-            {getFieldDecorator('WebSite', {
+            </Col>
+            <Col span={12}>
+              <FormItem key="WebSite" {...formLayout} label="官网">
+                {getFieldDecorator('WebSite', {
               initialValue: formVals.WebSite,
             })(<Input placeholder="请输入官网！" />)}
-          </FormItem>
-          <FormItem key="Abbreviate" {...formLayout} label="简写">
-            {getFieldDecorator('Abbreviate', {
+              </FormItem>
+            </Col>
+            <Col span={12}>
+              <FormItem key="Abbreviate" {...formLayout} label="简写">
+                {getFieldDecorator('Abbreviate', {
               initialValue: formVals.Abbreviate,
             })(<Input placeholder="请输入简写！" />)}
-          </FormItem>
-          <FormItem key="BrandLevel" {...formLayout} label="级别">
-            {getFieldDecorator('BrandLevel', {
+              </FormItem>
+            </Col>
+            <Col span={12}>
+              <FormItem key="BrandLevel" {...formLayout} label="级别">
+                {getFieldDecorator('BrandLevel', {
               initialValue: formVals.BrandLevel,
             })(
               <Select placeholder="请选择品牌级别" style={{ width: '100%' }}>
@@ -201,15 +216,40 @@ class CreateForm extends PureComponent {
                 ))}
               </Select>
             )}
-          </FormItem>
-          <FormItem key="Content" {...formLayout} label="品牌介绍">
-            {getFieldDecorator('Content', {
+              </FormItem>
+            </Col>
+            <Col span={12}>
+              <FormItem key="Content" {...formLayout} label="品牌介绍">
+                {getFieldDecorator('Content', {
               rules: [{ required: true, message: '请输入名称！' }],
               initialValue: formVals.Content,
             })(<TextArea rows={4} placeholder="请输入介绍" />)}
-          </FormItem>
-          <FormItem key="Picture" {...formLayout} label="品牌主图">
-            {getFieldDecorator('Picture', {
+              </FormItem>
+            </Col>
+            <Col span={12}>
+              <FormItem key="Title" {...formLayout} label="网站Title">
+                {getFieldDecorator('Title', {
+              initialValue: formVals.Title,
+            })(<TextArea placeholder="请输入Title" />)}
+              </FormItem>
+            </Col>
+            <Col span={12}>
+              <FormItem key="SeoDescription" {...formLayout} label="Seo描述">
+                {getFieldDecorator('SeoDescription', {
+              initialValue: formVals.SeoDescription,
+            })(<TextArea placeholder="请输入SeoDescription" />)}
+              </FormItem>
+            </Col>
+            <Col span={12}>
+              <FormItem key="SeoKey" {...formLayout} label="Seo关键字">
+                {getFieldDecorator('SeoKey', {
+              initialValue: formVals.SeoKey,
+            })(<TextArea placeholder="请输入SeoKey" />)}
+              </FormItem>
+            </Col>
+            <Col span={12}>
+              <FormItem key="Picture" {...formLayout} label="品牌主图">
+                {getFieldDecorator('Picture', {
               initialValue: formVals.Picture,
             })(
               <Upload
@@ -219,7 +259,9 @@ class CreateForm extends PureComponent {
                 initialValue={formVals.Picture}
               />
             )}
-          </FormItem>
+              </FormItem>
+            </Col>
+          </Row>
         </Form>
       </Modal>
     );
@@ -276,7 +318,7 @@ class BrandList extends PureComponent {
       title: '主图',
       dataIndex: 'Picture',
       width: 100,
-      render: val => (val ? <img style={{ width: 50, height: 50 }} src={val} alt="主图" /> : ''),
+      render: val => (val&&<Popover content={<img src={val} alt="主图" />} title="品牌LOGO" trigger="hover"><img style={{ width: 50, height: 50 }} src={val} alt="主图" /></Popover>),
     },
     {
       title: '采购员',
@@ -314,7 +356,10 @@ class BrandList extends PureComponent {
     {
       title: '默认供应商',
       dataIndex: 'CardName',
-      render: text => <Text text={text} />,
+      render: (text,record) => {
+        const { global } = this.props;
+        return global.currentUser.Role && global.currentUser.Role !== 'S' && <Link to={`/main/TI_Z007/detail?Code=${record.CardCode}`}><Text text={text} /></Link>;
+      },
     },
     {
       title: '操作',
@@ -412,6 +457,7 @@ class BrandList extends PureComponent {
   handleSubmitAttach = fileList => {
     const { dispatch } = this.props;
     const { BaseEntry } = this.state;
+    // eslint-disable-next-line array-callback-return
     fileList.map(file => {
       const { AttachmentPath, AttachmentCode, AttachmentName, AttachmentExtension } = file;
       dispatch({
@@ -566,8 +612,10 @@ class BrandList extends PureComponent {
                   showArrow={false}
                   mode="multiple"
                   placeholder="输入名称"
-                  filterOption={false}
                   style={{ width: '100%' }}
+                  filterOption={(input, option) =>
+                    option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                  }
                 >
                   {Purchaser.map(option => (
                     <Option key={option.Key} value={option.Key}>
@@ -578,6 +626,12 @@ class BrandList extends PureComponent {
               )}
             </FormItem>
           </Col>
+          <Col md={5} sm={24}>
+            <FormItem label="官网">
+              {getFieldDecorator('WebSite')(<Input placeholder="请输入" />)}
+            </FormItem>
+          </Col>
+          
           <Col md={8} sm={24}>
             <span className="submitButtons">
               <Button type="primary" htmlType="submit">

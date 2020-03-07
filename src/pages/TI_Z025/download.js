@@ -1,7 +1,7 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import Link from 'umi/link';
-import { Row, Col, Card, Form, Input, Button, Tag, Table, Modal, Badge, Checkbox } from 'antd';
+import { Row, Col, Card, Form, Input, Button, Table, Modal, Badge, Checkbox } from 'antd';
 import FooterToolbar from 'ant-design-pro/lib/FooterToolbar';
 import Ellipsis from 'ant-design-pro/lib/Ellipsis';
 import SalerPurchaser from '@/components/Select/SalerPurchaser/other';
